@@ -626,6 +626,9 @@ if __name__ == "__main__":
 
     model.fit(X, y)
 
+    ## The below calibration process replaces "base_estimator" with "estimator"
+    ## for all scikit-learn versions >= 0.24
+    
     if model.calibrate:
         model.calibrateModel(X, y)
     else:
@@ -639,7 +642,7 @@ if __name__ == "__main__":
                 importance = (
                     model.xval_output["estimator"][i]
                     .calibrated_classifiers_[i]
-                    .base_estimator.steps[1][1]
+                    .estimator.steps[1][1]
                     .coef_[0]
                 )
             else:
@@ -652,7 +655,7 @@ if __name__ == "__main__":
                 print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
     else:
         if calibrate:
-            importance = model.estimator.base_estimator.steps[1][1].coef_[0]
+            importance = model.estimator.estimator.steps[1][1].coef_[0]
         else:
             importance = model.estimator.steps[1][1].coef_[0]
         sort_imp_indx = np.argsort(importance)[::-1]
@@ -661,3 +664,4 @@ if __name__ == "__main__":
         # summarize feature importance
         for i in sort_imp_indx:
             print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
+
