@@ -16,7 +16,7 @@ from pprint import pprint
 from sklearn.metrics import get_scorer
 from sklearn.metrics import fbeta_score
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import ParameterSampler
@@ -103,7 +103,8 @@ class Model:
         n_iter=100,
         trained=False,
         pipeline=True,
-        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
+        pipeline_steps=[("min_max_scaler", MinMaxScaler(),
+                         "standard_scaler", StandardScaler())],
     ):
         self.name = name
         self.estimator_name = estimator_name
