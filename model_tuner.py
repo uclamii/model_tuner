@@ -380,6 +380,12 @@ class Model:
 
             self.get_best_score_params(X, y)
         else:
+            print("y:", y)
+            print("X:", X)
+            print("Stratify:", stratify)
+            print("validation_size:", self.validation_size)
+            print("test_size:", self.test_size)
+    
             X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
                 X=X,
                 y=y,
@@ -561,33 +567,59 @@ def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]
         return_estimator=True,
     )
 
+def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
+    if stratify:
+        stratify_param = y
+    else:
+        stratify_param = None
 
-def train_val_test_split(
-    X,
-    y,
-    stratify,
-    train_size,
-    validation_size,
-    test_size,
-    random_state,
-):
     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
         X,
-        stratify,  # stratify contains another array and last the label
+        y,
         test_size=1 - train_size,
-        train_size=train_size,
-        stratify=stratify,
+        stratify=stratify_param,
         random_state=random_state,
     )
+
+    # Update to fix proportions for validation and test split
+    proportion = test_size / (validation_size + test_size)
+
     X_valid, X_test, y_valid, y_test = train_test_split(
         X_valid_test,
         y_valid_test,
-        test_size=(1 - train_size - validation_size) / (1 - train_size),
-        train_size=(1 - train_size - test_size) / (1 - train_size),
-        stratify=y_valid_test,
+        test_size=proportion,
+        stratify=y_valid_test if stratify else None,
         random_state=random_state,
     )
-    return X_train, X_valid, X_test, y_train[:, -1], y_valid[:, -1], y_test[:, -1]
+
+    return X_train, X_valid, X_test, y_train, y_valid, y_test
+
+# def train_val_test_split(
+#     X,
+#     y,
+#     stratify,
+#     train_size,
+#     validation_size,
+#     test_size,
+#     random_state,
+# ):
+#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
+#         X,
+#         stratify,  # stratify contains another array and last the label
+#         test_size=1 - train_size,
+#         train_size=train_size,
+#         stratify=stratify,
+#         random_state=random_state,
+#     )
+#     X_valid, X_test, y_valid, y_test = train_test_split(
+#         X_valid_test,
+#         y_valid_test,
+#         test_size=(1 - train_size - validation_size) / (1 - train_size),
+#         train_size=(1 - train_size - test_size) / (1 - train_size),
+#         stratify=y_valid_test,
+#         random_state=random_state,
+#     )
+#     return X_train, X_valid, X_test, y_train[:, -1], y_valid[:, -1], y_test[:, -1]
 
 
 if __name__ == "__main__":
