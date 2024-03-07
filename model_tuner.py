@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
 import matplotlib.pyplot as plt
@@ -17,8 +15,14 @@ from sklearn.metrics import get_scorer
 from sklearn.metrics import fbeta_score
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import cross_val_predict
+from sklearn.model_selection import (
+    cross_val_predict,
+    train_test_split,
+    GridSearchCV,
+    RandomizedSearchCV,
+)
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
 
@@ -103,8 +107,10 @@ class Model:
         n_iter=100,
         trained=False,
         pipeline=True,
-        pipeline_steps=[("min_max_scaler", MinMaxScaler(),
-                         "standard_scaler", StandardScaler())],
+        scaler_type="min_max_scaler",
+        pipeline_steps=[
+            ("min_max_scaler", MinMaxScaler(),)
+        ],
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -112,6 +118,8 @@ class Model:
         self.pipeline = pipeline
         self.original_estimator = estimator
         self.pipeline_steps = pipeline_steps
+        if scaler_type=="standard_scaler":
+            pipeline_steps=[("standard_scaler", StandardScaler(),)]
         if self.pipeline:
             self.estimator = Pipeline(
                 self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
@@ -331,7 +339,9 @@ class Model:
             if optimal_threshold:
                 return (
                     self.predict_proba(X)[:, 1]
-                    > self.threshold[self.scoring[0]] #TODO generalize so that user can select score
+                    > self.threshold[
+                        self.scoring[0]
+                    ]  # TODO generalize so that user can select score
                 ) * 1
             else:
                 return self.estimator.predict(X)
@@ -629,7 +639,7 @@ if __name__ == "__main__":
 
     ## The below calibration process replaces "base_estimator" with "estimator"
     ## for all scikit-learn versions >= 0.24
-    
+
     if model.calibrate:
         model.calibrateModel(X, y)
     else:
@@ -665,4 +675,3 @@ if __name__ == "__main__":
         # summarize feature importance
         for i in sort_imp_indx:
             print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
-
