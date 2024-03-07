@@ -108,6 +108,8 @@ class Model:
         trained=False,
         pipeline=True,
         scaler_type="min_max_scaler",
+        impute_strategy="mean",
+        impute=False,
         pipeline_steps=[
             ("min_max_scaler", MinMaxScaler(),)
         ],
@@ -117,9 +119,11 @@ class Model:
         self.calibrate = calibrate
         self.pipeline = pipeline
         self.original_estimator = estimator
-        self.pipeline_steps = pipeline_steps
         if scaler_type=="standard_scaler":
-            pipeline_steps=[("standard_scaler", StandardScaler(),)]
+            pipeline_steps=[("standard_scaler", StandardScaler())]
+        if impute:
+            pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
+        self.pipeline_steps = pipeline_steps
         if self.pipeline:
             self.estimator = Pipeline(
                 self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
