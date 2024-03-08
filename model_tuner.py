@@ -97,6 +97,7 @@ class Model:
         validation_size=0.2,
         test_size=0.2,
         stratify=True,
+        stratify_by=None,
         grid=None,
         scoring=["roc_auc"],
         n_splits=10,
@@ -150,6 +151,7 @@ class Model:
         self.kf = None
         self.xval_output = None
         self.stratify = stratify
+        self.stratify_by = stratify_by
         self.n_splits = n_splits
         self.scoring = scoring
         self.best_params_per_score = {score: 0 for score in self.scoring}
@@ -217,6 +219,7 @@ class Model:
                         y,
                         self.kf,
                         stratify=self.stratify,
+                        stratify_by=self.stratify_by,
                         scoring=score,
                     )
         else:
@@ -233,6 +236,7 @@ class Model:
                         X=X,
                         y=y,
                         stratify=stratify,
+                        stratify_by=self.stratify_by,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         test_size=self.test_size,
@@ -365,6 +369,7 @@ class Model:
         f1_beta_tune=False,
         betas=[1, 2],
         stratify=None,
+        stratify_by=None,
     ):
 
         if self.kfold:
@@ -373,6 +378,7 @@ class Model:
                 X,
                 y,
                 stratify=self.stratify,
+                stratify_by=self.stratify_by,
                 scoring=self.scoring,
                 n_splits=self.n_splits,
                 random_state=self.random_state,
@@ -385,11 +391,13 @@ class Model:
             print("Stratify:", stratify)
             print("validation_size:", self.validation_size)
             print("test_size:", self.test_size)
+            print(f"Stratify By {self.stratify_by}")
     
             X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
                 X=X,
                 y=y,
                 stratify=stratify,
+                stratify_by=self.stratify_by,
                 train_size=self.train_size,
                 validation_size=self.validation_size,
                 test_size=self.test_size,
@@ -567,32 +575,70 @@ def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]
         return_estimator=True,
     )
 
-def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
-    if stratify:
-        stratify_param = y
+def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by):
+    
+    # Determine the stratify parameter based on stratify and stratify_by
+    if stratify_by:
+        # Stratify option
+        stratify_option = X[stratify_by] if stratify_by else None
+        # Ensure X is a pandas DataFrame to use column names
+        stratify_key = stratify_option
+    elif stratify:
+        stratify_key = y
     else:
-        stratify_param = None
+        stratify_key = None
 
+    # Split the dataset into training and (validation + test) sets
+    print(f"Stratify Key: {stratify_key}")
     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
         X,
         y,
         test_size=1 - train_size,
-        stratify=stratify_param,
+        stratify=stratify_key,  # Use stratify_key here
         random_state=random_state,
     )
 
-    # Update to fix proportions for validation and test split
+    # Determine the proportion of validation to test size in the remaining dataset
     proportion = test_size / (validation_size + test_size)
 
+    # Further split (validation + test) set into validation and test sets
     X_valid, X_test, y_valid, y_test = train_test_split(
         X_valid_test,
         y_valid_test,
         test_size=proportion,
-        stratify=y_valid_test if stratify else None,
+        stratify=y_valid_test if stratify and stratify_by is None else None,  # Adjust stratification here
         random_state=random_state,
     )
 
     return X_train, X_valid, X_test, y_train, y_valid, y_test
+
+
+# def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
+#     if stratify:
+#         stratify_param = y
+#     else:
+#         stratify_param = None
+
+#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
+#         X,
+#         y,
+#         test_size=1 - train_size,
+#         stratify=stratify_param,
+#         random_state=random_state,
+#     )
+
+#     # Update to fix proportions for validation and test split
+#     proportion = test_size / (validation_size + test_size)
+
+#     X_valid, X_test, y_valid, y_test = train_test_split(
+#         X_valid_test,
+#         y_valid_test,
+#         test_size=proportion,
+#         stratify=y_valid_test if stratify else None,
+#         random_state=random_state,
+#     )
+
+#     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
 # def train_val_test_split(
 #     X,
