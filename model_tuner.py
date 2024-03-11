@@ -403,6 +403,12 @@ class Model:
                 test_size=self.test_size,
                 random_state=self.random_state,
             )
+            self.X_train = X_train   # returns training data as df for X
+            self.X_valid = X_valid   # returns calidation data as df for X
+            self.X_test = X_test     # returns test data as df for X
+            self.y_train = y_train   # returns training data as df for y
+            self.y_valid = y_valid   # returns validation data as df for y
+            self.y_test = y_test     # returns test data as df for y
             if self.balance:
                 rus = self.imbalance_sampler
                 X_train, y_train = rus.fit_sample(X_train, y_train)
