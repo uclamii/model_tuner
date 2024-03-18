@@ -112,7 +112,10 @@ class Model:
         impute_strategy="mean",
         impute=False,
         pipeline_steps=[
-            ("min_max_scaler", MinMaxScaler(),)
+            (
+                "min_max_scaler",
+                MinMaxScaler(),
+            )
         ],
     ):
         self.name = name
@@ -120,8 +123,8 @@ class Model:
         self.calibrate = calibrate
         self.pipeline = pipeline
         self.original_estimator = estimator
-        if scaler_type=="standard_scaler":
-            pipeline_steps=[("standard_scaler", StandardScaler())]
+        if scaler_type == "standard_scaler":
+            pipeline_steps = [("standard_scaler", StandardScaler())]
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
         self.pipeline_steps = pipeline_steps
@@ -163,6 +166,7 @@ class Model:
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
         self.trained = trained
+        self.labels = ["TP", "FN", "FP", "TN"]
 
     def reset_estimator(self):
         if self.pipeline:
@@ -378,7 +382,6 @@ class Model:
                 X,
                 y,
                 stratify=self.stratify,
-                stratify_by=self.stratify_by,
                 scoring=self.scoring,
                 n_splits=self.n_splits,
                 random_state=self.random_state,
@@ -386,13 +389,13 @@ class Model:
 
             self.get_best_score_params(X, y)
         else:
-            print("y:", y)
-            print("X:", X)
-            print("Stratify:", stratify)
-            print("validation_size:", self.validation_size)
-            print("test_size:", self.test_size)
-            print(f"Stratify By {self.stratify_by}")
-    
+            # print("y:", y)
+            # print("X:", X)
+            # print("Stratify:", stratify)
+            # print("validation_size:", self.validation_size)
+            # print("test_size:", self.test_size)
+            # print(f"Stratify By {self.stratify_by}")
+
             X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
                 X=X,
                 y=y,
@@ -403,12 +406,12 @@ class Model:
                 test_size=self.test_size,
                 random_state=self.random_state,
             )
-            self.X_train = X_train   # returns training data as df for X
-            self.X_valid = X_valid   # returns calidation data as df for X
-            self.X_test = X_test     # returns test data as df for X
-            self.y_train = y_train   # returns training data as df for y
-            self.y_valid = y_valid   # returns validation data as df for y
-            self.y_test = y_test     # returns test data as df for y
+            self.X_train = X_train  # returns training data as df for X
+            self.X_valid = X_valid  # returns validation data as df for X
+            self.X_test = X_test  # returns test data as df for X
+            self.y_train = y_train  # returns training data as df for y
+            self.y_valid = y_valid  # returns validation data as df for y
+            self.y_test = y_test  # returns test data as df for y
             if self.balance:
                 rus = self.imbalance_sampler
                 X_train, y_train = rus.fit_sample(X_train, y_train)
@@ -434,6 +437,10 @@ class Model:
                     print("Best score/param set found on validation set:")
                     pprint(self.best_params_per_score[score])
                     print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+                    y_pred_valid = clf.predict(X_valid)
+                    conf_mat = confusion_matrix(y_valid, y_pred_valid)
+                    print("Confusion matrix on validation set: ")
+                    _confusion_matrix_print(conf_mat, self.labels)
 
             # for score in self.scoring:
             #     scores = []
@@ -520,6 +527,22 @@ class Model:
                     n_jobs=1,
                     verbose=2,
                 )
+
+            ### Confusion Matrix across
+            conf_ma_list = []
+            for train, test in self.kf.split(X, y):
+                X_train = X[train]
+                X_test = X[test]
+                y_train = y[train]
+                y_test = y[test]
+                clf.fit(X_train, y_train)
+                pred_y_test = clf.predict(X_test)
+                conf_ma = confusion_matrix(y_test, pred_y_test)
+                conf_ma_list.append(conf_ma)
+
+            print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds")
+            conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
+            _confusion_matrix_print(conf_matrix, self.labels)
             clf.fit(X, y)
 
             if self.display:
@@ -581,8 +604,11 @@ def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]
         return_estimator=True,
     )
 
-def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by):
-    
+
+def train_val_test_split(
+    X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by
+):
+
     # Determine the stratify parameter based on stratify and stratify_by
     if stratify_by:
         # Stratify option
@@ -595,7 +621,7 @@ def train_val_test_split(X, y, stratify, train_size, validation_size, test_size,
         stratify_key = None
 
     # Split the dataset into training and (validation + test) sets
-    print(f"Stratify Key: {stratify_key}")
+    # print(f"Stratify Key: {stratify_key}")
     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
         X,
         y,
@@ -612,11 +638,30 @@ def train_val_test_split(X, y, stratify, train_size, validation_size, test_size,
         X_valid_test,
         y_valid_test,
         test_size=proportion,
-        stratify=y_valid_test if stratify and stratify_by is None else None,  # Adjust stratification here
+        stratify=(
+            y_valid_test if stratify and stratify_by is None else None
+        ),  # Adjust stratification here
         random_state=random_state,
     )
 
     return X_train, X_valid, X_test, y_train, y_valid, y_test
+
+
+def _confusion_matrix_print(conf_matrix, labels):
+
+    max_length = max(len(str(conf_matrix.max())), 2)
+    border = "-" * 80
+    print(border)
+    print(f"{'':>10}Predicted:")
+    print(f"{'':>12}{'Pos':>{max_length+1}}{'Neg':>{max_length+3}}")
+    print(border)
+    print(
+        f"Actual: Pos {conf_matrix[0,0]:>{max_length}} ({labels[0]})  {conf_matrix[0,1]:>{max_length}} ({labels[1]})"
+    )
+    print(
+        f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({labels[2]})  {conf_matrix[1,1]:>{max_length}} ({labels[3]})"
+    )
+    print(border)
 
 
 # def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
