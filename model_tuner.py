@@ -189,13 +189,12 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    ### FIXING CODE: More efficient by removing unnecessary fit
-                    classifier = self.estimator.set_params(
-                    **self.best_params_per_score[self.scoring[0]]["params"]
-                    )
+                    # fit model
+                    self.fit(X, y)
+                    #  calibrate model, and save output
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            classifier,
+                            self.estimator,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
@@ -211,16 +210,12 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    ## FIXING CODE: Making it more efficient
-                    ## fit model
-                    # self.fit(X, y, score)
-                    classifier = self.estimator.set_params(
-                        **self.best_params_per_score[self.scoring[0]]["params"]
-                    )
+                    # fit model
+                    self.fit(X, y, score)
                     #  calibrate model, and save output
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            classifier,
+                            self.estimator,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
@@ -463,11 +458,11 @@ class Model:
                     y_pred_valid = clf.predict(X_valid)
                     conf_mat = confusion_matrix(y_valid, y_pred_valid)
                     print("Confusion matrix on validation set: ")
-                    _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
-
+                    _confusion_matrix_print(conf_mat, self.labels) #TODO: LS
                     print()
                     print(classification_report(y_valid, y_pred_valid))
                     print("-" * 80)
+
 
             # for score in self.scoring:
             #     scores = []
@@ -529,6 +524,8 @@ class Model:
         return
 
     def get_best_score_params(self, X, y):
+        aggregated_true_labels = []
+        aggregated_predictions = []
 
         for score in self.scoring:
 
@@ -556,28 +553,35 @@ class Model:
                     verbose=2,
                 )
 
-            ### Confusion Matrix across
+            # Reset lists for each scoring metric
+            aggregated_true_labels.clear()
+            aggregated_predictions.clear()
+
+            ### Confusion Matrix across multiple folds
             conf_ma_list = []
+
             for train, test in self.kf.split(X, y):
-                X_train = X[train]
-                X_test = X[test]
-                y_train = y[train]
-                y_test = y[test]
+                X_train, X_test = X[train], X[test]
+                y_train, y_test = y[train], y[test]
                 clf.fit(X_train, y_train)
                 pred_y_test = clf.predict(X_test)
                 conf_ma = confusion_matrix(y_test, pred_y_test)
                 conf_ma_list.append(conf_ma)
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(pred_y_test)
 
             print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds")
             conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
+            # Assume _confusion_matrix_print is defined elsewhere
             _confusion_matrix_print(conf_matrix, self.labels)
-            clf.fit(X, y)  # TODO: LS
             print()
-            print(classification_report(y_test, pred_y_test))
-            print("-" * 80)
+
+            # Now, outside the fold loop, calculate and print the overall classification report
+            print(f"Classification Report Averaged Across All Folds for {score}:")
+            print(classification_report(aggregated_true_labels, aggregated_predictions, zero_division=0))
+            print('-' * 80)
 
             if self.display:
-
                 print("\n" + "Best score/param set found on development set:")
                 pprint({clf.best_score_: clf.best_params_})
                 print("\n" + "Grid scores on development set:")
