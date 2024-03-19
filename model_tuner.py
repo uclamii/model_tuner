@@ -189,12 +189,13 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    # fit model
-                    self.fit(X, y)
-                    #  calibrate model, and save output
+                    ### FIXING CODE: More efficient by removing unnecessary fit
+                    classifier = self.estimator.set_params(
+                    **self.best_params_per_score[self.scoring[0]]["params"]
+                    )
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            self.estimator,
+                            classifier,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
@@ -210,12 +211,16 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    # fit model
-                    self.fit(X, y, score)
+                    ## FIXING CODE: Making it more efficient
+                    ## fit model
+                    # self.fit(X, y, score)
+                    classifier = self.estimator.set_params(
+                        **self.best_params_per_score[self.scoring[0]]["params"]
+                    )
                     #  calibrate model, and save output
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            self.estimator,
+                            classifier,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
@@ -458,12 +463,11 @@ class Model:
                     y_pred_valid = clf.predict(X_valid)
                     conf_mat = confusion_matrix(y_valid, y_pred_valid)
                     print("Confusion matrix on validation set: ")
-                    _confusion_matrix_print(conf_mat, self.labels) #TODO: LS
+                    _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
 
                     print()
                     print(classification_report(y_valid, y_pred_valid))
                     print("-" * 80)
-
 
             # for score in self.scoring:
             #     scores = []
@@ -567,7 +571,7 @@ class Model:
             print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds")
             conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
             _confusion_matrix_print(conf_matrix, self.labels)
-            clf.fit(X, y) #TODO: LS
+            clf.fit(X, y)  # TODO: LS
             print()
             print(classification_report(y_test, pred_y_test))
             print("-" * 80)
