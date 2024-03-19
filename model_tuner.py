@@ -246,6 +246,12 @@ class Model:
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
+                    self.X_train = X_train  # returns training data as df for X
+                    self.X_valid = X_valid  # returns validation data as df for X
+                    self.X_test = X_test  # returns test data as df for X
+                    self.y_train = y_train  # returns training data as df for y
+                    self.y_valid = y_valid  # returns validation data as df for y
+                    self.y_test = y_test  # returns test data as df for y
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
@@ -280,11 +286,18 @@ class Model:
                         X=X,
                         y=y,
                         stratify=stratify,
+                        stratify_by=self.stratify_by,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
+                    self.X_train = X_train  # returns training data as df for X
+                    self.X_valid = X_valid  # returns validation data as df for X
+                    self.X_test = X_test  # returns test data as df for X
+                    self.y_train = y_train  # returns training data as df for y
+                    self.y_valid = y_valid  # returns validation data as df for y
+                    self.y_test = y_test  # returns test data as df for y
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
@@ -305,6 +318,11 @@ class Model:
                         cv="prefit",
                         method="sigmoid",
                     ).fit(X_test, y_test)
+                    print(
+                        f"{score} after calibration:",
+                        get_scorer(score)(self.estimator, X_valid, y_valid),
+                    )
+
                 else:
                     pass
         return
@@ -518,6 +536,7 @@ class Model:
                     n_jobs=1,
                     verbose=2,
                 )
+
             else:
                 clf = GridSearchCV(
                     self.estimator,
@@ -621,7 +640,6 @@ def train_val_test_split(
         stratify_key = None
 
     # Split the dataset into training and (validation + test) sets
-    # print(f"Stratify Key: {stratify_key}")
     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
         X,
         y,
