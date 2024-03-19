@@ -458,7 +458,12 @@ class Model:
                     y_pred_valid = clf.predict(X_valid)
                     conf_mat = confusion_matrix(y_valid, y_pred_valid)
                     print("Confusion matrix on validation set: ")
-                    _confusion_matrix_print(conf_mat, self.labels)
+                    _confusion_matrix_print(conf_mat, self.labels) #TODO: LS
+
+                    print()
+                    print(classification_report(y_valid, y_pred_valid))
+                    print("-" * 80)
+
 
             # for score in self.scoring:
             #     scores = []
@@ -562,7 +567,10 @@ class Model:
             print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds")
             conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
             _confusion_matrix_print(conf_matrix, self.labels)
-            clf.fit(X, y)
+            clf.fit(X, y) #TODO: LS
+            print()
+            print(classification_report(y_test, pred_y_test))
+            print("-" * 80)
 
             if self.display:
 
