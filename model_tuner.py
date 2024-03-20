@@ -102,6 +102,7 @@ class Model:
         scoring=["roc_auc"],
         n_splits=10,
         random_state=3,
+        n_jobs=1,
         display=True,
         feature_names=None,
         randomized_grid=False,
@@ -140,6 +141,7 @@ class Model:
         self.randomized_grid = randomized_grid
         self.random_state = random_state
         self.n_iter = n_iter
+        self.n_jobs = n_jobs
         if self.randomized_grid and not self.kfold:
             self.grid = list(
                 ParameterSampler(
@@ -553,7 +555,7 @@ class Model:
                     cv=self.kf,
                     random_state=self.random_state,
                     n_iter=self.n_iter,
-                    n_jobs=1,
+                    n_jobs=self.n_jobs,
                     verbose=2,
                 )
 
@@ -563,7 +565,7 @@ class Model:
                     self.grid,
                     scoring=score,
                     cv=self.kf,
-                    n_jobs=1,
+                    n_jobs=self.n_jobs,
                     verbose=2,
                 )
 
