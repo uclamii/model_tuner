@@ -192,23 +192,30 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     ### FIXING CODE: More efficient by removing unnecessary fit
+
                     classifier = self.estimator.set_params(
                         **self.best_params_per_score[self.scoring[0]]["params"]
                     )
-                    self.xval_output = get_cross_validate(
-                        CalibratedClassifierCV(
-                            classifier,
-                            cv=self.n_splits,
-                            method="sigmoid",
-                        ),
-                        X,
-                        y,
-                        self.kf,
-                        stratify=self.stratify,
-                        scoring=self.scoring[0],
-                    )
-                    max_score_estimator = np.argmax(self.xval_output["test_score"])
-                    self.estimator = self.xval_output["estimator"][max_score_estimator]
+
+                    # self.xval_output = get_cross_validate(
+                    # CalibratedClassifierCV(
+                    #     classifier,
+                    #     cv=self.n_splits,
+                    #     method="sigmoid",
+                    # ),
+                    #     X,
+                    #     y,
+                    #     self.kf,
+                    #     stratify=self.stratify,
+                    #     scoring=self.scoring[0],
+                    # )
+                    # max_score_estimator = np.argmax(self.xval_output["test_score"])
+                    # self.estimator = self.xval_output["estimator"][max_score_estimator]
+                    self.estimator = CalibratedClassifierCV(
+                        classifier,
+                        cv=self.n_splits,
+                        method="sigmoid",
+                    ).fit(X, y)
 
                 else:
                     pass
@@ -217,24 +224,15 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     classifier = self.estimator.set_params(
-                        **self.best_params_per_score[self.scoring[0]]["params"]
+                        **self.best_params_per_score[score]["params"]
                     )
                     #  calibrate model, and save output
-                    self.xval_output = get_cross_validate(
-                        CalibratedClassifierCV(
-                            classifier,
-                            cv=self.n_splits,
-                            method="sigmoid",
-                        ),
-                        X,
-                        y,
-                        self.kf,
-                        stratify=self.stratify,
-                        stratify_by=self.stratify_by,
-                        scoring=score,
-                    )
-                    max_score_estimator = np.argmax(self.xval_output["test_score"])
-                    self.estimator = self.xval_output["estimator"][max_score_estimator]
+                    self.estimator = CalibratedClassifierCV(
+                        classifier,
+                        cv=self.n_splits,
+                        method="sigmoid",
+                    ).fit(X, y)
+
         else:
             if score == None:
                 if self.calibrate:
@@ -354,11 +352,11 @@ class Model:
                 # print(self.xval_output['estimator'])
                 ## TODO: If the scores are best for the minimum then
                 ## this needs to inverted max will not always be correct!
-                max_score_estimator = np.argmax(self.xval_output["test_score"])
-                self.estimator = self.xval_output["estimator"][max_score_estimator]
+                # max_score_estimator = np.argmax(self.xval_output["test_score"])
+                # self.estimator = self.xval_output["estimator"][max_score_estimator]
             else:
                 classifier = self.estimator.set_params(
-                    **self.best_params_per_score[self.scoring[0]]["params"]
+                    **self.best_params_per_score[score]["params"]
                 )
                 self.xval_output = get_cross_validate(
                     classifier,
@@ -368,8 +366,8 @@ class Model:
                     stratify=self.stratify,
                     scoring=score,
                 )
-                max_score_estimator = np.argmax(self.xval_output["test_score"])
-                self.estimator = self.xval_output["estimator"][max_score_estimator]
+                # max_score_estimator = np.argmax(self.xval_output["test_score"])
+                # self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
             if score == None:
                 self.estimator.fit(X, y)
@@ -576,11 +574,17 @@ class Model:
             ### Confusion Matrix across multiple folds
             conf_ma_list = []
 
+            clf.fit(X, y)
+            self.estimator = clf.best_estimator_
+            test_model = clf.best_estimator_
+            #### TODO: Confusion matrix and classification report function
+            #### Takes best estimator and kfold split and give report on CM and CR
+
             for train, test in self.kf.split(X, y):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
-                clf.fit(X_train, y_train)
-                pred_y_test = clf.predict(X_test)
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
                 conf_ma = confusion_matrix(y_test, pred_y_test)
                 conf_ma_list.append(conf_ma)
                 aggregated_true_labels.extend(y_test)
@@ -602,6 +606,7 @@ class Model:
             print("-" * 80)
 
             if self.display:
+                ## Make classification report and conf matrix into function
                 print("\n" + "Best score/param set found on development set:")
                 pprint({clf.best_score_: clf.best_params_})
                 print("\n" + "Grid scores on development set:")
@@ -620,6 +625,7 @@ class Model:
                 "params": clf.best_params_,
                 "score": clf.best_score_,
             }
+            # self.estimator = clf.best_estimator_
 
 
 def kfold_split(
