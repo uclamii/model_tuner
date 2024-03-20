@@ -195,7 +195,7 @@ class Model:
                     )
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            self.estimator,
+                            classifier,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
@@ -214,12 +214,13 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    # fit model
-                    self.fit(X, y, score)
+                    classifier = self.estimator.set_params(
+                        **self.best_params_per_score[self.scoring[0]]["params"]
+                    )
                     #  calibrate model, and save output
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
-                            self.estimator,
+                            classifier,
                             cv=self.n_splits,
                             method="sigmoid",
                         ),
