@@ -191,7 +191,7 @@ class Model:
                     self.reset_estimator()
                     ### FIXING CODE: More efficient by removing unnecessary fit
                     classifier = self.estimator.set_params(
-                    **self.best_params_per_score[self.scoring[0]]["params"]
+                        **self.best_params_per_score[self.scoring[0]]["params"]
                     )
                     self.xval_output = get_cross_validate(
                         CalibratedClassifierCV(
@@ -205,6 +205,9 @@ class Model:
                         stratify=self.stratify,
                         scoring=self.scoring[0],
                     )
+                    max_score_estimator = np.argmax(self.xval_output["test_score"])
+                    self.estimator = self.xval_output["estimator"][max_score_estimator]
+
                 else:
                     pass
             else:
@@ -231,6 +234,8 @@ class Model:
                         stratify_by=self.stratify_by,
                         scoring=score,
                     )
+                    max_score_estimator = np.argmax(self.xval_output["test_score"])
+                    self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
             if score == None:
                 if self.calibrate:
@@ -346,6 +351,12 @@ class Model:
                     stratify=self.stratify,
                     scoring=self.scoring[0],
                 )
+                # print(self.xval_output)
+                # print(self.xval_output['estimator'])
+                ## TODO: If the scores are best for the minimum then
+                ## this needs to inverted max will not always be correct!
+                max_score_estimator = np.argmax(self.xval_output["test_score"])
+                self.estimator = self.xval_output["estimator"][max_score_estimator]
             else:
                 classifier = self.estimator.set_params(
                     **self.best_params_per_score[self.scoring[0]]["params"]
@@ -358,6 +369,8 @@ class Model:
                     stratify=self.stratify,
                     scoring=score,
                 )
+                max_score_estimator = np.argmax(self.xval_output["test_score"])
+                self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
             if score == None:
                 self.estimator.fit(X, y)
