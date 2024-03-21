@@ -216,7 +216,6 @@ class Model:
                         cv=self.n_splits,
                         method="sigmoid",
                     ).fit(X, y)
-
                 else:
                     pass
             else:
@@ -579,6 +578,8 @@ class Model:
             test_model = clf.best_estimator_
             #### TODO: Confusion matrix and classification report function
             #### Takes best estimator and kfold split and give report on CM and CR
+
+            #### TODO: Implement threshold tuning for kfold split
 
             for train, test in self.kf.split(X, y):
                 X_train, X_test = X[train], X[test]
