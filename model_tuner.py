@@ -13,6 +13,7 @@ from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
 from sklearn.metrics import get_scorer
 from sklearn.metrics import fbeta_score
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.impute import SimpleImputer
@@ -869,3 +870,53 @@ if __name__ == "__main__":
         # summarize feature importance
         for i in sort_imp_indx:
             print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
+
+################################################################################
+
+class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
+    def __init__(self, model, pipeline=None):
+        super().__init__()
+        self.model = model
+        self.pipeline = pipeline
+
+    def fit(self, X, y, **params):
+        if self.pipeline:
+            X = self.pipeline.fit_transform(X)
+        self.model.fit(X, y, **params)
+        self.model_export = self.model.export_model()
+        self.best_params_per_score = self.summarize_auto_keras_params(self.model_export.get_config())
+
+    def predict(self, X):
+        if self.pipeline:
+            X = self.pipeline.transform(X)
+        return self.model.predict(X)
+    
+    def predict_proba(self, X):
+        if self.pipeline:
+            X = self.pipeline.transform(X)
+        y_pos = self.model_export.predict(X_valid)
+        return np.c_[1-y_pos, y_pos]
+
+    def summarize_auto_keras_params(self, params):
+        # Importing the 'deepcopy' function from the 'copy' module
+        from copy import deepcopy
+        
+        # Creating a deep copy of the 'params' dictionary and storing it in 'res'
+        res = deepcopy(params)
+        
+        # Initializing an empty list for the 'layers' key in the 'res' dictionary
+        res['layers'] = []
+        
+        # Looping through each 'layer' in the 'params['layers']' list
+        for layer in params['layers']:
+            # Appending a dictionary to 'res['layers']' with only specific keys 
+            # ('class_name' and 'name')
+            # res['layers'].append({key: val for key, val in layer.items() if key in {'class_name', 'name'}})
+
+            key_inc = {'class_name', 'name'}
+            filt_keys = {key: val for key, val in layer.items() if key in key_inc}
+            res['layers'].append(filt_keys)
+
+        # Returning the modified 'res' dictionary
+        return res
+        
