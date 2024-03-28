@@ -895,7 +895,7 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
     def predict_proba(self, X):
         if self.pipeline:
             X = self.pipeline.transform(X)
-        y_pos = self.model_export.predict(X_valid)
+        y_pos = self.model_export.predict(X)
         return np.c_[1 - y_pos, y_pos]
 
     def summarize_auto_keras_params(self, params):
