@@ -85,6 +85,7 @@ from sklearn.datasets import load_iris, load_breast_cancer
 
 
 class Model:
+
     def __init__(
         self,
         name,
@@ -113,12 +114,7 @@ class Model:
         scaler_type="min_max_scaler",
         impute_strategy="mean",
         impute=False,
-        pipeline_steps=[
-            (
-                "min_max_scaler",
-                MinMaxScaler(),
-            )
-        ],
+        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -127,6 +123,8 @@ class Model:
         self.original_estimator = estimator
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
+        if scaler_type == "None":
+            pipeline_steps = []
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
         self.pipeline_steps = pipeline_steps
@@ -873,6 +871,7 @@ if __name__ == "__main__":
 
 ################################################################################
 
+
 class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, model, pipeline=None):
         super().__init__()
@@ -884,39 +883,40 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
             X = self.pipeline.fit_transform(X)
         self.model.fit(X, y, **params)
         self.model_export = self.model.export_model()
-        self.best_params_per_score = self.summarize_auto_keras_params(self.model_export.get_config())
+        self.best_params_per_score = self.summarize_auto_keras_params(
+            self.model_export.get_config()
+        )
 
     def predict(self, X):
         if self.pipeline:
             X = self.pipeline.transform(X)
         return self.model.predict(X)
-    
+
     def predict_proba(self, X):
         if self.pipeline:
             X = self.pipeline.transform(X)
         y_pos = self.model_export.predict(X_valid)
-        return np.c_[1-y_pos, y_pos]
+        return np.c_[1 - y_pos, y_pos]
 
     def summarize_auto_keras_params(self, params):
         # Importing the 'deepcopy' function from the 'copy' module
         from copy import deepcopy
-        
+
         # Creating a deep copy of the 'params' dictionary and storing it in 'res'
         res = deepcopy(params)
-        
+
         # Initializing an empty list for the 'layers' key in the 'res' dictionary
-        res['layers'] = []
-        
+        res["layers"] = []
+
         # Looping through each 'layer' in the 'params['layers']' list
-        for layer in params['layers']:
-            # Appending a dictionary to 'res['layers']' with only specific keys 
+        for layer in params["layers"]:
+            # Appending a dictionary to 'res['layers']' with only specific keys
             # ('class_name' and 'name')
             # res['layers'].append({key: val for key, val in layer.items() if key in {'class_name', 'name'}})
 
-            key_inc = {'class_name', 'name'}
+            key_inc = {"class_name", "name"}
             filt_keys = {key: val for key, val in layer.items() if key in key_inc}
-            res['layers'].append(filt_keys)
+            res["layers"].append(filt_keys)
 
         # Returning the modified 'res' dictionary
         return res
-        
