@@ -123,7 +123,7 @@ class Model:
         self.original_estimator = estimator
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
-        if scaler_type == "None":
+        if scaler_type == None:
             pipeline_steps = []
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
