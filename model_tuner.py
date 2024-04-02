@@ -491,15 +491,20 @@ class Model:
                 scores = []
                 for params in tqdm(self.grid):
                     if self.early_stopping_rounds:
+                        ### xgb_params required here in order to ensure
+                        ### custom estimator name. X_valid, y_valid
+                        ### needed to use .values.
                         eval_set = [(X_valid.values, y_valid.values)]
-                        estimator_name = self.estimator_name + "__eval_set"
+                        xgb_params = {
+                            self.estimator_name + "__eval_set": eval_set,
+                            self.estimator_name + "__verbose": False,
+                            self.estimator_name
+                            + "__early_stopping_rounds": self.early_stopping_rounds,
+                            self.estimator_name
+                            + "__eval_metric": self.early_stopping_monitor,
+                        }
                         clf = self.estimator.set_params(**params).fit(
-                            X_train,
-                            y_train,
-                            xgb__eval_set=eval_set,
-                            xgb__verbose=False,
-                            xgb__early_stopping_rounds=self.early_stopping_rounds,
-                            xgb__eval_metric=self.early_stopping_monitor,
+                            X_train, y_train, **xgb_params
                         )
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
