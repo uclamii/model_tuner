@@ -117,9 +117,6 @@ class Model:
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         early_stopping_rounds=None,  # Number of rounds to enable early stopping
-        early_stopping_monitor="logloss",  # Metric to monitor for early stopping
-        early_stopping_mode="min",  # Mode for the monitored quantity ('min' or 'max')
-        early_stopping_patience=0,  # Patience for early stopping
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -176,9 +173,6 @@ class Model:
         self.trained = trained
         self.labels = ["TP", "FN", "FP", "TN"]
         self.early_stopping_rounds = early_stopping_rounds
-        self.early_stopping_monitor = early_stopping_monitor
-        self.early_stopping_mode = early_stopping_mode
-        self.early_stopping_patience = early_stopping_patience
 
     def reset_estimator(self):
         if self.pipeline:
@@ -380,27 +374,6 @@ class Model:
                 # max_score_estimator = np.argmax(self.xval_output["test_score"])
                 # self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
-            # Early stopping parameters are utilized
-            # eval_set = [validation_data]
-            # if score is None:
-            #     self.estimator.fit(
-            #         X,
-            #         y,
-            #         early_stopping_rounds=self.early_stopping_rounds,
-            #         eval_set=eval_set,
-            #         verbose=True,
-            #     )
-            # else:
-            #     self.estimator.set_params(
-            #         **self.best_params_per_score[score]["params"]
-            #     ).fit(
-            #         X,
-            #         y,
-            #         early_stopping_rounds=self.early_stopping_rounds,
-            #         eval_set=eval_set,
-            #         verbose=True,
-            #     )
-            # Fitting without early stopping
             if score is None:
                 self.estimator.fit(X, y)
             else:
@@ -495,11 +468,8 @@ class Model:
                         eval_set = [(X_valid.values, y_valid.values)]
                         xgb_params = {
                             self.estimator_name + "__eval_set": eval_set,
-                            self.estimator_name + "__verbose": False,
                             self.estimator_name
                             + "__early_stopping_rounds": self.early_stopping_rounds,
-                            self.estimator_name
-                            + "__eval_metric": self.early_stopping_monitor,
                         }
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
