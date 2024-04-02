@@ -117,10 +117,9 @@ class Model:
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         early_stopping_rounds=None,  # Number of rounds to enable early stopping
-        early_stopping_monitor='val_loss',  # Metric to monitor for early stopping
-        early_stopping_mode='min',  # Mode for the monitored quantity ('min' or 'max')
+        early_stopping_monitor="logloss",  # Metric to monitor for early stopping
+        early_stopping_mode="min",  # Mode for the monitored quantity ('min' or 'max')
         early_stopping_patience=0,  # Patience for early stopping
-        validation_data=None,  # Add this parameter
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -180,7 +179,6 @@ class Model:
         self.early_stopping_monitor = early_stopping_monitor
         self.early_stopping_mode = early_stopping_mode
         self.early_stopping_patience = early_stopping_patience
-        self.validation_data = validation_data  # Store validation data
 
     def reset_estimator(self):
         if self.pipeline:
@@ -386,15 +384,31 @@ class Model:
                 # Early stopping parameters are utilized
                 eval_set = [validation_data]
                 if score is None:
-                    self.estimator.fit(X, y, early_stopping_rounds=self.early_stopping_rounds, eval_set=eval_set, verbose=True)
+                    self.estimator.fit(
+                        X,
+                        y,
+                        early_stopping_rounds=self.early_stopping_rounds,
+                        eval_set=eval_set,
+                        verbose=True,
+                    )
                 else:
-                    self.estimator.set_params(**self.best_params_per_score[score]["params"]).fit(X, y, early_stopping_rounds=self.early_stopping_rounds, eval_set=eval_set, verbose=True)
+                    self.estimator.set_params(
+                        **self.best_params_per_score[score]["params"]
+                    ).fit(
+                        X,
+                        y,
+                        early_stopping_rounds=self.early_stopping_rounds,
+                        eval_set=eval_set,
+                        verbose=True,
+                    )
             else:
                 # Fitting without early stopping
                 if score is None:
                     self.estimator.fit(X, y)
                 else:
-                    self.estimator.set_params(**self.best_params_per_score[score]["params"]).fit(X, y)
+                    self.estimator.set_params(
+                        **self.best_params_per_score[score]["params"]
+                    ).fit(X, y)
         return
 
     def predict(self, X, y=None, optimal_threshold=True):
@@ -449,16 +463,18 @@ class Model:
             # print("test_size:", self.test_size)
             # print(f"Stratify By {self.stratify_by}")
 
-            X_train, X_valid, X_test, y_train, y_valid, y_test = self.train_val_test_split(
-                X=X,
-                y=y,
-                stratify=stratify,
-                stratify_by=self.stratify_by,
-                train_size=self.train_size,
-                validation_size=self.validation_size,
-                test_size=self.test_size,
-                calibrate=False,
-                random_state=self.random_state,
+            X_train, X_valid, X_test, y_train, y_valid, y_test = (
+                self.train_val_test_split(
+                    X=X,
+                    y=y,
+                    stratify=stratify,
+                    stratify_by=self.stratify_by,
+                    train_size=self.train_size,
+                    validation_size=self.validation_size,
+                    test_size=self.test_size,
+                    calibrate=False,
+                    random_state=self.random_state,
+                )
             )
             self.X_train = X_train  # returns training data as df for X
             self.X_valid = X_valid  # returns validation data as df for X
@@ -474,7 +490,20 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
-                    clf = self.estimator.set_params(**params).fit(X_train, y_train)
+                    if self.early_stopping_rounds:
+                        eval_set = [(X_valid.values, y_valid.values)]
+                        estimator_name = self.estimator_name + "__eval_set"
+                        clf = self.estimator.set_params(**params).fit(
+                            X_train,
+                            y_train,
+                            xgb__eval_set=eval_set,
+                            xgb__verbose=False,
+                            xgb__early_stopping_rounds=self.early_stopping_rounds,
+                            xgb__eval_metric=self.early_stopping_monitor,
+                        )
+                    else:
+                        clf = self.estimator.set_params(**params).fit(X_train, y_train)
+
                     scores.append(get_scorer(score)(clf, X_valid, y_valid))
 
                 self.best_params_per_score[score] = {
@@ -558,10 +587,19 @@ class Model:
         ]
         return
 
-    def train_val_test_split(self,
-        X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by, calibrate
+    def train_val_test_split(
+        self,
+        X,
+        y,
+        stratify,
+        train_size,
+        validation_size,
+        test_size,
+        random_state,
+        stratify_by,
+        calibrate,
     ):
-        
+
         # if calibrate:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_by
@@ -572,19 +610,12 @@ class Model:
             stratify_key = y
         else:
             stratify_key = None
-       
-        print("STRATIFICATION KEY:")
-        print(stratify_key.columns.to_list())
-        print("X Before drop:")
-        print(X.columns.to_list())
+
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
 
-
-        #TODO: add special case to drop additional columns for stratify list\
-        print("Features for training: ")
-        print(X.columns.to_list())
+        # TODO: add special case to drop additional columns for stratify list\
         # Split the dataset into training and (validation + test) sets
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
@@ -609,7 +640,6 @@ class Model:
         )
 
         return X_train, X_valid, X_test, y_train, y_valid, y_test
-
 
     def get_best_score_params(self, X, y):
         aggregated_true_labels = []
@@ -740,9 +770,6 @@ def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]
         return_train_score=True,
         return_estimator=True,
     )
-
-
-
 
 
 def _confusion_matrix_print(conf_matrix, labels):
