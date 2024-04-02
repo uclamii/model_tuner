@@ -100,6 +100,7 @@ class Model:
         test_size=0.2,
         stratify=True,
         stratify_by=None,
+        drop_strat_feat=None,
         grid=None,
         scoring=["roc_auc"],
         n_splits=10,
@@ -115,6 +116,11 @@ class Model:
         impute_strategy="mean",
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
+        early_stopping_rounds=None,  # Number of rounds to enable early stopping
+        early_stopping_monitor='val_loss',  # Metric to monitor for early stopping
+        early_stopping_mode='min',  # Mode for the monitored quantity ('min' or 'max')
+        early_stopping_patience=0,  # Patience for early stopping
+        validation_data=None,  # Add this parameter
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -137,6 +143,7 @@ class Model:
         self.grid = grid
         self.kfold = kfold
         self.balance = balance
+        self.dropped_strat_cols = None
         self.randomized_grid = randomized_grid
         self.random_state = random_state
         self.n_iter = n_iter
@@ -156,6 +163,7 @@ class Model:
         self.xval_output = None
         self.stratify = stratify
         self.stratify_by = stratify_by
+        self.drop_strat_feat = drop_strat_feat
         self.n_splits = n_splits
         self.scoring = scoring
         self.best_params_per_score = {score: 0 for score in self.scoring}
@@ -168,6 +176,11 @@ class Model:
         self.beta = 2
         self.trained = trained
         self.labels = ["TP", "FN", "FP", "TN"]
+        self.early_stopping_rounds = early_stopping_rounds
+        self.early_stopping_monitor = early_stopping_monitor
+        self.early_stopping_mode = early_stopping_mode
+        self.early_stopping_patience = early_stopping_patience
+        self.validation_data = validation_data  # Store validation data
 
     def reset_estimator(self):
         if self.pipeline:
@@ -241,7 +254,7 @@ class Model:
                         y_train,
                         y_valid,
                         y_test,
-                    ) = train_val_test_split(
+                    ) = self.train_val_test_split(
                         X=X,
                         y=y,
                         stratify=stratify,
@@ -249,6 +262,7 @@ class Model:
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         test_size=self.test_size,
+                        calibrate=True,
                         random_state=self.random_state,
                     )
                     self.X_train = X_train  # returns training data as df for X
@@ -287,13 +301,14 @@ class Model:
                         y_train,
                         y_valid,
                         y_test,
-                    ) = train_val_test_split(
+                    ) = self.train_val_test_split(
                         X=X,
                         y=y,
                         stratify=stratify,
                         stratify_by=self.stratify_by,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
+                        calibrate=True,
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
@@ -332,7 +347,7 @@ class Model:
                     pass
         return
 
-    def fit(self, X, y, score=None):
+    def fit(self, X, y, validation_data=None, score=None):
         if self.kfold:
             if score == None:
                 classifier = self.estimator.set_params(
@@ -367,12 +382,19 @@ class Model:
                 # max_score_estimator = np.argmax(self.xval_output["test_score"])
                 # self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
-            if score == None:
-                self.estimator.fit(X, y)
+            if validation_data is not None and self.early_stopping_rounds:
+                # Early stopping parameters are utilized
+                eval_set = [validation_data]
+                if score is None:
+                    self.estimator.fit(X, y, early_stopping_rounds=self.early_stopping_rounds, eval_set=eval_set, verbose=True)
+                else:
+                    self.estimator.set_params(**self.best_params_per_score[score]["params"]).fit(X, y, early_stopping_rounds=self.early_stopping_rounds, eval_set=eval_set, verbose=True)
             else:
-                self.estimator.set_params(
-                    **self.best_params_per_score[score]["params"]
-                ).fit(X, y)
+                # Fitting without early stopping
+                if score is None:
+                    self.estimator.fit(X, y)
+                else:
+                    self.estimator.set_params(**self.best_params_per_score[score]["params"]).fit(X, y)
         return
 
     def predict(self, X, y=None, optimal_threshold=True):
@@ -427,7 +449,7 @@ class Model:
             # print("test_size:", self.test_size)
             # print(f"Stratify By {self.stratify_by}")
 
-            X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+            X_train, X_valid, X_test, y_train, y_valid, y_test = self.train_val_test_split(
                 X=X,
                 y=y,
                 stratify=stratify,
@@ -435,6 +457,7 @@ class Model:
                 train_size=self.train_size,
                 validation_size=self.validation_size,
                 test_size=self.test_size,
+                calibrate=False,
                 random_state=self.random_state,
             )
             self.X_train = X_train  # returns training data as df for X
@@ -534,6 +557,59 @@ class Model:
             np.argmax(fbeta_scores[ind_beta_with_max_fscore])
         ]
         return
+
+    def train_val_test_split(self,
+        X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by, calibrate
+    ):
+        
+        # if calibrate:
+        #     X = X.join(self.dropped_strat_cols)
+        # Determine the stratify parameter based on stratify and stratify_by
+        if stratify_by:
+            # Creating stratification columns out of stratify_by list
+            stratify_key = X[stratify_by] if stratify_by else None
+        elif stratify:
+            stratify_key = y
+        else:
+            stratify_key = None
+       
+        print("STRATIFICATION KEY:")
+        print(stratify_key.columns.to_list())
+        print("X Before drop:")
+        print(X.columns.to_list())
+        if self.drop_strat_feat:
+            self.dropped_strat_cols = X[self.drop_strat_feat]
+            X = X.drop(columns=self.drop_strat_feat)
+
+
+        #TODO: add special case to drop additional columns for stratify list\
+        print("Features for training: ")
+        print(X.columns.to_list())
+        # Split the dataset into training and (validation + test) sets
+        X_train, X_valid_test, y_train, y_valid_test = train_test_split(
+            X,
+            y,
+            test_size=1 - train_size,
+            stratify=stratify_key,  # Use stratify_key here
+            random_state=random_state,
+        )
+
+        # Determine the proportion of validation to test size in the remaining dataset
+        proportion = test_size / (validation_size + test_size)
+
+        # Further split (validation + test) set into validation and test sets
+        X_valid, X_test, y_valid, y_test = train_test_split(
+            X_valid_test,
+            y_valid_test,
+            test_size=proportion,
+            stratify=(
+                y_valid_test if stratify and stratify_by is None else None
+            ),  # Adjust stratification here
+            random_state=random_state,
+        )
+
+        return X_train, X_valid, X_test, y_train, y_valid, y_test
+
 
     def get_best_score_params(self, X, y):
         aggregated_true_labels = []
@@ -666,45 +742,7 @@ def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]
     )
 
 
-def train_val_test_split(
-    X, y, stratify, train_size, validation_size, test_size, random_state, stratify_by
-):
 
-    # Determine the stratify parameter based on stratify and stratify_by
-    if stratify_by:
-        # Stratify option
-        stratify_option = X[stratify_by] if stratify_by else None
-        # Ensure X is a pandas DataFrame to use column names
-        stratify_key = stratify_option
-    elif stratify:
-        stratify_key = y
-    else:
-        stratify_key = None
-
-    # Split the dataset into training and (validation + test) sets
-    X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-        X,
-        y,
-        test_size=1 - train_size,
-        stratify=stratify_key,  # Use stratify_key here
-        random_state=random_state,
-    )
-
-    # Determine the proportion of validation to test size in the remaining dataset
-    proportion = test_size / (validation_size + test_size)
-
-    # Further split (validation + test) set into validation and test sets
-    X_valid, X_test, y_valid, y_test = train_test_split(
-        X_valid_test,
-        y_valid_test,
-        test_size=proportion,
-        stratify=(
-            y_valid_test if stratify and stratify_by is None else None
-        ),  # Adjust stratification here
-        random_state=random_state,
-    )
-
-    return X_train, X_valid, X_test, y_train, y_valid, y_test
 
 
 def _confusion_matrix_print(conf_matrix, labels):
