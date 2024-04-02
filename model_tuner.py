@@ -380,35 +380,33 @@ class Model:
                 # max_score_estimator = np.argmax(self.xval_output["test_score"])
                 # self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
-            if validation_data is not None and self.early_stopping_rounds:
-                # Early stopping parameters are utilized
-                eval_set = [validation_data]
-                if score is None:
-                    self.estimator.fit(
-                        X,
-                        y,
-                        early_stopping_rounds=self.early_stopping_rounds,
-                        eval_set=eval_set,
-                        verbose=True,
-                    )
-                else:
-                    self.estimator.set_params(
-                        **self.best_params_per_score[score]["params"]
-                    ).fit(
-                        X,
-                        y,
-                        early_stopping_rounds=self.early_stopping_rounds,
-                        eval_set=eval_set,
-                        verbose=True,
-                    )
+            # Early stopping parameters are utilized
+            # eval_set = [validation_data]
+            # if score is None:
+            #     self.estimator.fit(
+            #         X,
+            #         y,
+            #         early_stopping_rounds=self.early_stopping_rounds,
+            #         eval_set=eval_set,
+            #         verbose=True,
+            #     )
+            # else:
+            #     self.estimator.set_params(
+            #         **self.best_params_per_score[score]["params"]
+            #     ).fit(
+            #         X,
+            #         y,
+            #         early_stopping_rounds=self.early_stopping_rounds,
+            #         eval_set=eval_set,
+            #         verbose=True,
+            #     )
+            # Fitting without early stopping
+            if score is None:
+                self.estimator.fit(X, y)
             else:
-                # Fitting without early stopping
-                if score is None:
-                    self.estimator.fit(X, y)
-                else:
-                    self.estimator.set_params(
-                        **self.best_params_per_score[score]["params"]
-                    ).fit(X, y)
+                self.estimator.set_params(
+                    **self.best_params_per_score[score]["params"]
+                ).fit(X, y)
         return
 
     def predict(self, X, y=None, optimal_threshold=True):
