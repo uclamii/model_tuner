@@ -116,7 +116,7 @@ class Model:
         impute_strategy="mean",
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
-        early_stopping_rounds=None,  # Number of rounds to enable early stopping
+        xgboost_early=False,
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -172,7 +172,7 @@ class Model:
         self.beta = 2
         self.trained = trained
         self.labels = ["TP", "FN", "FP", "TN"]
-        self.early_stopping_rounds = early_stopping_rounds
+        self.xgboost_early = xgboost_early
 
     def reset_estimator(self):
         if self.pipeline:
@@ -375,11 +375,36 @@ class Model:
                 # self.estimator = self.xval_output["estimator"][max_score_estimator]
         else:
             if score is None:
-                self.estimator.fit(X, y)
+                if self.xgboost_early:
+                    eval_set = [(self.X_valid.values, self.y_valid.values)]
+                    estimator_eval_set = f"{self.estimator_name}__eval_set"
+                    estimator_verbosity = f"{self.estimator_name}__verbose"
+
+                    xgb_params = {
+                        estimator_eval_set: eval_set,
+                        estimator_verbosity: self.verbosity,
+                    }
+                    self.estimator.fit(X, y, **xgb_params)
+                else:
+                    self.estimator.fit(X, y)
             else:
-                self.estimator.set_params(
-                    **self.best_params_per_score[score]["params"]
-                ).fit(X, y)
+                if self.xgboost_early:
+                    eval_set = [(self.X_valid.values, self.y_valid.values)]
+                    estimator_eval_set = f"{self.estimator_name}__eval_set"
+                    estimator_verbosity = f"{self.estimator_name}__verbose"
+
+                    xgb_params = {
+                        estimator_eval_set: eval_set,
+                        estimator_verbosity: self.verbosity,
+                    }
+                    self.estimator.set_params(
+                        **self.best_params_per_score[score]["params"]
+                    ).fit(X, y, **xgb_params)
+                else:
+                    self.estimator.set_params(
+                        **self.best_params_per_score[score]["params"]
+                    ).fit(X, y)
+
         return
 
     def predict(self, X, y=None, optimal_threshold=True):
@@ -461,16 +486,23 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
-                    if self.early_stopping_rounds:
+                    if self.xgboost_early:
+                        eval_set = [(X_valid.values, y_valid.values)]
+                        estimator_eval_set = f"{self.estimator_name}__eval_set"
+                        estimator_verbosity = f"{self.estimator_name}__verbose"
+
+                        if params.get(estimator_verbosity):
+                            self.verbosity = params[estimator_verbosity]
+                        else:
+                            self.verbosity = False
+
+                        xgb_params = {
+                            estimator_eval_set: eval_set,
+                            estimator_verbosity: self.verbosity,
+                        }
                         ### xgb_params required here in order to ensure
                         ### custom estimator name. X_valid, y_valid
                         ### needed to use .values.
-                        eval_set = [(X_valid.values, y_valid.values)]
-                        xgb_params = {
-                            self.estimator_name + "__eval_set": eval_set,
-                            self.estimator_name
-                            + "__early_stopping_rounds": self.early_stopping_rounds,
-                        }
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
