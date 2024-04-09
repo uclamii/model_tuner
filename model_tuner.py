@@ -171,7 +171,7 @@ class Model:
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
         self.trained = trained
-        self.labels = ["TP", "FN", "FP", "TN"]
+        self.labels = ["tn", "fp", "fn", "tp"]
         self.xgboost_early = xgboost_early
 
     def reset_estimator(self):
@@ -647,8 +647,6 @@ class Model:
         return X_train, X_valid, X_test, y_train, y_valid, y_test
 
     def get_best_score_params(self, X, y):
-        aggregated_true_labels = []
-        aggregated_predictions = []
 
         for score in self.scoring:
 
@@ -676,45 +674,11 @@ class Model:
                     verbose=2,
                 )
 
-            # Reset lists for each scoring metric
-            aggregated_true_labels.clear()
-            aggregated_predictions.clear()
-
-            ### Confusion Matrix across multiple folds
-            conf_ma_list = []
-
             clf.fit(X, y)
             self.estimator = clf.best_estimator_
             test_model = clf.best_estimator_
-            #### TODO: Confusion matrix and classification report function
-            #### Takes best estimator and kfold split and give report on CM and CR
 
             #### TODO: Implement threshold tuning for kfold split
-
-            for train, test in self.kf.split(X, y):
-                X_train, X_test = X[train], X[test]
-                y_train, y_test = y[train], y[test]
-                test_model.fit(X_train, y_train)
-                pred_y_test = test_model.predict(X_test)
-                conf_ma = confusion_matrix(y_test, pred_y_test)
-                conf_ma_list.append(conf_ma)
-                aggregated_true_labels.extend(y_test)
-                aggregated_predictions.extend(pred_y_test)
-
-            print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds")
-            conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
-            # Assume _confusion_matrix_print is defined elsewhere
-            _confusion_matrix_print(conf_matrix, self.labels)
-            print()
-
-            # Now, outside the fold loop, calculate and print the overall classification report
-            print(f"Classification Report Averaged Across All Folds for {score}:")
-            print(
-                classification_report(
-                    aggregated_true_labels, aggregated_predictions, zero_division=0
-                )
-            )
-            print("-" * 80)
 
             if self.display:
                 ## Make classification report and conf matrix into function
@@ -729,6 +693,8 @@ class Model:
                 print(
                     "\n" + "Detailed classification report for %s:" % self.name + "\n"
                 )
+                self.conf_mat_class_kfold(X, y, test_model, score)
+
                 print("The model is trained on the full development set.")
                 print("The scores are computed on the full evaluation set." + "\n")
 
@@ -737,6 +703,37 @@ class Model:
                 "score": clf.best_score_,
             }
             # self.estimator = clf.best_estimator_
+
+    def conf_mat_class_kfold(self, X, y, test_model, score):
+
+        aggregated_true_labels = []
+        aggregated_predictions = []
+        ### Confusion Matrix across multiple folds
+        conf_ma_list = []
+
+        for train, test in self.kf.split(X, y):
+            X_train, X_test = X[train], X[test]
+            y_train, y_test = y[train], y[test]
+            test_model.fit(X_train, y_train)
+            pred_y_test = test_model.predict(X_test)
+            conf_ma = confusion_matrix(y_test, pred_y_test)
+            conf_ma_list.append(conf_ma)
+            aggregated_true_labels.extend(y_test)
+            aggregated_predictions.extend(pred_y_test)
+
+        print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds for {score}:")
+        conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
+        _confusion_matrix_print(conf_matrix, self.labels)
+        print()
+
+        # Now, outside the fold loop, calculate and print the overall classification report
+        print(f"Classification Report Averaged Across All Folds for {score}:")
+        print(
+            classification_report(
+                aggregated_true_labels, aggregated_predictions, zero_division=0
+            )
+        )
+        print("-" * 80)
 
 
 def kfold_split(
