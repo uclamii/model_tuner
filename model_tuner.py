@@ -220,6 +220,8 @@ class Model:
                         cv=self.n_splits,
                         method="sigmoid",
                     ).fit(X, y)
+                    test_model = self.estimator
+                    self.conf_mat_class_kfold(X=X, y=y, test_model=test_model, score=self.scoring[0]["params"])
                 else:
                     pass
             else:
@@ -235,7 +237,9 @@ class Model:
                         cv=self.n_splits,
                         method="sigmoid",
                     ).fit(X, y)
-
+                    test_model = self.estimator
+                    for s in score: 
+                        self.conf_mat_class_kfold(X=X, y=y, test_model=test_model, score=s)
         else:
             if score == None:
                 if self.calibrate:
@@ -282,6 +286,9 @@ class Model:
                         cv="prefit",
                         method="sigmoid",
                     ).fit(X_test, y_test)
+                    test_model = self.estimator
+                    self.calibrate_report(test_model, X_valid, y_valid, score=self.scoring[0]["params"])                     
+
                 else:
                     pass
             else:
@@ -330,6 +337,8 @@ class Model:
                         cv="prefit",
                         method="sigmoid",
                     ).fit(X_test, y_test)
+                    test_model = self.estimator
+                    self.calibrate_report(test_model, X_valid, y_valid, score=score) 
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -337,7 +346,18 @@ class Model:
 
                 else:
                     pass
+
         return
+    
+    def calibrate_report(self, classifier, X, y, score):
+        y_pred_valid = classifier.predict(X)
+        conf_mat = confusion_matrix(y, y_pred_valid)
+        print(f"Confusion matrix on validation set for {score}")
+        _confusion_matrix_print(conf_mat, self.labels)  
+        print()
+        print(classification_report(y, y_pred_valid))
+        print("-" * 80)
+
 
     def fit(self, X, y, validation_data=None, score=None):
         if self.kfold:
@@ -521,17 +541,18 @@ class Model:
                         score, X_train, y_train, X_valid, y_valid, betas
                     )
 
-                if self.display:
-                    print("Best score/param set found on validation set:")
-                    pprint(self.best_params_per_score[score])
-                    print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                    y_pred_valid = clf.predict(X_valid)
-                    conf_mat = confusion_matrix(y_valid, y_pred_valid)
-                    print("Confusion matrix on validation set: ")
-                    _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
-                    print()
-                    print(classification_report(y_valid, y_pred_valid))
-                    print("-" * 80)
+                if not self.calibrate:
+                    if self.display:
+                        print("Best score/param set found on validation set:")
+                        pprint(self.best_params_per_score[score])
+                        print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+                        y_pred_valid = clf.predict(X_valid)
+                        conf_mat = confusion_matrix(y_valid, y_pred_valid)
+                        print("Confusion matrix on validation set: ")
+                        _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
+                        print()
+                        print(classification_report(y_valid, y_pred_valid))
+                        print("-" * 80)
 
             # for score in self.scoring:
             #     scores = []
