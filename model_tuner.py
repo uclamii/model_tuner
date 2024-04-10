@@ -115,7 +115,7 @@ class Model:
         scaler_type="min_max_scaler",
         impute_strategy="mean",
         impute=False,
-        pipeline_steps=[],
+        pipeline_steps=[[("min_max_scaler", MinMaxScaler())]],
         xgboost_early=False,
     ):
         self.name = name
@@ -123,12 +123,10 @@ class Model:
         self.calibrate = calibrate
         self.pipeline = pipeline
         self.original_estimator = estimator
-        if scaler_type == "min_max_scaler":
-            pipeline_steps.append(("min_max_scaler", MinMaxScaler()))
         if scaler_type == "standard_scaler":
-            pipeline_steps.append(("standard_scaler", StandardScaler()))
-        elif scaler_type == "MaxAbsScaler":
-            pipeline_steps.append(("max_abs", MaxAbsScaler()))
+            pipeline_steps = [("standard_scaler", StandardScaler())]
+        if scaler_type == None:
+            pipeline_steps = []
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
         self.pipeline_steps = pipeline_steps
