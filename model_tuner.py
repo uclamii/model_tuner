@@ -15,7 +15,7 @@ from sklearn.metrics import get_scorer
 from sklearn.metrics import fbeta_score
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import (
@@ -115,7 +115,7 @@ class Model:
         scaler_type="min_max_scaler",
         impute_strategy="mean",
         impute=False,
-        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
+        pipeline_steps=[],
         xgboost_early=False,
     ):
         self.name = name
@@ -123,10 +123,12 @@ class Model:
         self.calibrate = calibrate
         self.pipeline = pipeline
         self.original_estimator = estimator
+        if scaler_type == "min_max_scaler":
+            pipeline_steps.append(("min_max_scaler", MinMaxScaler()))
         if scaler_type == "standard_scaler":
-            pipeline_steps = [("standard_scaler", StandardScaler())]
-        if scaler_type == None:
-            pipeline_steps = []
+            pipeline_steps.append(("standard_scaler", StandardScaler()))
+        elif scaler_type == "MaxAbsScaler":
+            pipeline_steps.append(("max_abs", MaxAbsScaler()))
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
         self.pipeline_steps = pipeline_steps
@@ -739,7 +741,7 @@ class Model:
         conf_ma_list = []
 
         for train, test in self.kf.split(X, y):
-            X_train, X_test = X[train], X[test]
+            X_train, X_test = X.iloc[train], X.iloc[test]
             y_train, y_test = y[train], y[test]
             test_model.fit(X_train, y_train)
             pred_y_test = test_model.predict(X_test)
@@ -752,8 +754,14 @@ class Model:
         conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
         _confusion_matrix_print(conf_matrix, self.labels)
         print()
-        self.classification_report = classification_report(
+        class_report = classification_report(
             aggregated_true_labels, aggregated_predictions, zero_division=0
+        )
+        self.classification_report = classification_report(
+            aggregated_true_labels,
+            aggregated_predictions,
+            zero_division=0,
+            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
