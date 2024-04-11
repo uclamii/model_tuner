@@ -115,7 +115,7 @@ class Model:
         scaler_type="min_max_scaler",
         impute_strategy="mean",
         impute=False,
-        pipeline_steps=[[("min_max_scaler", MinMaxScaler())]],
+        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
     ):
         self.name = name
