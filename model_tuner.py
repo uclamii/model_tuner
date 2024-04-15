@@ -26,6 +26,7 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
+from sklearn.feature_selection import SelectKBest, f_classif
 
 # from imblearn.under_sampling import RandomUnderSampler
 # from imblearn.over_sampling import RandomOverSampler
@@ -115,20 +116,24 @@ class Model:
         scaler_type="min_max_scaler",
         impute_strategy="mean",
         impute=False,
-        pipeline_steps=[[("min_max_scaler", MinMaxScaler())]],
+        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
+        selectKBest=-1
     ):
         self.name = name
         self.estimator_name = estimator_name
         self.calibrate = calibrate
         self.pipeline = pipeline
         self.original_estimator = estimator
+        self.selectKBest = selectKBest
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
         if scaler_type == None:
             pipeline_steps = []
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
+        if selectKBest != -1:
+            pipeline_steps.append(("selectKBest", SelectKBest(f_classif, k=selectKBest)))
         self.pipeline_steps = pipeline_steps
         if self.pipeline:
             self.estimator = Pipeline(
@@ -265,6 +270,8 @@ class Model:
                         calibrate=True,
                         random_state=self.random_state,
                     )
+
+
                     self.X_train = X_train  # returns training data as df for X
                     self.X_valid = X_valid  # returns validation data as df for X
                     self.X_test = X_test  # returns test data as df for X
@@ -344,7 +351,7 @@ class Model:
                         method="sigmoid",
                     ).fit(X_test, y_test)
                     test_model = self.estimator
-                    self.calibrate_report(test_model, X_valid, y_valid, score=score)
+                    self.calibrate_report(X_valid, y_valid, score=score)
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -355,8 +362,11 @@ class Model:
 
         return
 
-    def calibrate_report(self, classifier, X, y, score):
-        y_pred_valid = classifier.predict(X)
+    # L.S. 04_13
+    # set optimal threshold = False inside predict()
+    # were passing test_model before to do test_model.predict, now self.predict
+    def calibrate_report(self, X, y, score):
+        y_pred_valid = self.predict(X, optimal_threshold=False)
         conf_mat = confusion_matrix(y, y_pred_valid)
         print(f"Confusion matrix on validation set for {score}")
         _confusion_matrix_print(conf_mat, self.labels)
@@ -498,6 +508,7 @@ class Model:
                     random_state=self.random_state,
                 )
             )
+
             self.X_train = X_train  # returns training data as df for X
             self.X_valid = X_valid  # returns validation data as df for X
             self.X_test = X_test  # returns test data as df for X
