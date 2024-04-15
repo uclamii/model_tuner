@@ -118,7 +118,7 @@ class Model:
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
-        selectKBest=-1
+        selectKBest=-1,
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -133,7 +133,9 @@ class Model:
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
         if selectKBest != -1:
-            pipeline_steps.append(("selectKBest", SelectKBest(f_classif, k=selectKBest)))
+            pipeline_steps.append(
+                ("selectKBest", SelectKBest(f_classif, k=selectKBest))
+            )
         self.pipeline_steps = pipeline_steps
         if self.pipeline:
             self.estimator = Pipeline(
@@ -226,9 +228,7 @@ class Model:
                         method="sigmoid",
                     ).fit(X, y)
                     test_model = self.estimator
-                    self.conf_mat_class_kfold(
-                        X=X, y=y, test_model=test_model, score=self.scoring[0]["params"]
-                    )
+                    self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
                 else:
                     pass
             else:
@@ -271,7 +271,6 @@ class Model:
                         random_state=self.random_state,
                     )
 
-
                     self.X_train = X_train  # returns training data as df for X
                     self.X_valid = X_valid  # returns validation data as df for X
                     self.X_test = X_test  # returns test data as df for X
@@ -297,11 +296,7 @@ class Model:
                         cv="prefit",
                         method="sigmoid",
                     ).fit(X_test, y_test)
-                    test_model = self.estimator
-                    self.calibrate_report(
-                        test_model, X_valid, y_valid, score=self.scoring[0]["params"]
-                    )
-
+                    self.calibrate_report(X_valid, y_valid)
                 else:
                     pass
             else:
@@ -365,10 +360,13 @@ class Model:
     # L.S. 04_13
     # set optimal threshold = False inside predict()
     # were passing test_model before to do test_model.predict, now self.predict
-    def calibrate_report(self, X, y, score):
+    def calibrate_report(self, X, y, score=None):
         y_pred_valid = self.predict(X, optimal_threshold=False)
         conf_mat = confusion_matrix(y, y_pred_valid)
-        print(f"Confusion matrix on validation set for {score}")
+        if score:
+            print(f"Confusion matrix on validation set for {score}")
+        else:
+            print(f"Confusion matrix on validation set:")
         _confusion_matrix_print(conf_mat, self.labels)
         print()
         self.classification_report = classification_report(y, y_pred_valid)
@@ -742,7 +740,7 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
-    def conf_mat_class_kfold(self, X, y, test_model, score):
+    def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
         aggregated_true_labels = []
         aggregated_predictions = []
@@ -750,7 +748,7 @@ class Model:
         conf_ma_list = []
 
         for train, test in self.kf.split(X, y):
-            X_train, X_test = X.iloc[train], X.iloc[test]
+            X_train, X_test = X[train], X[test]
             y_train, y_test = y[train], y[test]
             test_model.fit(X_train, y_train)
             pred_y_test = test_model.predict(X_test)
@@ -759,13 +757,15 @@ class Model:
             aggregated_true_labels.extend(y_test)
             aggregated_predictions.extend(pred_y_test)
 
-        print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds for {score}:")
+        if score:
+            print(
+                f"Confusion Matrix Average Across {len(conf_ma_list)} Folds for {score}:"
+            )
+        else:
+            print(f"Confusion Matrix Average Across {len(conf_ma_list)} Folds:")
         conf_matrix = np.mean(conf_ma_list, axis=0).astype(int)
         _confusion_matrix_print(conf_matrix, self.labels)
         print()
-        class_report = classification_report(
-            aggregated_true_labels, aggregated_predictions, zero_division=0
-        )
         self.classification_report = classification_report(
             aggregated_true_labels,
             aggregated_predictions,
