@@ -119,6 +119,7 @@ class Model:
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
         selectKBest=-1,
+        model_type="classification",
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -126,6 +127,7 @@ class Model:
         self.pipeline = pipeline
         self.original_estimator = estimator
         self.selectKBest = selectKBest
+        self.model_type = model_type
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
         if scaler_type == None:
@@ -161,6 +163,8 @@ class Model:
             self.grid = grid
         else:
             self.grid = ParameterGrid(grid)
+        if scoring == ["roc_auc"] and model_type == "regression":
+            scoring == ["r2"]
         self.imbalance_sampler = imbalance_sampler
         self.kf = None
         self.xval_output = None
@@ -357,9 +361,6 @@ class Model:
 
         return
 
-    # L.S. 04_13
-    # set optimal threshold = False inside predict()
-    # were passing test_model before to do test_model.predict, now self.predict
     def calibrate_report(self, X, y, score=None):
         y_pred_valid = self.predict(X, optimal_threshold=False)
         conf_mat = confusion_matrix(y, y_pred_valid)
@@ -442,6 +443,8 @@ class Model:
         return
 
     def predict(self, X, y=None, optimal_threshold=True):
+        if self.model_type == "regression":
+            optimal_threshold=False
         if self.kfold:
             return cross_val_predict(estimator=self.estimator, X=X, y=y, cv=self.kf)
         else:
