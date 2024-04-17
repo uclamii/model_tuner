@@ -130,10 +130,13 @@ class Model:
         self.model_type = model_type
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
-        if scaler_type == None:
+        elif scaler_type == None:
             pipeline_steps = []
+        pipeline_steps = [
+            step for step in pipeline_steps if not isinstance(step[1], (SimpleImputer))
+        ]
         if impute:
-            pipeline_steps.append(("imputer", SimpleImputer(strategy=impute_strategy)))
+            pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest != -1:
             pipeline_steps.append(
                 ("selectKBest", SelectKBest(f_classif, k=selectKBest))
@@ -444,7 +447,7 @@ class Model:
 
     def predict(self, X, y=None, optimal_threshold=True):
         if self.model_type == "regression":
-            optimal_threshold=False
+            optimal_threshold = False
         if self.kfold:
             return cross_val_predict(estimator=self.estimator, X=X, y=y, cv=self.kf)
         else:
