@@ -568,12 +568,15 @@ class Model:
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
                         y_pred_valid = clf.predict(X_valid)
-                        conf_mat = confusion_matrix(y_valid, y_pred_valid)
-                        print("Confusion matrix on validation set: ")
-                        _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
-                        print()
-                        print(classification_report(y_valid, y_pred_valid))
-                        print("-" * 80)
+
+                        if self.model_type != "regression":
+
+                            conf_mat = confusion_matrix(y_valid, y_pred_valid)
+                            print("Confusion matrix on validation set: ")
+                            _confusion_matrix_print(conf_mat, self.labels)  # TODO: LS
+                            print()
+                            print(classification_report(y_valid, y_pred_valid))
+                            print("-" * 80)
 
             # for score in self.scoring:
             #     scores = []
