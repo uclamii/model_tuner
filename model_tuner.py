@@ -121,7 +121,7 @@ class Model:
         model_type="classification",
         class_labels=None,
         multi_label=False,
-        custom_scorer=None,
+        custom_scorer=[],
     ):
         self.name = name
         self.estimator_name = estimator_name
