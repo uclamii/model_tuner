@@ -283,6 +283,13 @@ class Model:
                         random_state=self.random_state,
                     )
 
+                    self.X_train_index = X_train.index.to_list() 
+                    self.X_valid_index = X_valid.index.to_list() 
+                    self.X_test_index = X_test.index.to_list() 
+                    self.y_train_index = y_train.index.to_list() 
+                    self.y_valid_index = y_valid.index.to_list() 
+                    self.y_test_index = y_test.index.to_list() 
+
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
@@ -325,6 +332,14 @@ class Model:
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
+
+                    self.X_train_index = X_train.index.to_list() 
+                    self.X_valid_index = X_valid.index.to_list() 
+                    self.X_test_index = X_test.index.to_list() 
+                    self.y_train_index = y_train.index.to_list() 
+                    self.y_valid_index = y_valid.index.to_list() 
+                    self.y_test_index = y_test.index.to_list() 
+
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
@@ -338,7 +353,7 @@ class Model:
                         self.fit(X_res, y_res, score)
                     else:
                         # fit model
-                        self.fit(X_train, y_train, score)
+                        self.fit(X_train, y_train, score=score, validation_data=(X_valid, y_valid))
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
@@ -356,6 +371,16 @@ class Model:
                     pass
 
         return
+    
+    def get_train_data(self, X, y):
+        return X.loc[self.X_train_index], y.loc[self.y_train_index]
+
+    def get_valid_data(self, X, y):
+        return X.loc[self.X_valid_index], y.loc[self.y_valid_index]
+
+    def get_test_data(self, X, y):
+        return X.loc[self.X_test_index], y.loc[self.y_test_index]
+
 
     def calibrate_report(self, X, y, score=None):
         y_pred_valid = self.predict(X, optimal_threshold=False)
@@ -414,7 +439,15 @@ class Model:
         else:
             if score is None:
                 if self.xgboost_early:
-                    eval_set = [(self.X_valid.values, self.y_valid.values)]
+
+                    ## L.S. 04_20_24 
+                    ## previously x, valid, y_valid was a part of self, now we 
+                    ## use indices 
+                    # if validation_data:
+                    X_valid, y_valid = validation_data
+                    eval_set = [(X_valid.values, y_valid.values)]
+                    # else:
+                    #     eval_set = [] # changed only up until this line 04_20_24
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -426,12 +459,12 @@ class Model:
                 else:
                     self.estimator.fit(X, y)
             else:
-                if score in self.custom_scorer:
-                    scorer = self.custom_scorer[score]
-                else:
-                    scorer = score
                 if self.xgboost_early:
-                    eval_set = [(self.X_valid.values, self.y_valid.values)]
+                    # if validation_data:
+                    X_valid, y_valid = validation_data
+                    eval_set = [(X_valid.values, y_valid.values)]
+                    # else:
+                    #     eval_set = []
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -516,6 +549,14 @@ class Model:
                     random_state=self.random_state,
                 )
             )
+
+            self.X_train_index = X_train.index.to_list()
+            self.X_valid_index = X_valid.index.to_list()
+            self.X_test_index = X_test.index.to_list()
+            self.y_train_index = y_train.index.to_list()
+            self.y_valid_index = y_valid.index.to_list()
+            self.y_test_index = y_test.index.to_list()
+
             if self.balance:
                 rus = self.imbalance_sampler
                 X_train, y_train = rus.fit_sample(X_train, y_train)
@@ -589,6 +630,12 @@ class Model:
                             print()
                             print(classification_report(y_valid, y_pred_valid))
                             print("-" * 80)
+                else:
+                    if self.display:
+                        print("Best score/param set found on validation set:")
+                        pprint(self.best_params_per_score[score])
+                        print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+
 
             # for score in self.scoring:
             #     scores = []
