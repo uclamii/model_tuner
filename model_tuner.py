@@ -121,6 +121,7 @@ class Model:
         model_type="classification",
         class_labels=None,
         multi_label=False,
+        calibration_method='sigmoid', #04_27_24 --> added calibration method
         custom_scorer=[],
     ):
         self.name = name
@@ -131,6 +132,7 @@ class Model:
         self.selectKBest = selectKBest
         self.model_type = model_type
         self.multi_label = multi_label
+        self.calibration_method = calibration_method #04_27_24 --> added calibration method
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
         elif scaler_type == None:
@@ -237,7 +239,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method="sigmoid",
+                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X, y)
                     test_model = self.estimator
                     self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
@@ -254,7 +256,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method="sigmoid",
+                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X, y)
                     test_model = self.estimator
                     for s in score:
@@ -307,7 +309,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method="sigmoid",
+                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X_test, y_test)
                     self.calibrate_report(X_valid, y_valid)
                 else:
@@ -358,7 +360,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method="sigmoid",
+                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X_test, y_test)
                     test_model = self.estimator
                     self.calibrate_report(X_valid, y_valid, score=score)
