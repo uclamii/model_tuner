@@ -98,8 +98,8 @@ class Model:
         train_size=0.6,
         validation_size=0.2,
         test_size=0.2,
-        stratify=True,
-        stratify_by=None,
+        stratify_y=True,
+        stratify_cols=None,
         drop_strat_feat=None,
         grid=None,
         scoring=["roc_auc"],
@@ -121,7 +121,7 @@ class Model:
         model_type="classification",
         class_labels=None,
         multi_label=False,
-        calibration_method='sigmoid', #04_27_24 --> added calibration method
+        calibration_method="sigmoid",  # 04_27_24 --> added calibration method
         custom_scorer=[],
     ):
         self.name = name
@@ -132,7 +132,9 @@ class Model:
         self.selectKBest = selectKBest
         self.model_type = model_type
         self.multi_label = multi_label
-        self.calibration_method = calibration_method #04_27_24 --> added calibration method
+        self.calibration_method = (
+            calibration_method  # 04_27_24 --> added calibration method
+        )
         if scaler_type == "standard_scaler":
             pipeline_steps = [("standard_scaler", StandardScaler())]
         elif scaler_type == None:
@@ -177,8 +179,8 @@ class Model:
         self.imbalance_sampler = imbalance_sampler
         self.kf = None
         self.xval_output = None
-        self.stratify = stratify
-        self.stratify_by = stratify_by
+        self.stratify_y = stratify_y
+        self.stratify_cols = stratify_cols
         self.drop_strat_feat = drop_strat_feat
         self.n_splits = n_splits
         self.scoring = scoring
@@ -239,7 +241,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X, y)
                     test_model = self.estimator
                     self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
@@ -256,7 +258,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X, y)
                     test_model = self.estimator
                     for s in score:
@@ -276,21 +278,21 @@ class Model:
                     ) = self.train_val_test_split(
                         X=X,
                         y=y,
-                        stratify=stratify,
-                        stratify_by=self.stratify_by,
+                        stratify_y=self.stratify_y,
+                        stratify_cols=self.stratify_cols,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         calibrate=True,
                         random_state=self.random_state,
                     )
-
-                    self.X_train_index = X_train.index.to_list() 
-                    self.X_valid_index = X_valid.index.to_list() 
-                    self.X_test_index = X_test.index.to_list() 
-                    self.y_train_index = y_train.index.to_list() 
-                    self.y_valid_index = y_valid.index.to_list() 
-                    self.y_test_index = y_test.index.to_list() 
+                    if isinstance(X, pd.DataFrame):
+                        self.X_train_index = X_train.index.to_list()
+                        self.X_valid_index = X_valid.index.to_list()
+                        self.X_test_index = X_test.index.to_list()
+                        self.y_train_index = y_train.index.to_list()
+                        self.y_valid_index = y_valid.index.to_list()
+                        self.y_test_index = y_test.index.to_list()
 
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
@@ -309,7 +311,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X_test, y_test)
                     self.calibrate_report(X_valid, y_valid)
                 else:
@@ -326,21 +328,21 @@ class Model:
                     ) = self.train_val_test_split(
                         X=X,
                         y=y,
-                        stratify=stratify,
-                        stratify_by=self.stratify_by,
+                        stratify_y=self.stratify_y,
+                        stratify_cols=self.stratify_cols,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         calibrate=True,
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
-
-                    self.X_train_index = X_train.index.to_list() 
-                    self.X_valid_index = X_valid.index.to_list() 
-                    self.X_test_index = X_test.index.to_list() 
-                    self.y_train_index = y_train.index.to_list() 
-                    self.y_valid_index = y_valid.index.to_list() 
-                    self.y_test_index = y_test.index.to_list() 
+                    if isinstance(X, pd.DataFrame):
+                        self.X_train_index = X_train.index.to_list()
+                        self.X_valid_index = X_valid.index.to_list()
+                        self.X_test_index = X_test.index.to_list()
+                        self.y_train_index = y_train.index.to_list()
+                        self.y_valid_index = y_valid.index.to_list()
+                        self.y_test_index = y_test.index.to_list()
 
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
@@ -355,12 +357,17 @@ class Model:
                         self.fit(X_res, y_res, score)
                     else:
                         # fit model
-                        self.fit(X_train, y_train, score=score, validation_data=(X_valid, y_valid))
+                        self.fit(
+                            X_train,
+                            y_train,
+                            score=score,
+                            validation_data=(X_valid, y_valid),
+                        )
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method, #04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
                     ).fit(X_test, y_test)
                     test_model = self.estimator
                     self.calibrate_report(X_valid, y_valid, score=score)
@@ -373,7 +380,7 @@ class Model:
                     pass
 
         return
-    
+
     def get_train_data(self, X, y):
         return X.loc[self.X_train_index], y.loc[self.y_train_index]
 
@@ -382,7 +389,6 @@ class Model:
 
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
-
 
     def calibrate_report(self, X, y, score=None):
         y_pred_valid = self.predict(X, optimal_threshold=False)
@@ -411,7 +417,7 @@ class Model:
                     X,
                     y,
                     self.kf,
-                    stratify=self.stratify,
+                    stratify=self.stratify_y,
                     scoring=self.scoring[0],
                 )
                 # print(self.xval_output)
@@ -433,7 +439,7 @@ class Model:
                     X,
                     y,
                     self.kf,
-                    stratify=self.stratify,
+                    stratify=self.stratify_y,
                     scoring=scorer,
                 )
                 # max_score_estimator = np.argmax(self.xval_output["test_score"])
@@ -442,12 +448,15 @@ class Model:
             if score is None:
                 if self.xgboost_early:
 
-                    ## L.S. 04_20_24 
-                    ## previously x, valid, y_valid was a part of self, now we 
-                    ## use indices 
+                    ## L.S. 04_20_24
+                    ## previously x, valid, y_valid was a part of self, now we
+                    ## use indices
                     # if validation_data:
                     X_valid, y_valid = validation_data
-                    eval_set = [(X_valid.values, y_valid.values)]
+                    if isinstance(X_valid, pd.DataFrame):
+                        eval_set = [(X_valid.values, y_valid.values)]
+                    else:
+                        eval_set = [(X_valid, y_valid)]
                     # else:
                     #     eval_set = [] # changed only up until this line 04_20_24
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
@@ -464,7 +473,10 @@ class Model:
                 if self.xgboost_early:
                     # if validation_data:
                     X_valid, y_valid = validation_data
-                    eval_set = [(X_valid.values, y_valid.values)]
+                    if isinstance(X_valid, pd.DataFrame):
+                        eval_set = [(X_valid.values, y_valid.values)]
+                    else:
+                        eval_set = [(X_valid, y_valid)]
                     # else:
                     #     eval_set = []
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
@@ -514,8 +526,6 @@ class Model:
         y,
         f1_beta_tune=False,
         betas=[1, 2],
-        stratify=None,
-        stratify_by=None,
     ):
 
         if self.kfold:
@@ -523,7 +533,7 @@ class Model:
                 self.estimator,
                 X,
                 y,
-                stratify=self.stratify,
+                stratify=self.stratify_y,
                 scoring=self.scoring,
                 n_splits=self.n_splits,
                 random_state=self.random_state,
@@ -542,8 +552,8 @@ class Model:
                 self.train_val_test_split(
                     X=X,
                     y=y,
-                    stratify=stratify,
-                    stratify_by=self.stratify_by,
+                    stratify_y=self.stratify_y,
+                    stratify_cols=self.stratify_cols,
                     train_size=self.train_size,
                     validation_size=self.validation_size,
                     test_size=self.test_size,
@@ -551,13 +561,13 @@ class Model:
                     random_state=self.random_state,
                 )
             )
-
-            self.X_train_index = X_train.index.to_list()
-            self.X_valid_index = X_valid.index.to_list()
-            self.X_test_index = X_test.index.to_list()
-            self.y_train_index = y_train.index.to_list()
-            self.y_valid_index = y_valid.index.to_list()
-            self.y_test_index = y_test.index.to_list()
+            if isinstance(X, pd.DataFrame):
+                self.X_train_index = X_train.index.to_list()
+                self.X_valid_index = X_valid.index.to_list()
+                self.X_test_index = X_test.index.to_list()
+                self.y_train_index = y_train.index.to_list()
+                self.y_valid_index = y_valid.index.to_list()
+                self.y_test_index = y_test.index.to_list()
 
             if self.balance:
                 rus = self.imbalance_sampler
@@ -568,7 +578,10 @@ class Model:
                 scores = []
                 for params in tqdm(self.grid):
                     if self.xgboost_early:
-                        eval_set = [(X_valid.values, y_valid.values)]
+                        if isinstance(X_valid, pd.DataFrame):
+                            eval_set = [(X_valid.values, y_valid.values)]
+                        else:
+                            eval_set = [(X_valid, y_valid)]
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -638,7 +651,6 @@ class Model:
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
-
             # for score in self.scoring:
             #     scores = []
             #     for params in tqdm(self.grid):
@@ -702,22 +714,22 @@ class Model:
         self,
         X,
         y,
-        stratify,
+        stratify_y,
         train_size,
         validation_size,
         test_size,
         random_state,
-        stratify_by,
+        stratify_cols,
         calibrate,
     ):
 
         # if calibrate:
         #     X = X.join(self.dropped_strat_cols)
-        # Determine the stratify parameter based on stratify and stratify_by
-        if stratify_by:
-            # Creating stratification columns out of stratify_by list
-            stratify_key = X[stratify_by] if stratify_by else None
-        elif stratify:
+        # Determine the stratify parameter based on stratify and stratify_cols
+        if stratify_cols:
+            # Creating stratification columns out of stratify_cols list
+            stratify_key = X[stratify_cols] if stratify_cols else None
+        elif stratify_y:
             stratify_key = y
         else:
             stratify_key = None
@@ -739,14 +751,19 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
+        if stratify_y and not stratify_cols:
+            strat_key_val_test = y_valid_test
+        elif stratify_cols:
+            strat_key_val_test = X_valid_test[stratify_cols]
+        else:
+            strat_key_val_test = None
+
         # Further split (validation + test) set into validation and test sets
         X_valid, X_test, y_valid, y_test = train_test_split(
             X_valid_test,
             y_valid_test,
             test_size=proportion,
-            stratify=(
-                y_valid_test if stratify and stratify_by is None else None
-            ),  # Adjust stratification here
+            stratify=strat_key_val_test,
             random_state=random_state,
         )
 
