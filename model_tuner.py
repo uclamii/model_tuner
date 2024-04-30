@@ -643,7 +643,10 @@ class Model:
                                 )  # TODO: LS
 
                             print()
-                            print(classification_report(y_valid, y_pred_valid))
+                            self.classification_report = classification_report(
+                                y_valid, y_pred_valid
+                            )
+                            print(self.classification_report)
                             print("-" * 80)
                 else:
                     if self.display:
