@@ -644,9 +644,9 @@ class Model:
 
                             print()
                             self.classification_report = classification_report(
-                                y_valid, y_pred_valid
+                                y_valid, y_pred_valid, output_dict=True
                             )
-                            print(self.classification_report)
+                            print(classification_report(y_valid, y_pred_valid))
                             print("-" * 80)
                 else:
                     if self.display:
