@@ -542,6 +542,40 @@ class Model:
             )
 
             self.get_best_score_params(X, y)
+            #### Threshold tuning for kfold split for each score
+            if f1_beta_tune:  # tune threshold
+                if isinstance(X, pd.DataFrame):
+                    for score in self.scoring:
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y):
+                            thresh = self.tune_threshold_Fbeta(
+                                score,
+                                X.iloc[train],
+                                y.iloc[train],
+                                X.iloc[test],
+                                y.iloc[test],
+                                betas,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        average_threshold = np.mean(thresh_list)
+                        self.threshold[score] = average_threshold
+                else:
+                    for score in self.scoring:
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y):
+                            thresh = self.tune_threshold_Fbeta(
+                                score,
+                                X[train],
+                                y[train],
+                                X[test],
+                                y[test],
+                                betas,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        average_threshold = np.mean(thresh_list)
+                        self.threshold[score] = average_threshold
         else:
             # print("y:", y)
             # print("X:", X)
@@ -677,7 +711,9 @@ class Model:
             #         pprint(self.best_params_per_score[score])
             #         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
-    def tune_threshold_Fbeta(self, score, X_train, y_train, X_valid, y_valid, betas):
+    def tune_threshold_Fbeta(
+        self, score, X_train, y_train, X_valid, y_valid, betas, kfold=False
+    ):
         """Method to tune threshold on validation dataset using F beta score."""
 
         print("Fitting model with best params and tuning for best threshold ...")
@@ -710,10 +746,17 @@ class Model:
 
         ind_beta_with_max_fscore = np.argmax(np.max(fbeta_scores, axis=1))
         self.beta = betas[ind_beta_with_max_fscore]
-        self.threshold[score] = thresholds_range[
-            np.argmax(fbeta_scores[ind_beta_with_max_fscore])
-        ]
-        return
+
+        if kfold:
+            return_score = thresholds_range[
+                np.argmax(fbeta_scores[ind_beta_with_max_fscore])
+            ]
+            return return_score
+        else:
+            self.scoring[score] = thresholds_range[
+                np.argmax(fbeta_scores[ind_beta_with_max_fscore])
+            ]
+            return
 
     def train_val_test_split(
         self,
@@ -847,15 +890,26 @@ class Model:
         ### Confusion Matrix across multiple folds
         conf_ma_list = []
 
-        for train, test in self.kf.split(X, y):
-            X_train, X_test = X[train], X[test]
-            y_train, y_test = y[train], y[test]
-            test_model.fit(X_train, y_train)
-            pred_y_test = test_model.predict(X_test)
-            conf_ma = confusion_matrix(y_test, pred_y_test)
-            conf_ma_list.append(conf_ma)
-            aggregated_true_labels.extend(y_test)
-            aggregated_predictions.extend(pred_y_test)
+        if isinstance(X, pd.DataFrame):
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X.iloc[train], X.iloc[test]
+                y_train, y_test = y.iloc[train], y.iloc[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                conf_ma = confusion_matrix(y_test, pred_y_test)
+                conf_ma_list.append(conf_ma)
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(pred_y_test)
+        else:
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X[train], X[test]
+                y_train, y_test = y[train], y[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                conf_ma = confusion_matrix(y_test, pred_y_test)
+                conf_ma_list.append(conf_ma)
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(pred_y_test)
 
         if score:
             print(
