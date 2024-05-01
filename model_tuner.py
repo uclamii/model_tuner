@@ -498,7 +498,7 @@ class Model:
 
         return
 
-    def predict(self, X, y=None, optimal_threshold=True):
+    def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
             optimal_threshold = False
         if self.kfold:
