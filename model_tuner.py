@@ -98,7 +98,7 @@ class Model:
         train_size=0.6,
         validation_size=0.2,
         test_size=0.2,
-        stratify_y=True,
+        stratify_y=False,
         stratify_cols=None,
         stratify_test_val=True,
         drop_strat_feat=None,
@@ -753,7 +753,7 @@ class Model:
             ]
             return return_score
         else:
-            self.scoring[score] = thresholds_range[
+            self.threshold[score] = thresholds_range[
                 np.argmax(fbeta_scores[ind_beta_with_max_fscore])
             ]
             return
@@ -800,10 +800,10 @@ class Model:
         proportion = test_size / (validation_size + test_size)
 
         if self.stratify_test_val:
-            if stratify_y and not stratify_cols:
-                strat_key_val_test = y_valid_test
-            elif stratify_cols:
+            if stratify_cols:
                 strat_key_val_test = X_valid_test[stratify_cols]
+            elif stratify_y:
+                strat_key_val_test = y_valid_test
             else:
                 strat_key_val_test = None
         else:
