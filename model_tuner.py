@@ -100,7 +100,6 @@ class Model:
         test_size=0.2,
         stratify_y=False,
         stratify_cols=None,
-        stratify_test_val=True,
         drop_strat_feat=None,
         grid=None,
         scoring=["roc_auc"],
@@ -182,7 +181,6 @@ class Model:
         self.xval_output = None
         self.stratify_y = stratify_y
         self.stratify_cols = stratify_cols
-        self.stratify_test_val = stratify_test_val
         self.drop_strat_feat = drop_strat_feat
         self.n_splits = n_splits
         self.scoring = scoring
@@ -776,7 +774,7 @@ class Model:
         # Determine the stratify parameter based on stratify and stratify_cols
         if stratify_cols:
             # Creating stratification columns out of stratify_cols list
-            stratify_key = X[stratify_cols] if stratify_cols else None
+            stratify_key = X[stratify_cols]
         elif stratify_y:
             stratify_key = y
         else:
@@ -799,13 +797,10 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
-        if self.stratify_test_val:
-            if stratify_cols:
-                strat_key_val_test = X_valid_test[stratify_cols]
-            elif stratify_y:
-                strat_key_val_test = y_valid_test
-            else:
-                strat_key_val_test = None
+        if stratify_cols:
+            strat_key_val_test = X_valid_test[stratify_cols]
+        elif stratify_y:
+            strat_key_val_test = y_valid_test
         else:
             strat_key_val_test = None
 
