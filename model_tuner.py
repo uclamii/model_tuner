@@ -682,11 +682,37 @@ class Model:
                             )
                             print(classification_report(y_valid, y_pred_valid))
                             print("-" * 80)
+
+                            if self.selectKBest != -1:
+                                print()
+                                support = self.estimator.named_steps[
+                                    "selectKBest"
+                                ].get_support()
+                                if isinstance(X, pd.DataFrame):
+                                    print("Feature names selected:")
+                                    print(X.columns[support].to_list())
+                                else:
+                                    print("Feature columns selected:")
+                                    print(support)
+                                print()
+
                 else:
                     if self.display:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+                        if self.selectKBest != -1:
+                            print()
+                            support = self.estimator.named_steps[
+                                "selectKBest"
+                            ].get_support()
+                            if isinstance(X, pd.DataFrame):
+                                print("Feature names selected:")
+                                print(X.columns[support].to_list())
+                            else:
+                                print("Feature columns selected:")
+                                print(support)
+                            print()
 
             # for score in self.scoring:
             #     scores = []
@@ -871,6 +897,17 @@ class Model:
 
                 print("The model is trained on the full development set.")
                 print("The scores are computed on the full evaluation set." + "\n")
+
+                if self.selectKBest != -1:
+                    print()
+                    support = self.estimator.named_steps["selectKBest"].get_support()
+                    if isinstance(X, pd.DataFrame):
+                        print("Feature names selected:")
+                        print(X.columns[support].to_list())
+                    else:
+                        print("Feature columns selected:")
+                        print(support)
+                    print()
 
             self.best_params_per_score[score] = {
                 "params": clf.best_params_,
