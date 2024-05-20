@@ -12,11 +12,10 @@ from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
 from sklearn.metrics import get_scorer
 from sklearn.metrics import fbeta_score
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
 from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -93,7 +92,6 @@ class Model:
         estimator,
         calibrate=False,
         kfold=False,
-        balance=False,
         imbalance_sampler=None,
         train_size=0.6,
         validation_size=0.2,
@@ -148,9 +146,20 @@ class Model:
             pipeline_steps.append(
                 ("selectKBest", SelectKBest(f_classif, k=selectKBest))
             )
+
+        if imbalance_sampler:
+            from imblearn.pipeline import Pipeline 
+            self.PipelineClass = Pipeline
+            pipeline_steps.append(
+                ("Resampler", imbalance_sampler)
+            )
+        else:
+            from sklearn.pipeline import Pipeline 
+            self.PipelineClass = Pipeline
+
         self.pipeline_steps = pipeline_steps
         if self.pipeline:
-            self.estimator = Pipeline(
+            self.estimator = self.PipelineClass(
                 self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
             )
         else:
@@ -158,7 +167,6 @@ class Model:
         self.grid = grid
         self.class_labels = class_labels
         self.kfold = kfold
-        self.balance = balance
         self.dropped_strat_cols = None
         self.randomized_grid = randomized_grid
         self.random_state = random_state
@@ -199,7 +207,7 @@ class Model:
 
     def reset_estimator(self):
         if self.pipeline:
-            self.estimator = Pipeline(
+            self.estimator = self.PipelineClass(
                 self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
             )
         else:
@@ -297,14 +305,19 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
-                    if self.balance:
-                        rus = self.imbalance_sampler
-                        X_res, y_res = rus.fit_sample(X_train, y_train)
-                        print("Resampled dataset shape {}".format(Counter(y_res)))
+                    if self.imbalance_sampler:
+                        imputer_test = clone(self.estimator.named_steps['imputer'])
+                        resampler_test = clone(self.estimator.named_steps['Resampler'])
 
-                        # fit model based on "score_tune_params" best score params
-                        self.reset_estimator()
-                        self.fit(X_res, y_res)
+                        X_train_imputed = imputer_test.fit_transform(X_train)
+                
+                        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
+
+                        if not isinstance(y_res, pd.DataFrame):
+                            y_res = pd.DataFrame(y_res)
+                        print(f"Distribution of y values after resampling: {y_res.value_counts()}")
+                        print()
+
                     else:
                         self.fit(X_train, y_train)
                     #  calibrate model, and save output
@@ -347,14 +360,18 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
-                    if self.balance:
-                        rus = self.imbalance_sampler
-                        X_res, y_res = rus.fit_sample(X_train, y_train)
-                        print("Resampled dataset shape {}".format(Counter(y_res)))
+                    if self.imbalance_sampler:
+                        imputer_test = clone(self.estimator.named_steps['imputer'])
+                        resampler_test = clone(self.estimator.named_steps['Resampler'])
 
-                        # fit model based on "score_tune_params" best score params
-                        self.reset_estimator()
-                        self.fit(X_res, y_res, score)
+                        X_train_imputed = imputer_test.fit_transform(X_train)
+                
+                        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
+
+                        if not isinstance(y_res, pd.DataFrame):
+                            y_res = pd.DataFrame(y_res)
+                        print(f"Distribution of y values after resampling: {y_res.value_counts()}")
+                        print()
                     else:
                         # fit model
                         self.fit(
@@ -603,11 +620,18 @@ class Model:
                 self.y_valid_index = y_valid.index.to_list()
                 self.y_test_index = y_test.index.to_list()
 
-            if self.balance:
-                rus = self.imbalance_sampler
-                X_train, y_train = rus.fit_sample(X_train, y_train)
-                print("Resampled dataset shape {}".format(Counter(y_train)))
+            if self.imbalance_sampler:
+                imputer_test = clone(self.estimator.named_steps['imputer'])
+                resampler_test = clone(self.estimator.named_steps['Resampler'])
 
+                X_train_imputed = imputer_test.fit_transform(X_train)
+        
+                X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
+
+                if not isinstance(y_res, pd.DataFrame):
+                    y_res = pd.DataFrame(y_res)
+                print(f"Distribution of y values after resampling: {y_res.value_counts()}")
+                print()
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
