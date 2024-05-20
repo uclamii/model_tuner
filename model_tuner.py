@@ -214,6 +214,19 @@ class Model:
             self.estimator
         return
 
+    def process_imbalance_sampler(self, X_train, y_train):
+        imputer_test = clone(self.estimator.named_steps['imputer'])
+        resampler_test = clone(self.estimator.named_steps['Resampler'])
+
+        X_train_imputed = imputer_test.fit_transform(X_train)
+
+        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
+
+        if not isinstance(y_res, pd.DataFrame):
+            y_res = pd.DataFrame(y_res)
+        print(f"Distribution of y values after resampling: {y_res.value_counts()}")
+        print()
+
     def calibrateModel(
         self,
         X,
@@ -305,18 +318,9 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # fit estimator
+
                     if self.imbalance_sampler:
-                        imputer_test = clone(self.estimator.named_steps['imputer'])
-                        resampler_test = clone(self.estimator.named_steps['Resampler'])
-
-                        X_train_imputed = imputer_test.fit_transform(X_train)
-                
-                        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
-
-                        if not isinstance(y_res, pd.DataFrame):
-                            y_res = pd.DataFrame(y_res)
-                        print(f"Distribution of y values after resampling: {y_res.value_counts()}")
-                        print()
+                        self.process_imbalance_sampler(X_train, y_train)
 
                     else:
                         self.fit(X_train, y_train)
@@ -361,17 +365,7 @@ class Model:
                     self.reset_estimator()
                     # fit estimator
                     if self.imbalance_sampler:
-                        imputer_test = clone(self.estimator.named_steps['imputer'])
-                        resampler_test = clone(self.estimator.named_steps['Resampler'])
-
-                        X_train_imputed = imputer_test.fit_transform(X_train)
-                
-                        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
-
-                        if not isinstance(y_res, pd.DataFrame):
-                            y_res = pd.DataFrame(y_res)
-                        print(f"Distribution of y values after resampling: {y_res.value_counts()}")
-                        print()
+                        self.process_imbalance_sampler(X_train, y_train)
                     else:
                         # fit model
                         self.fit(
@@ -621,17 +615,7 @@ class Model:
                 self.y_test_index = y_test.index.to_list()
 
             if self.imbalance_sampler:
-                imputer_test = clone(self.estimator.named_steps['imputer'])
-                resampler_test = clone(self.estimator.named_steps['Resampler'])
-
-                X_train_imputed = imputer_test.fit_transform(X_train)
-        
-                X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
-
-                if not isinstance(y_res, pd.DataFrame):
-                    y_res = pd.DataFrame(y_res)
-                print(f"Distribution of y values after resampling: {y_res.value_counts()}")
-                print()
+                self.process_imbalance_sampler(X_train, y_train)
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
