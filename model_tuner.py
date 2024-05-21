@@ -142,7 +142,7 @@ class Model:
         ]
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer()))
-        if selectKBest != -1:
+        if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
         if imbalance_sampler:
@@ -503,6 +503,11 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y)
 
+                    if self.selectKBest:
+                        self.print_k_best_features(X)
+
+                    
+
         return
 
     def predict(self, X, y=None, optimal_threshold=False):
@@ -648,7 +653,7 @@ class Model:
                     else:
                         scorer_func = get_scorer(score)
 
-                    score_value = scorer_func(self.estimator, X_valid, y_valid)
+                    score_value = scorer_func(clf, X_valid, y_valid)
                     # if custom_scorer
                     scores.append(score_value)
 
@@ -689,7 +694,7 @@ class Model:
                             print(classification_report(y_valid, y_pred_valid))
                             print("-" * 80)
 
-                            if self.selectKBest != -1:
+                            if self.selectKBest:
                                 self.print_k_best_features(X)
 
                 else:
@@ -697,7 +702,7 @@ class Model:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                        if self.selectKBest != -1:
+                        if self.selectKBest:
                             self.print_k_best_features(X)
 
             # for score in self.scoring:
@@ -724,6 +729,8 @@ class Model:
     def print_k_best_features(self, X):
         print()
         support = self.estimator.named_steps["selectKBest"].get_support()
+
+        # print(self.estimator.named_steps)
 
         if isinstance(X, pd.DataFrame):
             print("Feature names selected:")
@@ -897,7 +904,9 @@ class Model:
                 print("The model is trained on the full development set.")
                 print("The scores are computed on the full evaluation set." + "\n")
 
-                if self.selectKBest != -1:
+                print(self.estimator.named_steps)
+
+                if self.selectKBest:
                    self.print_k_best_features(X)
                    
             self.best_params_per_score[score] = {
