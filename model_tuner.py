@@ -143,18 +143,16 @@ class Model:
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest != -1:
-            pipeline_steps.append(
-                ("selectKBest", SelectKBest(f_classif, k=selectKBest))
-            )
+            pipeline_steps.append(("selectKBest", SelectKBest()))
 
         if imbalance_sampler:
-            from imblearn.pipeline import Pipeline 
+            from imblearn.pipeline import Pipeline
+
             self.PipelineClass = Pipeline
-            pipeline_steps.append(
-                ("Resampler", imbalance_sampler)
-            )
+            pipeline_steps.append(("Resampler", imbalance_sampler))
         else:
-            from sklearn.pipeline import Pipeline 
+            from sklearn.pipeline import Pipeline
+
             self.PipelineClass = Pipeline
 
         self.pipeline_steps = pipeline_steps
@@ -215,8 +213,8 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        imputer_test = clone(self.estimator.named_steps['imputer'])
-        resampler_test = clone(self.estimator.named_steps['Resampler'])
+        imputer_test = clone(self.estimator.named_steps["imputer"])
+        resampler_test = clone(self.estimator.named_steps["Resampler"])
 
         X_train_imputed = imputer_test.fit_transform(X_train)
 
@@ -692,17 +690,7 @@ class Model:
                             print("-" * 80)
 
                             if self.selectKBest != -1:
-                                print()
-                                support = self.estimator.named_steps[
-                                    "selectKBest"
-                                ].get_support()
-                                if isinstance(X, pd.DataFrame):
-                                    print("Feature names selected:")
-                                    print(X.columns[support].to_list())
-                                else:
-                                    print("Feature columns selected:")
-                                    print(support)
-                                print()
+                                self.print_k_best_features(X)
 
                 else:
                     if self.display:
@@ -710,17 +698,7 @@ class Model:
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
                         if self.selectKBest != -1:
-                            print()
-                            support = self.estimator.named_steps[
-                                "selectKBest"
-                            ].get_support()
-                            if isinstance(X, pd.DataFrame):
-                                print("Feature names selected:")
-                                print(X.columns[support].to_list())
-                            else:
-                                print("Feature columns selected:")
-                                print(support)
-                            print()
+                            self.print_k_best_features(X)
 
             # for score in self.scoring:
             #     scores = []
@@ -742,6 +720,19 @@ class Model:
             #         print("Best score/param set found on validation set:")
             #         pprint(self.best_params_per_score[score])
             #         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+
+    def print_k_best_features(self, X):
+        print()
+        support = self.estimator.named_steps["selectKBest"].get_support()
+
+        if isinstance(X, pd.DataFrame):
+            print("Feature names selected:")
+            print(X.columns[support].to_list())
+
+        else:
+            print("Feature columns selected:")
+            print(support)
+        print()
 
     def tune_threshold_Fbeta(
         self, score, X_train, y_train, X_valid, y_valid, betas, kfold=False
@@ -907,16 +898,8 @@ class Model:
                 print("The scores are computed on the full evaluation set." + "\n")
 
                 if self.selectKBest != -1:
-                    print()
-                    support = self.estimator.named_steps["selectKBest"].get_support()
-                    if isinstance(X, pd.DataFrame):
-                        print("Feature names selected:")
-                        print(X.columns[support].to_list())
-                    else:
-                        print("Feature columns selected:")
-                        print(support)
-                    print()
-
+                   self.print_k_best_features(X)
+                   
             self.best_params_per_score[score] = {
                 "params": clf.best_params_,
                 "score": clf.best_score_,
