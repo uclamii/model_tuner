@@ -10,8 +10,14 @@ from sklearn.model_selection import cross_validate
 from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
-from sklearn.metrics import get_scorer
-from sklearn.metrics import fbeta_score
+from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
+from sklearn.metrics import (
+    fbeta_score,
+    mean_absolute_error,
+    mean_squared_log_error,
+    median_absolute_error,
+    r2_score,
+)
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
@@ -115,7 +121,7 @@ class Model:
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
-        selectKBest=-1,
+        selectKBest=False,
         model_type="classification",
         class_labels=None,
         multi_label=False,
@@ -503,12 +509,70 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y)
 
-                    if self.selectKBest:
-                        self.print_k_best_features(X)
-
-                    
-
         return
+
+    def return_metrics(self, X_test, y_test):
+
+        if self.kfold:
+            for score in self.scoring:
+                if self.model_type != "regression":
+                    print(
+                        "\n"
+                        + "Detailed classification report for %s:" % self.name
+                        + "\n"
+                    )
+                    self.conf_mat_class_kfold(X_test, y_test, self.test_model, score)
+
+                    print("The model is trained on the full development set.")
+                    print("The scores are computed on the full evaluation set." + "\n")
+
+                else:
+                    self.regression_report_kfold(X_test, y_test, self.test_model, score)
+
+                if self.selectKBest:
+                    self.print_k_best_features(X_test)
+        else:
+            y_pred_valid = self.estimator.predict(X_test)
+            if self.model_type != "regression":
+
+                if self.multi_label:
+                    conf_mat = multilabel_confusion_matrix(y_test, y_pred_valid)
+                    self._confusion_matrix_print_ML(conf_mat)
+                else:
+                    conf_mat = confusion_matrix(y_test, y_pred_valid)
+                    print("Confusion matrix on validation set: ")
+                    _confusion_matrix_print(conf_mat, self.labels)
+
+                print()
+                self.classification_report = classification_report(
+                    y_test, y_pred_valid, output_dict=True
+                )
+                print(classification_report(y_test, y_pred_valid))
+                print("-" * 80)
+
+                if self.selectKBest:
+                    k_best_features = self.print_k_best_features(X_test)
+
+                    return {
+                        "Classification Report": self.classification_report,
+                        "Confusion Matrix": conf_mat,
+                        "K Best Features": k_best_features,
+                    }
+                else:
+                    return {
+                        "Classification Report": self.classification_report,
+                        "Confusion Matrix": conf_mat,
+                    }
+            else:
+                reg_report = self.regression_report(y_test, y_pred_valid)
+                if self.selectKBest:
+                    k_best_features = self.print_k_best_features(X_test)
+                    return {
+                        "Regression Report": reg_report,
+                        "K Best Features": k_best_features,
+                    }
+                else:
+                    return reg_report
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -672,38 +736,12 @@ class Model:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                        y_pred_valid = clf.predict(X_valid)
-                        if self.model_type != "regression":
-
-                            if self.multi_label:
-                                conf_mat = multilabel_confusion_matrix(
-                                    y_valid, y_pred_valid
-                                )
-                                self._confusion_matrix_print_ML(conf_mat)
-                            else:
-                                conf_mat = confusion_matrix(y_valid, y_pred_valid)
-                                print("Confusion matrix on validation set: ")
-                                _confusion_matrix_print(
-                                    conf_mat, self.labels
-                                )  # TODO: LS
-
-                            print()
-                            self.classification_report = classification_report(
-                                y_valid, y_pred_valid, output_dict=True
-                            )
-                            print(classification_report(y_valid, y_pred_valid))
-                            print("-" * 80)
-
-                            if self.selectKBest:
-                                self.print_k_best_features(X)
 
                 else:
                     if self.display:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                        if self.selectKBest:
-                            self.print_k_best_features(X)
 
             # for score in self.scoring:
             #     scores = []
@@ -729,17 +767,14 @@ class Model:
     def print_k_best_features(self, X):
         print()
         support = self.estimator.named_steps["selectKBest"].get_support()
-
-        # print(self.estimator.named_steps)
-
         if isinstance(X, pd.DataFrame):
             print("Feature names selected:")
-            print(X.columns[support].to_list())
-
+            support = X.columns[support].to_list()
         else:
             print("Feature columns selected:")
-            print(support)
+        print(support)
         print()
+        return support
 
     def tune_threshold_Fbeta(
         self, score, X_train, y_train, X_valid, y_valid, betas, kfold=False
@@ -816,8 +851,6 @@ class Model:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
 
-        # TODO: add special case to drop additional columns for stratify list\
-        # Split the dataset into training and (validation + test) sets
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -882,7 +915,7 @@ class Model:
 
             clf.fit(X, y)
             self.estimator = clf.best_estimator_
-            test_model = clf.best_estimator_
+            self.test_model = clf.best_estimator_
 
             #### TODO: Implement threshold tuning for kfold split
 
@@ -896,19 +929,6 @@ class Model:
                 for mean, std, params in zip(means, stds, clf.cv_results_["params"]):
                     print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
 
-                print(
-                    "\n" + "Detailed classification report for %s:" % self.name + "\n"
-                )
-                self.conf_mat_class_kfold(X, y, test_model, score)
-
-                print("The model is trained on the full development set.")
-                print("The scores are computed on the full evaluation set." + "\n")
-
-                print(self.estimator.named_steps)
-
-                if self.selectKBest:
-                   self.print_k_best_features(X)
-                   
             self.best_params_per_score[score] = {
                 "params": clf.best_params_,
                 "score": clf.best_score_,
@@ -962,6 +982,63 @@ class Model:
         print(f"Classification Report Averaged Across All Folds for {score}:")
         print(self.classification_report)
         print("-" * 80)
+        return {
+            "Classification Report": self.classification_report,
+            "Confusion Matrix": conf_matrix,
+        }
+
+    def regression_report_kfold(self, X, y, test_model, score=None):
+
+        aggregated_pred_list = []
+
+        if isinstance(X, pd.DataFrame):
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X.iloc[train], X.iloc[test]
+                y_train, y_test = y.iloc[train], y.iloc[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                aggregated_pred_list.append(
+                    self.regression_report(y_test, pred_y_test, print_results=False),
+                )
+        else:
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X[train], X[test]
+                y_train, y_test = y[train], y[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                aggregated_pred_list.append(
+                    self.regression_report(y_test, pred_y_test, print_results=False),
+                )
+
+        pred_df = pd.DataFrame(aggregated_pred_list)
+        mean_dict = dict(pred_df.mean())
+        print("*" * 80)
+        print(f"Average performance across {len(aggregated_pred_list)} Folds:")
+        pprint(mean_dict)
+        print("*" * 80)
+        return mean_dict
+
+    def regression_report(self, y_true, y_pred, print_results=True):
+        explained_variance = explained_variance_score(y_true, y_pred)
+        mae = mean_absolute_error(y_true, y_pred)
+        mse = mean_squared_error(y_true, y_pred)
+        median_abs_error = median_absolute_error(y_true, y_pred)
+        r2 = r2_score(y_true, y_pred)
+
+        reg_dict = {
+            "Explained Variance": explained_variance,
+            "R2": r2,
+            "Mean Absolute Error": mae,
+            "Median Absolute Error": median_abs_error,
+            "Mean Squared Error": mse,
+            "RMSE": np.sqrt(mse),
+        }
+
+        if print_results:
+            print("*" * 80)
+            pprint(reg_dict)
+            print("*" * 80)
+        return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
         border = "-" * 80
