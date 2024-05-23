@@ -437,10 +437,6 @@ class Model:
                 )
                 # print(self.xval_output)
                 # print(self.xval_output['estimator'])
-                ## TODO: If the scores are best for the minimum then
-                ## this needs to inverted max will not always be correct!
-                # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                # self.estimator = self.xval_output["estimator"][max_score_estimator]
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -505,9 +501,13 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y, **xgb_params)
                 else:
-                    self.estimator.set_params(
-                        **self.best_params_per_score[score]["params"]
-                    ).fit(X, y)
+                    try:
+                        self.estimator.set_params(
+                            **self.best_params_per_score[score]["params"]
+                        ).fit(X, y)
+                    except ValueError as error:
+                        print("Specified score not found in scoring dictionary. Please use a score that was parsed for tuning.")
+                        raise error
 
         return
 
