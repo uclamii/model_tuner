@@ -482,23 +482,27 @@ class Model:
                     self.estimator.fit(X, y)
             else:
                 if self.xgboost_early:
-                    # if validation_data:
                     X_valid, y_valid = validation_data
+                    ## Uses the current K Best selected to transform the
+                    ## Eval set before it is used in early stopping.
+                    if self.selectKBest:
+                        params_without_stopping = self.best_params_per_score[score][
+                            "params"
+                        ].copy()
+                        for key in params_without_stopping.keys():
+                            if "early_stopping" in key:
+                                params_without_stopping[key] = None
 
-                    params_without_stopping = self.best_params_per_score[score]["params"].copy()
-                    for key in params_without_stopping.keys():
-                        if 'early_stopping' in key:
-                            params_without_stopping[key] = None   
-                              
-                    self.estimator.set_params(**params_without_stopping).fit(X, y)
-                    X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        self.estimator.set_params(**params_without_stopping).fit(X, y)
+                        X_valid_selected = self.estimator[:-1].transform(X_valid)
+                    else:
+                        X_valid_selected = X_valid
 
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid_selected, y_valid.values)]
                     else:
                         eval_set = [(X_valid_selected, y_valid)]
-                    # else:
-                    #     eval_set = []
+
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -515,7 +519,9 @@ class Model:
                             **self.best_params_per_score[score]["params"]
                         ).fit(X, y)
                     except ValueError as error:
-                        print("Specified score not found in scoring dictionary. Please use a score that was parsed for tuning.")
+                        print(
+                            "Specified score not found in scoring dictionary. Please use a score that was parsed for tuning."
+                        )
                         raise error
 
         return
@@ -662,13 +668,6 @@ class Model:
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
         else:
-            # print("y:", y)
-            # print("X:", X)
-            # print("Stratify:", stratify)
-            # print("validation_size:", self.validation_size)
-            # print("test_size:", self.test_size)
-            # print(f"Stratify By {self.stratify_by}")
-
             X_train, X_valid, X_test, y_train, y_valid, y_test = (
                 self.train_val_test_split(
                     X=X,
@@ -695,7 +694,7 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
-                    if self.xgboost_early:                        
+                    if self.xgboost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
@@ -705,10 +704,12 @@ class Model:
 
                         params_without_stopping = params.copy()
                         for key in params.keys():
-                            if 'early_stopping' in key:
-                                params_without_stopping[key] = None   
-                                          
-                        self.estimator.set_params(**params_without_stopping).fit(X_train, y_train)
+                            if "early_stopping" in key:
+                                params_without_stopping[key] = None
+
+                        self.estimator.set_params(**params_without_stopping).fit(
+                            X_train, y_train
+                        )
                         X_valid_selected = self.estimator[:-1].transform(X_valid)
 
                         if isinstance(X_valid, pd.DataFrame):
@@ -724,7 +725,7 @@ class Model:
                         ### xgb_params required here in order to ensure
                         ### custom estimator name. X_valid, y_valid
                         ### needed to use .values.
-                        
+
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
@@ -761,27 +762,6 @@ class Model:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-
-            # for score in self.scoring:
-            #     scores = []
-            #     for params in tqdm(self.grid):
-            #         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-            #         scores.append(get_scorer(score)(clf, X_valid, y_valid))
-
-            #     self.best_params_per_score[score] = {
-            #         "params": self.grid[np.argmax(scores)],
-            #         "score": np.max(scores),
-            #     }
-
-            #     if f1_beta_tune:  # tune threshold
-            #         self.tune_threshold_Fbeta(
-            #             score, X_train, y_train, X_valid, y_valid, betas
-            #         )
-
-            #     if self.display:
-            #         print("Best score/param set found on validation set:")
-            #         pprint(self.best_params_per_score[score])
-            #         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
     def print_k_best_features(self, X):
         print()
@@ -935,8 +915,6 @@ class Model:
             clf.fit(X, y)
             self.estimator = clf.best_estimator_
             self.test_model = clf.best_estimator_
-
-            #### TODO: Implement threshold tuning for kfold split
 
             if self.display:
                 ## Make classification report and conf matrix into function
@@ -1137,61 +1115,6 @@ def _confusion_matrix_print(conf_matrix, labels):
     print(border)
 
 
-# def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
-#     if stratify:
-#         stratify_param = y
-#     else:
-#         stratify_param = None
-
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         y,
-#         test_size=1 - train_size,
-#         stratify=stratify_param,
-#         random_state=random_state,
-#     )
-
-#     # Update to fix proportions for validation and test split
-#     proportion = test_size / (validation_size + test_size)
-
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=proportion,
-#         stratify=y_valid_test if stratify else None,
-#         random_state=random_state,
-#     )
-
-#     return X_train, X_valid, X_test, y_train, y_valid, y_test
-
-# def train_val_test_split(
-#     X,
-#     y,
-#     stratify,
-#     train_size,
-#     validation_size,
-#     test_size,
-#     random_state,
-# ):
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         stratify,  # stratify contains another array and last the label
-#         test_size=1 - train_size,
-#         train_size=train_size,
-#         stratify=stratify,
-#         random_state=random_state,
-#     )
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=(1 - train_size - validation_size) / (1 - train_size),
-#         train_size=(1 - train_size - test_size) / (1 - train_size),
-#         stratify=y_valid_test,
-#         random_state=random_state,
-#     )
-#     return X_train, X_valid, X_test, y_train[:, -1], y_valid[:, -1], y_test[:, -1]
-
-
 if __name__ == "__main__":
     iris = load_iris()
     iris = pd.DataFrame(
@@ -1203,17 +1126,6 @@ if __name__ == "__main__":
 
     X = iris[features].values  # independant variables
     y = iris[target].values.astype(int)  # dependent variable
-
-    # breast_sk = load_breast_cancer()
-    # breast = pd.DataFrame(
-    #     data=np.c_[breast_sk.data, breast_sk.target],
-    # )
-    # breast.columns = list(breast_sk.feature_names) + ["target"]
-    # features = [col for col in breast.columns if col != "target"]
-    # target = "target"
-
-    # X = breast[features].values  # independant variables
-    # y = breast[target].values.astype(int)  # dependent variable
 
     lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
 
