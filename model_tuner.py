@@ -10,8 +10,14 @@ from sklearn.model_selection import cross_validate
 from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
-from sklearn.metrics import get_scorer
-from sklearn.metrics import fbeta_score
+from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
+from sklearn.metrics import (
+    fbeta_score,
+    mean_absolute_error,
+    mean_squared_log_error,
+    median_absolute_error,
+    r2_score,
+)
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
@@ -115,7 +121,7 @@ class Model:
         impute=False,
         pipeline_steps=[("min_max_scaler", MinMaxScaler())],
         xgboost_early=False,
-        selectKBest=-1,
+        selectKBest=False,
         model_type="classification",
         class_labels=None,
         multi_label=False,
@@ -142,19 +148,17 @@ class Model:
         ]
         if impute:
             pipeline_steps.append(("imputer", SimpleImputer()))
-        if selectKBest != -1:
-            pipeline_steps.append(
-                ("selectKBest", SelectKBest(f_classif, k=selectKBest))
-            )
+        if selectKBest:
+            pipeline_steps.append(("selectKBest", SelectKBest()))
 
         if imbalance_sampler:
-            from imblearn.pipeline import Pipeline 
+            from imblearn.pipeline import Pipeline
+
             self.PipelineClass = Pipeline
-            pipeline_steps.append(
-                ("Resampler", imbalance_sampler)
-            )
+            pipeline_steps.append(("Resampler", imbalance_sampler))
         else:
-            from sklearn.pipeline import Pipeline 
+            from sklearn.pipeline import Pipeline
+
             self.PipelineClass = Pipeline
 
         self.pipeline_steps = pipeline_steps
@@ -215,8 +219,8 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        imputer_test = clone(self.estimator.named_steps['imputer'])
-        resampler_test = clone(self.estimator.named_steps['Resampler'])
+        imputer_test = clone(self.estimator.named_steps["imputer"])
+        resampler_test = clone(self.estimator.named_steps["Resampler"])
 
         X_train_imputed = imputer_test.fit_transform(X_train)
 
@@ -433,10 +437,6 @@ class Model:
                 )
                 # print(self.xval_output)
                 # print(self.xval_output['estimator'])
-                ## TODO: If the scores are best for the minimum then
-                ## this needs to inverted max will not always be correct!
-                # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                # self.estimator = self.xval_output["estimator"][max_score_estimator]
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -482,14 +482,29 @@ class Model:
                     self.estimator.fit(X, y)
             else:
                 if self.xgboost_early:
-                    # if validation_data:
                     X_valid, y_valid = validation_data
-                    if isinstance(X_valid, pd.DataFrame):
-                        eval_set = [(X_valid.values, y_valid.values)]
+                    ## Uses the current K Best selected to transform the
+                    ## Eval set before it is used in early stopping.
+                    if self.selectKBest:
+                        params_without_stopping = self.best_params_per_score[score][
+                            "params"
+                        ].copy()
+                        for key in params_without_stopping.keys():
+                            if "early_stopping" in key:
+                                params_without_stopping[key] = None
+                        self.estimator.set_params(**params_without_stopping).fit(X, y)
+                        if self.imbalance_sampler:
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
-                        eval_set = [(X_valid, y_valid)]
-                    # else:
-                    #     eval_set = []
+                        X_valid_selected = X_valid
+
+                    if isinstance(X_valid, pd.DataFrame):
+                        eval_set = [(X_valid_selected, y_valid.values)]
+                    else:
+                        eval_set = [(X_valid_selected, y_valid)]
+
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -501,11 +516,80 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y, **xgb_params)
                 else:
-                    self.estimator.set_params(
-                        **self.best_params_per_score[score]["params"]
-                    ).fit(X, y)
+                    try:
+                        self.estimator.set_params(
+                            **self.best_params_per_score[score]["params"]
+                        ).fit(X, y)
+                    except ValueError as error:
+                        print(
+                            "Specified score not found in scoring dictionary. Please use a score that was parsed for tuning."
+                        )
+                        raise error
 
         return
+
+    def return_metrics(self, X_test, y_test):
+
+        if self.kfold:
+            for score in self.scoring:
+                if self.model_type != "regression":
+                    print(
+                        "\n"
+                        + "Detailed classification report for %s:" % self.name
+                        + "\n"
+                    )
+                    self.conf_mat_class_kfold(X_test, y_test, self.test_model, score)
+
+                    print("The model is trained on the full development set.")
+                    print("The scores are computed on the full evaluation set." + "\n")
+
+                else:
+                    self.regression_report_kfold(X_test, y_test, self.test_model, score)
+
+                if self.selectKBest:
+                    self.print_k_best_features(X_test)
+        else:
+            y_pred_valid = self.estimator.predict(X_test)
+            if self.model_type != "regression":
+
+                if self.multi_label:
+                    conf_mat = multilabel_confusion_matrix(y_test, y_pred_valid)
+                    self._confusion_matrix_print_ML(conf_mat)
+                else:
+                    conf_mat = confusion_matrix(y_test, y_pred_valid)
+                    print("Confusion matrix on validation set: ")
+                    _confusion_matrix_print(conf_mat, self.labels)
+
+                print()
+                self.classification_report = classification_report(
+                    y_test, y_pred_valid, output_dict=True
+                )
+                print(classification_report(y_test, y_pred_valid))
+                print("-" * 80)
+
+                if self.selectKBest:
+                    k_best_features = self.print_k_best_features(X_test)
+
+                    return {
+                        "Classification Report": self.classification_report,
+                        "Confusion Matrix": conf_mat,
+                        "K Best Features": k_best_features,
+                    }
+                else:
+                    return {
+                        "Classification Report": self.classification_report,
+                        "Confusion Matrix": conf_mat,
+                    }
+            else:
+                reg_report = self.regression_report(y_test, y_pred_valid)
+                if self.selectKBest:
+                    k_best_features = self.print_k_best_features(X_test)
+                    return {
+                        "Regression Report": reg_report,
+                        "K Best Features": k_best_features,
+                    }
+                else:
+                    return reg_report
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -586,13 +670,6 @@ class Model:
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
         else:
-            # print("y:", y)
-            # print("X:", X)
-            # print("Stratify:", stratify)
-            # print("validation_size:", self.validation_size)
-            # print("test_size:", self.test_size)
-            # print(f"Stratify By {self.stratify_by}")
-
             X_train, X_valid, X_test, y_train, y_valid, y_test = (
                 self.train_val_test_split(
                     X=X,
@@ -620,17 +697,32 @@ class Model:
                 scores = []
                 for params in tqdm(self.grid):
                     if self.xgboost_early:
-                        if isinstance(X_valid, pd.DataFrame):
-                            eval_set = [(X_valid.values, y_valid.values)]
-                        else:
-                            eval_set = [(X_valid, y_valid)]
-                        estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
                             self.verbosity = params[estimator_verbosity]
                         else:
                             self.verbosity = False
+
+                        params_without_stopping = params.copy()
+                        for key in params.keys():
+                            if "early_stopping" in key:
+                                params_without_stopping[key] = None
+
+
+                        self.estimator.set_params(**params_without_stopping).fit(
+                            X_train, y_train
+                        )
+                        if self.imbalance_sampler:
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+
+                        if isinstance(X_valid, pd.DataFrame):
+                            eval_set = [(X_valid_selected, y_valid.values)]
+                        else:
+                            eval_set = [(X_valid_selected, y_valid)]
+                        estimator_eval_set = f"{self.estimator_name}__eval_set"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
@@ -639,6 +731,7 @@ class Model:
                         ### xgb_params required here in order to ensure
                         ### custom estimator name. X_valid, y_valid
                         ### needed to use .values.
+
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
@@ -650,7 +743,7 @@ class Model:
                     else:
                         scorer_func = get_scorer(score)
 
-                    score_value = scorer_func(self.estimator, X_valid, y_valid)
+                    score_value = scorer_func(clf, X_valid, y_valid)
                     # if custom_scorer
                     scores.append(score_value)
 
@@ -669,79 +762,24 @@ class Model:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                        y_pred_valid = clf.predict(X_valid)
-                        if self.model_type != "regression":
-
-                            if self.multi_label:
-                                conf_mat = multilabel_confusion_matrix(
-                                    y_valid, y_pred_valid
-                                )
-                                self._confusion_matrix_print_ML(conf_mat)
-                            else:
-                                conf_mat = confusion_matrix(y_valid, y_pred_valid)
-                                print("Confusion matrix on validation set: ")
-                                _confusion_matrix_print(
-                                    conf_mat, self.labels
-                                )  # TODO: LS
-
-                            print()
-                            self.classification_report = classification_report(
-                                y_valid, y_pred_valid, output_dict=True
-                            )
-                            print(classification_report(y_valid, y_pred_valid))
-                            print("-" * 80)
-
-                            if self.selectKBest != -1:
-                                print()
-                                support = self.estimator.named_steps[
-                                    "selectKBest"
-                                ].get_support()
-                                if isinstance(X, pd.DataFrame):
-                                    print("Feature names selected:")
-                                    print(X.columns[support].to_list())
-                                else:
-                                    print("Feature columns selected:")
-                                    print(support)
-                                print()
 
                 else:
                     if self.display:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-                        if self.selectKBest != -1:
-                            print()
-                            support = self.estimator.named_steps[
-                                "selectKBest"
-                            ].get_support()
-                            if isinstance(X, pd.DataFrame):
-                                print("Feature names selected:")
-                                print(X.columns[support].to_list())
-                            else:
-                                print("Feature columns selected:")
-                                print(support)
-                            print()
 
-            # for score in self.scoring:
-            #     scores = []
-            #     for params in tqdm(self.grid):
-            #         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-            #         scores.append(get_scorer(score)(clf, X_valid, y_valid))
-
-            #     self.best_params_per_score[score] = {
-            #         "params": self.grid[np.argmax(scores)],
-            #         "score": np.max(scores),
-            #     }
-
-            #     if f1_beta_tune:  # tune threshold
-            #         self.tune_threshold_Fbeta(
-            #             score, X_train, y_train, X_valid, y_valid, betas
-            #         )
-
-            #     if self.display:
-            #         print("Best score/param set found on validation set:")
-            #         pprint(self.best_params_per_score[score])
-            #         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
+    def print_k_best_features(self, X):
+        print()
+        support = self.estimator.named_steps["selectKBest"].get_support()
+        if isinstance(X, pd.DataFrame):
+            print("Feature names selected:")
+            support = X.columns[support].to_list()
+        else:
+            print("Feature columns selected:")
+        print(support)
+        print()
+        return support
 
     def tune_threshold_Fbeta(
         self, score, X_train, y_train, X_valid, y_valid, betas, kfold=False
@@ -818,8 +856,6 @@ class Model:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
 
-        # TODO: add special case to drop additional columns for stratify list\
-        # Split the dataset into training and (validation + test) sets
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -884,9 +920,7 @@ class Model:
 
             clf.fit(X, y)
             self.estimator = clf.best_estimator_
-            test_model = clf.best_estimator_
-
-            #### TODO: Implement threshold tuning for kfold split
+            self.test_model = clf.best_estimator_
 
             if self.display:
                 ## Make classification report and conf matrix into function
@@ -897,25 +931,6 @@ class Model:
                 stds = clf.cv_results_["std_test_score"]
                 for mean, std, params in zip(means, stds, clf.cv_results_["params"]):
                     print("%0.3f (+/-%0.03f) for %r" % (mean, std * 2, params))
-
-                print(
-                    "\n" + "Detailed classification report for %s:" % self.name + "\n"
-                )
-                self.conf_mat_class_kfold(X, y, test_model, score)
-
-                print("The model is trained on the full development set.")
-                print("The scores are computed on the full evaluation set." + "\n")
-
-                if self.selectKBest != -1:
-                    print()
-                    support = self.estimator.named_steps["selectKBest"].get_support()
-                    if isinstance(X, pd.DataFrame):
-                        print("Feature names selected:")
-                        print(X.columns[support].to_list())
-                    else:
-                        print("Feature columns selected:")
-                        print(support)
-                    print()
 
             self.best_params_per_score[score] = {
                 "params": clf.best_params_,
@@ -970,6 +985,63 @@ class Model:
         print(f"Classification Report Averaged Across All Folds for {score}:")
         print(self.classification_report)
         print("-" * 80)
+        return {
+            "Classification Report": self.classification_report,
+            "Confusion Matrix": conf_matrix,
+        }
+
+    def regression_report_kfold(self, X, y, test_model, score=None):
+
+        aggregated_pred_list = []
+
+        if isinstance(X, pd.DataFrame):
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X.iloc[train], X.iloc[test]
+                y_train, y_test = y.iloc[train], y.iloc[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                aggregated_pred_list.append(
+                    self.regression_report(y_test, pred_y_test, print_results=False),
+                )
+        else:
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X[train], X[test]
+                y_train, y_test = y[train], y[test]
+                test_model.fit(X_train, y_train)
+                pred_y_test = test_model.predict(X_test)
+                aggregated_pred_list.append(
+                    self.regression_report(y_test, pred_y_test, print_results=False),
+                )
+
+        pred_df = pd.DataFrame(aggregated_pred_list)
+        mean_dict = dict(pred_df.mean())
+        print("*" * 80)
+        print(f"Average performance across {len(aggregated_pred_list)} Folds:")
+        pprint(mean_dict)
+        print("*" * 80)
+        return mean_dict
+
+    def regression_report(self, y_true, y_pred, print_results=True):
+        explained_variance = explained_variance_score(y_true, y_pred)
+        mae = mean_absolute_error(y_true, y_pred)
+        mse = mean_squared_error(y_true, y_pred)
+        median_abs_error = median_absolute_error(y_true, y_pred)
+        r2 = r2_score(y_true, y_pred)
+
+        reg_dict = {
+            "Explained Variance": explained_variance,
+            "R2": r2,
+            "Mean Absolute Error": mae,
+            "Median Absolute Error": median_abs_error,
+            "Mean Squared Error": mse,
+            "RMSE": np.sqrt(mse),
+        }
+
+        if print_results:
+            print("*" * 80)
+            pprint(reg_dict)
+            print("*" * 80)
+        return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
         border = "-" * 80
@@ -1049,61 +1121,6 @@ def _confusion_matrix_print(conf_matrix, labels):
     print(border)
 
 
-# def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
-#     if stratify:
-#         stratify_param = y
-#     else:
-#         stratify_param = None
-
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         y,
-#         test_size=1 - train_size,
-#         stratify=stratify_param,
-#         random_state=random_state,
-#     )
-
-#     # Update to fix proportions for validation and test split
-#     proportion = test_size / (validation_size + test_size)
-
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=proportion,
-#         stratify=y_valid_test if stratify else None,
-#         random_state=random_state,
-#     )
-
-#     return X_train, X_valid, X_test, y_train, y_valid, y_test
-
-# def train_val_test_split(
-#     X,
-#     y,
-#     stratify,
-#     train_size,
-#     validation_size,
-#     test_size,
-#     random_state,
-# ):
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         stratify,  # stratify contains another array and last the label
-#         test_size=1 - train_size,
-#         train_size=train_size,
-#         stratify=stratify,
-#         random_state=random_state,
-#     )
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=(1 - train_size - validation_size) / (1 - train_size),
-#         train_size=(1 - train_size - test_size) / (1 - train_size),
-#         stratify=y_valid_test,
-#         random_state=random_state,
-#     )
-#     return X_train, X_valid, X_test, y_train[:, -1], y_valid[:, -1], y_test[:, -1]
-
-
 if __name__ == "__main__":
     iris = load_iris()
     iris = pd.DataFrame(
@@ -1115,17 +1132,6 @@ if __name__ == "__main__":
 
     X = iris[features].values  # independant variables
     y = iris[target].values.astype(int)  # dependent variable
-
-    # breast_sk = load_breast_cancer()
-    # breast = pd.DataFrame(
-    #     data=np.c_[breast_sk.data, breast_sk.target],
-    # )
-    # breast.columns = list(breast_sk.feature_names) + ["target"]
-    # features = [col for col in breast.columns if col != "target"]
-    # target = "target"
-
-    # X = breast[features].values  # independant variables
-    # y = breast[target].values.astype(int)  # dependent variable
 
     lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
 
