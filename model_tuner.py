@@ -492,9 +492,11 @@ class Model:
                         for key in params_without_stopping.keys():
                             if "early_stopping" in key:
                                 params_without_stopping[key] = None
-
                         self.estimator.set_params(**params_without_stopping).fit(X, y)
-                        X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        if self.imbalance_sampler:
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
                         X_valid_selected = X_valid
 
@@ -707,10 +709,14 @@ class Model:
                             if "early_stopping" in key:
                                 params_without_stopping[key] = None
 
+
                         self.estimator.set_params(**params_without_stopping).fit(
                             X_train, y_train
                         )
-                        X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        if self.imbalance_sampler:
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
 
                         if isinstance(X_valid, pd.DataFrame):
                             eval_set = [(X_valid_selected, y_valid.values)]
