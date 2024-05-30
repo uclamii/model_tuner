@@ -484,10 +484,19 @@ class Model:
                 if self.xgboost_early:
                     # if validation_data:
                     X_valid, y_valid = validation_data
+
+                    params_without_stopping = self.best_params_per_score[score]["params"].copy()
+                    for key in params_without_stopping.keys():
+                        if 'early_stopping' in key:
+                            params_without_stopping[key] = None   
+                              
+                    self.estimator.set_params(**params_without_stopping).fit(X, y)
+                    X_valid_selected = self.estimator[:-1].transform(X_valid)
+
                     if isinstance(X_valid, pd.DataFrame):
-                        eval_set = [(X_valid.values, y_valid.values)]
+                        eval_set = [(X_valid_selected, y_valid.values)]
                     else:
-                        eval_set = [(X_valid, y_valid)]
+                        eval_set = [(X_valid_selected, y_valid)]
                     # else:
                     #     eval_set = []
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
@@ -686,18 +695,27 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
-                    if self.xgboost_early:
-                        if isinstance(X_valid, pd.DataFrame):
-                            eval_set = [(X_valid.values, y_valid.values)]
-                        else:
-                            eval_set = [(X_valid, y_valid)]
-                        estimator_eval_set = f"{self.estimator_name}__eval_set"
+                    if self.xgboost_early:                        
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
                             self.verbosity = params[estimator_verbosity]
                         else:
                             self.verbosity = False
+
+                        params_without_stopping = params.copy()
+                        for key in params.keys():
+                            if 'early_stopping' in key:
+                                params_without_stopping[key] = None   
+                                          
+                        self.estimator.set_params(**params_without_stopping).fit(X_train, y_train)
+                        X_valid_selected = self.estimator[:-1].transform(X_valid)
+
+                        if isinstance(X_valid, pd.DataFrame):
+                            eval_set = [(X_valid_selected, y_valid.values)]
+                        else:
+                            eval_set = [(X_valid_selected, y_valid)]
+                        estimator_eval_set = f"{self.estimator_name}__eval_set"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
@@ -706,6 +724,7 @@ class Model:
                         ### xgb_params required here in order to ensure
                         ### custom estimator name. X_valid, y_valid
                         ### needed to use .values.
+                        
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
