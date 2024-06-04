@@ -16,6 +16,7 @@ def evaluate_bootstrap_metrics(
     num_resamples=1000,
     metrics=["roc_auc", "f1_weighted", "average_precision"],
     random_state=42,
+    threshold=0.5,
 ):
     """
     Evaluate various classification metrics on bootstrap samples using a
@@ -30,8 +31,9 @@ def evaluate_bootstrap_metrics(
     - n_samples (int): The number of samples in each bootstrap sample.
     - num_resamples (int): The number of resamples to generate.
     - metrics (list): List of metric names to evaluate.
-    - random_state (int): Random state used as the seed for each random number
+    - random_state (int, optional): Random state used as the seed for each random number
       in the loop
+    - threshold (float, optional): Threshold used to turn probability estimates into predictions.
 
     Returns:
     - DataFrame: Confidence intervals for various metrics.
@@ -64,7 +66,7 @@ def evaluate_bootstrap_metrics(
         if y_pred_prob is not None:
             resampled_indicies = y_resample.index
             y_pred_prob_resample = y_pred_prob[resampled_indicies]
-            y_pred_resample = (y_pred_prob_resample >= 0.5).astype(int)
+            y_pred_resample = (y_pred_prob_resample >= threshold).astype(int)
         else:
             # Resample the input features and compute predictions
             X_resample = resample(
