@@ -39,16 +39,34 @@ def evaluate_bootstrap_metrics(
     Returns:
     - DataFrame: Confidence intervals for various metrics.
     """
-    if isinstance(y_pred_prob, np.ndarray) or isinstance(y, np.ndarray):
-        y_pred_prob = pd.Dataframe(y_pred_prob)
-        y = pd.DataFrame(y)
 
+    regression_metrics = [
+        "explained_variance",
+        "max_error",
+        "neg_mean_absolute_error",
+        "neg_mean_squared_error",
+        "neg_root_mean_squared_error",
+        "neg_mean_squared_log_error",
+        "neg_median_absolute_error",
+        "r2",
+        "neg_mean_poisson_deviance",
+        "neg_mean_gamma_deviance",
+    ]
+
+    # if y is a numpy array cast it to a dataframe
+    if isinstance(y, np.ndarray):
+        y = pd.DataFrame(y)
     # Set the random seed for reproducibility
     seed(random_state)
 
     # Ensure either model and X or y_pred_prob are provided
     if y_pred_prob is None and (model is None or X is None):
         raise ValueError("Either model and X or y_pred_prob must be provided.")
+
+    if model_type != "regression" and metric in regression_metrics:
+        raise ValueError(
+            "If using regression metrics please specify model_type='regression'"
+        )
 
     # Initialize a dictionary to store scores for each metric
     scores = {metric: [] for metric in metrics}
