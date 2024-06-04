@@ -17,6 +17,7 @@ def evaluate_bootstrap_metrics(
     metrics=["roc_auc", "f1_weighted", "average_precision"],
     random_state=42,
     threshold=0.5,
+    model_type="classification",
 ):
     """
     Evaluate various classification metrics on bootstrap samples using a
@@ -38,6 +39,9 @@ def evaluate_bootstrap_metrics(
     Returns:
     - DataFrame: Confidence intervals for various metrics.
     """
+    if isinstance(y_pred_prob, np.ndarray) or isinstance(y, np.ndarray):
+        y_pred_prob = pd.Dataframe(y_pred_prob)
+        y = pd.DataFrame(y)
 
     # Set the random seed for reproducibility
     seed(random_state)
@@ -66,7 +70,11 @@ def evaluate_bootstrap_metrics(
         if y_pred_prob is not None:
             resampled_indicies = y_resample.index
             y_pred_prob_resample = y_pred_prob[resampled_indicies]
-            y_pred_resample = (y_pred_prob_resample >= threshold).astype(int)
+
+            if model_type != "regression":
+                y_pred_resample = (y_pred_prob_resample >= threshold).astype(int)
+            else:
+                y_pred_resample = y_pred_prob_resample
         else:
             # Resample the input features and compute predictions
             X_resample = resample(
@@ -78,7 +86,10 @@ def evaluate_bootstrap_metrics(
                     1000000,
                 ),
             )
-            y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
+            if model_type != "regression":
+                y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
+            else:
+                y_pred_prob_resample = None
             y_pred_resample = model.predict(X_resample)
 
         # Calculate and store metric scores
