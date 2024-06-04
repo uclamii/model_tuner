@@ -249,24 +249,10 @@ class Model:
                         **self.best_params_per_score[self.scoring[0]]["params"]
                     )
 
-                    # self.xval_output = get_cross_validate(
-                    # CalibratedClassifierCV(
-                    #     classifier,
-                    #     cv=self.n_splits,
-                    #     method="sigmoid",
-                    # ),
-                    #     X,
-                    #     y,
-                    #     self.kf,
-                    #     stratify=self.stratify,
-                    #     scoring=self.scoring[0],
-                    # )
-                    # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                    # self.estimator = self.xval_output["estimator"][max_score_estimator]
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
                     self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
@@ -283,7 +269,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
                     for s in score:
@@ -332,7 +318,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X_test, y_test)
                     self.calibrate_report(X_valid, y_valid)
                 else:
@@ -382,7 +368,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X_test, y_test)
                     test_model = self.estimator
                     self.calibrate_report(X_valid, y_valid, score=score)
@@ -435,8 +421,6 @@ class Model:
                     stratify=self.stratify_y,
                     scoring=self.scoring[0],
                 )
-                # print(self.xval_output)
-                # print(self.xval_output['estimator'])
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -453,23 +437,16 @@ class Model:
                     stratify=self.stratify_y,
                     scoring=scorer,
                 )
-                # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                # self.estimator = self.xval_output["estimator"][max_score_estimator]
+
         else:
             if score is None:
                 if self.xgboost_early:
 
-                    ## L.S. 04_20_24
-                    ## previously x, valid, y_valid was a part of self, now we
-                    ## use indices
-                    # if validation_data:
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid.values, y_valid.values)]
                     else:
                         eval_set = [(X_valid, y_valid)]
-                    # else:
-                    #     eval_set = [] # changed only up until this line 04_20_24
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -708,7 +685,6 @@ class Model:
                         for key in params.keys():
                             if "early_stopping" in key:
                                 params_without_stopping[key] = None
-
 
                         self.estimator.set_params(**params_without_stopping).fit(
                             X_train, y_train
