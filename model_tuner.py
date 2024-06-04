@@ -496,14 +496,24 @@ class Model:
 
         return
 
-    def return_metrics(self, X_test, y_test, bootstrap=False, metrics=None):
-
-        if bootstrap:
+    def return_bootstrap_metrics(self, X_test, y_test, metrics, threshold=0.5):
+        if self.model_type != "regression":
             y_pred_prob = self.predict_proba(X_test)
             bootstrap_metrics = evaluate_bootstrap_metrics(
-                model=None, y=y_test, y_pred_prob=y_pred_prob, metrics=metrics
+                model=None,
+                y=y_test,
+                y_pred_prob=y_pred_prob,
+                metrics=metrics,
+                threshold=threshold,
             )
-            return bootstrap_metrics
+        else:
+            y_pred = self.predict(X_test)
+            bootstrap_metrics = evaluate_bootstrap_metrics(
+                model=None, y=y_test, y_pred_prob=y_pred
+            )
+        return bootstrap_metrics
+
+    def return_metrics(self, X_test, y_test):
 
         if self.kfold:
             for score in self.scoring:
