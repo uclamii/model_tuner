@@ -1,20 +1,15 @@
 import pandas as pd
 import numpy as np
-
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
-from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
 from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
 from sklearn.metrics import (
     fbeta_score,
     mean_absolute_error,
-    mean_squared_log_error,
     median_absolute_error,
     r2_score,
 )
@@ -30,16 +25,12 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
-from sklearn.feature_selection import SelectKBest, f_classif
-
-# from imblearn.under_sampling import RandomUnderSampler
-# from imblearn.over_sampling import RandomOverSampler
-from collections import Counter
-
+from sklearn.feature_selection import SelectKBest
+from bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris, load_breast_cancer
+from sklearn.datasets import load_iris
 
 """
 # Scores
@@ -505,7 +496,14 @@ class Model:
 
         return
 
-    def return_metrics(self, X_test, y_test):
+    def return_metrics(self, X_test, y_test, bootstrap=False, metrics=None):
+
+        if bootstrap:
+            y_pred_prob = self.predict_proba(X_test)
+            bootstrap_metrics = evaluate_bootstrap_metrics(
+                model=None, y=y_test, y_pred_prob=y_pred_prob, metrics=metrics
+            )
+            return bootstrap_metrics
 
         if self.kfold:
             for score in self.scoring:
