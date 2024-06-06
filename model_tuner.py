@@ -131,9 +131,9 @@ class Model:
             calibration_method  # 04_27_24 --> added calibration method
         )
         if scaler_type == "standard_scaler":
-            pipeline_steps = [("standard_scaler", StandardScaler())]
+            pipeline_steps.append(("standard_scaler", StandardScaler()))
         elif scaler_type == None:
-            pipeline_steps = []
+            pipeline_steps = pipeline_steps
         pipeline_steps = [
             step for step in pipeline_steps if not isinstance(step[1], (SimpleImputer))
         ]
@@ -199,6 +199,8 @@ class Model:
         self.labels = ["tp", "fn", "fp", "tn"]
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
+
+        print(self.pipeline_steps)
 
     def reset_estimator(self):
         if self.pipeline:
@@ -554,7 +556,7 @@ class Model:
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
                     conf_mat = confusion_matrix(y_test, y_pred_valid)
-                    print("Confusion matrix on validation set: ")
+                    print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
 
                 print()
