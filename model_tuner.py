@@ -200,8 +200,6 @@ class Model:
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
 
-        print(self.pipeline_steps)
-
     def reset_estimator(self):
         if self.pipeline:
             self.estimator = self.PipelineClass(
@@ -703,35 +701,41 @@ class Model:
                         else:
                             self.verbosity = False
 
-                        params_without_stopping = params.copy()
-                        for key in params.keys():
-                            if "early_stopping" in key:
-                                params_without_stopping[key] = None
-
-                        self.estimator.set_params(**params_without_stopping).fit(
-                            X_train, y_train
-                        )
-                        if self.imbalance_sampler:
-                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        if self.selectKBest:
+                            params_without_stopping = self.best_params_per_score[score][
+                                "params"
+                            ].copy()
+                            for key in params_without_stopping.keys():
+                                if "early_stopping" in key:
+                                    params_without_stopping[key] = None
+                            self.estimator.set_params(**params_without_stopping).fit(
+                                X, y
+                            )
+                            if self.imbalance_sampler:
+                                X_valid_selected = self.estimator[:-2].transform(
+                                    X_valid
+                                )
+                            else:
+                                X_valid_selected = self.estimator[:-1].transform(
+                                    X_valid
+                                )
                         else:
-                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+                            X_valid_selected = X_valid
 
                         if isinstance(X_valid, pd.DataFrame):
                             eval_set = [(X_valid_selected, y_valid.values)]
                         else:
                             eval_set = [(X_valid_selected, y_valid)]
+
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
+                        estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
-                        ### xgb_params required here in order to ensure
-                        ### custom estimator name. X_valid, y_valid
-                        ### needed to use .values.
-
                         clf = self.estimator.set_params(**params).fit(
-                            X_train, y_train, **xgb_params
+                            X, y, **xgb_params
                         )
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
