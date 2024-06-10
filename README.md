@@ -1,5 +1,3 @@
-# Model Tuner README
-
 # Model Tuner Documentation
 
 ## Table of Contents
