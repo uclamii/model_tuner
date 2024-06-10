@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 # Model Tuner README
-
-=======
 
 # Model Tuner Documentation
 
