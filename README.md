@@ -162,14 +162,14 @@ xgb_model = xgb.XGBClassifier(
 estimator_name_xgb = "xgb"
 
 # Define the hyperparameters for XGBoost
-xgb_learning_rates = [0.1, 0.01, 0.05][:1]  # Learning rate or eta
-xgb_n_estimators = [100, 200, 300][:1]  # Number of trees. Equivalent to n_estimators in GB
-xgb_max_depths = [3, 5, 7][:1]  # Maximum depth of the trees
-xgb_subsamples = [0.8, 1.0][:1]  # Subsample ratio of the training instances
-xgb_colsample_bytree = [0.8, 1.0][:1]
+xgb_learning_rates = [0.1, 0.01, 0.05]  # Learning rate or eta
+xgb_n_estimators = [100, 200, 300]  # Number of trees. Equivalent to n_estimators in GB
+xgb_max_depths = [3, 5, 7]  # Maximum depth of the trees
+xgb_subsamples = [0.8, 1.0]  # Subsample ratio of the training instances
+xgb_colsample_bytree = [0.8, 1.0]
 
 xgb_eval_metric = ["logloss"]  # Check out "pr_auc"
-xgb_early_stopping_rounds = [10][:1]
+xgb_early_stopping_rounds = [10]
 xgb_verbose = [False]  # Subsample ratio of columns when constructing each tree
 
 # Combining the hyperparameters in a dictionary
@@ -203,7 +203,7 @@ model_tuner = ModelTuner(
     impute=True,
     scaler_type=None,  # Turn off scaling for XGBoost
     selectKBest=True,
-    stratify_cols=None,  # Assuming stratification is not required for this example
+    stratify_y=False,
     grid=xgb_parameters,
     randomized_grid=False,
     scoring=["roc_auc"],
