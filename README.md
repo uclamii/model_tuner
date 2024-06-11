@@ -62,65 +62,6 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 
 ## Usage
 
-### Example: Using ModelTuner with Logistic Regression on Iris Dataset
-
-```python
-
-from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris
-import pandas as pd
-import numpy as np
-
-# Load the dataset
-iris = load_iris()
-iris_df = pd.DataFrame(data=np.c_[iris['data'], iris['target']], columns=iris['feature_names'] + ['target'])
-features = [col for col in iris_df.columns if col != 'target']
-target = 'target'
-
-X = iris_df[features].values
-y = iris_df[target].values.astype(int)
-
-# Define the model and parameters
-lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
-estimator_name = "lr"
-tuned_parameters = [{estimator_name + "__C": np.logspace(-4, 0, 10)}]
-
-# Initialize ModelTuner
-model_tuner = ModelTuner(
-    name="Iris_model",
-    estimator_name=estimator_name,
-    calibrate=True,
-    estimator=lr,
-    kfold=True,
-    stratify_y=True,
-    grid=tuned_parameters,
-    randomized_grid=False,
-    n_iter=3,
-    scoring=["roc_auc_ovr", "precision_macro"],
-    n_splits=2,
-    random_state=3
-)
-
-# Perform grid search parameter tuning
-model_tuner.grid_search_param_tuning(X, y)
-
-# Fit the model
-model_tuner.fit(X, y)
-
-# Calibrate the model
-if model_tuner.calibrate:
-    model_tuner.calibrateModel(X, y)
-
-# Print results
-if model_tuner.kfold:
-    print(model_tuner.xval_output['train_score'], model_tuner.xval_output['test_score'])
-else:
-    importance = model_tuner.estimator.steps[1][1].coef_[0]
-    sort_imp_indx = np.argsort(importance)[::-1]
-    for i in sort_imp_indx:
-        print(f"Feature: {features[i]}, Score: {importance[i]}")
-```
-
 ### Binary Classification
 
 Here is an example of using the ModelTuner class for binary classification using XGBoost on the Breast Cancer dataset.
@@ -163,14 +104,14 @@ xgb_model = xgb.XGBClassifier(
 estimator_name_xgb = "xgb"
 
 # Define the hyperparameters for XGBoost
-xgb_learning_rates = [0.1, 0.01, 0.05][:1]  # Learning rate or eta
-xgb_n_estimators = [100, 200, 300][:1]  # Number of trees. Equivalent to n_estimators in GB
-xgb_max_depths = [3, 5, 7][:1]  # Maximum depth of the trees
-xgb_subsamples = [0.8, 1.0][:1]  # Subsample ratio of the training instances
-xgb_colsample_bytree = [0.8, 1.0][:1]
+xgb_learning_rates = [0.1, 0.01, 0.05]  # Learning rate or eta
+xgb_n_estimators = [100, 200, 300]  # Number of trees. Equivalent to n_estimators in GB
+xgb_max_depths = [3, 5, 7]  # Maximum depth of the trees
+xgb_subsamples = [0.8, 1.0]  # Subsample ratio of the training instances
+xgb_colsample_bytree = [0.8, 1.0]
 
 xgb_eval_metric = ["logloss"]  # Check out "pr_auc"
-xgb_early_stopping_rounds = [10][:1]
+xgb_early_stopping_rounds = [10]
 xgb_verbose = [False]  # Subsample ratio of columns when constructing each tree
 
 # Combining the hyperparameters in a dictionary
@@ -194,7 +135,7 @@ xgb_parameters = [
 
 ```python
 # Initialize ModelTuner
-model_tuner = ModelTuner(
+model_tuner = Model(
     name="XGBoost_Breast_Cancer",
     estimator_name=estimator_name_xgb,
     calibrate=True,
@@ -219,7 +160,6 @@ model_tuner = ModelTuner(
 ```python
 # Perform grid search parameter tuning
 model_tuner.grid_search_param_tuning(X, y)
-
 ```
 
 ##### Step 7: Fit the Model
@@ -233,7 +173,6 @@ X_valid, y_valid = model_tuner.get_valid_data(X, y)
 model_tuner.fit(
     X_train, y_train, validation_data=(X_valid, y_valid), score="roc_auc"
 )
-
 ```
 
 ##### Step 8: Evaluate the Model
@@ -256,6 +195,71 @@ if model_tuner.calibrate:
 # Predict on the validation set
 y_valid_pred = model_tuner.predict(X_valid)
 
+```
+
+
+Output:
+
+```
+100%|██████████| 324/324 [15:39<00:00,  2.90s/it]
+Best score/param set found on validation set:
+{'params': {'selectKBest__k': 20,
+            'xgb__colsample_bytree': 0.8,
+            'xgb__early_stopping_rounds': 10,
+            'xgb__eval_metric': 'logloss',
+            'xgb__learning_rate': 0.1,
+            'xgb__max_depth': 3,
+            'xgb__n_estimators': 200,
+            'xgb__subsample': 0.8,
+            'xgb__verbose': False},
+ 'score': 0.9987212276214834}
+Best roc_auc: 0.999 
+
+Confusion matrix on validation set: 
+--------------------------------------------------------------------------------
+          Predicted:
+            Pos  Neg
+--------------------------------------------------------------------------------
+Actual: Pos 46 (tp)   0 (fn)
+        Neg  3 (fp)  65 (tn)
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.94      1.00      0.97        46
+           1       1.00      0.96      0.98        68
+
+    accuracy                           0.97       114
+   macro avg       0.97      0.98      0.97       114
+weighted avg       0.98      0.97      0.97       114
+
+--------------------------------------------------------------------------------
+
+Feature names selected:
+['mean radius', 'mean texture', 'mean perimeter', 'mean area', 'mean compactness', 'mean concavity', 'mean concave points', 'radius error', 'perimeter error', 'area error', 'concavity error', 'concave points error', 'worst radius', 'worst texture', 'worst perimeter', 'worst area', 'worst smoothness', 'worst compactness', 'worst concavity', 'worst concave points']
+
+{'Classification Report': {'0': {'precision': 0.9387755102040817, 'recall': 1.0, 'f1-score': 0.968421052631579, 'support': 46.0}, '1': {'precision': 1.0, 'recall': 0.9558823529411765, 'f1-score': 0.9774436090225563, 'support': 68.0}, 'accuracy': 0.9736842105263158, 'macro avg': {'precision': 0.9693877551020409, 'recall': 0.9779411764705883, 'f1-score': 0.9729323308270676, 'support': 114.0}, 'weighted avg': {'precision': 0.9752953813104189, 'recall': 0.9736842105263158, 'f1-score': 0.9738029283735655, 'support': 114.0}}, 'Confusion Matrix': array([[46,  0],
+       [ 3, 65]]), 'K Best Features': ['mean radius', 'mean texture', 'mean perimeter', 'mean area', 'mean compactness', 'mean concavity', 'mean concave points', 'radius error', 'perimeter error', 'area error', 'concavity error', 'concave points error', 'worst radius', 'worst texture', 'worst perimeter', 'worst area', 'worst smoothness', 'worst compactness', 'worst concavity', 'worst concave points']}
+Confusion matrix on validation set for roc_auc
+--------------------------------------------------------------------------------
+          Predicted:
+            Pos  Neg
+--------------------------------------------------------------------------------
+Actual: Pos 46 (tp)   0 (fn)
+        Neg  3 (fp)  65 (tn)
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.94      1.00      0.97        46
+           1       1.00      0.96      0.98        68
+
+    accuracy                           0.97       114
+   macro avg       0.97      0.98      0.97       114
+weighted avg       0.98      0.97      0.97       114
+
+--------------------------------------------------------------------------------
+roc_auc after calibration: 0.9987212276214834
 ```
 
 ## Acknowledgements
