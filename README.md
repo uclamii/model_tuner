@@ -8,7 +8,6 @@ III. [Key Methods and Functionalities](#key-methods-and-functionalities)
 IV. [Helper Functions](#helper-functions)  
 V. [Notes](#notes)  
 VI. [Usage](#usage)  
-- [Example: Using ModelTuner with Logistic Regression on Iris Dataset](#example-using-modeltuner-with-logistic-regression-on-iris-dataset)  
 - [Binary Classification](#binary-classification)  
   - [Breast Cancer Example with XGBoost](#breast-cancer-example-with-xgboost)  
     
