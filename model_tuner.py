@@ -1,20 +1,15 @@
 import pandas as pd
 import numpy as np
-
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
-from sklearn.metrics import recall_score
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
 from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
 from sklearn.metrics import (
     fbeta_score,
     mean_absolute_error,
-    mean_squared_log_error,
     median_absolute_error,
     r2_score,
 )
@@ -30,16 +25,12 @@ from sklearn.model_selection import (
 )
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
-from sklearn.feature_selection import SelectKBest, f_classif
-
-# from imblearn.under_sampling import RandomUnderSampler
-# from imblearn.over_sampling import RandomOverSampler
-from collections import Counter
-
+from sklearn.feature_selection import SelectKBest
+from bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris, load_breast_cancer
+from sklearn.datasets import load_iris
 
 """
 # Scores
@@ -140,9 +131,9 @@ class Model:
             calibration_method  # 04_27_24 --> added calibration method
         )
         if scaler_type == "standard_scaler":
-            pipeline_steps = [("standard_scaler", StandardScaler())]
+            pipeline_steps.append(("standard_scaler", StandardScaler()))
         elif scaler_type == None:
-            pipeline_steps = []
+            pipeline_steps = pipeline_steps
         pipeline_steps = [
             step for step in pipeline_steps if not isinstance(step[1], (SimpleImputer))
         ]
@@ -249,24 +240,10 @@ class Model:
                         **self.best_params_per_score[self.scoring[0]]["params"]
                     )
 
-                    # self.xval_output = get_cross_validate(
-                    # CalibratedClassifierCV(
-                    #     classifier,
-                    #     cv=self.n_splits,
-                    #     method="sigmoid",
-                    # ),
-                    #     X,
-                    #     y,
-                    #     self.kf,
-                    #     stratify=self.stratify,
-                    #     scoring=self.scoring[0],
-                    # )
-                    # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                    # self.estimator = self.xval_output["estimator"][max_score_estimator]
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
                     self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
@@ -283,7 +260,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
                     for s in score:
@@ -332,7 +309,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X_test, y_test)
                     self.calibrate_report(X_valid, y_valid)
                 else:
@@ -382,7 +359,7 @@ class Model:
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
-                        method=self.calibration_method,  # 04_27_24 --> previously hard-coded to sigmoid
+                        method=self.calibration_method,
                     ).fit(X_test, y_test)
                     test_model = self.estimator
                     self.calibrate_report(X_valid, y_valid, score=score)
@@ -435,8 +412,6 @@ class Model:
                     stratify=self.stratify_y,
                     scoring=self.scoring[0],
                 )
-                # print(self.xval_output)
-                # print(self.xval_output['estimator'])
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -453,23 +428,16 @@ class Model:
                     stratify=self.stratify_y,
                     scoring=scorer,
                 )
-                # max_score_estimator = np.argmax(self.xval_output["test_score"])
-                # self.estimator = self.xval_output["estimator"][max_score_estimator]
+
         else:
             if score is None:
                 if self.xgboost_early:
 
-                    ## L.S. 04_20_24
-                    ## previously x, valid, y_valid was a part of self, now we
-                    ## use indices
-                    # if validation_data:
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid.values, y_valid.values)]
                     else:
                         eval_set = [(X_valid, y_valid)]
-                    # else:
-                    #     eval_set = [] # changed only up until this line 04_20_24
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -482,23 +450,29 @@ class Model:
                     self.estimator.fit(X, y)
             else:
                 if self.xgboost_early:
-                    # if validation_data:
                     X_valid, y_valid = validation_data
-
-                    params_without_stopping = self.best_params_per_score[score]["params"].copy()
-                    for key in params_without_stopping.keys():
-                        if 'early_stopping' in key:
-                            params_without_stopping[key] = None   
-                              
-                    self.estimator.set_params(**params_without_stopping).fit(X, y)
-                    X_valid_selected = self.estimator[:-1].transform(X_valid)
+                    ## Uses the current K Best selected to transform the
+                    ## Eval set before it is used in early stopping.
+                    if self.selectKBest:
+                        params_without_stopping = self.best_params_per_score[score][
+                            "params"
+                        ].copy()
+                        for key in params_without_stopping.keys():
+                            if "early_stopping" in key:
+                                params_without_stopping[key] = None
+                        self.estimator.set_params(**params_without_stopping).fit(X, y)
+                        if self.imbalance_sampler:
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+                    else:
+                        X_valid_selected = X_valid
 
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid_selected, y_valid.values)]
                     else:
                         eval_set = [(X_valid_selected, y_valid)]
-                    # else:
-                    #     eval_set = []
+
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -515,10 +489,41 @@ class Model:
                             **self.best_params_per_score[score]["params"]
                         ).fit(X, y)
                     except ValueError as error:
-                        print("Specified score not found in scoring dictionary. Please use a score that was parsed for tuning.")
+                        print(
+                            "Specified score not found in scoring dictionary. Please use a score that was parsed for tuning."
+                        )
                         raise error
 
         return
+
+    def return_bootstrap_metrics(
+        self, X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500
+    ):
+        if self.model_type != "regression":
+            y_pred_prob = self.predict_proba(X_test)
+            bootstrap_metrics = evaluate_bootstrap_metrics(
+                model=None,
+                y=y_test,
+                y_pred_prob=y_pred_prob,
+                metrics=metrics,
+                threshold=threshold,
+                num_resamples=num_resamples,
+                n_samples=n_samples,
+            )
+        else:
+            y_pred = pd.Series(self.predict(X_test))
+            if not isinstance(y_test, np.ndarray):
+                y_test = y_test.reset_index(drop=True)
+            bootstrap_metrics = evaluate_bootstrap_metrics(
+                model=None,
+                y=y_test,
+                y_pred_prob=y_pred,
+                model_type="regression",
+                metrics=metrics,
+                num_resamples=num_resamples,
+                n_samples=n_samples,
+            )
+        return bootstrap_metrics
 
     def return_metrics(self, X_test, y_test):
 
@@ -549,7 +554,7 @@ class Model:
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
                     conf_mat = confusion_matrix(y_test, y_pred_valid)
-                    print("Confusion matrix on validation set: ")
+                    print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
 
                 print()
@@ -662,13 +667,6 @@ class Model:
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
         else:
-            # print("y:", y)
-            # print("X:", X)
-            # print("Stratify:", stratify)
-            # print("validation_size:", self.validation_size)
-            # print("test_size:", self.test_size)
-            # print(f"Stratify By {self.stratify_by}")
-
             X_train, X_valid, X_test, y_train, y_valid, y_test = (
                 self.train_val_test_split(
                     X=X,
@@ -695,7 +693,7 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for params in tqdm(self.grid):
-                    if self.xgboost_early:                        
+                    if self.xgboost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
@@ -703,30 +701,41 @@ class Model:
                         else:
                             self.verbosity = False
 
-                        params_without_stopping = params.copy()
-                        for key in params.keys():
-                            if 'early_stopping' in key:
-                                params_without_stopping[key] = None   
-                                          
-                        self.estimator.set_params(**params_without_stopping).fit(X_train, y_train)
-                        X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        if self.selectKBest:
+                            params_without_stopping = self.best_params_per_score[score][
+                                "params"
+                            ].copy()
+                            for key in params_without_stopping.keys():
+                                if "early_stopping" in key:
+                                    params_without_stopping[key] = None
+                            self.estimator.set_params(**params_without_stopping).fit(
+                                X, y
+                            )
+                            if self.imbalance_sampler:
+                                X_valid_selected = self.estimator[:-2].transform(
+                                    X_valid
+                                )
+                            else:
+                                X_valid_selected = self.estimator[:-1].transform(
+                                    X_valid
+                                )
+                        else:
+                            X_valid_selected = X_valid
 
                         if isinstance(X_valid, pd.DataFrame):
                             eval_set = [(X_valid_selected, y_valid.values)]
                         else:
                             eval_set = [(X_valid_selected, y_valid)]
+
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
+                        estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
-                        ### xgb_params required here in order to ensure
-                        ### custom estimator name. X_valid, y_valid
-                        ### needed to use .values.
-                        
                         clf = self.estimator.set_params(**params).fit(
-                            X_train, y_train, **xgb_params
+                            X, y, **xgb_params
                         )
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
@@ -761,27 +770,6 @@ class Model:
                         print("Best score/param set found on validation set:")
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
-
-            # for score in self.scoring:
-            #     scores = []
-            #     for params in tqdm(self.grid):
-            #         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-            #         scores.append(get_scorer(score)(clf, X_valid, y_valid))
-
-            #     self.best_params_per_score[score] = {
-            #         "params": self.grid[np.argmax(scores)],
-            #         "score": np.max(scores),
-            #     }
-
-            #     if f1_beta_tune:  # tune threshold
-            #         self.tune_threshold_Fbeta(
-            #             score, X_train, y_train, X_valid, y_valid, betas
-            #         )
-
-            #     if self.display:
-            #         print("Best score/param set found on validation set:")
-            #         pprint(self.best_params_per_score[score])
-            #         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
     def print_k_best_features(self, X):
         print()
@@ -935,8 +923,6 @@ class Model:
             clf.fit(X, y)
             self.estimator = clf.best_estimator_
             self.test_model = clf.best_estimator_
-
-            #### TODO: Implement threshold tuning for kfold split
 
             if self.display:
                 ## Make classification report and conf matrix into function
@@ -1137,61 +1123,6 @@ def _confusion_matrix_print(conf_matrix, labels):
     print(border)
 
 
-# def train_val_test_split(X, y, stratify, train_size, validation_size, test_size, random_state):
-#     if stratify:
-#         stratify_param = y
-#     else:
-#         stratify_param = None
-
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         y,
-#         test_size=1 - train_size,
-#         stratify=stratify_param,
-#         random_state=random_state,
-#     )
-
-#     # Update to fix proportions for validation and test split
-#     proportion = test_size / (validation_size + test_size)
-
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=proportion,
-#         stratify=y_valid_test if stratify else None,
-#         random_state=random_state,
-#     )
-
-#     return X_train, X_valid, X_test, y_train, y_valid, y_test
-
-# def train_val_test_split(
-#     X,
-#     y,
-#     stratify,
-#     train_size,
-#     validation_size,
-#     test_size,
-#     random_state,
-# ):
-#     X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-#         X,
-#         stratify,  # stratify contains another array and last the label
-#         test_size=1 - train_size,
-#         train_size=train_size,
-#         stratify=stratify,
-#         random_state=random_state,
-#     )
-#     X_valid, X_test, y_valid, y_test = train_test_split(
-#         X_valid_test,
-#         y_valid_test,
-#         test_size=(1 - train_size - validation_size) / (1 - train_size),
-#         train_size=(1 - train_size - test_size) / (1 - train_size),
-#         stratify=y_valid_test,
-#         random_state=random_state,
-#     )
-#     return X_train, X_valid, X_test, y_train[:, -1], y_valid[:, -1], y_test[:, -1]
-
-
 if __name__ == "__main__":
     iris = load_iris()
     iris = pd.DataFrame(
@@ -1203,17 +1134,6 @@ if __name__ == "__main__":
 
     X = iris[features].values  # independant variables
     y = iris[target].values.astype(int)  # dependent variable
-
-    # breast_sk = load_breast_cancer()
-    # breast = pd.DataFrame(
-    #     data=np.c_[breast_sk.data, breast_sk.target],
-    # )
-    # breast.columns = list(breast_sk.feature_names) + ["target"]
-    # features = [col for col in breast.columns if col != "target"]
-    # target = "target"
-
-    # X = breast[features].values  # independant variables
-    # y = breast[target].values.astype(int)  # dependent variable
 
     lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
 

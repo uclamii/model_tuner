@@ -1,4 +1,3 @@
-
 # Model Tuner Documentation
 
 ## Table of Contents
@@ -145,7 +144,7 @@ model_tuner = Model(
     impute=True,
     scaler_type=None,  # Turn off scaling for XGBoost
     selectKBest=True,
-    stratify_cols=None,  # Assuming stratification is not required for this example
+    stratify_y=False,
     grid=xgb_parameters,
     randomized_grid=False,
     scoring=["roc_auc"],
