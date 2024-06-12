@@ -32,7 +32,6 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 ## Key Methods and Functionalities
 
 - `__init__(...)`: Initializes the ModelTuner with various configurations such as estimator, cross-validation settings, scoring metrics, etc.
-
 - `reset_estimator()`: Resets the estimator.
 - `process_imbalance_sampler(X_train, y_train)`: Processes imbalance sampler.
 - `calibrateModel(X, y, score=None, stratify=None)`: Calibrates the model.
