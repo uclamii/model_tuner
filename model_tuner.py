@@ -130,13 +130,20 @@ class Model:
         self.calibration_method = (
             calibration_method  # 04_27_24 --> added calibration method
         )
-        if scaler_type == "standard_scaler":
-            pipeline_steps.append(("standard_scaler", StandardScaler()))
-        elif scaler_type == None:
+
+        if scaler_type == None:
             pipeline_steps = pipeline_steps
         pipeline_steps = [
-            step for step in pipeline_steps if not isinstance(step[1], (SimpleImputer))
+            step
+            for step in pipeline_steps
+            if not isinstance(
+                step[1], (SimpleImputer) or not isinstance(step[1], (StandardScaler))
+            )
         ]
+        if scaler_type == "standard_scaler":
+            pipeline_steps.append(("standard_scaler", StandardScaler()))
+        if impute:
+            pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
