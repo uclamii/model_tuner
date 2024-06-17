@@ -137,8 +137,6 @@ class Model:
         pipeline_steps = [
             step for step in pipeline_steps if not isinstance(step[1], (SimpleImputer))
         ]
-        if impute:
-            pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
@@ -432,6 +430,18 @@ class Model:
         else:
             if score is None:
                 if self.xgboost_early:
+                    X_valid, y_valid = validation_data
+                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
+                    print(best_params)
+                    if self.selectKBest or self.pipeline:
+                        if self.imbalance_sampler:
+                            self.estimator[:-2].fit(X, y)
+                            X_valid_selected = self.estimator[:-2].transform(X_valid)
+                        else:
+                            self.estimator[:-1].fit(X, y)
+                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+                    else:
+                        X_valid_selected = X_valid
 
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
@@ -453,17 +463,17 @@ class Model:
                     X_valid, y_valid = validation_data
                     ## Uses the current K Best selected to transform the
                     ## Eval set before it is used in early stopping.
-                    if self.selectKBest:
+
+                    if self.selectKBest or self.pipeline:
+                        print(self.best_params_per_score[score])
                         params_without_stopping = self.best_params_per_score[score][
                             "params"
                         ].copy()
-                        for key in params_without_stopping.keys():
-                            if "early_stopping" in key:
-                                params_without_stopping[key] = None
-                        self.estimator.set_params(**params_without_stopping).fit(X, y)
                         if self.imbalance_sampler:
+                            # self.estimator[:-2].set_param()fit(X, y)
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
                         else:
+                            self.estimator[:-1].fit(X, y)
                             X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
                         X_valid_selected = X_valid
@@ -500,7 +510,9 @@ class Model:
         self, X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500
     ):
         if self.model_type != "regression":
-            y_pred_prob = self.predict_proba(X_test)
+            y_pred_prob = pd.Series(self.predict_proba(X_test)[:, 1])
+            if isinstance(y_test, pd.DataFrame) or isinstance(y_test, pd.Series):
+                y_test = y_test.reset_index(drop=True)
             bootstrap_metrics = evaluate_bootstrap_metrics(
                 model=None,
                 y=y_test,
@@ -512,7 +524,7 @@ class Model:
             )
         else:
             y_pred = pd.Series(self.predict(X_test))
-            if not isinstance(y_test, np.ndarray):
+            if isinstance(y_test, pd.DataFrame) or isinstance(y_test, pd.Series):
                 y_test = y_test.reset_index(drop=True)
             bootstrap_metrics = evaluate_bootstrap_metrics(
                 model=None,
@@ -525,7 +537,7 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X_test, y_test):
+    def return_metrics(self, X_test, y_test, optimal_threshold=False):
 
         if self.kfold:
             for score in self.scoring:
@@ -546,7 +558,7 @@ class Model:
                 if self.selectKBest:
                     self.print_k_best_features(X_test)
         else:
-            y_pred_valid = self.estimator.predict(X_test)
+            y_pred_valid = self.predict(X_test, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
 
                 if self.multi_label:
@@ -638,6 +650,8 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X.iloc[train],
@@ -645,6 +659,7 @@ class Model:
                                 X.iloc[test],
                                 y.iloc[test],
                                 betas,
+                                y_pred_proba,
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
@@ -654,6 +669,8 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X[train],
@@ -661,6 +678,7 @@ class Model:
                                 X[test],
                                 y[test],
                                 betas,
+                                y_pred_proba,
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
@@ -701,21 +719,23 @@ class Model:
                         else:
                             self.verbosity = False
 
-                        if self.selectKBest:
-                            params_without_stopping = self.best_params_per_score[score][
-                                "params"
-                            ].copy()
-                            for key in params_without_stopping.keys():
-                                if "early_stopping" in key:
-                                    params_without_stopping[key] = None
-                            self.estimator.set_params(**params_without_stopping).fit(
-                                X, y
-                            )
+                        if self.selectKBest or self.pipeline:
+                            params_no_estimator = {
+                                key: value
+                                for key, value in params.items()
+                                if not key.startswith(f"{self.estimator_name}__")
+                            }
                             if self.imbalance_sampler:
+                                self.estimator[:-2].set_params(
+                                    **params_no_estimator
+                                ).fit(X_train, y_train)
                                 X_valid_selected = self.estimator[:-2].transform(
                                     X_valid
                                 )
                             else:
+                                self.estimator[:-1].set_params(
+                                    **params_no_estimator
+                                ).fit(X_train, y_train)
                                 X_valid_selected = self.estimator[:-1].transform(
                                     X_valid
                                 )
@@ -729,13 +749,14 @@ class Model:
 
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
+                        estimator_eval_metric = f"{self.estimator_name}__eval_metric"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
                         clf = self.estimator.set_params(**params).fit(
-                            X, y, **xgb_params
+                            X_train, y_train, **xgb_params
                         )
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
@@ -755,8 +776,9 @@ class Model:
                 }
 
                 if f1_beta_tune:  # tune threshold
+                    y_pred_proba = clf.predict_proba(X_valid)[:, 1]
                     self.tune_threshold_Fbeta(
-                        score, X_train, y_train, X_valid, y_valid, betas
+                        score, X_train, y_train, X_valid, y_valid, betas, y_pred_proba
                     )
 
                 if not self.calibrate:
@@ -784,17 +806,21 @@ class Model:
         return support
 
     def tune_threshold_Fbeta(
-        self, score, X_train, y_train, X_valid, y_valid, betas, kfold=False
+        self,
+        score,
+        X_train,
+        y_train,
+        X_valid,
+        y_valid,
+        betas,
+        y_valid_proba,
+        kfold=False,
     ):
         """Method to tune threshold on validation dataset using F beta score."""
 
         print("Fitting model with best params and tuning for best threshold ...")
         # predictions
-        y_valid_probs = (
-            self.estimator.set_params(**self.best_params_per_score[score]["params"])
-            .fit(X_train, y_train)
-            .predict_proba(X_valid)[:, 1]
-        )
+        y_valid_probs = y_valid_proba
 
         # threshold range
         thresholds_range = np.arange(0, 1, 0.01)
