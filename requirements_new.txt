@@ -1,0 +1,7 @@
+colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1666700638685/work
+joblib @ file:///home/conda/feedstock_root/build_artifacts/joblib_1691577114857/work
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1649806371302/work
+scikit-learn @ file:///Users/runner/miniforge3/conda-bld/scikit-learn_1640464192339/work
+scipy @ file:///private/var/folders/sy/f16zz6x50xz3113nwtb9bvq00000gp/T/abs_595zrwl1it/croots/recipe/scipy_1661390418356/work
+threadpoolctl @ file:///home/conda/feedstock_root/build_artifacts/threadpoolctl_1643647933166/work
+tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1714854870413/work

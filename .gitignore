@@ -8,6 +8,7 @@ __pycache__/
 
 # CSV files (because most (if not all) contain identifying patient information
 *.csv
+.DS_Store
 
 # Distribution / packaging
 .Python
@@ -142,3 +143,4 @@ structured_data_regressor/
 mlruns/
 Images/
 --stdin*/
+.DS_store
