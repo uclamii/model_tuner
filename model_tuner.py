@@ -441,20 +441,30 @@ class Model:
                     best_params = self.best_params_per_score[self.scoring[0]]["params"]
                     print(best_params)
                     if self.selectKBest or self.pipeline:
+
+                        params_no_estimator = {
+                            key: value
+                            for key, value in best_params.items()
+                            if not key.startswith(f"{self.estimator_name}__")
+                        }
                         if self.imbalance_sampler:
-                            self.estimator[:-2].fit(X, y)
+                            self.estimator[:-2].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
                         else:
-                            self.estimator[:-1].fit(X, y)
+                            self.estimator[:-1].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
                         X_valid_selected = X_valid
 
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
-                        eval_set = [(X_valid.values, y_valid.values)]
+                        eval_set = [(X_valid_selected, y_valid.values)]
                     else:
-                        eval_set = [(X_valid, y_valid)]
+                        eval_set = [(X_valid_selected, y_valid)]
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
