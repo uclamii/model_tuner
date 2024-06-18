@@ -19,7 +19,7 @@ setup(
     },
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache License",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],  # Classifiers for the package
     python_requires=">=3.7",  # Minimum version of Python required
