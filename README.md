@@ -1,5 +1,5 @@
 
-![Model Tuner Logo](./assets/modeltuntargetsmall.png)
+![Model Tuner Logo](./assets/modeltunertiny.png)
 
 
 
