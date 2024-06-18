@@ -1,4 +1,7 @@
-# Model Tuner Documentation
+
+![Model Tuner Logo](./assets/modeltuntargetsmall.png)
+
+
 
 ## Table of Contents
 
