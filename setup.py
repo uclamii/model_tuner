@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="model_tuner",
-    version="0.0.1a",
+    version="0.0.01a",
     author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
     author_email="lshpaner@ucla.edu, alafunnell@gmail.com, pp89@ucla.edu",
     description="Python library for tuning ML models in healthcare.",
