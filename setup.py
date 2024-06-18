@@ -3,10 +3,10 @@ from setuptools import setup, find_packages
 setup(
     name="model_tuner",
     version="0.0.1a",
-    author="CTSI ML Team",
-    author_email="pp89@ucla.edu",
+    author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
+    author_email="lshpaner@ucla.edu, alafunnell@gmail.com, pp89@ucla.edu",
     description="Python library for tuning ML models in healthcare.",
-    long_description=open("README.md").read(),
+    long_description=open("README_min.md").read(),
     long_description_content_type="text/markdown",  # Type of the long description
     package_dir={"": "src"},  # Directory where your package files are located
     # Automatically find packages in the specified directory
@@ -24,7 +24,44 @@ setup(
     ],  # Classifiers for the package
     python_requires=">=3.7",  # Minimum version of Python required
     install_requires=[
-        "numpy>=1.18.5",  # Minimum version of numpy required
-        "pandas>=1.0.5",  # Minimum version of pandas required
+        "blas>=2.122",
+        "blas-devel>=3.9.0",
+        "ca-certificates>=2024.6.2",
+        "colorama>=0.4.6",
+        "fftw>=3.3.10",
+        "joblib>=1.3.2",
+        "libblas>=3.9.0",
+        "libcblas>=3.9.0",
+        "libcxx>=17.0.6",
+        "libffi>=3.4.2",
+        "libgfortran>=5.0.0",
+        "libgfortran5>=13.2.0",
+        "liblapack>=3.9.0",
+        "liblapacke>=3.9.0",
+        "libopenblas>=0.3.27",
+        "libsqlite>=3.46.0",
+        "libzlib>=1.3.1",
+        "llvm-openmp>=18.1.7",
+        "ncurses>=6.5",
+        "numpy>=1.21.6",
+        "openblas>=0.3.27",
+        "openssl>=3.3.1",
+        "pandas>=1.3.5",
+        "pip>=24",
+        "python>=3.7.12",
+        "python-dateutil>=2.9.0",
+        "python_abi>=3.7",
+        "pytz>=2024.1",
+        "readline>=8.2",
+        "scikit-learn>=1.0.2",
+        "scipy>=1.7.3",
+        "setuptools>=59.8.0",
+        "six>=1.16.0",
+        "sqlite>=3.46.0",
+        "threadpoolctl>=3.1.0",
+        "tk>=8.6.13",
+        "tqdm>=4.66.4",
+        "wheel>=0.42.0",
+        "xz>=5.2.6",
     ],
 )
