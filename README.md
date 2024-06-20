@@ -1,5 +1,5 @@
 
-![Model Tuner Logo](./assets/modeltuntargetsmall.png)
+![Model Tuner Logo](https://github.com/uclamii/model_tuner/blob/main/assets/modeltunertiny.png?raw=true)
 
 ## Overview
 
