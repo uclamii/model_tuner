@@ -1,25 +1,5 @@
 
-![Model Tuner Logo](https://github.com/uclamii/model_tuner/blob/main/assets/modeltunertiny.png?raw=true)
-
-
-
-## Table of Contents
-
-I. [Overview](#overview)  
-II. [Dependencies](#dependencies)  
-III. [Key Methods and Functionalities](#key-methods-and-functionalities)  
-IV. [Helper Functions](#helper-functions)  
-V. [Notes](#notes)  
-VI. [Input Parameters](#input-parameters)  
-VII. [Usage](#usage)  
-- [Binary Classification](#binary-classification)  
-  - [Breast Cancer Example with XGBoost](#breast-cancer-example-with-xgboost)   
-- [Regression](#regression)  
-  - [California Housing with XGBoost](#california-housing-with-xgboost)   
-
-VIII. [Acknowledgements](#acknowledgements)   
-IX. [License](LICENSE.md)     
-
+![Model Tuner Logo](./assets/modeltuntargetsmall.png)
 
 ## Overview
 
