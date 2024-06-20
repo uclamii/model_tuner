@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="model_tuner",
-    version="0.0.02a",
+    version="0.0.04a",
     author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
     author_email="pp89@ucla.edu",
     description="A Python library for tuning Machine Learning models.",
-    long_description=open("README_min.md").read(),
+    long_description=open("README.md").read(),
     long_description_content_type="text/markdown",  # Type of the long description
     package_dir={"": "src"},  # Directory where your package files are located
     # Automatically find packages in the specified directory
