@@ -26,7 +26,7 @@ from sklearn.model_selection import (
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
 from sklearn.feature_selection import SelectKBest
-from bootstrapper import evaluate_bootstrap_metrics
+from .bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.linear_model import LogisticRegression
@@ -663,7 +663,7 @@ class Model:
             self.get_best_score_params(X, y)
             #### Threshold tuning for kfold split for each score
             if f1_beta_tune:  # tune threshold
-                if isinstance(X, pd.DataFrame):
+                if isinstance(X, pd.DataFrame) or isinstance(X, pd.Series):
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
@@ -686,8 +686,8 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
-                            self.fit(X.iloc[train], y.iloc[train])
-                            y_pred_proba = self.predict_proba(X.iloc[test])
+                            self.fit(X[train], y[train])
+                            y_pred_proba = self.predict_proba(X[test])
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X[train],
