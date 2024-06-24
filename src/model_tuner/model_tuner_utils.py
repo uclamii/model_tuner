@@ -30,7 +30,6 @@ from .bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris
 
 """
 # Scores
@@ -1164,86 +1163,6 @@ def _confusion_matrix_print(conf_matrix, labels):
         f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({labels[2]})  {conf_matrix[1,1]:>{max_length}} ({labels[3]})"
     )
     print(border)
-
-
-# if __name__ == "__main__":
-#     iris = load_iris()
-#     iris = pd.DataFrame(
-#         data=np.c_[iris["data"], iris["target"]],
-#         columns=iris["feature_names"] + ["target"],
-#     )
-#     features = [col for col in iris.columns if col != "target"]
-#     target = "target"
-
-#     X = iris[features].values  # independant variables
-#     y = iris[target].values.astype(int)  # dependent variable
-
-#     lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
-
-#     estimator_name = "lr"
-#     # Set the parameters by cross-validation
-#     tuned_parameters = [{estimator_name + "__C": np.logspace(-4, 0, 10)}]
-
-#     kfold = True
-#     calibrate = True
-
-#     model = Model(
-#         name="Iris_model",
-#         estimator_name=estimator_name,
-#         calibrate=calibrate,
-#         estimator=lr,
-#         kfold=kfold,
-#         stratify=True,
-#         grid=tuned_parameters,
-#         randomized_grid=False,
-#         n_iter=3,
-#         scoring=["roc_auc_ovr", "precision_macro"],
-#         n_splits=2,
-#         random_state=3,
-#     )
-
-#     model.grid_search_param_tuning(X, y)
-
-#     model.fit(X, y)
-
-#     ## The below calibration process replaces "base_estimator" with "estimator"
-#     ## for all scikit-learn versions >= 0.24
-
-#     if model.calibrate:
-#         model.calibrateModel(X, y)
-#     else:
-#         pass
-
-#     if kfold:
-#         print(model.xval_output["train_score"], model.xval_output["test_score"])
-#         for i in range(len(model.xval_output["estimator"])):
-#             print("\n" + str(i) + " Fold: ")
-#             if calibrate:
-#                 importance = (
-#                     model.xval_output["estimator"][i]
-#                     .calibrated_classifiers_[i]
-#                     .estimator.steps[1][1]
-#                     .coef_[0]
-#                 )
-#             else:
-#                 importance = model.xval_output["estimator"][i].steps[1][1].coef_[0]
-
-#             sort_imp_indx = np.argsort(importance)[::-1]
-#             # print(importance)
-#             # print(sort_imp_indx)
-#             for i in sort_imp_indx:
-#                 print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
-#     else:
-#         if calibrate:
-#             importance = model.estimator.estimator.steps[1][1].coef_[0]
-#         else:
-#             importance = model.estimator.steps[1][1].coef_[0]
-#         sort_imp_indx = np.argsort(importance)[::-1]
-#         # print(importance)
-#         # print(sort_imp_indx)
-#         # summarize feature importance
-#         for i in sort_imp_indx:
-#             print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
 
 ################################################################################
 
