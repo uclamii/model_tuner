@@ -1,9 +1,9 @@
-# from sklearn.utils import resample
-# from sklearn.metrics import get_scorer, recall_score
-# import numpy as np
+from sklearn.utils import resample
+from sklearn.metrics import get_scorer, recall_score
+import numpy as np
 import scipy.stats as st
-# import pandas as pd
-# from tqdm import tqdm
+import pandas as pd
+from tqdm import tqdm
 from random import seed, randint
 
 
@@ -63,7 +63,9 @@ def evaluate_bootstrap_metrics(
     if y_pred_prob is None and (model is None or X is None):
         raise ValueError("Either model and X or y_pred_prob must be provided.")
 
-    if model_type != "regression" and metric in regression_metrics:
+    if model_type != "regression" and any(
+        metric in metrics for metric in regression_metrics
+    ):
         raise ValueError(
             "If using regression metrics please specify model_type='regression'"
         )

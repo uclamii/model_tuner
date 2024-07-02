@@ -445,7 +445,6 @@ class Model:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
                     best_params = self.best_params_per_score[self.scoring[0]]["params"]
-                    print(best_params)
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
@@ -478,14 +477,15 @@ class Model:
                         estimator_eval_set: eval_set,
                         estimator_verbosity: self.verbosity,
                     }
-                    self.estimator.fit(X, y, **xgb_params)
+                    if estimator_verbosity in best_params:
+                        best_params.pop(estimator_verbosity)
+                    self.estimator.set_params(**best_params).fit(X, y, **xgb_params)
                 else:
-                    self.estimator.fit(X, y)
+                    self.estimator.set_params(**best_params).fit(X, y)
             else:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
                     best_params = self.best_params_per_score[self.scoring[0]]["params"]
-                    print(best_params)
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
@@ -518,7 +518,11 @@ class Model:
                         estimator_eval_set: eval_set,
                         estimator_verbosity: self.verbosity,
                     }
-                    
+                    if estimator_verbosity in self.best_params_per_score[score]["params"]:
+                        self.best_params_per_score[score]["params"].pop(
+                            estimator_verbosity
+                        )
+
                     self.estimator.set_params(
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y, **xgb_params)
@@ -675,7 +679,7 @@ class Model:
             self.get_best_score_params(X, y)
             #### Threshold tuning for kfold split for each score
             if f1_beta_tune:  # tune threshold
-                if isinstance(X, pd.DataFrame):
+                if isinstance(X, pd.DataFrame) or isinstance(X, pd.Series):
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
@@ -698,8 +702,8 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         for train, test in self.kf.split(X, y):
-                            self.fit(X.iloc[train], y.iloc[train])
-                            y_pred_proba = self.predict_proba(X.iloc[test])
+                            self.fit(X[train], y[train])
+                            y_pred_proba = self.predict_proba(X[test])
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X[train],
@@ -745,6 +749,7 @@ class Model:
 
                         if params.get(estimator_verbosity):
                             self.verbosity = params[estimator_verbosity]
+                            params.pop(estimator_verbosity)
                         else:
                             self.verbosity = False
 
@@ -778,12 +783,15 @@ class Model:
 
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
-                        estimator_eval_metric = f"{self.estimator_name}__eval_metric"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
+                        
+                        if estimator_verbosity in params:
+                            params.pop(estimator_verbosity)
+
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
