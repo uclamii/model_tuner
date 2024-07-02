@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 from sklearn.metrics import classification_report
@@ -348,6 +349,11 @@ class Model:
 
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
+                    # print(self.estimator[-1].get_params())
+                    if 'device' in self.estimator[-1].get_params():
+                        print("Change back to CPU")
+                        self.estimator[-1].set_params(**{'device': 'cpu'})
+                       
                     # fit estimator
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
@@ -360,6 +366,7 @@ class Model:
                             validation_data=(X_valid, y_valid),
                         )
                     #  calibrate model, and save output
+
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
@@ -438,7 +445,6 @@ class Model:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
                     best_params = self.best_params_per_score[self.scoring[0]]["params"]
-                    print(best_params)
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
@@ -471,34 +477,40 @@ class Model:
                         estimator_eval_set: eval_set,
                         estimator_verbosity: self.verbosity,
                     }
-                    self.estimator.fit(X, y, **xgb_params)
+                    if estimator_verbosity in best_params:
+                        best_params.pop(estimator_verbosity)
+                    self.estimator.set_params(**best_params).fit(X, y, **xgb_params)
                 else:
-                    self.estimator.fit(X, y)
+                    self.estimator.set_params(**best_params).fit(X, y)
             else:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    ## Uses the current K Best selected to transform the
-                    ## Eval set before it is used in early stopping.
-
+                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
                     if self.selectKBest or self.pipeline:
-                        print(self.best_params_per_score[score])
-                        params_without_stopping = self.best_params_per_score[score][
-                            "params"
-                        ].copy()
+
+                        params_no_estimator = {
+                            key: value
+                            for key, value in best_params.items()
+                            if not key.startswith(f"{self.estimator_name}__")
+                        }
                         if self.imbalance_sampler:
-                            # self.estimator[:-2].set_param()fit(X, y)
+                            self.estimator[:-2].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
                         else:
-                            self.estimator[:-1].fit(X, y)
+                            self.estimator[:-1].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
                         X_valid_selected = X_valid
 
+                    X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid_selected, y_valid.values)]
                     else:
                         eval_set = [(X_valid_selected, y_valid)]
-
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -506,6 +518,11 @@ class Model:
                         estimator_eval_set: eval_set,
                         estimator_verbosity: self.verbosity,
                     }
+                    if estimator_verbosity in self.best_params_per_score[score]["params"]:
+                        self.best_params_per_score[score]["params"].pop(
+                            estimator_verbosity
+                        )
+
                     self.estimator.set_params(
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y, **xgb_params)
@@ -732,6 +749,7 @@ class Model:
 
                         if params.get(estimator_verbosity):
                             self.verbosity = params[estimator_verbosity]
+                            params.pop(estimator_verbosity)
                         else:
                             self.verbosity = False
 
@@ -765,12 +783,15 @@ class Model:
 
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
-                        estimator_eval_metric = f"{self.estimator_name}__eval_metric"
 
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
+                        
+                        if estimator_verbosity in params:
+                            params.pop(estimator_verbosity)
+
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
