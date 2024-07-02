@@ -25,18 +25,18 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 - `predict(X, y=None, optimal_threshold=False)`, `predict_proba(X, y=None)`: Methods to make predictions and predict probabilities.
 - `grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])`: Performs grid search parameter tuning.
 - `print_k_best_features(X)`: Prints the top K best features.
-- `tune_threshold_Fbeta(score, X_train, y_train, X_valid, y_valid, betas, kfold=False)`: Tunes the threshold for F-beta score.
 - `train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols, calibrate)`: Splits the data into train, validation, and test sets.
 - `get_best_score_params(X, y)`: Retrieves the best score parameters.
-- `conf_mat_class_kfold(X, y, test_model, score=None)`: Generates confusion matrix for k-fold cross-validation.
-- `regression_report_kfold(X, y, test_model, score=None)`: Generates regression report for k-fold cross-validation.
-- `regression_report(y_true, y_pred, print_results=True)`: Generates a regression report.
 
 ## Helper Functions
 
 - `kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)`: Splits data using k-fold cross-validation.
 - `get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"])`: Performs cross-validation.
 - `_confusion_matrix_print(conf_matrix, labels)`: Prints the confusion matrix.
+- `tune_threshold_Fbeta(score, X_train, y_train, X_valid, y_valid, betas, kfold=False)`: Tunes the threshold for F-beta score.
+- `conf_mat_class_kfold(X, y, test_model, score=None)`: Generates confusion matrix for k-fold cross-validation.
+- `regression_report_kfold(X, y, test_model, score=None)`: Generates regression report for k-fold cross-validation.
+- `regression_report(y_true, y_pred, print_results=True)`: Generates a regression report.
 
 ## Notes
 - This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
