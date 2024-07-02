@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 from sklearn.metrics import classification_report
@@ -30,7 +31,6 @@ from .bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
 
 from sklearn.linear_model import LogisticRegression
-from sklearn.datasets import load_iris
 
 """
 # Scores
@@ -349,6 +349,11 @@ class Model:
 
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
+                    # print(self.estimator[-1].get_params())
+                    if 'device' in self.estimator[-1].get_params():
+                        print("Change back to CPU")
+                        self.estimator[-1].set_params(**{'device': 'cpu'})
+                       
                     # fit estimator
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
@@ -361,6 +366,7 @@ class Model:
                             validation_data=(X_valid, y_valid),
                         )
                     #  calibrate model, and save output
+
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
@@ -479,28 +485,32 @@ class Model:
             else:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    ## Uses the current K Best selected to transform the
-                    ## Eval set before it is used in early stopping.
-
+                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
                     if self.selectKBest or self.pipeline:
-                        print(self.best_params_per_score[score])
-                        params_without_stopping = self.best_params_per_score[score][
-                            "params"
-                        ].copy()
+
+                        params_no_estimator = {
+                            key: value
+                            for key, value in best_params.items()
+                            if not key.startswith(f"{self.estimator_name}__")
+                        }
                         if self.imbalance_sampler:
-                            # self.estimator[:-2].set_param()fit(X, y)
+                            self.estimator[:-2].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
                         else:
-                            self.estimator[:-1].fit(X, y)
+                            self.estimator[:-1].set_params(**params_no_estimator).fit(
+                                X, y
+                            )
                             X_valid_selected = self.estimator[:-1].transform(X_valid)
                     else:
                         X_valid_selected = X_valid
 
+                    X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
                         eval_set = [(X_valid_selected, y_valid.values)]
                     else:
                         eval_set = [(X_valid_selected, y_valid)]
-
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -513,7 +523,6 @@ class Model:
                             estimator_verbosity
                         )
 
-                    print(self.best_params_per_score[score]["params"])
                     self.estimator.set_params(
                         **self.best_params_per_score[score]["params"]
                     ).fit(X, y, **xgb_params)
@@ -1175,86 +1184,6 @@ def _confusion_matrix_print(conf_matrix, labels):
         f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({labels[2]})  {conf_matrix[1,1]:>{max_length}} ({labels[3]})"
     )
     print(border)
-
-
-# if __name__ == "__main__":
-#     iris = load_iris()
-#     iris = pd.DataFrame(
-#         data=np.c_[iris["data"], iris["target"]],
-#         columns=iris["feature_names"] + ["target"],
-#     )
-#     features = [col for col in iris.columns if col != "target"]
-#     target = "target"
-
-#     X = iris[features].values  # independant variables
-#     y = iris[target].values.astype(int)  # dependent variable
-
-#     lr = LogisticRegression(class_weight="balanced", C=1, max_iter=1000)
-
-#     estimator_name = "lr"
-#     # Set the parameters by cross-validation
-#     tuned_parameters = [{estimator_name + "__C": np.logspace(-4, 0, 10)}]
-
-#     kfold = True
-#     calibrate = True
-
-#     model = Model(
-#         name="Iris_model",
-#         estimator_name=estimator_name,
-#         calibrate=calibrate,
-#         estimator=lr,
-#         kfold=kfold,
-#         stratify=True,
-#         grid=tuned_parameters,
-#         randomized_grid=False,
-#         n_iter=3,
-#         scoring=["roc_auc_ovr", "precision_macro"],
-#         n_splits=2,
-#         random_state=3,
-#     )
-
-#     model.grid_search_param_tuning(X, y)
-
-#     model.fit(X, y)
-
-#     ## The below calibration process replaces "base_estimator" with "estimator"
-#     ## for all scikit-learn versions >= 0.24
-
-#     if model.calibrate:
-#         model.calibrateModel(X, y)
-#     else:
-#         pass
-
-#     if kfold:
-#         print(model.xval_output["train_score"], model.xval_output["test_score"])
-#         for i in range(len(model.xval_output["estimator"])):
-#             print("\n" + str(i) + " Fold: ")
-#             if calibrate:
-#                 importance = (
-#                     model.xval_output["estimator"][i]
-#                     .calibrated_classifiers_[i]
-#                     .estimator.steps[1][1]
-#                     .coef_[0]
-#                 )
-#             else:
-#                 importance = model.xval_output["estimator"][i].steps[1][1].coef_[0]
-
-#             sort_imp_indx = np.argsort(importance)[::-1]
-#             # print(importance)
-#             # print(sort_imp_indx)
-#             for i in sort_imp_indx:
-#                 print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
-#     else:
-#         if calibrate:
-#             importance = model.estimator.estimator.steps[1][1].coef_[0]
-#         else:
-#             importance = model.estimator.steps[1][1].coef_[0]
-#         sort_imp_indx = np.argsort(importance)[::-1]
-#         # print(importance)
-#         # print(sort_imp_indx)
-#         # summarize feature importance
-#         for i in sort_imp_indx:
-#             print("Feature: %s, Score: %.5f" % (features[i], importance[i]))
 
 ################################################################################
 

@@ -1,3 +1,3 @@
-__version__ = "0.0.02a"
+__version__ = "0.0.04a"
 
 from .main import *
