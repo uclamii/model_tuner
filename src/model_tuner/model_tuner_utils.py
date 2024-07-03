@@ -442,9 +442,10 @@ class Model:
 
         else:
             if score is None:
+                best_params = self.best_params_per_score[self.scoring[0]]["params"]
+
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
