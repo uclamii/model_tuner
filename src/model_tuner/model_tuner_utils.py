@@ -682,9 +682,10 @@ class Model:
                 if isinstance(X, pd.DataFrame) or isinstance(X, pd.Series):
                     for score in self.scoring:
                         thresh_list = []
+                        self.kfold = False
                         for train, test in self.kf.split(X, y):
                             self.fit(X.iloc[train], y.iloc[train])
-                            y_pred_proba = self.predict_proba(X.iloc[test])
+                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X.iloc[train],
@@ -701,9 +702,10 @@ class Model:
                 else:
                     for score in self.scoring:
                         thresh_list = []
+                        self.kfold = False
                         for train, test in self.kf.split(X, y):
                             self.fit(X[train], y[train])
-                            y_pred_proba = self.predict_proba(X[test])
+                            y_pred_proba = self.predict_proba(X[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
                                 X[train],
@@ -715,6 +717,7 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
+                        self.kfold = True
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
         else:
