@@ -349,9 +349,9 @@ class Model:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
                     # print(self.estimator[-1].get_params())
-                    if 'device' in self.estimator[-1].get_params():
+                    if "device" in self.estimator[-1].get_params():
                         print("Change back to CPU")
-                        self.estimator[-1].set_params(**{'device': 'cpu'})
+                        self.estimator[-1].set_params(**{"device": "cpu"})
 
                     # fit estimator
                     if self.imbalance_sampler:
@@ -518,7 +518,10 @@ class Model:
                         estimator_eval_set: eval_set,
                         estimator_verbosity: self.verbosity,
                     }
-                    if estimator_verbosity in self.best_params_per_score[score]["params"]:
+                    if (
+                        estimator_verbosity
+                        in self.best_params_per_score[score]["params"]
+                    ):
                         self.best_params_per_score[score]["params"].pop(
                             estimator_verbosity
                         )
@@ -1188,6 +1191,7 @@ def _confusion_matrix_print(conf_matrix, labels):
     )
     print(border)
 
+
 ################################################################################
 
 
@@ -1209,7 +1213,8 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
     def predict(self, X):
         if self.pipeline:
             X = self.pipeline.transform(X)
-        return self.model.predict(X)
+        y_pos = self.model_export.predict(X)
+        return 1 * (y_pos > 0.5)
 
     def predict_proba(self, X):
         if self.pipeline:
@@ -1225,17 +1230,17 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
         res = deepcopy(params)
 
         # Initializing an empty list for the 'layers' key in the 'res' dictionary
-        res["layers"] = []
-
-        # Looping through each 'layer' in the 'params['layers']' list
-        for layer in params["layers"]:
-            # Appending a dictionary to 'res['layers']' with only specific keys
-            # ('class_name' and 'name')
-            # res['layers'].append({key: val for key, val in layer.items() if key in {'class_name', 'name'}})
-
-            key_inc = {"class_name", "name"}
-            filt_keys = {key: val for key, val in layer.items() if key in key_inc}
-            res["layers"].append(filt_keys)
-
+        res["layers"] = len(params["layers"])
+        print(res)
         # Returning the modified 'res' dictionary
         return res
+
+    def save_model_object(self):
+        d = {}
+        d["pipeline"] = self.pipeline
+        d["model_export"] = self.model_export
+        return d
+
+    def load_model_object(d):
+        self.pipeline = d["pipeline"]
+        self.model_export = d["model_export"]
