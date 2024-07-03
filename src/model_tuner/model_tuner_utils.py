@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 from sklearn.metrics import classification_report
@@ -353,7 +352,7 @@ class Model:
                     if 'device' in self.estimator[-1].get_params():
                         print("Change back to CPU")
                         self.estimator[-1].set_params(**{'device': 'cpu'})
-                       
+
                     # fit estimator
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
@@ -442,9 +441,10 @@ class Model:
 
         else:
             if score is None:
+                best_params = self.best_params_per_score[self.scoring[0]]["params"]
+
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
@@ -485,7 +485,7 @@ class Model:
             else:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    best_params = self.best_params_per_score[self.scoring[0]]["params"]
+                    best_params = self.best_params_per_score[score]["params"]
                     if self.selectKBest or self.pipeline:
 
                         params_no_estimator = {
@@ -788,7 +788,7 @@ class Model:
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
-                        
+
                         if estimator_verbosity in params:
                             params.pop(estimator_verbosity)
 
