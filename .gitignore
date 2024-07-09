@@ -104,9 +104,6 @@ celerybeat-schedule
 # vscode related paths
 .vscode 
 
-# Ignore all HTML files
-*.html
-
 # Environments
 .env
 .venv
