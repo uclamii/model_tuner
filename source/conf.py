@@ -1,5 +1,5 @@
 import sphinx_rtd_theme
-
+import os
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -24,7 +24,7 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = []
 
 
 
@@ -33,4 +33,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+# If your documentation is served from a subdirectory, set this to the subdirectory path
 html_baseurl = 'https://uclamii.github.io/model_tuner/docs/'
