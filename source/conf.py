@@ -35,4 +35,4 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 # If your documentation is served from a subdirectory, set this to the subdirectory path
-html_baseurl = 'https://uclamii.github.io/model_tuner/docs/'
+html_baseurl = 'https://uclamii.github.io/model_tuner/'
