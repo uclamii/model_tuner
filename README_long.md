@@ -117,7 +117,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.datasets import load_breast_cancer
-from ModelTuner import ModelTuner  
+from ModelTuner import model_tuner  
 
 ```
 
@@ -323,7 +323,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.datasets import fetch_california_housing
-from ModelTuner import ModelTuner  
+from ModelTuner import model_tuner  
 
 ```
 
