@@ -28,3 +28,17 @@
 
    usage_guide
 
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Changelog
+
+   changelog
+
+.. toctree::
+   :maxdepth: 3
+   :caption: About
+
+   about
+
+
