@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Model Tuner 0.0.8a0 documentation</title>
+  <title>Changelog &mdash; Model Tuner 0.0.8a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
-    <link rel="canonical" href="https://uclamii.github.io/model_tuner/genindex.html" />
+    <link rel="canonical" href="https://uclamii.github.io/model_tuner/changelog.html" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -22,9 +23,9 @@
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/js/theme.js"></script>
-    <link rel="author" title="About these documents" href="about.html" />
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Usage Guide" href="usage_guide.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -60,13 +61,15 @@
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#usage">Usage</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-08a">Version 0.0.08a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-07a">Version 0.0.07a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-06a">Version 0.0.06a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-05a">Version 0.0.05a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-02a">Version 0.0.02a</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">About</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">Acknowledgements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
+</li>
 </ul>
 
         </div>
@@ -83,7 +86,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Index</li>
+      <li class="breadcrumb-item active">Changelog</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -92,45 +95,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- <a href="#B"><strong>B</strong></a>
- | <a href="#M"><strong>M</strong></a>
- 
+  <a class="reference internal image-reference" href="_images/ModelTunerTarget.png" id="target-link"><span id="changelog"></span><span id="changelog"></span><img alt="Model Tuner Logo" class="align-left" id="target-link" src="_images/ModelTunerTarget.png" style="width: 350px;" /></a>
+<div style="height: 200px;"></div><p></p>
+<section id="id1">
+<h1>Changelog<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
-<h2 id="B">B</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    built-in function
-
-      <ul>
-        <li><a href="usage_guide.html#Model">Model()</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
-<h2 id="M">M</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li>
-    Model()
-
-      <ul>
-        <li><a href="usage_guide.html#Model">built-in function</a>
-</li>
-      </ul></li>
-  </ul></td>
-</tr></table>
-
+<section id="version-0-0-08a">
+<h2>Version 0.0.08a<a class="headerlink" href="#version-0-0-08a" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">AutoKerasClassifier</span></code></p>
+<ul class="simple">
+<li><p>Changed ‘layers’ key to store count instead of list to avoid exceeding MLflow’s 500-char limit.</p></li>
+<li><p>Simplified function by removing key filtering loop.</p></li>
+</ul>
+</section>
+<section id="version-0-0-07a">
+<h2>Version 0.0.07a<a class="headerlink" href="#version-0-0-07a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Kfold threshold tuning fix</p></li>
+</ul>
+</section>
+<section id="version-0-0-06a">
+<h2>Version 0.0.06a<a class="headerlink" href="#version-0-0-06a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Updating best_params: ref before assignment bug</p></li>
+</ul>
+</section>
+<section id="version-0-0-05a">
+<h2>Version 0.0.05a<a class="headerlink" href="#version-0-0-05a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Bootstrapper:
+- Fixed import bugs
+- Fixed Assertion bug to do with metrics not being assigned</p></li>
+<li><p>Early stopping:
+- Leon: fixed bug with <cite>SelectKBest</cite> and <cite>ADASYN</cite> where the wrong code chunk was being utilized
+- Arthur: Verbosity fix</p></li>
+</ul>
+</section>
+<section id="version-0-0-02a">
+<h2>Version 0.0.02a<a class="headerlink" href="#version-0-0-02a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>temporarily commented out updated apache software license string in setup.py</p></li>
+<li><p>updated logo resolution</p></li>
+</ul>
+</section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage_guide.html" class="btn btn-neutral float-left" title="Usage Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 
