@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _main:
+
 .. _target-link:
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
@@ -15,16 +17,7 @@
 
 \
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Getting Started
+Welcome to Model Tuner's Documentation!
+=======================================
 
-   getting_started
-
-
-.. toctree::
-   :maxdepth: 3
-   :caption: Usage Guide
-
-   usage_guide
-
+asdasd
