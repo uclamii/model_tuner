@@ -1,7 +1,7 @@
 .. _usage_guide:
 
 .. _target-link:
-.. image:: /../assets/model_tunerTarget.png
+.. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
    :width: 350px
