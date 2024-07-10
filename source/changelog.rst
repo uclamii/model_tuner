@@ -12,6 +12,7 @@
 
 \
 
+
 Changelog
 =======================================
 
@@ -56,4 +57,5 @@ Version 0.0.02a
 
 - temporarily commented out updated apache software license string in setup.py
 - updated logo resolution
+
 
