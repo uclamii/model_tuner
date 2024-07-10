@@ -813,6 +813,7 @@ class Model:
                     # if custom_scorer
                     scores.append(score_value)
 
+                # TODO: L.S. fix early stopping to select best model
                 self.best_params_per_score[score] = {
                     "params": self.grid[np.argmax(scores)],
                     "score": np.max(scores),
