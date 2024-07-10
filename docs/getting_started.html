@@ -52,6 +52,7 @@
               <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to Model Tuner’s Documentation!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-does-model-tuner-offer">What Does Model Tuner Offer?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 </ul>
@@ -59,8 +60,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">Acknowledgements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Usage Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#helper-functions">Helper Functions</a></li>
@@ -70,8 +69,6 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">Acknowledgements</a></li>
-<li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About</span></p>
@@ -111,7 +108,26 @@
 <p class="admonition-title">Important</p>
 <p>This documentation is for <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> version <code class="docutils literal notranslate"><span class="pre">0.0.08a</span></code>.</p>
 </div>
-<p>Model Tuner is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.</p>
+<section id="what-does-model-tuner-offer">
+<h2>What Does Model Tuner Offer?<a class="headerlink" href="#what-does-model-tuner-offer" title="Link to this heading"></a></h2>
+<p>Model Tuner is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics. Here are the key features it offers:</p>
+<ul class="simple">
+<li><p><strong>Multi-Class Label Support</strong>: Currently under development to support multi-class classification tasks.</p></li>
+<li><p><strong>XGBoost Integration</strong>: Includes early stopping for <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> to prevent overfitting and improve model performance.</p></li>
+<li><p><strong>Performance Metrics</strong>: Provides bootstrap metrics and general performance metrics to evaluate model effectiveness.</p></li>
+<li><p><strong>Hyperparameter Tuning</strong>: Facilitates hyperparameter optimization to fine-tune model parameters.</p></li>
+<li><p><strong>Model Calibration</strong>: Supports calibration methods such as <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> and <code class="docutils literal notranslate"><span class="pre">isotonic</span></code> to improve probability estimates.</p></li>
+<li><p><strong>Threshold Tuning</strong>: Allows for threshold tuning to optimize classification performance.</p></li>
+<li><p><strong>Custom Pipelines</strong>: Enables the creation of custom pipelines for flexible and robust model workflows.</p></li>
+<li><p><strong>K-Fold Cross-Validation</strong>: Implements <code class="docutils literal notranslate"><span class="pre">K-Fold</span> <span class="pre">cross-validation</span></code> to assess model performance across different data splits.</p></li>
+<li><p><strong>Stratified Splits</strong>: Ensures balanced splits of data based on target variable distribution.</p></li>
+<li><p><strong>Model Compatibility</strong>: Compatible with all scikit-learn models and deep learning models, including AutoKeras.</p></li>
+<li><p><strong>Data Imputation</strong>: Supports imputation using <code class="docutils literal notranslate"><span class="pre">SimpleImputer</span></code> and is compatible with other imputation strategies.</p></li>
+<li><p><strong>Feature Scaling</strong>: Includes feature scaling methods like <code class="docutils literal notranslate"><span class="pre">MinMax</span></code> scaling.</p></li>
+<li><p><strong>Feature Selection</strong>: Offers feature selection techniques such as <code class="docutils literal notranslate"><span class="pre">SelectKBest</span></code> and <code class="docutils literal notranslate"><span class="pre">Recursive</span> <span class="pre">Feature</span> <span class="pre">Elimination</span> <span class="pre">(RFE)</span></code>.</p></li>
+<li><p><strong>Imbalanced Learning</strong>: Provides oversampling methods like <code class="docutils literal notranslate"><span class="pre">ADASYN</span></code> and <code class="docutils literal notranslate"><span class="pre">SMOTE</span></code> to handle imbalanced datasets.</p></li>
+</ul>
+</section>
 <section id="prerequisites">
 <span id="id1"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>Before you install <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code>, ensure your system meets the following requirements:</p>
