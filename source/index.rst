@@ -15,6 +15,9 @@
 
 \
 
+Model Tuner Documentation
+==========================
+
 .. toctree::
    :maxdepth: 3
    :caption: Getting Started
