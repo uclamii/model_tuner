@@ -306,7 +306,6 @@ class Model:
 
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-
                     else:
                         self.fit(X_train, y_train)
                     #  calibrate model, and save output
@@ -814,7 +813,7 @@ class Model:
                         ) in best_early_stopping_params.items():
                             if param_name in params:
                                 params[param_name] = param_value
-
+                            
                         params[f"{self.estimator_name}__n_estimators"] = clf[
                             len(clf) - 1
                         ].best_iteration
