@@ -1,5 +1,5 @@
 
-![Model Tuner Logo](https://github.com/uclamii/model_tuner/blob/main/assets/modeltunertiny.png?raw=true)
+![Model Tuner Logo](https://github.com/uclamii/model_tuner/blob/main/assets/model_tunertiny.png?raw=true)
 
 [![Downloads](https://pepy.tech/badge/model_tuner)](https://pepy.tech/project/model_tuner) [![PyPI](https://img.shields.io/pypi/v/model_tuner.svg)](https://pypi.org/project/model_tuner/) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -19,6 +19,8 @@ VII. [Usage](#usage)
   - [Breast Cancer Example with XGBoost](#breast-cancer-example-with-xgboost)   
 - [Regression](#regression)  
   - [California Housing with XGBoost](#california-housing-with-xgboost)   
+- [iPython Notebook Example - Binary Classification](https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1)
+- [iPython Notebook Example - Regression](https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN)
 
 VIII. [Acknowledgements](#acknowledgements)   
 IX. [License](LICENSE.md)     
@@ -26,7 +28,7 @@ IX. [License](LICENSE.md)
 
 ## Overview
 
-The ModelTuner class is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.
+The model_tuner class is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.
 
 ## Dependencies
 - `pandas`
@@ -37,7 +39,7 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 
 ## Key Methods and Functionalities
 
-- `__init__(...)`: Initializes the ModelTuner with various configurations such as estimator, cross-validation settings, scoring metrics, etc.
+- `__init__(...)`: Initializes the model_tuner with various configurations such as estimator, cross-validation settings, scoring metrics, etc.
 - `reset_estimator()`: Resets the estimator.
 - `process_imbalance_sampler(X_train, y_train)`: Processes imbalance sampler.
 - `calibrateModel(X, y, score=None, stratify=None)`: Calibrates the model.
@@ -64,7 +66,7 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 ## Notes
 - This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
 - It is essential to properly configure the parameters during initialization to suit the specific requirements of your machine learning task.
-- Ensure that all dependencies are installed and properly imported before using the ModelTuner class.
+- Ensure that all dependencies are installed and properly imported before using the model_tuner class.
 
 ## Input Parameters
 
@@ -107,7 +109,9 @@ The ModelTuner class is a versatile and powerful tool designed to facilitate the
 
 ### Binary Classification
 
-Here is an example of using the `ModelTuner` class for binary classification using XGBoost on the Breast Cancer dataset.
+Here is an example of using the `model_tuner` class for binary classification using XGBoost on the Breast Cancer dataset.
+
+You can also follow along with the provided [`iPython` notebook file here](https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1)
 
 #### Breast Cancer Example with XGBoost
 ##### Step 1: Import Necessary Libraries
@@ -117,7 +121,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.datasets import load_breast_cancer
-from ModelTuner import ModelTuner  
+from model_tuner import model_tuner  
 
 ```
 
@@ -174,10 +178,10 @@ xgb_parameters = [
 
 ```
 
-##### Step 5: Initialize and Configure the ModelTuner
+##### Step 5: Initialize and Configure the model_tuner
 
 ```python
-# Initialize ModelTuner
+# Initialize model_tuner
 model_tuner = Model(
     name="XGBoost_Breast_Cancer",
     estimator_name=estimator_name_xgb,
@@ -313,7 +317,9 @@ roc_auc after calibration: 0.9987212276214834
 
 ### Regression
 
-Here is an example of using the `ModelTuner` class for regression using XGBoost on the California Housing dataset.
+Here is an example of using the `model_tuner` class for regression using XGBoost on the California Housing dataset.
+
+You can also see other examples with the provided [`iPython` notebook file here](https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN)
 
 #### California Housing with XGBoost
 ##### Step 1: Import Necessary Libraries
@@ -323,7 +329,7 @@ import pandas as pd
 import numpy as np
 import xgboost as xgb
 from sklearn.datasets import fetch_california_housing
-from ModelTuner import ModelTuner  
+from model_tuner import model_tuner  
 
 ```
 
@@ -372,10 +378,10 @@ xgb_parameters = [
 
 ```
 
-##### Step 5: Initialize and Configure the ModelTuner
+##### Step 5: Initialize and Configure the model_tuner
 
 ```python
-# Initialize ModelTuner
+# Initialize model_tuner
 model_tuner = Model(
     name="XGBoost_California_Housing",
     model_type="regression",
