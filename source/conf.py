@@ -23,7 +23,11 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
+    'sphinxcontrib.bibtex',
 ]
+
+# Add this line to specify the bibliography file
+bibtex_bibfiles = ['references.bib']
 
 extensions.append("sphinx.ext.intersphinx")
 intersphinx_mapping = {

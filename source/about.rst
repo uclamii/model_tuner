@@ -30,3 +30,11 @@ Key contributors to the codebase include Panayiotis Petousis, Arthur Funnell and
 Citing Model Tuner
 ---------------------
 
+This is a reference to a software publication :cite:`arthur_funnell_2024_12727323`.
+
+.. bibliography:: references.bib
+   :cited:
+   :style: plain
+
+
+
