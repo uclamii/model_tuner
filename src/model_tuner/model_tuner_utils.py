@@ -306,7 +306,6 @@ class Model:
 
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-
                     else:
                         self.fit(X_train, y_train)
                     #  calibrate model, and save output
@@ -749,7 +748,7 @@ class Model:
                 self.process_imbalance_sampler(X_train, y_train)
             for score in self.scoring:
                 scores = []
-                for params in tqdm(self.grid):
+                for index, params in enumerate(tqdm(self.grid)):
                     if self.xgboost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -801,16 +800,36 @@ class Model:
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
                         )
+
+                        ### extracting the best parameters found through early stopping
+                        best_early_stopping_params = clf.named_steps[
+                            self.estimator_name
+                        ].get_params()
+
+                        ### updating the params in the param grid with these updated parameters
+                        for (
+                            param_name,
+                            param_value,
+                        ) in best_early_stopping_params.items():
+                            if param_name in params:
+                                params[param_name] = param_value
+                            
+                        params[f"{self.estimator_name}__n_estimators"] = clf[
+                            len(clf) - 1
+                        ].best_iteration
+
+                        # Update the parameters in the grid
+                        self.grid[index] = params
+
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-
+                        
                     if score in self.custom_scorer:
                         scorer_func = self.custom_scorer[score]
                     else:
                         scorer_func = get_scorer(score)
 
                     score_value = scorer_func(clf, X_valid, y_valid)
-                    # if custom_scorer
                     scores.append(score_value)
 
                 self.best_params_per_score[score] = {
