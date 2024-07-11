@@ -27,7 +27,7 @@ Usage Guide
 =======================================
 
 .. important::
-   This documentation is for ``model_tuner`` version ``0.0.08a``.
+   This documentation is for ``model_tuner`` version ``0.0.11a``.
 
 
 Key Methods and Functionalities
