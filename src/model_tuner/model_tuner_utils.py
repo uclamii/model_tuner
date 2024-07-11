@@ -823,8 +823,7 @@ class Model:
 
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-                    # if custom_scorer
-
+                        
                     if score in self.custom_scorer:
                         scorer_func = self.custom_scorer[score]
                     else:
