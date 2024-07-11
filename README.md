@@ -13,17 +13,17 @@ Before you install `model_tuner`, ensure your system meets the following require
 
 Additionally, `model_tuner` depends on the following packages, which will be automatically installed when you install `model_tuner` using pip:
 
-- NumPy: Version 1.21.6 or higher
+- `numpy`: Version 1.21.6 or higher
 
-- Pandas: Version 1.3.5 or higher
+- `pandas`: Version 1.3.5 or higher
 
-- joblib: Version 1.3.2 or higher
+- `joblib`: Version 1.3.2 or higher
 
-- scikit-learn: Version 1.0.2 or higher
+- `scikit-learn`: Version 1.0.2 or higher
 
-- scipy: Version 1.7.3 or higher
+- `scipy`: Version 1.7.3 or higher
 
-- tqdm: Version 4.66.4 or higher
+- `tqdm`: Version 4.66.4 or higher
 
 
 ## Installation
@@ -53,13 +53,13 @@ If you use `model_tuner` in your research or projects, please consider citing it
 ```bibtex
 @software{arthur_funnell_2024_12727323,
   author       = {Arthur Funnell and
-                  Leon Shpaner and
+                  Leonid Shpaner and
                   Panayiotis Petousis},
-  title        = {uclamii/model\_tuner: model tuner 0.0.09a},
+  title        = {uclamii/model\_tuner: model tuner 0.0.11a},
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.09a},
+  version      = {0.0.11a},
   doi          = {10.5281/zenodo.12727323},
   url          = {https://doi.org/10.5281/zenodo.12727323}
 }
