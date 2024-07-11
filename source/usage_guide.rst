@@ -69,40 +69,75 @@ Input Parameters
 
 .. function:: Model(name, estimator_name, estimator, calibrate, kfold, imbalance_sampler, train_size, validation_size, test_size, stratify_y, stratify_cols, drop_strat_feat, grid, scoring, n_splits, random_state, n_jobs, display, feature_names, randomized_grid, n_iter, trained, pipeline, scaler_type, impute_strategy, impute, pipeline_steps, xgboost_early, selectKBest, model_type, class_labels, multi_label, calibration_method, custom_scorer)
 
-   :param name (str): A name for the model, useful for identifying the model in outputs and logs.
-   :param estimator_name (str): The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + ``__param_name``).
-   :param estimator (object): The machine learning model to be tuned and trained.
-   :param calibrate (bool, optional): Whether to calibrate the classifier. Default is False.
-   :param kfold (bool, optional): Whether to use k-fold cross-validation. Default is False.
-   :param imbalance_sampler (object, optional): An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.
-   :param train_size (float, optional): Proportion of the data to use for training. Default is 0.6.
-   :param validation_size (float, optional): Proportion of the data to use for validation. Default is 0.2.
-   :param test_size (float, optional): Proportion of the data to use for testing. Default is 0.2.
-   :param stratify_y (bool, optional): Whether to stratify by the target variable during train/validation/test split. Default is False.
-   :param stratify_cols (list, optional): List of columns to stratify by during train/validation/test split. Default is None.
-   :param drop_strat_feat (list, optional): List of columns to drop after stratification. Default is None.
-   :param grid (list of dict): Hyperparameter grid for tuning.
-   :param scoring (list of str): Scoring metrics for evaluation.
-   :param n_splits (int, optional): Number of splits for k-fold cross-validation. Default is 10.
-   :param random_state (int, optional): Random state for reproducibility. Default is 3.
-   :param n_jobs (int, optional): Number of jobs to run in parallel for model fitting. Default is 1.
-   :param display (bool, optional): Whether to display output messages during the tuning process. Default is True.
-   :param feature_names (list, optional): List of feature names. Default is None.
-   :param randomized_grid (bool, optional): Whether to use randomized grid search. Default is False.
-   :param n_iter (int, optional): Number of iterations for randomized grid search. Default is 100.
-   :param trained (bool, optional): Whether the model has been trained. Default is False.
-   :param pipeline (bool, optional): Whether to use a pipeline. Default is True.
-   :param scaler_type (str, optional): Type of scaler to use. Options are ``min_max_scaler``, ``standard_scaler``, ``max_abs_scaler``, or None. Default is ``min_max_scaler``.
-   :param impute_strategy (str, optional): Strategy for imputation. Options are ``mean``, ``median``, ``most_frequent``, or ``constant``. Default is ``mean``.
-   :param impute (bool, optional): Whether to impute missing values. Default is False.
-   :param pipeline_steps (list, optional): List of pipeline steps. Default is [(``min_max_scaler``, MinMaxScaler())].
-   :param xgboost_early (bool, optional): Whether to use early stopping for XGBoost. Default is False.
-   :param selectKBest (bool, optional): Whether to select K best features. Default is False.
-   :param model_type (str, optional): Type of model, either ``classification`` or ``regression``. Default is ``classification``.
-   :param class_labels (list, optional): List of class labels for multi-class classification. Default is None.
-   :param multi_label (bool, optional): Whether the problem is a multi-label classification problem. Default is False.
-   :param calibration_method (str, optional): Method for calibration, options are ``sigmoid`` or ``isotonic``. Default is ``sigmoid``.
-   :param custom_scorer (dict, optional): Custom scorers for evaluation. Default is ``[]``.
+   :param name: A name for the model, useful for identifying the model in outputs and logs.
+   :type name: str
+   :param estimator_name: The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + ``__param_name``).
+   :type estimator_name: str
+   :param estimator: The machine learning model to be tuned and trained.
+   :type estimator: object
+   :param calibrate: Whether to calibrate the classifier. Default is False.
+   :type calibrate: bool, optional
+   :param kfold: Whether to use k-fold cross-validation. Default is False.
+   :type kfold: bool, optional
+   :param imbalance_sampler: An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.
+   :type imbalance_sampler: object, optional
+   :param train_size: Proportion of the data to use for training. Default is 0.6.
+   :type train_size: float, optional
+   :param validation_size: Proportion of the data to use for validation. Default is 0.2.
+   :type validation_size: float, optional
+   :param test_size: Proportion of the data to use for testing. Default is 0.2.
+   :type test_size: float, optional
+   :param stratify_y: Whether to stratify by the target variable during train/validation/test split. Default is ``False``.
+   :type stratify_y: bool, optional
+   :param stratify_cols: List of columns to stratify by during train/validation/test split. Default is ``None``.
+   :type stratify_cols: list, optional
+   :param drop_strat_feat: List of columns to drop after stratification. Default is ``None``.
+   :type drop_strat_feat: list, optional
+   :param grid: Hyperparameter grid for tuning.
+   :type grid: list of dict
+   :param scoring: Scoring metrics for evaluation.
+   :type scoring: list of str
+   :param n_splits: Number of splits for k-fold cross-validation. Default is ``10``.
+   :type n_splits: int, optional
+   :param random_state: Random state for reproducibility. Default is ``3``.
+   :type random_state: int, optional
+   :param n_jobs: Number of jobs to run in parallel for model fitting. Default is ``1``.
+   :type n_jobs: int, optional
+   :param display: Whether to display output messages during the tuning process. Default is ``True``.
+   :type display: bool, optional
+   :param feature_names: List of feature names. Default is ``None``.
+   :type feature_names: list, optional
+   :param randomized_grid: Whether to use randomized grid search. Default is ``False``.
+   :type randomized_grid: bool, optional
+   :param n_iter: Number of iterations for randomized grid search. Default is ``100``.
+   :type n_iter: int, optional
+   :param trained: Whether the model has been trained. Default is ``False``.
+   :type trained: bool, optional
+   :param pipeline: Whether to use a pipeline. Default is ``True``.
+   :type pipeline: bool, optional
+   :param scaler_type: Type of scaler to use. Options are ``min_max_scaler``, ``standard_scaler``, ``max_abs_scaler``, or ``None``. Default is ``min_max_scaler``.
+   :type scaler_type: str, optional
+   :param impute_strategy: Strategy for imputation. Options are ``mean``, ``median``, ``most_frequent``, or ``constant``. Default is ``mean``.
+   :type impute_strategy: str, optional
+   :param impute: Whether to impute missing values. Default is ``False``.
+   :type impute: bool, optional
+   :param pipeline_steps: List of pipeline steps. Default is ``[(min_max_scaler, MinMaxScaler())]``.
+   :type pipeline_steps: list, optional
+   :param xgboost_early: Whether to use early stopping for ``XGBoost``. Default is ``False``.
+   :type xgboost_early: bool, optional
+   :param selectKBest: Whether to select K best features. Default is ``False``.
+   :type selectKBest: bool, optional
+   :param model_type: Type of model, either ``classification`` or ``regression``. Default is ``classification``.
+   :type model_type: str, optional
+   :param class_labels: List of class labels for multi-class classification. Default is ``None``.
+   :type class_labels: list, optional
+   :param multi_label: Whether the problem is a multi-label classification problem. Default is ``False``.
+   :type multi_label: bool, optional
+   :param calibration_method: Method for calibration, options are ``sigmoid`` or ``isotonic``. Default is ``sigmoid``.
+   :type calibration_method: str, optional
+   :param custom_scorer: Custom scorers for evaluation. Default is ``[]``.
+   :type custom_scorer: dict, optional
+
 
 
 Usage
