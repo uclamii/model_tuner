@@ -11,7 +11,7 @@ import os
 project = 'Model Tuner'
 copyright = '2024, UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis'
 author = 'UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis'
-release = '0.0.8a0'
+release = '0.0.11a0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
