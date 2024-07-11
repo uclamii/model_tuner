@@ -4,6 +4,11 @@
    contain the root `toctree` directive.
 
 .. _target-link:
+
+.. raw:: html
+
+   <div class="no-click">
+
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
@@ -11,8 +16,12 @@
 
 .. raw:: html
 
-   <div style="height: 200px;"></div>
+   </div>
 
+.. raw:: html
+
+   <div style="height: 200px;"></div>
+   
 \
 
 Model Tuner Documentation

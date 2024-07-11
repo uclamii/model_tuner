@@ -1,6 +1,11 @@
 .. _usage_guide:
 
 .. _target-link:
+
+.. raw:: html
+
+   <div class="no-click">
+
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
@@ -8,9 +13,15 @@
 
 .. raw:: html
 
+   </div>
+
+.. raw:: html
+
    <div style="height: 200px;"></div>
 
 \
+
+
 
 Usage Guide
 =======================================

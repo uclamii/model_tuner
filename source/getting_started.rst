@@ -1,10 +1,19 @@
 .. _getting_started:
 
 .. _target-link:
+
+.. raw:: html
+
+   <div class="no-click">
+
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
    :width: 350px
+
+.. raw:: html
+
+   </div>
 
 .. raw:: html
 

@@ -53,3 +53,7 @@ html_static_path = ['_static']
 # If your documentation is served from a subdirectory, set this to the subdirectory path
 html_baseurl = 'https://uclamii.github.io/model_tuner/'
 html_show_sourcelink = False
+
+def setup(app):
+    app.add_css_file('custom.css')
+    app.add_js_file('custom.js')
