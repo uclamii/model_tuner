@@ -30,6 +30,16 @@ Usage Guide
    This documentation is for ``model_tuner`` version ``0.0.11a``.
 
 
+iPython Notebooks
+--------------------
+
+- `Binary Classification Example <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_  
+
+- `Column Transformer Example <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+
+- `Regression Example <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
+
+
 Key Methods and Functionalities
 ========================================
 
@@ -511,14 +521,6 @@ Regression Output
    'AveOccup', 'Latitude', 'Longitude']}
 
 
-iPython Notebooks
---------------------
-
-- `Binary Classification Example <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_  
-
-- `Column Transformer Example <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
-
-- `Regression Example <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
 
 
 
