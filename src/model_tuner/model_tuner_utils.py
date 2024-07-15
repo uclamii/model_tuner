@@ -746,6 +746,14 @@ class Model:
 
             if self.imbalance_sampler:
                 self.process_imbalance_sampler(X_train, y_train)
+                
+                            
+            ## casting the ParameterGrid Object to a list so that we can update
+            ## update the hyperparameters in both random grid and non random grid
+            ## scenarios
+            if not self.randomized_grid:
+                self.grid = list(self.grid)
+                
             for score in self.scoring:
                 scores = []
                 for index, params in enumerate(tqdm(self.grid)):
