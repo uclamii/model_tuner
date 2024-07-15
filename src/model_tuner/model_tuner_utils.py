@@ -819,7 +819,9 @@ class Model:
                         ].best_iteration
 
                         # Update the parameters in the grid
-                        self.grid[index] = params
+                        if self.randomized_grid:
+                            self.grid[index] = params
+                            
 
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
