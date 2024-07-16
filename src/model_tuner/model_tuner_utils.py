@@ -827,8 +827,7 @@ class Model:
                         ].best_iteration
 
                         # Update the parameters in the grid
-                        if self.randomized_grid:
-                            self.grid[index] = params
+                        self.grid[index] = params
                             
 
                     else:
