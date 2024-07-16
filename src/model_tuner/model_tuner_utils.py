@@ -306,8 +306,8 @@ class Model:
 
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-                    else:
-                        self.fit(X_train, y_train)
+                    
+                    self.fit(X_train, y_train)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
@@ -355,14 +355,14 @@ class Model:
                     # fit estimator
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-                    else:
-                        # fit model
-                        self.fit(
-                            X_train,
-                            y_train,
-                            score=score,
-                            validation_data=(X_valid, y_valid),
-                        )
+                    
+                    # fit model
+                    self.fit(
+                        X_train,
+                        y_train,
+                        score=score,
+                        validation_data=(X_valid, y_valid),
+                    )
                     #  calibrate model, and save output
 
                     self.estimator = CalibratedClassifierCV(
