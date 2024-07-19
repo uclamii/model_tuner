@@ -18,6 +18,8 @@ def evaluate_bootstrap_metrics(
     random_state=42,
     threshold=0.5,
     model_type="classification",
+    stratify=None,
+    balance=False,
 ):
     """
     Evaluate various classification metrics on bootstrap samples using a
@@ -80,6 +82,7 @@ def evaluate_bootstrap_metrics(
             y,
             replace=True,
             n_samples=n_samples,
+            stratify=stratify,
             random_state=randint(
                 0,
                 1000000,
