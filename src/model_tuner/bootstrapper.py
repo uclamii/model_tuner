@@ -7,6 +7,68 @@ from tqdm import tqdm
 from random import seed, randint
 
 
+def check_input_type(x):
+    """Method to check input type pandas Series or numpy.
+    Sort index if pandas for sampling efficiency.
+    """
+    # if y is a numpy array cast it to a dataframe
+    if isinstance(x, np.ndarray):
+        x = pd.DataFrame(x)
+    elif isinstance(x, pd.Series):
+        x = x.reset_index(drop=True)  # have to reset index
+    elif isinstance(x, pd.DataFrame):
+        x = x.reset_index(drop=True)  # have to reset index
+    else:
+        raise ValueError("Only numpy or panndas types supported.")
+    return x
+
+
+def sampling_method(
+    y,
+    n_samples,
+    stratify,
+    balance,
+):
+    """Method to resample a dataframe balanced, stratified, or none.
+
+    Returns resampled y.
+    """
+    if balance:
+        # Perform balanced resampling by downsampling the majority classes
+        # resampling the same number of samples as the minority class
+        class_counts = y.value_counts()
+        num_classes = len(class_counts)
+        y_resample = pd.DataFrame()
+
+        # append each sample to y_resample
+        for class_label in class_counts.index:
+            class_samples = y[y == class_label]
+            resampled_class_samples = resample(
+                class_samples,
+                replace=True,
+                n_samples=int(
+                    n_samples / num_classes
+                ),  # same number of samples per class always same fraction
+                random_state=randint(0, 1000000),
+            )
+            y_resample = pd.concat([y_resample, resampled_class_samples])
+
+        y_resample = y_resample.sort_index()  # to set indx to original shuffled state
+    else:
+        # Resample the target variable
+        y_resample = resample(
+            y,
+            replace=True,
+            n_samples=n_samples,
+            stratify=stratify,
+            random_state=randint(
+                0,
+                1000000,
+            ),
+        )
+    return y_resample
+
+
 def evaluate_bootstrap_metrics(
     model=None,
     X=None,
@@ -56,8 +118,10 @@ def evaluate_bootstrap_metrics(
     ]
 
     # if y is a numpy array cast it to a dataframe
-    if isinstance(y, np.ndarray):
-        y = pd.DataFrame(y)
+    y = check_input_type(y)
+    if y_pred_prob is not None:
+        y_pred_prob = check_input_type(y_pred_prob)
+
     # Set the random seed for reproducibility
     seed(random_state)
 
@@ -78,58 +142,29 @@ def evaluate_bootstrap_metrics(
     # Perform bootstrap resampling
     for _ in tqdm(range(num_resamples)):
 
-        if balance:
-            # Perform balanced resampling by downsampling the majority classes
-            # resampling the same number of samples as the minority class
-            class_counts = y.value_counts()
-            num_classes = len(class_counts)
-            y_resample = pd.DataFrame()
-
-            # append each sample to y_resample
-            for class_label in class_counts.index:
-                class_samples = y[y == class_label]
-                resampled_class_samples = resample(
-                    class_samples,
-                    replace=True,
-                    n_samples=int(n_samples/num_classes), # same number of samples per class always same fraction
-                    random_state=randint(0, 1000000)
-                )
-                y_resample = pd.concat([y_resample, resampled_class_samples])
-
-            y_resample = y_resample.sort_index() # to set indx to original shuffled state
-        else:
-            # Resample the target variable
-            y_resample = resample(
-                y,
-                replace=True,
-                n_samples=n_samples,
-                stratify=stratify,
-                random_state=randint(
-                    0,
-                    1000000,
-                ),
-            )
+        y_resample = sampling_method(
+            y=y,
+            n_samples=n_samples,
+            stratify=stratify,
+            balance=balance,
+        )
 
         # If pre-computed predicted probabilities are provided
         if y_pred_prob is not None:
             resampled_indicies = y_resample.index
-            y_pred_prob_resample = y_pred_prob[resampled_indicies]
+            y_pred_prob_resample = y_pred_prob.iloc[resampled_indicies]
 
             if model_type != "regression":
                 y_pred_resample = (y_pred_prob_resample >= threshold).astype(int)
             else:
                 y_pred_resample = y_pred_prob_resample
         else:
+            X = check_input_type(X)
             # Resample the input features and compute predictions
-            X_resample = resample(
-                X,
-                replace=True,
-                n_samples=n_samples,
-                random_state=randint(
-                    0,
-                    1000000,
-                ),
-            )
+            resampled_indicies = y_resample.index
+            X_resample = X.iloc[resampled_indicies]
+
+            # X_resample = X_resample.values  # numpy array
             if model_type != "regression":
                 y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
             else:
