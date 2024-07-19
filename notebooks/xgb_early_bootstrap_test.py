@@ -3,6 +3,8 @@ import numpy as np
 import os
 import sys
 
+sys.path.append("src")
+
 from sklearn.datasets import make_classification
 
 from sklearn.datasets import load_breast_cancer
@@ -72,61 +74,79 @@ model.return_metrics(X_valid, y_valid)
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
 
-y_prob = model.predict_proba(X_test)
+y_prob = model.predict_proba(X_test)[:, 1]
 
 ### F1 Weighted
 y_pred = model.predict(X_test, optimal_threshold=True)
 
+### model type bootstrap
+print(
+    evaluate_bootstrap_metrics(
+        model=model,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=None,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+    )
+)
+
 ### boostrap metrics
 print(
     evaluate_bootstrap_metrics(
-    model=None,
-    X=X_test,
-    y=y_test,
-    y_pred_prob=None,
-    n_samples=500,
-    num_resamples=1000,
-    metrics=["roc_auc", "f1_weighted", "average_precision"],
-    random_state=42,
-    threshold=0.5,
-    model_type="classification",
-    stratify=None,
-    balance=False,
-)
+        model=None,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=y_prob,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+    )
 )
 
 # stratified
 print(
     evaluate_bootstrap_metrics(
-    model=None,
-    X=X_test,
-    y=y_test,
-    y_pred_prob=None,
-    n_samples=500,
-    num_resamples=1000,
-    metrics=["roc_auc", "f1_weighted", "average_precision"],
-    random_state=42,
-    threshold=0.5,
-    model_type="classification",
-    stratify=None,
-    balance=True,
-)
+        model=None,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=y_prob,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=y_prob,
+        balance=False,
+    )
 )
 
 # balanced
 print(
     evaluate_bootstrap_metrics(
-    model=None,
-    X=X_test,
-    y=y_test,
-    y_pred_prob=None,
-    n_samples=500,
-    num_resamples=1000,
-    metrics=["roc_auc", "f1_weighted", "average_precision"],
-    random_state=42,
-    threshold=0.5,
-    model_type="classification",
-    stratify=None,
-    balance=True,
-)
+        model=None,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=y_prob,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=True,
+    )
 )
