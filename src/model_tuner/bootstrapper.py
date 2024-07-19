@@ -77,17 +77,38 @@ def evaluate_bootstrap_metrics(
 
     # Perform bootstrap resampling
     for _ in tqdm(range(num_resamples)):
-        # Resample the target variable
-        y_resample = resample(
-            y,
-            replace=True,
-            n_samples=n_samples,
-            stratify=stratify,
-            random_state=randint(
-                0,
-                1000000,
-            ),
-        )
+
+        if balance:
+            # Perform balanced resampling by downsampling the majority classes
+            # resampling the same number of samples as the minority class
+            class_counts = y.value_counts()
+            num_classes = len(class_counts)
+            y_resample = pd.DataFrame()
+
+            # append each sample to y_resample
+            for class_label in class_counts.index:
+                class_samples = y[y == class_label]
+                resampled_class_samples = resample(
+                    class_samples,
+                    replace=True,
+                    n_samples=int(n_samples/num_classes), # same number of samples per class always same fraction
+                    random_state=randint(0, 1000000)
+                )
+                y_resample = pd.concat([y_resample, resampled_class_samples])
+
+            y_resample = y_resample.sort_index() # to set indx to original shuffled state
+        else:
+            # Resample the target variable
+            y_resample = resample(
+                y,
+                replace=True,
+                n_samples=n_samples,
+                stratify=stratify,
+                random_state=randint(
+                    0,
+                    1000000,
+                ),
+            )
 
         # If pre-computed predicted probabilities are provided
         if y_pred_prob is not None:
