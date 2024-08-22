@@ -1,4 +1,8 @@
-![Model Tuner Logo](https://github.com/uclamii/model_tuner/blob/main/assets/modeltunertiny.png?raw=true)
+<br>
+
+<img src="https://github.com/uclamii/model_tuner/blob/main/assets/modeltunersmaller.png?raw=true" width="250" style="border: none; outline: none; box-shadow: none;" oncontextmenu="return false;">
+
+<br> 
 
 [![Downloads](https://pepy.tech/badge/model_tuner)](https://pepy.tech/project/model_tuner) [![PyPI](https://img.shields.io/pypi/v/model_tuner.svg)](https://pypi.org/project/model_tuner/) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12727322.svg)](https://doi.org/10.5281/zenodo.12727322)
 
@@ -13,17 +17,17 @@ Before you install `model_tuner`, ensure your system meets the following require
 
 Additionally, `model_tuner` depends on the following packages, which will be automatically installed when you install `model_tuner` using pip:
 
-- `numpy`: Version 1.21.6 or higher
+- `numpy`: version `1.21.6` or higher
 
-- `pandas`: Version 1.3.5 or higher
+- `pandas`: version `1.3.5` or higher
 
-- `joblib`: Version 1.3.2 or higher
+- `joblib`: version `1.3.2` or higher
 
-- `scikit-learn`: Version 1.0.2 or higher
+- `scikit-learn`: version `1.0.2` or higher
 
-- `scipy`: Version 1.7.3 or higher
+- `scipy`: version `1.7.3` or higher
 
-- `tqdm`: Version 4.66.4 or higher
+- `tqdm`: version `4.66.4` or higher
 
 
 ## Installation
