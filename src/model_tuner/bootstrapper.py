@@ -19,7 +19,7 @@ def check_input_type(x):
     elif isinstance(x, pd.DataFrame):
         x = x.reset_index(drop=True)  # have to reset index
     else:
-        raise ValueError("Only numpy or panndas types supported.")
+        raise ValueError("Only numpy or pandas types supported.")
     return x
 
 
@@ -136,6 +136,11 @@ def evaluate_bootstrap_metrics(
             "If using regression metrics please specify model_type='regression'"
         )
 
+    if model_type == "regression" and balance == True:
+        raise ValueError(
+            "Error: Balancing classes is not applicable for 'regression' tasks."
+        )
+
     # Initialize a dictionary to store scores for each metric
     scores = {metric: [] for metric in metrics}
 
@@ -187,9 +192,18 @@ def evaluate_bootstrap_metrics(
             scorer = get_scorer(metric)
             if metric in ["roc_auc", "average_precision", "brier_score"]:
                 # Metrics that use probability predictions
-                scores[metric].append(
-                    scorer._score_func(y_resample, y_pred_prob_resample)
-                )
+                try:
+                    scores[metric].append(
+                        scorer._score_func(y_resample, y_pred_prob_resample)
+                    )
+                except ValueError as e:
+                    if "Only one class present in y_true" in str(e):
+                        raise RuntimeError(
+                            "Sample Size Error: Increase n_samples, sample size too small for metric to be valid."
+                        )
+                    else:
+                        raise
+
             elif metric == "precision":
                 # Precision with zero division handling
                 scores[metric].append(
