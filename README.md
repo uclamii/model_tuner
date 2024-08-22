@@ -1,6 +1,6 @@
 <br>
 
-<img src="https://github.com/uclamii/model_tuner/blob/main/assets/modeltunersmaller.png?raw=true" width="300" style="border: none; outline: none; box-shadow: none;" oncontextmenu="return false;">
+<img src="https://github.com/uclamii/model_tuner/blob/main/assets/modeltunersmaller.png?raw=true" width="250" style="border: none; outline: none; box-shadow: none;" oncontextmenu="return false;">
 
 <br> 
 
