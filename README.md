@@ -55,7 +55,7 @@ https://www.mii.ucla.edu/
 If you use `model_tuner` in your research or projects, please consider citing it.
 
 ```bibtex
-@software{arthur_funnell_2024_12727322,
+@software{funnell_2024_12727322,
   author       = {Funnell, Arthur, 
                   Shpaner, Leonid and
                   Petousis, Panayiotis},
