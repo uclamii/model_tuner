@@ -7,7 +7,7 @@
 [![Downloads](https://pepy.tech/badge/model_tuner)](https://pepy.tech/project/model_tuner) [![PyPI](https://img.shields.io/pypi/v/model_tuner.svg)](https://pypi.org/project/model_tuner/) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12727322.svg)](https://doi.org/10.5281/zenodo.12727322)
 
 
-The model_tuner class is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.
+The `model_tuner` class is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.
 
 ## Prerequisites
 
@@ -56,14 +56,14 @@ If you use `model_tuner` in your research or projects, please consider citing it
 
 ```bibtex
 @software{arthur_funnell_2024_12727322,
-  author       = {Arthur Funnell,
-                  Leonid Shpaner and
-                  Panayiotis Petousis},
-  title        = {uclamii/model\_tuner: model tuner 0.0.12a},
+  author       = {Funnell, Arthur, 
+                  Shpaner, Leonid and
+                  Petousis, Panayiotis},
+  title        = {Model Tuner},
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.12a},
+  version      = {0.0.13a},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
