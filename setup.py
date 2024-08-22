@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="model_tuner",
-    version="0.0.12a",
+    version="0.0.13a",
     author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
     author_email="pp89@ucla.edu",
     description="A Python library for tuning Machine Learning models.",
@@ -13,8 +13,8 @@ setup(
     packages=find_packages(where="src"),
     project_urls={  # Optional
         # "Author Website": "https://www.leonshpaner.com",
-        # "Documentation": "https://lshpaner.github.io/kfre_docs/",
-        # "Zenodo Archive": "https://zenodo.org/records/11100222",
+        "Documentation": "https://uclamii.github.io/model_tuner",
+        "Zenodo Archive": "https://zenodo.org/doi/10.5281/zenodo.12727322",
         "Source Code": "https://github.com/uclamii/model_tuner/",
     },
     classifiers=[
