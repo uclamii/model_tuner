@@ -542,12 +542,10 @@ class Model:
         return
 
     def return_bootstrap_metrics(
-        self, X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500
+        self, X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500, balance=False
     ):
         if self.model_type != "regression":
             y_pred_prob = pd.Series(self.predict_proba(X_test)[:, 1])
-            if isinstance(y_test, pd.DataFrame) or isinstance(y_test, pd.Series):
-                y_test = y_test.reset_index(drop=True)
             bootstrap_metrics = evaluate_bootstrap_metrics(
                 model=None,
                 y=y_test,
@@ -556,11 +554,10 @@ class Model:
                 threshold=threshold,
                 num_resamples=num_resamples,
                 n_samples=n_samples,
+                balance=balance
             )
         else:
             y_pred = pd.Series(self.predict(X_test))
-            if isinstance(y_test, pd.DataFrame) or isinstance(y_test, pd.Series):
-                y_test = y_test.reset_index(drop=True)
             bootstrap_metrics = evaluate_bootstrap_metrics(
                 model=None,
                 y=y_test,
@@ -569,6 +566,7 @@ class Model:
                 metrics=metrics,
                 num_resamples=num_resamples,
                 n_samples=n_samples,
+                balance=balance
             )
         return bootstrap_metrics
 
