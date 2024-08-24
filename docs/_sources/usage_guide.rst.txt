@@ -543,7 +543,7 @@ You can use this function to evaluate the model by printing the output.
 
 
 Regression
------------
+===========
 
 Here is an example of using the ``model_tuner`` class for regression using XGBoost on the California Housing dataset.
 
