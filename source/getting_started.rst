@@ -56,16 +56,16 @@ Prerequisites
 -------------
 Before you install ``model_tuner``, ensure your system meets the following requirements:
 
-- **Python**: Version ``3.7`` or higher is required to run ``model_tuner``.
+- **Python**: version ``3.7`` or higher.
 
 Additionally, ``model_tuner`` depends on the following packages, which will be automatically installed when you install ``model_tuner`` using pip:
 
-- **NumPy**: version ``1.21.6`` or higher
-- **Pandas**: version ``1.3.5`` or higher
-- **joblib**: version ``1.3.2`` or higher
-- **scikit-learn**: version ``1.0.2`` or higher
-- **scipy**: version ``1.7.3`` or higher
-- **tqdm**: version ``4.66.4`` or higher
+- ``NumPy``: version ``1.21.6`` or higher
+- ``Pandas``: version ``1.3.5`` or higher
+- ``Joblib``: version ``1.3.2`` or higher
+- ``Scikit-Learn``: version ``1.0.2`` or higher
+- ``Scipy``: version ``1.7.3`` or higher
+- ``Tqdm``: version ``4.66.4`` or higher
 
 .. _installation:
 

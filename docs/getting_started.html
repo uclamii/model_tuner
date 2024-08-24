@@ -28,7 +28,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Usage Guide" href="usage_guide.html" />
+    <link rel="next" title="iPython Notebooks" href="usage_guide.html" />
     <link rel="prev" title="Model Tuner Documentation" href="index.html" /> 
 </head>
 
@@ -62,22 +62,18 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html">iPython Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#helper-functions">Helper Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#notes">Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#input-parameters">Input Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#usage">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Changelog</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="about.html">GitHub Repository</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
         </div>
@@ -135,16 +131,16 @@
 <span id="id1"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
 <p>Before you install <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code>, ensure your system meets the following requirements:</p>
 <ul class="simple">
-<li><p><strong>Python</strong>: Version <code class="docutils literal notranslate"><span class="pre">3.7</span></code> or higher is required to run <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code>.</p></li>
+<li><p><strong>Python</strong>: version <code class="docutils literal notranslate"><span class="pre">3.7</span></code> or higher.</p></li>
 </ul>
 <p>Additionally, <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> depends on the following packages, which will be automatically installed when you install <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> using pip:</p>
 <ul class="simple">
-<li><p><strong>NumPy</strong>: version <code class="docutils literal notranslate"><span class="pre">1.21.6</span></code> or higher</p></li>
-<li><p><strong>Pandas</strong>: version <code class="docutils literal notranslate"><span class="pre">1.3.5</span></code> or higher</p></li>
-<li><p><strong>joblib</strong>: version <code class="docutils literal notranslate"><span class="pre">1.3.2</span></code> or higher</p></li>
-<li><p><strong>scikit-learn</strong>: version <code class="docutils literal notranslate"><span class="pre">1.0.2</span></code> or higher</p></li>
-<li><p><strong>scipy</strong>: version <code class="docutils literal notranslate"><span class="pre">1.7.3</span></code> or higher</p></li>
-<li><p><strong>tqdm</strong>: version <code class="docutils literal notranslate"><span class="pre">4.66.4</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">NumPy</span></code>: version <code class="docutils literal notranslate"><span class="pre">1.21.6</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pandas</span></code>: version <code class="docutils literal notranslate"><span class="pre">1.3.5</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Joblib</span></code>: version <code class="docutils literal notranslate"><span class="pre">1.3.2</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Scikit-Learn</span></code>: version <code class="docutils literal notranslate"><span class="pre">1.0.2</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Scipy</span></code>: version <code class="docutils literal notranslate"><span class="pre">1.7.3</span></code> or higher</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Tqdm</span></code>: version <code class="docutils literal notranslate"><span class="pre">4.66.4</span></code> or higher</p></li>
 </ul>
 </section>
 <section id="installation">
@@ -161,7 +157,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Model Tuner Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="usage_guide.html" class="btn btn-neutral float-right" title="Usage Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="usage_guide.html" class="btn btn-neutral float-right" title="iPython Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
