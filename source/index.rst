@@ -20,12 +20,12 @@
 
 .. raw:: html
 
-   <div style="height: 200px;"></div>
+   <div style="height: 150px;"></div>
    
 \
 
 Model Tuner Documentation
-==========================
+==============================
 
 .. toctree::
    :maxdepth: 3
@@ -43,14 +43,8 @@ Model Tuner Documentation
 
 .. toctree::
    :maxdepth: 3
-   :caption: Changelog
-
-   changelog
-
-.. toctree::
-   :maxdepth: 3
-   :caption: About
+   :caption: About Model Tuner
 
    about
-
+   changelog
 
