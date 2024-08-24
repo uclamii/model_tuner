@@ -316,7 +316,7 @@ with a simple command:
 
    # Initialize model_tuner
    model_tuner = Model(
-      name="XGBoost_Breast_Cancer",
+      name="XGBoost_AIDS",
       estimator_name=estimator_name_xgb,
       calibrate=True,
       estimator=xgb_model,
@@ -340,6 +340,21 @@ with a simple command:
    # Perform grid search parameter tuning
    model_tuner.grid_search_param_tuning(X, y)
 
+.. code-block:: bash
+
+   100%|██████████| 324/324 [01:36<00:00,  3.37it/s]
+   Best score/param set found on validation set:
+   {'params': {'selectKBest__k': 4,
+               'xgb__colsample_bytree': 1.0,
+               'xgb__early_stopping_rounds': 10,
+               'xgb__eval_metric': 'logloss',
+               'xgb__learning_rate': 0.01,
+               'xgb__max_depth': 3,
+               'xgb__n_estimators': 199,
+               'xgb__subsample': 0.8},
+   'score': 0.9364314448541736}
+   Best roc_auc: 0.936 
+
 **Step 7: Fit the Model**
 
 .. code-block:: python
@@ -350,7 +365,10 @@ with a simple command:
 
    # Fit the model with the validation data
    model_tuner.fit(
-      X_train, y_train, validation_data=(X_valid, y_valid), score="roc_auc"
+      X_train,
+      y_train,
+      validation_data=(X_valid, y_valid),
+      score="roc_auc",
    )
 
 **Step 8: Return Metrics (Optional)**
@@ -366,95 +384,162 @@ You can use this function to evaluate the model by printing the output.
    )
    print(metrics)
 
+.. code-block:: bash
+
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 291 (tp)   23 (fn)
+         Neg  31 (fp)   83 (tn)
+   --------------------------------------------------------------------------------
+
+               precision    recall  f1-score   support
+
+            0       0.90      0.93      0.92       314
+            1       0.78      0.73      0.75       114
+
+      accuracy                           0.87       428
+      macro avg       0.84      0.83      0.83       428
+   weighted avg       0.87      0.87      0.87       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['time', 'strat', 'cd40', 'cd420']
+
+   {'Classification Report': {'0': {'precision': 0.9037267080745341,
+      'recall': 0.9267515923566879,
+      'f1-score': 0.9150943396226415,
+      'support': 314.0},
+   '1': {'precision': 0.7830188679245284,
+      'recall': 0.7280701754385965,
+      'f1-score': 0.7545454545454546,
+      'support': 114.0},
+   'accuracy': 0.8738317757009346,
+   'macro avg': {'precision': 0.8433727879995312,
+      'recall': 0.8274108838976422,
+      'f1-score': 0.8348198970840481,
+      'support': 428.0},
+   'weighted avg': {'precision': 0.8715755543897196,
+      'recall': 0.8738317757009346,
+      'f1-score': 0.8723313188310543,
+      'support': 428.0}},
+   'Confusion Matrix': array([[291,  23],
+         [ 31,  83]]),
+   'K Best Features': ['time', 'strat', 'cd40', 'cd420']}   
+
 **Step 9: Calibrate the Model (if needed)**
 
 .. code-block:: python
+
+   from sklearn.calibration import calibration_curve
+
+   # Get the predicted probabilities for the validation data from the 
+   # uncalibrated model
+   y_prob_uncalibrated = model_tuner.predict_proba(X_test)[:, 1]
+
+   # Compute the calibration curve for the uncalibrated model
+   prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
+      y_test,
+      y_prob_uncalibrated,
+      n_bins=10,
+   )
+
 
    # Calibrate the model
    if model_tuner.calibrate:
       model_tuner.calibrateModel(X, y, score="roc_auc")
 
    # Predict on the validation set
-   y_valid_pred = model_tuner.predict(X_valid)
+   y_test_pred = model_tuner.predict_proba(X_test)[:,1]
 
 
 .. code-block:: bash
 
-   100%|██████████| 324/324 [15:39<00:00,  2.90s/it]
-   Best score/param set found on validation set:
-   {'params': {'selectKBest__k': 20,
-               'xgb__colsample_bytree': 0.8,
-               'xgb__early_stopping_rounds': 10,
-               'xgb__eval_metric': 'logloss',
-               'xgb__learning_rate': 0.1,
-               'xgb__max_depth': 3,
-               'xgb__n_estimators': 200,
-               'xgb__subsample': 0.8,
-               'xgb__verbose': False},
-   'score': 0.9987212276214834}
-   Best roc_auc: 0.999 
 
-   Confusion matrix on validation set: 
-   --------------------------------------------------------------------------------
-            Predicted:
-               Pos  Neg
-   --------------------------------------------------------------------------------
-   Actual: Pos 46 (tp)   0 (fn)
-         Neg  3 (fp)  65 (tn)
-   --------------------------------------------------------------------------------
-
-               precision    recall  f1-score   support
-
-            0       0.94      1.00      0.97        46
-            1       1.00      0.96      0.98        68
-
-      accuracy                           0.97       114
-      macro avg       0.97      0.98      0.97       114
-   weighted avg       0.98      0.97      0.97       114
-
-   --------------------------------------------------------------------------------
-
-   Feature names selected:
-   ['mean radius', 'mean texture', 'mean perimeter', 'mean area', 
-   'mean compactness', 'mean concavity', 'mean concave points', 
-   'radius error', 'perimeter error', 'area error', 'concavity error', 
-   'concave points error', 'worst radius', 'worst texture', 
-   'worst perimeter', 'worst area', 'worst smoothness', 'worst compactness', 
-   'worst concavity', 'worst concave points']
-
-   {'Classification Report': {'0': {'precision': 0.9387755102040817, 'recall': 1.0,
-   'f1-score': 0.968421052631579, 'support': 46.0}, '1': {'precision': 1.0, 'recall':
-   0.9558823529411765, 'f1-score': 0.9774436090225563, 'support': 68.0}, 'accuracy':
-   0.9736842105263158, 'macro avg': {'precision': 0.9693877551020409, 'recall':
-   0.9779411764705883, 'f1-score': 0.9729323308270676, 'support': 114.0}, 'weighted 
-   avg': {'precision': 0.9752953813104189, 'recall': 0.9736842105263158, 'f1-score':
-   0.9738029283735655, 'support': 114.0}}, 'Confusion Matrix': array([[46,  0], 
-   [ 3, 65]]), 'K Best Features': ['mean radius', 'mean texture', 'mean perimeter', 
-   'mean area', 'mean compactness', 'mean concavity', 'mean concave points', 
-   'radius error', 'perimeter error', 'area error', 'concavity error', 'concave 
-   points error', 'worst radius', 'worst texture', 'worst perimeter', 'worst area', 
-   'worst smoothness', 'worst compactness', 'worst concavity', 'worst concave 
-   points']}
+   Change back to CPU
    Confusion matrix on validation set for roc_auc
    --------------------------------------------------------------------------------
             Predicted:
-               Pos  Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos 46 (tp)   0 (fn)
-         Neg  3 (fp)  65 (tn)
+   Actual: Pos 292 (tp)   22 (fn)
+         Neg  32 (fp)   82 (tn)
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.94      1.00      0.97        46
-            1       1.00      0.96      0.98        68
+            0       0.90      0.93      0.92       314
+            1       0.79      0.72      0.75       114
 
-      accuracy                           0.97       114
-      macro avg       0.97      0.98      0.97       114
-   weighted avg       0.98      0.97      0.97       114
+      accuracy                           0.87       428
+      macro avg       0.84      0.82      0.83       428
+   weighted avg       0.87      0.87      0.87       428
 
    --------------------------------------------------------------------------------
-   roc_auc after calibration: 0.9987212276214834
+   roc_auc after calibration: 0.9364035087719298
+
+
+.. code-block:: python
+
+   import matplotlib.pyplot as plt
+
+   # Get the predicted probabilities for the validation data from calibrated model
+   y_prob_calibrated = model_tuner.predict_proba(X_test)[:, 1]
+
+   # Compute the calibration curve for the calibrated model
+   prob_true_calibrated, prob_pred_calibrated = calibration_curve(
+      y_test,
+      y_prob_calibrated,
+      n_bins=5,
+   )
+
+
+   # Plot the calibration curves
+   plt.figure(figsize=(5, 5))
+   plt.plot(
+      prob_pred_uncalibrated,
+      prob_true_uncalibrated,
+      marker="o",
+      label="Uncalibrated XGBoost",
+   )
+   plt.plot(
+      prob_pred_calibrated,
+      prob_true_calibrated,
+      marker="o",
+      label="Calibrated XGBoost",
+   )
+   plt.plot(
+      [0, 1],
+      [0, 1],
+      linestyle="--",
+      label="Perfectly calibrated",
+   )
+   plt.xlabel("Predicted probability")
+   plt.ylabel("True probability in each bin")
+   plt.title("Calibration plot (reliability curve)")
+   plt.legend()
+   plt.show()
+
+
+.. raw:: html
+
+   <div class="no-click">
+
+.. image:: /../assets/calibration_curves.png
+   :alt: Model Tuner Logo
+   :align: center
+   :width: 400px
+
+.. raw:: html
+
+   </div>
+
+.. raw:: html
+
+   <div style="height: 50px;"></div>
 
 
 Regression

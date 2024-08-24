@@ -1,5 +1,3 @@
-.. _changelog:
-
 .. _target-link:
 
 .. raw:: html
