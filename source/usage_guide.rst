@@ -9,7 +9,7 @@
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
-   :width: 350px
+   :width: 250px
 
 .. raw:: html
 
@@ -17,21 +17,14 @@
 
 .. raw:: html
 
-   <div style="height: 200px;"></div>
+   <div style="height: 150px;"></div>
 
 \
 
 
 
-Usage Guide
-=======================================
-
-.. important::
-   This documentation is for ``model_tuner`` version ``0.0.11a``.
-
-
 iPython Notebooks
---------------------
+===================
 
 - `Binary Classification Example <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_  
 
@@ -43,36 +36,76 @@ iPython Notebooks
 Key Methods and Functionalities
 ========================================
 
-- ``__init__(...)``: Initializes the model_tuner with various configurations such as estimator, cross-validation settings, scoring metrics, etc.
-- ``reset_estimator()``: Resets the estimator.
-- ``process_imbalance_sampler(X_train, y_train)``: Processes imbalance sampler.
-- ``calibrateModel(X, y, score=None, stratify=None)``: Calibrates the model.
-- ``get_train_data(X, y)``, ``get_valid_data(X, y)``, ``get_test_data(X, y)``: Methods to retrieve train, validation, and test data.
-- ``calibrate_report(X, y, score=None)``: Generates a calibration report.
-- ``fit(X, y, validation_data=None, score=None)``: Fits the model to the data.
-- ``return_metrics(X_test, y_test)``: Returns evaluation metrics.
-- ``predict(X, y=None, optimal_threshold=False)``, ``predict_proba(X, y=None)``: Methods to make predictions and predict probabilities.
-- ``grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])``: Performs grid search parameter tuning.
-- ``print_k_best_features(X)``: Prints the top K best features.
-- ``tune_threshold_Fbeta(score, X_train, y_train, X_valid, y_valid, betas, kfold=False)``: Tunes the threshold for F-beta score.
-- ``train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols, calibrate)``: Splits the data into train, validation, and test sets.
-- ``get_best_score_params(X, y)``: Retrieves the best score parameters.
-- ``conf_mat_class_kfold(X, y, test_model, score=None)``: Generates confusion matrix for k-fold cross-validation.
-- ``regression_report_kfold(X, y, test_model, score=None)``: Generates regression report for k-fold cross-validation.
-- ``regression_report(y_true, y_pred, print_results=True)``: Generates a regression report.
+``__init__(...)``
+    Initializes the model_tuner with configurations such as estimator, cross-validation settings, scoring metrics, etc.
+
+``reset_estimator()``
+    Resets the estimator.
+
+``process_imbalance_sampler(X_train, y_train)``
+    Processes imbalance sampler.
+
+``calibrateModel(X, y, score=None, stratify=None)``
+    Calibrates the model.
+
+``get_train_data(X, y), get_valid_data(X, y), get_test_data(X, y)``
+    Retrieves train, validation, and test data.
+
+``calibrate_report(X, y, score=None)``
+    Generates a calibration report.
+
+``fit(X, y, validation_data=None, score=None)``
+    Fits the model to the data.
+
+``return_metrics(X_test, y_test)``
+    Returns evaluation metrics.
+
+``predict(X, y=None, optimal_threshold=False), predict_proba(X, y=None)``
+    Makes predictions and predicts probabilities.
+
+``grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])``
+    Performs grid search parameter tuning.
+
+``print_k_best_features(X)``
+    Prints the top K best features.
+
+``tune_threshold_Fbeta(score, X_train, y_train, X_valid, y_valid, betas, kfold=False)``
+    Tunes the threshold for F-beta score.
+
+``train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols, calibrate)``
+    Splits the data into train, validation, and test sets.
+
+``get_best_score_params(X, y)``
+    Retrieves the best score parameters.
+
+``conf_mat_class_kfold(X, y, test_model, score=None)``
+    Generates confusion matrix for k-fold cross-validation.
+
+``regression_report_kfold(X, y, test_model, score=None)``
+    Generates regression report for k-fold cross-validation.
+
+``regression_report(y_true, y_pred, print_results=True)``
+    Generates a regression report.
+
 
 Helper Functions
 =================
 
-- ``kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)``: Splits data using k-fold cross-validation.
-- ``get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"])``: Performs cross-validation.
-- ``_confusion_matrix_print(conf_matrix, labels)``: Prints the confusion matrix.
+``kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)`` 
+      Splits data using k-fold cross-validation.
 
-Notes
-===============
-- This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
-- It is essential to properly configure the parameters during initialization to suit the specific requirements of your machine learning task.
-- Ensure that all dependencies are installed and properly imported before using the model_tuner class.
+``get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"])``
+      Performs cross-validation.
+
+``_confusion_matrix_print(conf_matrix, labels)``
+      Prints the confusion matrix.
+
+
+.. note::
+
+   - This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
+   - It is essential to properly configure the parameters during initialization to suit the specific requirements of your machine learning task.
+   - Ensure that all dependencies are installed and properly imported before using the ``Model`` class from the ``model_tuner`` library.
 
 Input Parameters
 =====================
@@ -89,7 +122,7 @@ Input Parameters
    :type calibrate: bool, optional
    :param kfold: Whether to use k-fold cross-validation. Default is False.
    :type kfold: bool, optional
-   :param imbalance_sampler: An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.
+   :param imbalance_sampler: An imbalanced data sampler from the imblearn library, e.g., ``RandomUnderSampler`` or ``RandomOverSampler``.
    :type imbalance_sampler: object, optional
    :param train_size: Proportion of the data to use for training. Default is 0.6.
    :type train_size: float, optional
@@ -149,14 +182,58 @@ Input Parameters
    :type custom_scorer: dict, optional
 
 
+   :raises ImportError: If the ``bootstrapper`` module is not found or not installed.
+   :raises ValueError: In various cases, such as when an invalid parameter is passed to Scikit-learn functions like ``cross_validate``, ``fit``, or ``train_test_split``, or if the shapes of ``X`` and ``y`` do not match during operations.
+   :raises AttributeError: If an expected step in the pipeline (e.g., "imputer", "Resampler") is missing from ``self.estimator.named_steps``, or if ``self.PipelineClass`` or ``self.estimator`` is not properly initialized.
+   :raises TypeError: If an incorrect type is passed to a function or method, such as passing ``None`` where a numerical value or a non-NoneType object is expected.
+   :raises IndexError: If the dimensions of the confusion matrix are incorrect or unexpected in ``_confusion_matrix_print_ML`` or ``_confusion_matrix_print``.
+   :raises KeyError: If a key is not found in a dictionary, such as when accessing ``self.best_params_per_score`` with a score that is not in the dictionary, or when accessing configuration keys in the ``summarize_auto_keras_params`` method.
+   :raises RuntimeError: If there is an unexpected issue during model fitting or transformation that does not fit into the other categories of exceptions.
 
-Usage
-=======
 
-Binary classification
-----------------------
+Binary Classification
+======================
 
-**Breast Cancer Example with XGBoost**
+
+Binary classification is a type of supervised learning where a model is trained 
+to distinguish between two distinct classes or categories. In essence, the model 
+learns to classify input data into one of two possible outcomes, typically 
+labeled as ``0`` and ``1``, or negative and positive. This is commonly used in 
+scenarios such as spam detection, disease diagnosis, or fraud detection.
+
+In our library, binary classification is handled seamlessly through the ``Model`` 
+class. Users can specify a binary classifier as the estimator, and the library 
+takes care of essential tasks like data preprocessing, model calibration, and 
+cross-validation. The library also provides robust support for evaluating the 
+model's performance using a variety of metrics, such as accuracy, precision, 
+recall, and ROC-AUC, ensuring that the model's ability to distinguish between the 
+two classes is thoroughly assessed. Additionally, the library supports advanced 
+techniques like imbalanced data handling and model calibration to fine-tune 
+decision thresholds, making it easier to deploy effective binary classifiers in 
+real-world applications.
+
+AIDS Clinical Trials Group Study
+---------------------------------
+
+The UCI Machine Learning Repository is a well-known resource for accessing a wide 
+range of datasets used for machine learning research and practice. One such dataset 
+is the AIDS Clinical Trials Group Study dataset, which can be used to build and 
+evaluate predictive models.
+
+You can easily fetch this dataset using the ucimlrepo package. If you haven't 
+installed it yet, you can do so by running the following command:
+
+.. code-block:: bash
+   
+   pip install ucimlrepo
+
+
+Once installed, you can quickly load the AIDS Clinical Trials Group Study dataset 
+with a simple command:
+
+.. code-block:: python
+
+    from ucimlrepo import fetch_ucirepo 
 
 **Step 1: Import Necessary Libraries**
 
@@ -165,18 +242,29 @@ Binary classification
     import pandas as pd
     import numpy as np
     import xgboost as xgb
-    from sklearn.datasets import load_breast_cancer
-    from model_tuner import model_tuner  
 
 
-**Step 2: Load the Dataset**
+**Step 2: Load the dataset, define X, y**
 
 .. code-block:: python
 
-   # Load the breast cancer dataset
-   data = load_breast_cancer()
-   X = pd.DataFrame(data.data, columns=data.feature_names)
-   y = pd.Series(data.target, name="target")
+   # fetch dataset 
+   aids_clinical_trials_group_study_175 = fetch_ucirepo(id=890) 
+   
+   # data (as pandas dataframes) 
+   X = aids_clinical_trials_group_study_175.data.features 
+   y = aids_clinical_trials_group_study_175.data.targets 
+   y = y.squeeze() # convert a DataFrame to Series when single column
+
+
+**Step 3: Check for zero-variance columns and drop accordingly**
+
+.. code-block:: python
+
+   # Check for zero-variance columns and drop them
+   zero_variance_columns = X.columns[X.var() == 0]
+   if not zero_variance_columns.empty:
+      X = X.drop(columns=zero_variance_columns)
 
 
 **Step 3: Create an Instance of the XGBClassifier**
@@ -289,9 +377,6 @@ You can use this function to evaluate the model by printing the output.
    # Predict on the validation set
    y_valid_pred = model_tuner.predict(X_valid)
 
-
-Binary Classification Output
------------------------------
 
 .. code-block:: bash
 
@@ -481,10 +566,6 @@ Here is an example of using the ``model_tuner`` class for regression using XGBoo
       y_valid,
    )
    print(metrics)
-
-
-Regression Output
--------------------
 
 
 .. code-block:: bash

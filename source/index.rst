@@ -12,7 +12,7 @@
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
-   :width: 350px
+   :width: 250px
 
 .. raw:: html
 

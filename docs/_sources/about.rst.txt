@@ -9,7 +9,7 @@
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
-   :width: 350px
+   :width: 250px
 
 .. raw:: html
 
@@ -17,7 +17,7 @@
 
 .. raw:: html
 
-   <div style="height: 200px;"></div>
+   <div style="height: 150px;"></div>
 
 \
 
@@ -32,7 +32,7 @@ Acknowledgements
 
 This work was supported by the UCLA Medical Informatics Institute (MII) and the Clinical and Translational Science Institute (CTSI). Special thanks to Dr. Alex Bui for his invaluable guidance and support, and to Panayiotis Petousis for his original contributions to this codebase.
 
-Key contributors to the codebase are Panayiotis Petousis, Arthur Funnell and Leonid Shpaner. :cite:`arthur_funnell_2024_12727323`
+Key contributors to the codebase are Panayiotis Petousis, Arthur Funnell and Leonid Shpaner.
 
 
 Citing Model Tuner
@@ -41,23 +41,20 @@ Citing Model Tuner
 .. code:: bash
 
 
-   @software{arthur_funnell_2024_12727323,
-      author       = {Arthur Funnell and
-                      Leonid Shpaner and
-                      Panayiotis Petousis},
-      title        = {uclamii/model\_tuner: model tuner 0.0.11a},
+   @software{funnell_2024_12727322,
+      author       = {Funnell, Arthur, and
+                      Shpaner, Leonid and
+                      Petousis, Panayiotis},
+      title        = {Model Tuner},
       month        = jul,
       year         = 2024,
       publisher    = {Zenodo},
-      version      = {0.0.11a},
-      doi          = {10.5281/zenodo.12727323},
-      url          = {https://doi.org/10.5281/zenodo.12727323}
+      version      = {0.0.13a},
+      doi          = {10.5281/zenodo.12727322},
+      url          = {https://doi.org/10.5281/zenodo.12727322}
    }
 
 
-.. bibliography:: references.bib
-   :cited:
-   :style: plain
 
 
 

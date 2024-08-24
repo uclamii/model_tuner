@@ -9,7 +9,7 @@
 .. image:: /../assets/ModelTunerTarget.png
    :alt: Model Tuner Logo
    :align: left
-   :width: 350px
+   :width: 250px
 
 .. raw:: html
 
@@ -17,7 +17,7 @@
 
 .. raw:: html
 
-   <div style="height: 200px;"></div>
+   <div style="height: 150px;"></div>
 
 \
 
@@ -25,7 +25,7 @@ Welcome to Model Tuner's Documentation!
 =======================================
 
 .. important::
-   This documentation is for ``model_tuner`` version ``0.0.11a``.
+   This documentation is for ``model_tuner`` version ``0.0.13a``.
 
 
 What Does Model Tuner Offer?
@@ -60,12 +60,12 @@ Before you install ``model_tuner``, ensure your system meets the following requi
 
 Additionally, ``model_tuner`` depends on the following packages, which will be automatically installed when you install ``model_tuner`` using pip:
 
-- **NumPy**: Version ``1.21.6`` or higher
-- **Pandas**: Version ``1.3.5`` or higher
-- **joblib**: Version ``1.3.2`` or higher
-- **scikit-learn**: Version ``1.0.2`` or higher
-- **scipy**: Version ``1.7.3`` or higher
-- **tqdm**: Version ``4.66.4`` or higher
+- **NumPy**: version ``1.21.6`` or higher
+- **Pandas**: version ``1.3.5`` or higher
+- **joblib**: version ``1.3.2`` or higher
+- **scikit-learn**: version ``1.0.2`` or higher
+- **scipy**: version ``1.7.3`` or higher
+- **tqdm**: version ``4.66.4`` or higher
 
 .. _installation:
 

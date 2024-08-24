@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Usage Guide &mdash; Model Tuner 0.0.11a0 documentation</title>
+  <title>iPython Notebooks &mdash; Model Tuner 0.0.11a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -57,22 +57,16 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage Guide</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#ipython-notebooks">iPython Notebooks</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">iPython Notebooks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#helper-functions">Helper Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#notes">Notes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#input-parameters">Input Parameters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Model"><code class="docutils literal notranslate"><span class="pre">Model()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#usage">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#binary-classification">Binary classification</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#binary-classification-output">Binary Classification Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#binary-classification">Binary Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aids-clinical-trials-group-study">AIDS Clinical Trials Group Study</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#regression">Regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#regression-output">Regression Output</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +95,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Usage Guide</li>
+      <li class="breadcrumb-item active">iPython Notebooks</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -110,60 +104,73 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="no-click"><a class="reference internal image-reference" href="_images/ModelTunerTarget.png"><img alt="Model Tuner Logo" class="align-left" src="_images/ModelTunerTarget.png" style="width: 350px;" /></a>
-</div><div style="height: 200px;"></div><p></p>
-<section id="id1">
-<h1>Usage Guide<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>This documentation is for <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> version <code class="docutils literal notranslate"><span class="pre">0.0.11a</span></code>.</p>
-</div>
+  <div class="no-click"><a class="reference internal image-reference" href="_images/ModelTunerTarget.png"><img alt="Model Tuner Logo" class="align-left" src="_images/ModelTunerTarget.png" style="width: 250px;" /></a>
+</div><div style="height: 150px;"></div><p></p>
 <section id="ipython-notebooks">
-<h2>iPython Notebooks<a class="headerlink" href="#ipython-notebooks" title="Link to this heading"></a></h2>
+<h1>iPython Notebooks<a class="headerlink" href="#ipython-notebooks" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p><a class="reference external" href="https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&amp;uniqifier=1">Binary Classification Example</a></p></li>
 <li><p><a class="reference external" href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ">Column Transformer Example</a></p></li>
 <li><p><a class="reference external" href="https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN">Regression Example</a></p></li>
 </ul>
 </section>
-</section>
 <section id="key-methods-and-functionalities">
 <h1>Key Methods and Functionalities<a class="headerlink" href="#key-methods-and-functionalities" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">__init__(...)</span></code>: Initializes the model_tuner with various configurations such as estimator, cross-validation settings, scoring metrics, etc.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">reset_estimator()</span></code>: Resets the estimator.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">process_imbalance_sampler(X_train,</span> <span class="pre">y_train)</span></code>: Processes imbalance sampler.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">calibrateModel(X,</span> <span class="pre">y,</span> <span class="pre">score=None,</span> <span class="pre">stratify=None)</span></code>: Calibrates the model.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_train_data(X,</span> <span class="pre">y)</span></code>, <code class="docutils literal notranslate"><span class="pre">get_valid_data(X,</span> <span class="pre">y)</span></code>, <code class="docutils literal notranslate"><span class="pre">get_test_data(X,</span> <span class="pre">y)</span></code>: Methods to retrieve train, validation, and test data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">calibrate_report(X,</span> <span class="pre">y,</span> <span class="pre">score=None)</span></code>: Generates a calibration report.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">fit(X,</span> <span class="pre">y,</span> <span class="pre">validation_data=None,</span> <span class="pre">score=None)</span></code>: Fits the model to the data.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">return_metrics(X_test,</span> <span class="pre">y_test)</span></code>: Returns evaluation metrics.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">predict(X,</span> <span class="pre">y=None,</span> <span class="pre">optimal_threshold=False)</span></code>, <code class="docutils literal notranslate"><span class="pre">predict_proba(X,</span> <span class="pre">y=None)</span></code>: Methods to make predictions and predict probabilities.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning(X,</span> <span class="pre">y,</span> <span class="pre">f1_beta_tune=False,</span> <span class="pre">betas=[1,</span> <span class="pre">2])</span></code>: Performs grid search parameter tuning.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">print_k_best_features(X)</span></code>: Prints the top K best features.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta(score,</span> <span class="pre">X_train,</span> <span class="pre">y_train,</span> <span class="pre">X_valid,</span> <span class="pre">y_valid,</span> <span class="pre">betas,</span> <span class="pre">kfold=False)</span></code>: Tunes the threshold for F-beta score.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">train_val_test_split(X,</span> <span class="pre">y,</span> <span class="pre">stratify_y,</span> <span class="pre">train_size,</span> <span class="pre">validation_size,</span> <span class="pre">test_size,</span> <span class="pre">random_state,</span> <span class="pre">stratify_cols,</span> <span class="pre">calibrate)</span></code>: Splits the data into train, validation, and test sets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_best_score_params(X,</span> <span class="pre">y)</span></code>: Retrieves the best score parameters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">conf_mat_class_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code>: Generates confusion matrix for k-fold cross-validation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">regression_report_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code>: Generates regression report for k-fold cross-validation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">regression_report(y_true,</span> <span class="pre">y_pred,</span> <span class="pre">print_results=True)</span></code>: Generates a regression report.</p></li>
-</ul>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">__init__(...)</span></code></dt><dd><p>Initializes the model_tuner with configurations such as estimator, cross-validation settings, scoring metrics, etc.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">reset_estimator()</span></code></dt><dd><p>Resets the estimator.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">process_imbalance_sampler(X_train,</span> <span class="pre">y_train)</span></code></dt><dd><p>Processes imbalance sampler.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">calibrateModel(X,</span> <span class="pre">y,</span> <span class="pre">score=None,</span> <span class="pre">stratify=None)</span></code></dt><dd><p>Calibrates the model.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">get_train_data(X,</span> <span class="pre">y),</span> <span class="pre">get_valid_data(X,</span> <span class="pre">y),</span> <span class="pre">get_test_data(X,</span> <span class="pre">y)</span></code></dt><dd><p>Retrieves train, validation, and test data.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">calibrate_report(X,</span> <span class="pre">y,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates a calibration report.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">fit(X,</span> <span class="pre">y,</span> <span class="pre">validation_data=None,</span> <span class="pre">score=None)</span></code></dt><dd><p>Fits the model to the data.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">return_metrics(X_test,</span> <span class="pre">y_test)</span></code></dt><dd><p>Returns evaluation metrics.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">predict(X,</span> <span class="pre">y=None,</span> <span class="pre">optimal_threshold=False),</span> <span class="pre">predict_proba(X,</span> <span class="pre">y=None)</span></code></dt><dd><p>Makes predictions and predicts probabilities.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning(X,</span> <span class="pre">y,</span> <span class="pre">f1_beta_tune=False,</span> <span class="pre">betas=[1,</span> <span class="pre">2])</span></code></dt><dd><p>Performs grid search parameter tuning.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">print_k_best_features(X)</span></code></dt><dd><p>Prints the top K best features.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta(score,</span> <span class="pre">X_train,</span> <span class="pre">y_train,</span> <span class="pre">X_valid,</span> <span class="pre">y_valid,</span> <span class="pre">betas,</span> <span class="pre">kfold=False)</span></code></dt><dd><p>Tunes the threshold for F-beta score.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">train_val_test_split(X,</span> <span class="pre">y,</span> <span class="pre">stratify_y,</span> <span class="pre">train_size,</span> <span class="pre">validation_size,</span> <span class="pre">test_size,</span> <span class="pre">random_state,</span> <span class="pre">stratify_cols,</span> <span class="pre">calibrate)</span></code></dt><dd><p>Splits the data into train, validation, and test sets.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">get_best_score_params(X,</span> <span class="pre">y)</span></code></dt><dd><p>Retrieves the best score parameters.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">conf_mat_class_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates confusion matrix for k-fold cross-validation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">regression_report_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates regression report for k-fold cross-validation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">regression_report(y_true,</span> <span class="pre">y_pred,</span> <span class="pre">print_results=True)</span></code></dt><dd><p>Generates a regression report.</p>
+</dd>
+</dl>
 </section>
 <section id="helper-functions">
 <h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">kfold_split(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">stratify=False,</span> <span class="pre">scoring=[&quot;roc_auc&quot;],</span> <span class="pre">n_splits=10,</span> <span class="pre">random_state=3)</span></code>: Splits data using k-fold cross-validation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_cross_validate(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">kf,</span> <span class="pre">stratify=False,</span> <span class="pre">scoring=[&quot;roc_auc&quot;])</span></code>: Performs cross-validation.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print(conf_matrix,</span> <span class="pre">labels)</span></code>: Prints the confusion matrix.</p></li>
-</ul>
-</section>
-<section id="notes">
-<h1>Notes<a class="headerlink" href="#notes" title="Link to this heading"></a></h1>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kfold_split(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">stratify=False,</span> <span class="pre">scoring=[&quot;roc_auc&quot;],</span> <span class="pre">n_splits=10,</span> <span class="pre">random_state=3)</span></code></dt><dd><p>Splits data using k-fold cross-validation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">get_cross_validate(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">kf,</span> <span class="pre">stratify=False,</span> <span class="pre">scoring=[&quot;roc_auc&quot;])</span></code></dt><dd><p>Performs cross-validation.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print(conf_matrix,</span> <span class="pre">labels)</span></code></dt><dd><p>Prints the confusion matrix.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.</p></li>
 <li><p>It is essential to properly configure the parameters during initialization to suit the specific requirements of your machine learning task.</p></li>
-<li><p>Ensure that all dependencies are installed and properly imported before using the model_tuner class.</p></li>
+<li><p>Ensure that all dependencies are installed and properly imported before using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class from the <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> library.</p></li>
 </ul>
+</div>
 </section>
 <section id="input-parameters">
 <h1>Input Parameters<a class="headerlink" href="#input-parameters" title="Link to this heading"></a></h1>
@@ -178,7 +185,7 @@
 <li><p><strong>estimator</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a>) – The machine learning model to be tuned and trained.</p></li>
 <li><p><strong>calibrate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to calibrate the classifier. Default is False.</p></li>
 <li><p><strong>kfold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use k-fold cross-validation. Default is False.</p></li>
-<li><p><strong>imbalance_sampler</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a><em>, </em><em>optional</em>) – An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.</p></li>
+<li><p><strong>imbalance_sampler</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><em>object</em></a><em>, </em><em>optional</em>) – An imbalanced data sampler from the imblearn library, e.g., <code class="docutils literal notranslate"><span class="pre">RandomUnderSampler</span></code> or <code class="docutils literal notranslate"><span class="pre">RandomOverSampler</span></code>.</p></li>
 <li><p><strong>train_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to use for training. Default is 0.6.</p></li>
 <li><p><strong>validation_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to use for validation. Default is 0.2.</p></li>
 <li><p><strong>test_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to use for testing. Default is 0.2.</p></li>
@@ -209,28 +216,75 @@
 <li><p><strong>custom_scorer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a><em>, </em><em>optional</em>) – Custom scorers for evaluation. Default is <code class="docutils literal notranslate"><span class="pre">[]</span></code>.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.12)"><strong>ImportError</strong></a> – If the <code class="docutils literal notranslate"><span class="pre">bootstrapper</span></code> module is not found or not installed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.12)"><strong>ValueError</strong></a> – In various cases, such as when an invalid parameter is passed to Scikit-learn functions like <code class="docutils literal notranslate"><span class="pre">cross_validate</span></code>, <code class="docutils literal notranslate"><span class="pre">fit</span></code>, or <code class="docutils literal notranslate"><span class="pre">train_test_split</span></code>, or if the shapes of <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> do not match during operations.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.12)"><strong>AttributeError</strong></a> – If an expected step in the pipeline (e.g., “imputer”, “Resampler”) is missing from <code class="docutils literal notranslate"><span class="pre">self.estimator.named_steps</span></code>, or if <code class="docutils literal notranslate"><span class="pre">self.PipelineClass</span></code> or <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> is not properly initialized.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><strong>TypeError</strong></a> – If an incorrect type is passed to a function or method, such as passing <code class="docutils literal notranslate"><span class="pre">None</span></code> where a numerical value or a non-NoneType object is expected.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#IndexError" title="(in Python v3.12)"><strong>IndexError</strong></a> – If the dimensions of the confusion matrix are incorrect or unexpected in <code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print_ML</span></code> or <code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.12)"><strong>KeyError</strong></a> – If a key is not found in a dictionary, such as when accessing <code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code> with a score that is not in the dictionary, or when accessing configuration keys in the <code class="docutils literal notranslate"><span class="pre">summarize_auto_keras_params</span></code> method.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.12)"><strong>RuntimeError</strong></a> – If there is an unexpected issue during model fitting or transformation that does not fit into the other categories of exceptions.</p></li>
+</ul>
+</dd>
 </dl>
 </dd></dl>
 
 </section>
-<section id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
 <section id="binary-classification">
-<h2>Binary classification<a class="headerlink" href="#binary-classification" title="Link to this heading"></a></h2>
-<p><strong>Breast Cancer Example with XGBoost</strong></p>
+<h1>Binary Classification<a class="headerlink" href="#binary-classification" title="Link to this heading"></a></h1>
+<p>Binary classification is a type of supervised learning where a model is trained
+to distinguish between two distinct classes or categories. In essence, the model
+learns to classify input data into one of two possible outcomes, typically
+labeled as <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>, or negative and positive. This is commonly used in
+scenarios such as spam detection, disease diagnosis, or fraud detection.</p>
+<p>In our library, binary classification is handled seamlessly through the <code class="docutils literal notranslate"><span class="pre">Model</span></code>
+class. Users can specify a binary classifier as the estimator, and the library
+takes care of essential tasks like data preprocessing, model calibration, and
+cross-validation. The library also provides robust support for evaluating the
+model’s performance using a variety of metrics, such as accuracy, precision,
+recall, and ROC-AUC, ensuring that the model’s ability to distinguish between the
+two classes is thoroughly assessed. Additionally, the library supports advanced
+techniques like imbalanced data handling and model calibration to fine-tune
+decision thresholds, making it easier to deploy effective binary classifiers in
+real-world applications.</p>
+<section id="aids-clinical-trials-group-study">
+<h2>AIDS Clinical Trials Group Study<a class="headerlink" href="#aids-clinical-trials-group-study" title="Link to this heading"></a></h2>
+<p>The UCI Machine Learning Repository is a well-known resource for accessing a wide
+range of datasets used for machine learning research and practice. One such dataset
+is the AIDS Clinical Trials Group Study dataset, which can be used to build and
+evaluate predictive models.</p>
+<p>You can easily fetch this dataset using the ucimlrepo package. If you haven’t
+installed it yet, you can do so by running the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>ucimlrepo
+</pre></div>
+</div>
+<p>Once installed, you can quickly load the AIDS Clinical Trials Group Study dataset
+with a simple command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ucimlrepo</span> <span class="kn">import</span> <span class="n">fetch_ucirepo</span>
+</pre></div>
+</div>
 <p><strong>Step 1: Import Necessary Libraries</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
-<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_breast_cancer</span>
-<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">model_tuner</span>
 </pre></div>
 </div>
-<p><strong>Step 2: Load the Dataset</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the breast cancer dataset</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">()</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
+<p><strong>Step 2: Load the dataset, define X, y</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># fetch dataset</span>
+<span class="n">aids_clinical_trials_group_study_175</span> <span class="o">=</span> <span class="n">fetch_ucirepo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">890</span><span class="p">)</span>
+
+<span class="c1"># data (as pandas dataframes)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">features</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">targets</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="c1"># convert a DataFrame to Series when single column</span>
+</pre></div>
+</div>
+<p><strong>Step 3: Check for zero-variance columns and drop accordingly</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for zero-variance columns and drop them</span>
+<span class="n">zero_variance_columns</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">var</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">zero_variance_columns</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+   <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">zero_variance_columns</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Step 3: Create an Instance of the XGBClassifier</strong></p>
@@ -327,9 +381,6 @@
 <span class="n">y_valid_pred</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="binary-classification-output">
-<h2>Binary Classification Output<a class="headerlink" href="#binary-classification-output" title="Link to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">324</span>/324<span class="w"> </span><span class="o">[</span><span class="m">15</span>:39&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">2</span>.90s/it<span class="o">]</span>
 Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">20</span>,
@@ -500,9 +551,6 @@ roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span cl
 <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="regression-output">
-<h2>Regression Output<a class="headerlink" href="#regression-output" title="Link to this heading"></a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">432</span>/432<span class="w"> </span><span class="o">[</span><span class="m">04</span>:10&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">1</span>.73it/s<span class="o">]</span>
 Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">8</span>,
