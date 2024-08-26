@@ -306,7 +306,7 @@ class Model:
 
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-                    
+
                     self.fit(X_train, y_train)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
@@ -355,7 +355,7 @@ class Model:
                     # fit estimator
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
-                    
+
                     # fit model
                     self.fit(
                         X_train,
@@ -542,7 +542,14 @@ class Model:
         return
 
     def return_bootstrap_metrics(
-        self, X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500, balance=False
+        self,
+        X_test,
+        y_test,
+        metrics,
+        threshold=0.5,
+        num_resamples=500,
+        n_samples=500,
+        balance=False,
     ):
         if self.model_type != "regression":
             y_pred_prob = pd.Series(self.predict_proba(X_test)[:, 1])
@@ -554,7 +561,7 @@ class Model:
                 threshold=threshold,
                 num_resamples=num_resamples,
                 n_samples=n_samples,
-                balance=balance
+                balance=balance,
             )
         else:
             y_pred = pd.Series(self.predict(X_test))
@@ -566,7 +573,7 @@ class Model:
                 metrics=metrics,
                 num_resamples=num_resamples,
                 n_samples=n_samples,
-                balance=balance
+                balance=balance,
             )
         return bootstrap_metrics
 
@@ -744,14 +751,13 @@ class Model:
 
             if self.imbalance_sampler:
                 self.process_imbalance_sampler(X_train, y_train)
-                
-                            
+
             ## casting the ParameterGrid Object to a list so that we can update
             ## update the hyperparameters in both random grid and non random grid
             ## scenarios
             if not self.randomized_grid:
                 self.grid = list(self.grid)
-                
+
             for score in self.scoring:
                 scores = []
                 for index, params in enumerate(tqdm(self.grid)):
@@ -819,18 +825,17 @@ class Model:
                         ) in best_early_stopping_params.items():
                             if param_name in params:
                                 params[param_name] = param_value
-                            
+
                         params[f"{self.estimator_name}__n_estimators"] = clf[
                             len(clf) - 1
                         ].best_iteration
 
                         # Update the parameters in the grid
                         self.grid[index] = params
-                            
 
                     else:
                         clf = self.estimator.set_params(**params).fit(X_train, y_train)
-                        
+
                     if score in self.custom_scorer:
                         scorer_func = self.custom_scorer[score]
                     else:
@@ -942,11 +947,13 @@ class Model:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_cols
 
-        ## TODO: need to either consolidate stratification into one input or 
+        ## TODO: need to either consolidate stratification into one input or
         ## alow for simultaneous usage of stratify_cols and stratify_y inputs.
-        
-        if stratify_cols:
+
+        if stratify_cols and stratify_y:
             # Creating stratification columns out of stratify_cols list
+            stratify_key = pd.concat([X[stratify_cols], y], axis=1)
+        elif stratify_cols:
             stratify_key = X[stratify_cols]
         elif stratify_y:
             stratify_key = y
@@ -968,7 +975,11 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
-        if stratify_cols:
+        if stratify_cols and stratify_y:
+            strat_key_val_test = pd.concat(
+                [X_valid_test[stratify_cols], y_valid_test], axis=1
+            )
+        elif stratify_cols:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
             strat_key_val_test = y_valid_test
