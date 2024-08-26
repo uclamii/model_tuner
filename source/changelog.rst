@@ -25,6 +25,16 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.013a
+------------------
+
+- Updated bootstrapper 
+- ``evaluate_bootstrap_metrics``
+- Added ``notebooks/xgb_early_bootstrap_test.py`` to test it
+- Updated ``requirements.txt`` file for dev testing
+- Fixed sampling error on low number of samples inside bootstrapper
+
+
 Version 0.0.012a
 ------------------
 
