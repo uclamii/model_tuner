@@ -412,8 +412,8 @@ Step 4: Define Hyperparameters for XGBoost
    ]
 
 
-Step 5: Initialize and Configure the model_tuner
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 5: Initialize and Configure the ``Model``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -652,13 +652,13 @@ Step 9: Calibrate the Model (if needed)
 Regression
 ===========
 
-Here is an example of using the ``model_tuner`` class for regression using XGBoost on the California Housing dataset.
+Here is an example of using the ``Model`` class for regression using XGBoost on the California Housing dataset.
 
 California Housing with XGBoost
 --------------------------------
 
 Step 1: Import Necessary Libraries
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -668,7 +668,8 @@ Step 1: Import Necessary Libraries
    from sklearn.datasets import fetch_california_housing
    from model_tuner import model_tuner  
 
-**Step 2: Load the Dataset**
+Step 2: Load the Dataset
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -677,7 +678,8 @@ Step 1: Import Necessary Libraries
    X = pd.DataFrame(data.data, columns=data.feature_names)
    y = pd.Series(data.target, name="target")
 
-**Step 3: Create an Instance of the XGBClassifier**
+Step 3: Create an Instance of the XGBClassifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -686,7 +688,8 @@ Step 1: Import Necessary Libraries
       random_state=222,
    )
 
-**Step 4: Define Hyperparameters for XGBoost**
+Step 4: Define Hyperparameters for XGBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -713,7 +716,8 @@ Step 1: Import Necessary Libraries
    ]
 
 
-**Step 5: Initialize and Configure the ``model_tuner``**
+Step 5: Initialize and Configure the ``Model``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -736,7 +740,8 @@ Step 1: Import Necessary Libraries
       n_jobs=-1,
    )
 
-**Step 6: Fit the Model**
+Step 6: Fit the Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -750,7 +755,8 @@ Step 1: Import Necessary Libraries
       score="neg_mean_squared_error",
    )
 
-**Step 7: Return Metrics (Optional)**
+Step 7: Return Metrics (Optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
