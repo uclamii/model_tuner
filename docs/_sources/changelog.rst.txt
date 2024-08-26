@@ -25,13 +25,40 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.012a
+------------------
+
+- ``Xgboost`` bug fixes
+- Zenodo updates
+- Pickle model fixes with ``np`` import
+- ``ADASYN`` and ``SMOTE`` fix with no fit happening when calibrating
+
+
+Version 0.0.011a
+------------------
+
+- updated readme for PyPI
+- previous version not saved on setup; re-release to ``0.0.11a``
+
+
+Version 0.0.010a
+-----------------
+
+- updated readme for PyPI
+
+Version 0.0.09a
+----------------
+
+- number of estimators now extracted from ``XGBoost`` model object
+- early stopping fixed
+
 
 Version 0.0.08a
 ----------------
 
 ``AutoKerasClassifier``
 
-- Changed 'layers' key to store count instead of list to avoid exceeding MLflow's 500-char limit.
+- Changed ``layers`` key to store count instead of list to avoid exceeding MLflow's 500-char limit.
 - Simplified function by removing key filtering loop.
 
 

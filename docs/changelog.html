@@ -70,6 +70,10 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-012a">Version 0.0.012a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-011a">Version 0.0.011a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-010a">Version 0.0.010a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-09a">Version 0.0.09a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-08a">Version 0.0.08a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-07a">Version 0.0.07a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-06a">Version 0.0.06a</a></li>
@@ -110,11 +114,40 @@
 <p class="admonition-title">Important</p>
 <p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
+<section id="version-0-0-012a">
+<h2>Version 0.0.012a<a class="headerlink" href="#version-0-0-012a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Xgboost</span></code> bug fixes</p></li>
+<li><p>Zenodo updates</p></li>
+<li><p>Pickle model fixes with <code class="docutils literal notranslate"><span class="pre">np</span></code> import</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ADASYN</span></code> and <code class="docutils literal notranslate"><span class="pre">SMOTE</span></code> fix with no fit happening when calibrating</p></li>
+</ul>
+</section>
+<section id="version-0-0-011a">
+<h2>Version 0.0.011a<a class="headerlink" href="#version-0-0-011a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>updated readme for PyPI</p></li>
+<li><p>previous version not saved on setup; re-release to <code class="docutils literal notranslate"><span class="pre">0.0.11a</span></code></p></li>
+</ul>
+</section>
+<section id="version-0-0-010a">
+<h2>Version 0.0.010a<a class="headerlink" href="#version-0-0-010a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>updated readme for PyPI</p></li>
+</ul>
+</section>
+<section id="version-0-0-09a">
+<h2>Version 0.0.09a<a class="headerlink" href="#version-0-0-09a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>number of estimators now extracted from <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> model object</p></li>
+<li><p>early stopping fixed</p></li>
+</ul>
+</section>
 <section id="version-0-0-08a">
 <h2>Version 0.0.08a<a class="headerlink" href="#version-0-0-08a" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">AutoKerasClassifier</span></code></p>
 <ul class="simple">
-<li><p>Changed ‘layers’ key to store count instead of list to avoid exceeding MLflow’s 500-char limit.</p></li>
+<li><p>Changed <code class="docutils literal notranslate"><span class="pre">layers</span></code> key to store count instead of list to avoid exceeding MLflow’s 500-char limit.</p></li>
 <li><p>Simplified function by removing key filtering loop.</p></li>
 </ul>
 </section>
