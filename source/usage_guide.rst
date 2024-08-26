@@ -667,6 +667,29 @@ Step 9: Calibrate the Model (if needed)
 
    <div style="height: 50px;"></div>
 
+Classification Report (Optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A classification report is readily available at this stage, should you wish to 
+print and examine it. A call to ``print(model_tuner.classification_report)`` will
+output it as follows:
+
+.. code-block:: python 
+
+   print(model_tuner.classification_report)
+
+.. code-block:: bash
+
+                 precision    recall  f1-score   support
+
+              0       0.90      0.93      0.92       314
+              1       0.79      0.72      0.75       114
+
+       accuracy                           0.87       428
+      macro avg       0.84      0.82      0.83       428
+   weighted avg       0.87      0.87      0.87       428
+
+
 
 Regression
 ===========
