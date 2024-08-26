@@ -190,10 +190,106 @@ Input Parameters
    :raises KeyError: If a key is not found in a dictionary, such as when accessing ``self.best_params_per_score`` with a score that is not in the dictionary, or when accessing configuration keys in the ``summarize_auto_keras_params`` method.
    :raises RuntimeError: If there is an unexpected issue during model fitting or transformation that does not fit into the other categories of exceptions.
 
+Model Calibration
+==================
+
+Model calibration refers to the process of adjusting the predicted probabilities of a model so that they more accurately reflect the true likelihood of outcomes. This is crucial in machine learning, particularly for classification problems where the model outputs probabilities rather than just class labels.
+
+Goal of Calibration
+--------------------
+
+The goal of calibration is to ensure that the predicted probability :math:`\hat{p}(x)` is equal to the true probability that :math:`y = 1` given :math:`x`. Mathematically, this can be expressed as:
+
+.. math::
+
+    \hat{p}(x) = P(y = 1 \mid \hat{p}(x) = p)
+
+This equation states that for all instances where the model predicts a probability :math:`p`, the true fraction of positive cases should also be :math:`p`.
+
+Calibration Curve
+------------------
+
+To assess calibration, we often use a *calibration curve*. This involves:
+
+1. **Binning** the predicted probabilities :math:`\hat{p}(x)` into intervals (e.g., [0.0, 0.1), [0.1, 0.2), ..., [0.9, 1.0]).
+2. **Calculating the mean predicted probability** :math:`\hat{p}_i` for each bin :math:`i`.
+3. **Calculating the empirical frequency** :math:`f_i` (the fraction of positives) in each bin.
+
+For a perfectly calibrated model:
+
+.. math::
+
+    \hat{p}_i = f_i \quad \text{for all bins } i
+
+Brier Score
+------------
+
+The **Brier score** is one way to measure the calibration of a model. It’s calculated as:
+
+.. math::
+
+    \text{Brier Score} = \frac{1}{N} \sum_{i=1}^{N} (\hat{p}(x_i) - y_i)^2
+
+Where:
+
+- :math:`N` is the number of instances.
+- :math:`\hat{p}(x_i)` is the predicted probability for instance :math:`i`.
+- :math:`y_i` is the actual label for instance :math:`i` (0 or 1).
+
+The Brier score penalizes predictions that are far from the true outcome. A lower Brier score indicates better calibration and accuracy.
+
+Platt Scaling
+--------------
+
+One common method to calibrate a model is **Platt Scaling**. This involves fitting a logistic regression model to the predictions of the original model. The logistic regression model adjusts the raw predictions :math:`\hat{p}(x)` to output calibrated probabilities.
+
+Mathematically, Platt scaling is expressed as:
+
+.. math::
+
+    \hat{p}_{\text{calibrated}}(x) = \frac{1}{1 + \exp(-(A \hat{p}(x) + B))}
+
+Where :math:`A` and :math:`B` are parameters learned from the data. These parameters adjust the original probability estimates to better align with the true probabilities.
+
+Isotonic Regression
+--------------------
+
+Another method is **Isotonic Regression**, a non-parametric approach that fits a piecewise constant function. Unlike Platt Scaling, which assumes a logistic function, Isotonic Regression only assumes that the function is monotonically increasing. The goal is to find a set of probabilities :math:`p_i` that are as close as possible to the true probabilities while maintaining a monotonic relationship.
+
+The isotonic regression problem can be formulated as:
+
+.. math::
+
+    \min_{p_1 \leq p_2 \leq \dots \leq p_n} \sum_{i=1}^{n} (p_i - y_i)^2
+
+Where :math:`p_i` are the adjusted probabilities, and the constraint ensures that the probabilities are non-decreasing.
+
+Example: Calibration in Logistic Regression
+---------------------------------------------
+
+In a standard logistic regression model, the predicted probability is given by:
+
+.. math::
+
+    \hat{p}(x) = \sigma(w^\top x) = \frac{1}{1 + \exp(-w^\top x)}
+
+Where :math:`w` is the vector of weights, and :math:`x` is the input feature vector.
+
+If this model is well-calibrated, :math:`\hat{p}(x)` should closely match the true conditional probability :math:`P(y = 1 \mid x)`. If not, techniques like Platt Scaling or Isotonic Regression can be applied to adjust :math:`\hat{p}(x)` to be more accurate.
+
+Summary
+--------
+
+- **Model calibration** is about aligning predicted probabilities with actual outcomes.
+- **Mathematically**, calibration ensures :math:`\hat{p}(x) = P(y = 1 \mid \hat{p}(x) = p)`.
+- **Platt Scaling** and **Isotonic Regression** are two common methods to achieve calibration.
+- **Brier Score** is a metric that captures both the calibration and accuracy of probabilistic predictions.
+
+Calibration is essential when the probabilities output by a model need to be trusted, such as in risk assessment, medical diagnosis, and other critical applications.
+
 
 Binary Classification
 ======================
-
 
 Binary classification is a type of supervised learning where a model is trained 
 to distinguish between two distinct classes or categories. In essence, the model 
@@ -211,6 +307,7 @@ two classes is thoroughly assessed. Additionally, the library supports advanced
 techniques like imbalanced data handling and model calibration to fine-tune 
 decision thresholds, making it easier to deploy effective binary classifiers in 
 real-world applications.
+
 
 AIDS Clinical Trials Group Study
 ---------------------------------
@@ -235,7 +332,8 @@ with a simple command:
 
     from ucimlrepo import fetch_ucirepo 
 
-**Step 1: Import Necessary Libraries**
+Step 1: Import Necessary Libraries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -244,7 +342,8 @@ with a simple command:
     import xgboost as xgb
 
 
-**Step 2: Load the dataset, define X, y**
+Step 2: Load the dataset, define X, y
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -257,7 +356,8 @@ with a simple command:
    y = y.squeeze() # convert a DataFrame to Series when single column
 
 
-**Step 3: Check for zero-variance columns and drop accordingly**
+Step 3: Check for zero-variance columns and drop accordingly
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -267,7 +367,8 @@ with a simple command:
       X = X.drop(columns=zero_variance_columns)
 
 
-**Step 3: Create an Instance of the XGBClassifier**
+Step 3: Create an Instance of the XGBClassifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -276,7 +377,8 @@ with a simple command:
       random_state=222,
    )
 
-**Step 4: Define Hyperparameters for XGBoost**
+Step 4: Define Hyperparameters for XGBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -310,7 +412,8 @@ with a simple command:
    ]
 
 
-**Step 5: Initialize and Configure the model_tuner**
+Step 5: Initialize and Configure the model_tuner
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -333,7 +436,8 @@ with a simple command:
       n_jobs=-1,
    )
 
-**Step 6: Perform Grid Search Parameter Tuning**
+Step 6: Perform Grid Search Parameter Tuning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -355,7 +459,8 @@ with a simple command:
    'score': 0.9364314448541736}
    Best roc_auc: 0.936 
 
-**Step 7: Fit the Model**
+Step 7: Fit the Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -371,7 +476,8 @@ with a simple command:
       score="roc_auc",
    )
 
-**Step 8: Return Metrics (Optional)**
+Step 8: Return Metrics (Optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use this function to evaluate the model by printing the output.
 
@@ -430,7 +536,8 @@ You can use this function to evaluate the model by printing the output.
          [ 31,  83]]),
    'K Best Features': ['time', 'strat', 'cd40', 'cd420']}   
 
-**Step 9: Calibrate the Model (if needed)**
+Step 9: Calibrate the Model (if needed)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -547,9 +654,11 @@ Regression
 
 Here is an example of using the ``model_tuner`` class for regression using XGBoost on the California Housing dataset.
 
-**California Housing with XGBoost**
+California Housing with XGBoost
+--------------------------------
 
-**Step 1: Import Necessary Libraries**
+Step 1: Import Necessary Libraries
+-----------------------------------------
 
 .. code-block:: python
 

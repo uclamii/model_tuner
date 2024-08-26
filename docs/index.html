@@ -24,6 +24,7 @@
         <script src="_static/clipboard.min.js?v=a7894cd8"></script>
         <script src="_static/copybutton.js?v=f281be69"></script>
         <script src="_static/custom.js?v=59429b38"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -60,6 +61,7 @@
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#helper-functions">Helper Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#input-parameters">Input Parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#model-calibration">Model Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a></li>
 </ul>
@@ -119,11 +121,37 @@
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#Model"><code class="docutils literal notranslate"><span class="pre">Model()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#aids-clinical-trials-group-study">AIDS Clinical Trials Group Study</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#model-calibration">Model Calibration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#goal-of-calibration">Goal of Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#calibration-curve">Calibration Curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#brier-score">Brier Score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#platt-scaling">Platt Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#isotonic-regression">Isotonic Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#aids-clinical-trials-group-study">AIDS Clinical Trials Group Study</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-1-import-necessary-libraries">Step 1: Import Necessary Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-2-load-the-dataset-define-x-y">Step 2: Load the dataset, define X, y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-check-for-zero-variance-columns-and-drop-accordingly">Step 3: Check for zero-variance columns and drop accordingly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-create-an-instance-of-the-xgbclassifier">Step 3: Create an Instance of the XGBClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-5-initialize-and-configure-the-model-tuner">Step 5: Initialize and Configure the model_tuner</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-6-perform-grid-search-parameter-tuning">Step 6: Perform Grid Search Parameter Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-fit-the-model">Step 7: Fit the Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-8-return-metrics-optional">Step 8: Return Metrics (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-9-calibrate-the-model-if-needed">Step 9: Calibrate the Model (if needed)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#california-housing-with-xgboost">California Housing with XGBoost</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#id1">Step 1: Import Necessary Libraries</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
