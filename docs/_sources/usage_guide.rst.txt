@@ -190,6 +190,25 @@ Input Parameters
    :raises KeyError: If a key is not found in a dictionary, such as when accessing ``self.best_params_per_score`` with a score that is not in the dictionary, or when accessing configuration keys in the ``summarize_auto_keras_params`` method.
    :raises RuntimeError: If there is an unexpected issue during model fitting or transformation that does not fit into the other categories of exceptions.
 
+
+Caveats
+=========
+.. important::
+
+   Ensure that your feature set `X` is free of zero-variance columns before using this method. 
+   Zero-variance columns can lead to issues such as ``UserWarning: Features[feat_num] are constant`` 
+   and ``RuntimeWarning: invalid value encountered in divide f = msb/msw`` during the model training process.
+
+   To check for and remove zero-variance columns, you can use the following code:
+
+   .. code-block:: python
+
+      # Check for zero-variance columns and drop them
+      zero_variance_columns = X.columns[X.var() == 0]
+      if not zero_variance_columns.empty:
+          X = X.drop(columns=zero_variance_columns)
+
+
 Model Calibration
 ==================
 
