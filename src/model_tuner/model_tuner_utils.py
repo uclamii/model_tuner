@@ -941,6 +941,10 @@ class Model:
         # if calibrate:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_cols
+
+        ## TODO: need to either consolidate stratification into one input or 
+        ## alow for simultaneous usage of stratify_cols and stratify_y inputs.
+        
         if stratify_cols:
             # Creating stratification columns out of stratify_cols list
             stratify_key = X[stratify_cols]
