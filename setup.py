@@ -5,7 +5,7 @@ setup(
     version="0.0.13a",
     author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
     author_email="pp89@ucla.edu",
-    description="A Python library for tuning Machine Learning models.",
+    description="A Python library for tuning machine learning models.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",  # Type of the long description
     package_dir={"": "src"},  # Directory where your package files are located
