@@ -314,7 +314,7 @@ When :math:`y` is passed as a DataFrame, it is treated as a 2-dimensional array,
 
 .. math::
 
-   y = \begin{pmatrix} y_1 & y_2 & \dots & y_n \end{pmatrix}
+   y = \begin{pmatrix} y_1, y_2, \dots , y_n \end{pmatrix}
 
 or 
 
