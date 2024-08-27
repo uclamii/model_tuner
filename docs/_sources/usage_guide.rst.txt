@@ -351,6 +351,58 @@ The method :code:`squeeze()` effectively removes any unnecessary dimensions, con
 with a single column into a 1-dimensional Series. This ensures that :math:`y` has the correct shape, preventing 
 the aforementioned warning and ensuring the model processes the target variable correctly.
 
+Column Stratification with Cross-Validation
+---------------------------------------------
+.. important::
+
+   **Using** ``stratify_cols`` **with Cross-Validation**
+
+   It is important to note that ``stratify_cols`` cannot be used when performing cross-validation.
+   Cross-validation involves repeatedly splitting the dataset into training and validation sets to 
+   evaluate the model's performance across different subsets of the data. 
+
+   **Explanation:**
+
+   When using cross-validation, the process automatically handles the stratification of the target variable :math:`y`, 
+   if specified. This ensures that each fold is representative of the overall distribution of :math:`y`. However, 
+   ``stratify_cols`` is designed to stratify based on specific columns in the feature set :math:`X`, which can lead to 
+   inconsistencies or even errors when applied in the context of cross-validation.
+
+   Since cross-validation inherently handles stratification based on the target variable, attempting to apply 
+   additional stratification based on specific columns would conflict with the cross-validation process. 
+   This can result in unpredictable behavior or failure of the cross-validation routine.
+
+   However, you can use ``stratify_y`` during cross-validation to ensure that each fold of the dataset is representative 
+   of the distribution of the target variable :math:`y`. This is a common practice to maintain consistency in the distribution 
+   of the target variable across the different training and validation sets.
+
+
+Cross-Validation and Stratification
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Let :math:`D = \{(X_i, y_i)\}_{i=1}^n` be the dataset with :math:`n` samples, where :math:`X_i` is the feature set and :math:`y_i` is the target variable.
+
+In `k-fold` cross-validation, the dataset :math:`D` is split into :math:`k` folds :math:`\{D_1, D_2, \dots, D_k\}`.
+
+When stratifying by :math:`y` using :code:`stratify_y`, each fold :math:`D_j` is constructed such that the distribution of :math:`y` in each fold is similar to the distribution of :math:`y` in :math:`D`.
+
+Mathematically, if :math:`P(y=c)` is the probability of the target variable :math:`y` taking on class :math:`c`, then:
+
+.. math::
+
+    P(y=c \mid D_j) \approx P(y=c \mid D)
+
+for all folds :math:`D_j` and all classes :math:`c`.
+
+This ensures that the stratified folds preserve the same class proportions as the original dataset.
+
+On the other hand, :code:`stratify_cols` stratifies based on specific columns of :math:`X`. However, in cross-validation, the primary focus is on the target variable :math:`y`.
+
+Attempting to stratify based on :math:`X` columns during cross-validation can disrupt the process of ensuring a representative sample of :math:`y` in each fold. This can lead to unreliable performance estimates and, in some cases, errors.
+
+Therefore, the use of :code:`stratify_y` is recommended during cross-validation to maintain consistency in the target variable distribution across folds, while :code:`stratify_cols` should be avoided.
+
+
 
 
 Model Calibration

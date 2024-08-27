@@ -80,6 +80,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#solution">Solution</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cross-validation-and-stratification">Cross-Validation and Stratification</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#model-calibration">Model Calibration</a><ul>
@@ -129,6 +133,7 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 </ul>
 
         </div>
@@ -400,6 +405,41 @@ If <span class="math notranslate nohighlight">\(y\)</span> is currently a DataFr
 <p>The method <code class="code docutils literal notranslate"><span class="pre">squeeze()</span></code> effectively removes any unnecessary dimensions, converting a 2-dimensional DataFrame
 with a single column into a 1-dimensional Series. This ensures that <span class="math notranslate nohighlight">\(y\)</span> has the correct shape, preventing
 the aforementioned warning and ensuring the model processes the target variable correctly.</p>
+</section>
+</section>
+<section id="column-stratification-with-cross-validation">
+<h2>Column Stratification with Cross-Validation<a class="headerlink" href="#column-stratification-with-cross-validation" title="Link to this heading"></a></h2>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><strong>Using</strong> <code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code> <strong>with Cross-Validation</strong></p>
+<p>It is important to note that <code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code> cannot be used when performing cross-validation.
+Cross-validation involves repeatedly splitting the dataset into training and validation sets to
+evaluate the model’s performance across different subsets of the data.</p>
+<p><strong>Explanation:</strong></p>
+<p>When using cross-validation, the process automatically handles the stratification of the target variable <span class="math notranslate nohighlight">\(y\)</span>,
+if specified. This ensures that each fold is representative of the overall distribution of <span class="math notranslate nohighlight">\(y\)</span>. However,
+<code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code> is designed to stratify based on specific columns in the feature set <span class="math notranslate nohighlight">\(X\)</span>, which can lead to
+inconsistencies or even errors when applied in the context of cross-validation.</p>
+<p>Since cross-validation inherently handles stratification based on the target variable, attempting to apply
+additional stratification based on specific columns would conflict with the cross-validation process.
+This can result in unpredictable behavior or failure of the cross-validation routine.</p>
+<p>However, you can use <code class="docutils literal notranslate"><span class="pre">stratify_y</span></code> during cross-validation to ensure that each fold of the dataset is representative
+of the distribution of the target variable <span class="math notranslate nohighlight">\(y\)</span>. This is a common practice to maintain consistency in the distribution
+of the target variable across the different training and validation sets.</p>
+</div>
+<section id="cross-validation-and-stratification">
+<h3>Cross-Validation and Stratification<a class="headerlink" href="#cross-validation-and-stratification" title="Link to this heading"></a></h3>
+<p>Let <span class="math notranslate nohighlight">\(D = \{(X_i, y_i)\}_{i=1}^n\)</span> be the dataset with <span class="math notranslate nohighlight">\(n\)</span> samples, where <span class="math notranslate nohighlight">\(X_i\)</span> is the feature set and <span class="math notranslate nohighlight">\(y_i\)</span> is the target variable.</p>
+<p>In <cite>k-fold</cite> cross-validation, the dataset <span class="math notranslate nohighlight">\(D\)</span> is split into <span class="math notranslate nohighlight">\(k\)</span> folds <span class="math notranslate nohighlight">\(\{D_1, D_2, \dots, D_k\}\)</span>.</p>
+<p>When stratifying by <span class="math notranslate nohighlight">\(y\)</span> using <code class="code docutils literal notranslate"><span class="pre">stratify_y</span></code>, each fold <span class="math notranslate nohighlight">\(D_j\)</span> is constructed such that the distribution of <span class="math notranslate nohighlight">\(y\)</span> in each fold is similar to the distribution of <span class="math notranslate nohighlight">\(y\)</span> in <span class="math notranslate nohighlight">\(D\)</span>.</p>
+<p>Mathematically, if <span class="math notranslate nohighlight">\(P(y=c)\)</span> is the probability of the target variable <span class="math notranslate nohighlight">\(y\)</span> taking on class <span class="math notranslate nohighlight">\(c\)</span>, then:</p>
+<div class="math notranslate nohighlight">
+\[P(y=c \mid D_j) \approx P(y=c \mid D)\]</div>
+<p>for all folds <span class="math notranslate nohighlight">\(D_j\)</span> and all classes <span class="math notranslate nohighlight">\(c\)</span>.</p>
+<p>This ensures that the stratified folds preserve the same class proportions as the original dataset.</p>
+<p>On the other hand, <code class="code docutils literal notranslate"><span class="pre">stratify_cols</span></code> stratifies based on specific columns of <span class="math notranslate nohighlight">\(X\)</span>. However, in cross-validation, the primary focus is on the target variable <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<p>Attempting to stratify based on <span class="math notranslate nohighlight">\(X\)</span> columns during cross-validation can disrupt the process of ensuring a representative sample of <span class="math notranslate nohighlight">\(y\)</span> in each fold. This can lead to unreliable performance estimates and, in some cases, errors.</p>
+<p>Therefore, the use of <code class="code docutils literal notranslate"><span class="pre">stratify_y</span></code> is recommended during cross-validation to maintain consistency in the target variable distribution across folds, while <code class="code docutils literal notranslate"><span class="pre">stratify_cols</span></code> should be avoided.</p>
 </section>
 </section>
 </section>
