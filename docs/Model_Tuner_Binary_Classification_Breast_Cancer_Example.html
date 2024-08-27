@@ -13099,7 +13099,38 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Model-Tuner-Library-Instructions">Model Tuner Library Instructions<a class="anchor-link" href="#Model-Tuner-Library-Instructions">&#182;</a></h1><p>This notebook provides a guide on how to install and use the <code>model_tuner</code> library in a notebook environment like Google Colab.</p>
+<h1 id="Binary-Classification-Via-The-Breast-Cancer-Dataset">Binary Classification Via The Breast Cancer Dataset<a class="anchor-link" href="#Binary-Classification-Via-The-Breast-Cancer-Dataset">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The Breast Cancer Wisconsin (Diagnostic) Dataset is a widely used dataset in the field of machine learning and medical research. It contains features computed from digitized images of fine needle aspirates (FNAs) of breast masses. The dataset includes information about the characteristics of cell nuclei present in the images.</p>
+<h3 id="Key-Features-of-the-Dataset">Key Features of the Dataset<a class="anchor-link" href="#Key-Features-of-the-Dataset">&#182;</a></h3><ul>
+<li><strong>Number of Instances:</strong> 569</li>
+<li><strong>Number of Attributes:</strong> 30 numeric features</li>
+<li><strong>Target Variable:</strong> Binary classification (malignant or benign)</li>
+<li><strong>Features:</strong> Measurements such as radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension</li>
+</ul>
+<h3 id="Attributes-Information">Attributes Information<a class="anchor-link" href="#Attributes-Information">&#182;</a></h3><p>The features are computed for each cell nucleus, and the dataset includes both mean, standard error, and "worst" (mean of the three largest values) of these features.</p>
+<h3 id="Target-Variable">Target Variable<a class="anchor-link" href="#Target-Variable">&#182;</a></h3><p>The target variable indicates the diagnosis of the breast mass: <code>0</code> represents benign, and <code>1</code> represents malignant.</p>
+<p>This dataset is often used for classification tasks to build models that can predict whether a breast tumor is malignant or benign based on the given features.</p>
+<h3 id="Example-Usage-in-Machine-Learning">Example Usage in Machine Learning<a class="anchor-link" href="#Example-Usage-in-Machine-Learning">&#182;</a></h3><ul>
+<li><p><strong>Classification Algorithms</strong>: It can be used to train various classification algorithms including, but not limited to <code>logistic regression</code>, <code>decision trees</code>, <code>random forests</code>, and <code>support vector machines</code>.</p>
+</li>
+<li><p><strong>Feature Selection</strong>: The dataset is also useful for performing feature selection to identify which features are most important for predicting breast cancer.</p>
+</li>
+</ul>
+<p>The dataset is available in the <code>scikit-learn</code> library, making it easy to load and use in <code>Python</code> for various machine learning tasks.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Model-Tuner-Library-Instructions">Model Tuner Library Instructions<a class="anchor-link" href="#Model-Tuner-Library-Instructions">&#182;</a></h2><p>This notebook provides a guide on how to install and use the <code>model_tuner</code> library in a notebook environment like Google Colab.</p>
 
 </div>
 </div>
@@ -13242,37 +13273,6 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Binary-Classification-Via-The-Breast-Cancer-Dataset">Binary Classification Via The Breast Cancer Dataset<a class="anchor-link" href="#Binary-Classification-Via-The-Breast-Cancer-Dataset">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The Breast Cancer Wisconsin (Diagnostic) Dataset is a widely used dataset in the field of machine learning and medical research. It contains features computed from digitized images of fine needle aspirates (FNAs) of breast masses. The dataset includes information about the characteristics of cell nuclei present in the images.</p>
-<h3 id="Key-Features-of-the-Dataset">Key Features of the Dataset<a class="anchor-link" href="#Key-Features-of-the-Dataset">&#182;</a></h3><ul>
-<li><strong>Number of Instances:</strong> 569</li>
-<li><strong>Number of Attributes:</strong> 30 numeric features</li>
-<li><strong>Target Variable:</strong> Binary classification (malignant or benign)</li>
-<li><strong>Features:</strong> Measurements such as radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension</li>
-</ul>
-<h3 id="Attributes-Information">Attributes Information<a class="anchor-link" href="#Attributes-Information">&#182;</a></h3><p>The features are computed for each cell nucleus, and the dataset includes both mean, standard error, and "worst" (mean of the three largest values) of these features.</p>
-<h3 id="Target-Variable">Target Variable<a class="anchor-link" href="#Target-Variable">&#182;</a></h3><p>The target variable indicates the diagnosis of the breast mass: <code>0</code> represents benign, and <code>1</code> represents malignant.</p>
-<p>This dataset is often used for classification tasks to build models that can predict whether a breast tumor is malignant or benign based on the given features.</p>
-<h3 id="Example-Usage-in-Machine-Learning">Example Usage in Machine Learning<a class="anchor-link" href="#Example-Usage-in-Machine-Learning">&#182;</a></h3><ul>
-<li><p><strong>Classification Algorithms</strong>: It can be used to train various classification algorithms including, but not limited to <code>logistic regression</code>, <code>decision trees</code>, <code>random forests</code>, and <code>support vector machines</code>.</p>
-</li>
-<li><p><strong>Feature Selection</strong>: The dataset is also useful for performing feature selection to identify which features are most important for predicting breast cancer.</p>
-</li>
-</ul>
-<p>The dataset is available in the <code>scikit-learn</code> library, making it easy to load and use in <code>Python</code> for various machine learning tasks.</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">

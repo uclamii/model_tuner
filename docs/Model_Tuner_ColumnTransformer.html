@@ -13145,7 +13145,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="err">!</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">model_tuner</span>
@@ -13167,27 +13167,26 @@ $( document ).ready(function(){
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Collecting model_tuner
-  Downloading model_tuner-0.0.14a0-py3-none-any.whl.metadata (3.9 kB)
+  Downloading model_tuner-0.0.11a0-py3-none-any.whl (18 kB)
 Requirement already satisfied: joblib&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.4.2)
-Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
-Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.4)
-Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
-Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.13.1)
-Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.5)
+Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.25.2)
+Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.0.3)
+Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.2.2)
+Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.11.4)
+Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.4)
 Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2023.4)
 Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
 Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=1.0.2-&gt;model_tuner) (3.5.0)
 Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.3.5-&gt;model_tuner) (1.16.0)
-Downloading model_tuner-0.0.14a0-py3-none-any.whl (19 kB)
 Installing collected packages: model_tuner
-Successfully installed model_tuner-0.0.14a0
+Successfully installed model_tuner-0.0.11a0
 Collecting sns
   Downloading sns-0.1.tar.gz (2.1 kB)
   Preparing metadata (setup.py) ... done
 Building wheels for collected packages: sns
   Building wheel for sns (setup.py) ... done
-  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=36184ba37b12156895cea55715048ab24a73c6558974281035951dca84cd5bce
+  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=b5ab1f9fcb759117aa40e86aad0acd7d228d192fd798de8aba5488d45a993a56
   Stored in directory: /root/.cache/pip/wheels/76/1a/47/c3b6a8b9d3ae47b1488f4be13c86586327c07e0ac1bb5b3337
 Successfully built sns
 Installing collected packages: sns
@@ -13210,7 +13209,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -13239,7 +13238,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;titanic&#39;</span><span class="p">)</span>
@@ -13256,13 +13255,13 @@ Successfully installed sns-0.1
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[3]:</div>
+    <div class="prompt output_prompt">Out[&nbsp;]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-e9817a7f-5c0b-4765-98c4-3b2e80145bfc" class="colab-df-container">
+  <div id="df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13395,7 +13394,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-e9817a7f-5c0b-4765-98c4-3b2e80145bfc')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13447,12 +13446,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-e9817a7f-5c0b-4765-98c4-3b2e80145bfc button.colab-df-convert');
+        document.querySelector('#df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-e9817a7f-5c0b-4765-98c4-3b2e80145bfc');
+        const element = document.querySelector('#df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13472,8 +13471,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-96983535-e75b-493f-adcb-ab6d91196652">
-  <button class="colab-df-quickchart" onclick="quickchart('df-96983535-e75b-493f-adcb-ab6d91196652')"
+<div id="df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4">
+  <button class="colab-df-quickchart" onclick="quickchart('df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13592,7 +13591,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-96983535-e75b-493f-adcb-ab6d91196652 button');
+        document.querySelector('#df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -13619,7 +13618,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">titanic</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">titanic</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s2">&quot;survived&quot;</span><span class="p">]]</span>
@@ -13635,7 +13634,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>
@@ -13668,7 +13667,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -13684,13 +13683,13 @@ Successfully installed sns-0.1
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[6]:</div>
+    <div class="prompt output_prompt">Out[&nbsp;]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-c1572674-3505-4f52-b926-05f4e06f64ee" class="colab-df-container">
+  <div id="df-085dfb37-04c1-4d2a-8777-45eb286c35ba" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13799,7 +13798,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-c1572674-3505-4f52-b926-05f4e06f64ee')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-085dfb37-04c1-4d2a-8777-45eb286c35ba')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13851,12 +13850,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-c1572674-3505-4f52-b926-05f4e06f64ee button.colab-df-convert');
+        document.querySelector('#df-085dfb37-04c1-4d2a-8777-45eb286c35ba button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-c1572674-3505-4f52-b926-05f4e06f64ee');
+        const element = document.querySelector('#df-085dfb37-04c1-4d2a-8777-45eb286c35ba');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13876,8 +13875,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-70b3def3-b002-49f6-988a-856028362695">
-  <button class="colab-df-quickchart" onclick="quickchart('df-70b3def3-b002-49f6-988a-856028362695')"
+<div id="df-271c61b7-db6d-4dab-b468-cb4146683be9">
+  <button class="colab-df-quickchart" onclick="quickchart('df-271c61b7-db6d-4dab-b468-cb4146683be9')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13996,7 +13995,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-70b3def3-b002-49f6-988a-856028362695 button');
+        document.querySelector('#df-271c61b7-db6d-4dab-b468-cb4146683be9 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -14016,7 +14015,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1">### Defining columns to be scaled and columns to be onehotencoded</span>
@@ -14068,7 +14067,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
@@ -14097,7 +14096,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -14117,7 +14116,7 @@ Successfully installed sns-0.1
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 5/5 [00:01&lt;00:00,  2.92it/s]
+<pre>100%|██████████| 5/5 [00:01&lt;00:00,  4.38it/s]
 </pre>
 </div>
 </div>
@@ -14139,7 +14138,7 @@ Successfully installed sns-0.1
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.23it/s]</pre>
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.97it/s]</pre>
 </div>
 </div>
 
@@ -14150,12 +14149,12 @@ Successfully installed sns-0.1
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;rf__max_depth&#39;: 5,
+{&#39;params&#39;: {&#39;rf__max_depth&#39;: 10,
             &#39;rf__max_features&#39;: 5,
-            &#39;rf__min_samples_leaf&#39;: 1,
-            &#39;rf__n_estimators&#39;: 200},
- &#39;score&#39;: 0.8756016042780749}
-Best roc_auc: 0.876 
+            &#39;rf__min_samples_leaf&#39;: 3,
+            &#39;rf__n_estimators&#39;: 100},
+ &#39;score&#39;: 0.8848262032085563}
+Best roc_auc: 0.885 
 
 </pre>
 </div>
@@ -14178,7 +14177,7 @@ Best roc_auc: 0.876
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14195,7 +14194,7 @@ Best roc_auc: 0.876
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">prob_uncalibrated</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -14221,20 +14220,20 @@ Best roc_auc: 0.876
 <pre>Confusion matrix on validation set:
 --------------------------------------------------------------------------------
           Predicted:
-            Pos  Neg
+             Pos   Neg
 --------------------------------------------------------------------------------
-Actual: Pos 99 (tp)  11 (fn)
-        Neg 17 (fp)  51 (tn)
+Actual: Pos 100 (tp)   10 (fn)
+        Neg  21 (fp)   47 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.85      0.90      0.88       110
-           1       0.82      0.75      0.78        68
+           0       0.83      0.91      0.87       110
+           1       0.82      0.69      0.75        68
 
-    accuracy                           0.84       178
-   macro avg       0.84      0.82      0.83       178
-weighted avg       0.84      0.84      0.84       178
+    accuracy                           0.83       178
+   macro avg       0.83      0.80      0.81       178
+weighted avg       0.83      0.83      0.82       178
 
 --------------------------------------------------------------------------------
 </pre>
@@ -14247,7 +14246,7 @@ weighted avg       0.84      0.84      0.84       178
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
@@ -14270,20 +14269,20 @@ weighted avg       0.84      0.84      0.84       178
 <pre>Confusion matrix on set provided: 
 --------------------------------------------------------------------------------
           Predicted:
-             Pos   Neg
+            Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 100 (tp)   10 (fn)
-        Neg  19 (fp)   50 (tn)
+Actual: Pos 99 (tp)  11 (fn)
+        Neg 23 (fp)  46 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.84      0.91      0.87       110
-           1       0.83      0.72      0.78        69
+           0       0.81      0.90      0.85       110
+           1       0.81      0.67      0.73        69
 
-    accuracy                           0.84       179
-   macro avg       0.84      0.82      0.82       179
-weighted avg       0.84      0.84      0.84       179
+    accuracy                           0.81       179
+   macro avg       0.81      0.78      0.79       179
+weighted avg       0.81      0.81      0.81       179
 
 --------------------------------------------------------------------------------
 </pre>
@@ -14296,7 +14295,7 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14312,13 +14311,13 @@ weighted avg       0.84      0.84      0.84       179
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[13]:</div>
+    <div class="prompt output_prompt">Out[&nbsp;]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&#39;roc_auc&#39;: 0.35000000000000003}</pre>
+<pre>{&#39;roc_auc&#39;: 0.33}</pre>
 </div>
 
 </div>
@@ -14336,7 +14335,7 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -14350,7 +14349,7 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from the calibrated model</span>
@@ -14415,7 +14414,7 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
@@ -14446,7 +14445,7 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
@@ -14460,252 +14459,10 @@ weighted avg       0.84      0.84      0.84       179
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre># Tuning hyper-parameters for roc_auc
-Fitting 10 folds for each of 5 candidates, totalling 50 fits
-
-Best score/param set found on development set:
-{0.8740331288136373: {&#39;rf__max_depth&#39;: 10,
-                      &#39;rf__max_features&#39;: 5,
-                      &#39;rf__min_samples_leaf&#39;: 3,
-                      &#39;rf__n_estimators&#39;: 100}}
-
-Grid scores on development set:
-0.848 (+/-0.091) for {&#39;rf__n_estimators&#39;: 10, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: None}
-0.859 (+/-0.097) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 3}
-0.869 (+/-0.096) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: 10}
-0.874 (+/-0.090) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 3, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 10}
-0.869 (+/-0.086) for {&#39;rf__n_estimators&#39;: 200, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 5}
-Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.26it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.09it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.77it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.81it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.74it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.93it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.81it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.17it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.17it/s]
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Fitting model with best params and tuning for best threshold ...
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.83it/s]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
@@ -14722,7 +14479,7 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14732,30 +14489,10 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[19]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;roc_auc&#39;: 0.32}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14765,70 +14502,16 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Confusion matrix on set provided: 
---------------------------------------------------------------------------------
-          Predicted:
-             Pos   Neg
---------------------------------------------------------------------------------
-Actual: Pos 509 (tp)   40 (fn)
-        Neg  52 (fp)  290 (tn)
---------------------------------------------------------------------------------
-
-              precision    recall  f1-score   support
-
-           0       0.91      0.93      0.92       549
-           1       0.88      0.85      0.86       342
-
-    accuracy                           0.90       891
-   macro avg       0.89      0.89      0.89       891
-weighted avg       0.90      0.90      0.90       891
-
---------------------------------------------------------------------------------
-</pre>
 </div>
-</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span>
+</pre></div>
 
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[20]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Classification Report&#39;: {&#39;0&#39;: {&#39;precision&#39;: 0.9073083778966132,
-   &#39;recall&#39;: 0.9271402550091075,
-   &#39;f1-score&#39;: 0.9171171171171171,
-   &#39;support&#39;: 549.0},
-  &#39;1&#39;: {&#39;precision&#39;: 0.8787878787878788,
-   &#39;recall&#39;: 0.847953216374269,
-   &#39;f1-score&#39;: 0.863095238095238,
-   &#39;support&#39;: 342.0},
-  &#39;accuracy&#39;: 0.8967452300785634,
-  &#39;macro avg&#39;: {&#39;precision&#39;: 0.893048128342246,
-   &#39;recall&#39;: 0.8875467356916882,
-   &#39;f1-score&#39;: 0.8901061776061776,
-   &#39;support&#39;: 891.0},
-  &#39;weighted avg&#39;: {&#39;precision&#39;: 0.8963611156124526,
-   &#39;recall&#39;: 0.8967452300785634,
-   &#39;f1-score&#39;: 0.8963814463814463,
-   &#39;support&#39;: 891.0}},
- &#39;Confusion Matrix&#39;: array([[509,  40],
-        [ 52, 290]])}</pre>
-</div>
-
-</div>
-
+    </div>
 </div>
 </div>
 

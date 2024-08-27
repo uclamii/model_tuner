@@ -31,19 +31,24 @@ Binary Classification Examples
 
    **Google Colab Notebooks**
 
-   - `Binary Classification: AIDS Clinical Trials Colab Notebook <https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M->`_  
+   - .. raw:: html
 
-   - `Binary Classification: Breast Cancer Colab Notebook <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_
+      <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+
+   - .. raw:: html
+
+      <a href="https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1" target="_blank">Binary Classification: Breast Cancer Colab Notebook</a>
+
 
    **HTML Files**
 
    - .. raw:: html
 
-      <a href="../notebooks/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+      <a href="../docs/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
 
    - .. raw:: html
 
-      <a href="../notebooks/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
+      <a href="../docs/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
 
 
 
@@ -52,13 +57,16 @@ Column Transformer Example
 
    **Google Colab Notebook**
 
-   - `Column Transformer <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+   - .. raw:: html
+
+      <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Column Transformer</a>
+      
 
    **HTML File**
 
    - .. raw:: html
 
-      <a href="../notebooks/Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
+      <a href="../docs/Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
 
 
 Regression Example
@@ -66,13 +74,16 @@ Regression Example
 
    **Google Colab Notebook**
 
-   - `Redfin Real Estate - Los Angeles Data <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
+   - .. raw:: html
+
+      <a href="https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN" target="_blank">Redfin Real Estate - Los Angeles Data</a>
+      
 
    **HTML File**
    
    - .. raw:: html
 
-      <a href="../notebooks/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data</a>
+      <a href="../docs/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data</a>
 
 
 
