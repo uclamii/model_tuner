@@ -25,7 +25,7 @@ Welcome to Model Tuner's Documentation!
 =======================================
 
 .. important::
-   This documentation is for ``model_tuner`` version ``0.0.13a``.
+   This documentation is for ``model_tuner`` version ``0.0.014a``.
 
 
 What Does Model Tuner Offer?
