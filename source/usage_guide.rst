@@ -26,11 +26,22 @@
 iPython Notebooks
 ===================
 
-- `Binary Classification Example <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_  
+Binary Classification Examples
+--------------------------------
 
-- `Column Transformer Example <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+- `AIDS Clinical Trials <https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M->`_  
 
-- `Regression Example <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
+- `Breast Cancer <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_
+
+Column Transformer Example
+----------------------------
+
+- `Column Transformer <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+
+Regression Example
+----------------------
+
+- `Redfin Real Estate - Los Angeles Data <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
 
 
 Key Methods and Functionalities
