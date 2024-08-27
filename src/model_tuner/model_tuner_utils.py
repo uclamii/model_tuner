@@ -947,9 +947,6 @@ class Model:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_cols
 
-        ## TODO: need to either consolidate stratification into one input or
-        ## alow for simultaneous usage of stratify_cols and stratify_y inputs.
-
         if stratify_cols and stratify_y:
             # Creating stratification columns out of stratify_cols list
             stratify_key = pd.concat([X[stratify_cols], y], axis=1)
@@ -1204,7 +1201,7 @@ def kfold_split(
         return kf
 
 
-def get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"]):
+def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
     return cross_validate(
         classifier,
         X,
