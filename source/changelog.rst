@@ -25,6 +25,31 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.014a
+------------------
+
+In previous versions, the ``train_val_test_split`` method allowed for stratification 
+either by `y` (``stratify_y``) or by specified columns (``stratify_cols``), but 
+not both at the same time. There are use cases where stratification by both the target 
+variable (`y`) and specific columns is necessary to ensure a balanced and representative 
+split across different data segments.
+
+**Enhancement**
+
+Modified the ``train_val_test_split`` method to support simultaneous stratification 
+by both ``stratify_y`` and ``stratify_cols``. This was inside the method achieved 
+by implementing the following logic that ensures both y and the specified columns 
+are considered during the stratification process.
+
+.. code-block:: python
+
+   stratify_key = pd.concat([X[stratify_cols], y], axis=1)
+
+   strat_key_val_test = pd.concat(
+      [X_valid_test[stratify_cols], y_valid_test], axis=1
+   )
+
+
 Version 0.0.013a
 ------------------
 
