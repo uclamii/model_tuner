@@ -29,19 +29,52 @@ iPython Notebooks
 Binary Classification Examples
 --------------------------------
 
-- `AIDS Clinical Trials <https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M->`_  
+   **Google Colab Notebooks**
 
-- `Breast Cancer <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_
+   - `Binary Classification: AIDS Clinical Trials Colab Notebook <https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M->`_  
+
+   - `Binary Classification: Breast Cancer Colab Notebook <https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1>`_
+
+   **HTML Files**
+
+   - .. raw:: html
+
+      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+
+   - .. raw:: html
+
+      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
+
+
 
 Column Transformer Example
 ----------------------------
 
-- `Column Transformer <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+   **Google Colab Notebook**
+
+   - `Column Transformer <https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ>`_
+
+   **HTML File**
+
+   - .. raw:: html
+
+      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
+
 
 Regression Example
 ----------------------
 
-- `Redfin Real Estate - Los Angeles Data <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
+   **Google Colab Notebook**
+
+   - `Redfin Real Estate - Los Angeles Data <https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN>`_
+
+   **HTML File**
+   
+   - .. raw:: html
+
+      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Column Transformer</a>
+
+
 
 
 Key Methods and Functionalities
