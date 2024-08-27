@@ -193,6 +193,10 @@ Input Parameters
 
 Caveats
 =========
+
+Zero Variance Columns
+-----------------------
+
 .. important::
 
    Ensure that your feature set `X` is free of zero-variance columns before using this method. 
@@ -208,6 +212,68 @@ Caveats
       if not zero_variance_columns.empty:
           X = X.drop(columns=zero_variance_columns)
 
+Zero-variance columns in the feature set :math:`X` refer to columns where all values are identical.
+Mathematically, if :math:`X_j` is a column in :math:`X`, the variance of this column is calculated as:
+
+.. math::
+
+   \text{Var}(X_j) = \frac{1}{n} \sum_{i=1}^{n} (X_{ij} - \bar{X}_j)^2 = 0
+
+where :math:`X_{ij}` is the :math:`i`-th observation of feature :math:`j`, and :math:`\bar{X}_j` is the mean of the :math:`j`-th feature. 
+Since all :math:`X_{ij}` are equal, :math:`\text{Var}(X_j)` is zero.
+
+Effects on Model Training
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1. **UserWarning:**
+
+   During model training, algorithms often check for variability in features to determine their usefulness in predicting the target variable. A zero-variance column provides no information, leading to the following warning:
+
+   .. code-block:: text
+
+      UserWarning: Features[feat_num] are constant
+
+   This indicates that the feature :math:`X_j` has no variability and, therefore, cannot contribute to the model's predictive power.
+
+2. **RuntimeWarning:**
+
+   When calculating metrics like the F-statistic used in Analysis of Variance (ANOVA) or feature importance metrics, the following ratio is computed:
+
+   .. math::
+
+      F = \frac{\text{MSB}}{\text{MSW}}
+
+   where :math:`\text{MSB}` (Mean Square Between) and :math:`\text{MSW}` (Mean Square Within) are defined as:
+
+   .. math::
+
+      \text{MSB} = \frac{1}{k-1} \sum_{j=1}^{k} n_j (\bar{X}_j - \bar{X})^2
+
+   .. math::
+
+      \text{MSW} = \frac{1}{n-k} \sum_{j=1}^{k} \sum_{i=1}^{n_j} (X_{ij} - \bar{X}_j)^2
+
+   If :math:`X_j` is a zero-variance column, then :math:`\text{MSW} = 0` because all :math:`X_{ij}` are equal to :math:`\bar{X}_j`. This leads to a division by zero in the calculation of :math:`F`:
+
+   .. math::
+
+      F = \frac{\text{MSB}}{0} \rightarrow \text{undefined}
+
+   which triggers a runtime warning:
+
+   .. code-block:: text
+
+      RuntimeWarning: invalid value encountered in divide f = msb/msw
+
+   indicating that the calculation involves dividing by zero, resulting in undefined or infinite values.
+
+To avoid these issues, ensure that zero-variance columns are removed from :math:`X` before proceeding with model training.
+
+
+Dependent Variable
+-------------------
+
+.. important::
+
    Additionally, ensure that `y` (the target variable) is passed as a Series and not as a DataFrame.
    Passing `y` as a DataFrame can cause issues such as ``DataConversionWarning: A column-vector y was passed 
    when a 1d array was expected. Please change the shape of y to (n_samples,)``. 
@@ -221,6 +287,58 @@ Caveats
           y = y.squeeze()
 
    This conversion ensures that the target variable `y` has the correct shape, preventing the aforementioned warning.
+
+
+Target Variable Shape and Its Effects
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The target variable :math:`y` should be passed as a 1-dimensional array (Series) and not as a 2-dimensional array (DataFrame).
+If :math:`y` is passed as a DataFrame, the model training process might raise the following warning:
+
+.. code-block:: text
+
+   DataConversionWarning: A column-vector y was passed when a 1d array was expected. 
+   Please change the shape of y to (n_samples,).
+
+**Explanation:**
+
+Machine learning models generally expect the target variable :math:`y` to be in the shape of a 1-dimensional array, 
+denoted as :math:`y = \{y_1, y_2, \dots, y_n\}`, where :math:`n` is the number of samples. 
+Mathematically, :math:`y` is represented as:
+
+.. math::
+
+   y = \begin{pmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{pmatrix}
+
+When :math:`y` is passed as a DataFrame, it is treated as a 2-dimensional array, which has the form:
+
+.. math::
+
+   y = \begin{pmatrix} y_1 & y_2 & \dots & y_n \end{pmatrix}
+
+or 
+
+.. math::
+
+   y = \begin{pmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{pmatrix}
+
+where each sample is represented as a column vector. This discrepancy in dimensionality can cause the model to misinterpret the data, 
+leading to the ``DataConversionWarning``.
+
+Solution
+^^^^^^^^^^
+To ensure :math:`y` is interpreted correctly as a 1-dimensional array, it should be passed as a Series. 
+If :math:`y` is currently a DataFrame, you can convert it to a Series using the following code:
+
+.. code-block:: python
+
+   # Convert y to a Series if it's a DataFrame
+   if isinstance(y, pd.DataFrame):
+         y = y.squeeze()
+
+The method :code:`squeeze()` effectively removes any unnecessary dimensions, converting a 2-dimensional DataFrame 
+with a single column into a 1-dimensional Series. This ensures that :math:`y` has the correct shape, preventing 
+the aforementioned warning and ensuring the model processes the target variable correctly.
 
 
 
