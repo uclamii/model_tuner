@@ -92,13 +92,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-1-import-necessary-libraries">Step 1: Import Necessary Libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset-define-x-y">Step 2: Load the dataset, define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-check-for-zero-variance-columns-and-drop-accordingly">Step 3: Check for zero-variance columns and drop accordingly</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbclassifier">Step 3: Create an Instance of the XGBClassifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning">Step 6: Perform Grid Search Parameter Tuning</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return Metrics (Optional)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-9-calibrate-the-model-if-needed">Step 9: Calibrate the Model (if needed)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-create-an-instance-of-the-xgbclassifier">Step 4: Create an Instance of the XGBClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-define-hyperparameters-for-xgboost">Step 5: Define Hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-initialize-and-configure-the-model">Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-perform-grid-search-parameter-tuning">Step 7: Perform Grid Search Parameter Tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8-fit-the-model">Step 8: Fit the Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-9-return-metrics-optional">Step 9: Return Metrics (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the Model (if needed)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#classification-report-optional">Classification Report (Optional)</a></li>
 </ul>
 </li>
@@ -108,9 +108,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Step 1: Import Necessary Libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Step 3: Create an Instance of the XGBClassifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Step 4: Define Hyperparameters for XGBoost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbclassifier">Step 3: Create an Instance of the XGBClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-fit-the-model">Step 6: Fit the Model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-return-metrics-optional">Step 7: Return Metrics (Optional)</a></li>
 </ul>
@@ -516,8 +516,8 @@ with a simple command:</p>
 </pre></div>
 </div>
 </section>
-<section id="step-3-create-an-instance-of-the-xgbclassifier">
-<h3>Step 3: Create an Instance of the XGBClassifier<a class="headerlink" href="#step-3-create-an-instance-of-the-xgbclassifier" title="Link to this heading"></a></h3>
+<section id="step-4-create-an-instance-of-the-xgbclassifier">
+<h3>Step 4: Create an Instance of the XGBClassifier<a class="headerlink" href="#step-4-create-an-instance-of-the-xgbclassifier" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating an instance of the XGBClassifier</span>
 <span class="n">xgb_model</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
@@ -525,8 +525,8 @@ with a simple command:</p>
 </pre></div>
 </div>
 </section>
-<section id="step-4-define-hyperparameters-for-xgboost">
-<h3>Step 4: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-4-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
+<section id="step-5-define-hyperparameters-for-xgboost">
+<h3>Step 5: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-5-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
 <span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 
@@ -558,8 +558,8 @@ with a simple command:</p>
 </pre></div>
 </div>
 </section>
-<section id="step-5-initialize-and-configure-the-model">
-<h3>Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-5-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
+<section id="step-6-initialize-and-configure-the-model">
+<h3>Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
 <span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_AIDS&quot;</span><span class="p">,</span>
@@ -581,8 +581,8 @@ with a simple command:</p>
 </pre></div>
 </div>
 </section>
-<section id="step-6-perform-grid-search-parameter-tuning">
-<h3>Step 6: Perform Grid Search Parameter Tuning<a class="headerlink" href="#step-6-perform-grid-search-parameter-tuning" title="Link to this heading"></a></h3>
+<section id="step-7-perform-grid-search-parameter-tuning">
+<h3>Step 7: Perform Grid Search Parameter Tuning<a class="headerlink" href="#step-7-perform-grid-search-parameter-tuning" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform grid search parameter tuning</span>
 <span class="n">model_tuner</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
@@ -602,8 +602,8 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 </pre></div>
 </div>
 </section>
-<section id="step-7-fit-the-model">
-<h3>Step 7: Fit the Model<a class="headerlink" href="#step-7-fit-the-model" title="Link to this heading"></a></h3>
+<section id="step-8-fit-the-model">
+<h3>Step 8: Fit the Model<a class="headerlink" href="#step-8-fit-the-model" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the training and validation data</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -618,8 +618,8 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 </pre></div>
 </div>
 </section>
-<section id="step-8-return-metrics-optional">
-<h3>Step 8: Return Metrics (Optional)<a class="headerlink" href="#step-8-return-metrics-optional" title="Link to this heading"></a></h3>
+<section id="step-9-return-metrics-optional">
+<h3>Step 9: Return Metrics (Optional)<a class="headerlink" href="#step-9-return-metrics-optional" title="Link to this heading"></a></h3>
 <p>You can use this function to evaluate the model by printing the output.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Return metrics for the validation set</span>
 <span class="n">metrics</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
@@ -675,8 +675,8 @@ Feature<span class="w"> </span>names<span class="w"> </span>selected:
 </pre></div>
 </div>
 </section>
-<section id="step-9-calibrate-the-model-if-needed">
-<h3>Step 9: Calibrate the Model (if needed)<a class="headerlink" href="#step-9-calibrate-the-model-if-needed" title="Link to this heading"></a></h3>
+<section id="step-10-calibrate-the-model-if-needed">
+<h3>Step 10: Calibrate the Model (if needed)<a class="headerlink" href="#step-10-calibrate-the-model-if-needed" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 
 <span class="c1"># Get the predicted probabilities for the validation data from the</span>
@@ -809,8 +809,8 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </pre></div>
 </div>
 </section>
-<section id="id2">
-<h3>Step 3: Create an Instance of the XGBClassifier<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="step-3-create-an-instance-of-the-xgbclassifier">
+<h3>Step 3: Create an Instance of the XGBClassifier<a class="headerlink" href="#step-3-create-an-instance-of-the-xgbclassifier" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating an instance of the XGBRegressor</span>
 <span class="n">xgb_model</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBRegressor</span><span class="p">(</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
@@ -818,8 +818,8 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h3>Step 4: Define Hyperparameters for XGBoost<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="step-4-define-hyperparameters-for-xgboost">
+<h3>Step 4: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-4-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
 <span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 
@@ -844,8 +844,8 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </pre></div>
 </div>
 </section>
-<section id="id4">
-<h3>Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="step-5-initialize-and-configure-the-model">
+<h3>Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-5-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
 <span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_California_Housing&quot;</span><span class="p">,</span>

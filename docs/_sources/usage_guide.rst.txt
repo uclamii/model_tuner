@@ -519,7 +519,7 @@ Step 3: Check for zero-variance columns and drop accordingly
       X = X.drop(columns=zero_variance_columns)
 
 
-Step 3: Create an Instance of the XGBClassifier
+Step 4: Create an Instance of the XGBClassifier
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -529,7 +529,7 @@ Step 3: Create an Instance of the XGBClassifier
       random_state=222,
    )
 
-Step 4: Define Hyperparameters for XGBoost
+Step 5: Define Hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -564,7 +564,7 @@ Step 4: Define Hyperparameters for XGBoost
    ]
 
 
-Step 5: Initialize and Configure the ``Model``
+Step 6: Initialize and Configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -588,7 +588,7 @@ Step 5: Initialize and Configure the ``Model``
       n_jobs=-1,
    )
 
-Step 6: Perform Grid Search Parameter Tuning
+Step 7: Perform Grid Search Parameter Tuning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -611,7 +611,7 @@ Step 6: Perform Grid Search Parameter Tuning
    'score': 0.9364314448541736}
    Best roc_auc: 0.936 
 
-Step 7: Fit the Model
+Step 8: Fit the Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -628,7 +628,7 @@ Step 7: Fit the Model
       score="roc_auc",
    )
 
-Step 8: Return Metrics (Optional)
+Step 9: Return Metrics (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use this function to evaluate the model by printing the output.
@@ -688,7 +688,7 @@ You can use this function to evaluate the model by printing the output.
          [ 31,  83]]),
    'K Best Features': ['time', 'strat', 'cd40', 'cd420']}   
 
-Step 9: Calibrate the Model (if needed)
+Step 10: Calibrate the Model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
