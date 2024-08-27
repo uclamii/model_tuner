@@ -13106,6 +13106,62 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2><p>This Google Colab notebook utilizes a dataset on the Los Angeles Real Estate market sourced from <code>Redfin</code>, consisting of 200 rows and 27 columns. The dataset captures a snapshot in time of various property listings, providing detailed information about each property.</p>
+<h2 id="Dataset-Columns">Dataset Columns<a class="anchor-link" href="#Dataset-Columns">&#182;</a></h2><p>The dataset includes the following columns:</p>
+<ul>
+<li><code>SALE TYPE</code></li>
+<li><code>SOLD DATE</code></li>
+<li><code>PROPERTY TYPE</code></li>
+<li><code>ADDRESS</code></li>
+<li><code>CITY</code></li>
+<li><code>STATE OR PROVINCE</code></li>
+<li><code>ZIP OR POSTAL CODE</code></li>
+<li><code>PRICE</code></li>
+<li><code>BEDS</code></li>
+<li><code>BATHS</code></li>
+<li><code>LOCATION</code></li>
+<li><code>SQUARE FEET</code></li>
+<li><code>LOT SIZE</code></li>
+<li><code>YEAR BUILT</code></li>
+<li><code>DAYS ON MARKET</code></li>
+<li><code>$/SQUARE FEET</code></li>
+<li><code>HOA/MONTH</code></li>
+<li><code>STATUS</code></li>
+<li><code>NEXT OPEN HOUSE START TIME</code></li>
+<li><code>NEXT OPEN HOUSE END TIME</code></li>
+<li><code>URL (SEE https://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)</code></li>
+<li><code>SOURCE</code></li>
+<li><code>MLS#</code></li>
+<li><code>FAVORITE</code></li>
+<li><code>INTERESTED</code></li>
+<li><code>LATITUDE</code></li>
+<li><code>LONGITUDE</code></li>
+</ul>
+<h2 id="Usage">Usage<a class="anchor-link" href="#Usage">&#182;</a></h2><p>The primary purpose of this notebook is to demonstrate various regression examples using the Redfin dataset. Specifically, the following variables are used for testing in this notebook:</p>
+<ul>
+<li><p><strong>Features (X):</strong></p>
+<ul>
+<li><code>BEDS</code></li>
+<li><code>BATHS</code></li>
+<li><code>SQUARE FEET</code></li>
+<li><code>LOT SIZE</code></li>
+</ul>
+</li>
+<li><p><strong>Target (y):</strong></p>
+<ul>
+<li><code>PRICE</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="Source">Source<a class="anchor-link" href="#Source">&#182;</a></h2><p>The dataset is sourced from Redfin, available at <a href="https://www.redfin.com/">Redfin's Comparative Market Analysis</a>.</p>
+<h2 id="Note">Note<a class="anchor-link" href="#Note">&#182;</a></h2><p>This dataset represents a single snapshot in time and may not reflect current market conditions.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Model-Tuner-Library-Instructions">Model Tuner Library Instructions<a class="anchor-link" href="#Model-Tuner-Library-Instructions">&#182;</a></h2><p>This notebook provides a guide on how to install and use the <code>model_tuner</code> library in a notebook environment like Google Colab.</p>
 
 </div>
@@ -13279,69 +13335,6 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Regression-Examples-Via-The-Redfin-Dataset">Regression Examples Via The Redfin Dataset<a class="anchor-link" href="#Regression-Examples-Via-The-Redfin-Dataset">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2><p>This Google Colab notebook utilizes a dataset on the Los Angeles Real Estate market sourced from <code>Redfin</code>, consisting of 200 rows and 27 columns. The dataset captures a snapshot in time of various property listings, providing detailed information about each property.</p>
-<h2 id="Dataset-Columns">Dataset Columns<a class="anchor-link" href="#Dataset-Columns">&#182;</a></h2><p>The dataset includes the following columns:</p>
-<ul>
-<li><code>SALE TYPE</code></li>
-<li><code>SOLD DATE</code></li>
-<li><code>PROPERTY TYPE</code></li>
-<li><code>ADDRESS</code></li>
-<li><code>CITY</code></li>
-<li><code>STATE OR PROVINCE</code></li>
-<li><code>ZIP OR POSTAL CODE</code></li>
-<li><code>PRICE</code></li>
-<li><code>BEDS</code></li>
-<li><code>BATHS</code></li>
-<li><code>LOCATION</code></li>
-<li><code>SQUARE FEET</code></li>
-<li><code>LOT SIZE</code></li>
-<li><code>YEAR BUILT</code></li>
-<li><code>DAYS ON MARKET</code></li>
-<li><code>$/SQUARE FEET</code></li>
-<li><code>HOA/MONTH</code></li>
-<li><code>STATUS</code></li>
-<li><code>NEXT OPEN HOUSE START TIME</code></li>
-<li><code>NEXT OPEN HOUSE END TIME</code></li>
-<li><code>URL (SEE https://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)</code></li>
-<li><code>SOURCE</code></li>
-<li><code>MLS#</code></li>
-<li><code>FAVORITE</code></li>
-<li><code>INTERESTED</code></li>
-<li><code>LATITUDE</code></li>
-<li><code>LONGITUDE</code></li>
-</ul>
-<h2 id="Usage">Usage<a class="anchor-link" href="#Usage">&#182;</a></h2><p>The primary purpose of this notebook is to demonstrate various regression examples using the Redfin dataset. Specifically, the following variables are used for testing in this notebook:</p>
-<ul>
-<li><p><strong>Features (X):</strong></p>
-<ul>
-<li><code>BEDS</code></li>
-<li><code>BATHS</code></li>
-<li><code>SQUARE FEET</code></li>
-<li><code>LOT SIZE</code></li>
-</ul>
-</li>
-<li><p><strong>Target (y):</strong></p>
-<ul>
-<li><code>PRICE</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="Source">Source<a class="anchor-link" href="#Source">&#182;</a></h2><p>The dataset is sourced from Redfin, available at <a href="https://www.redfin.com/">Redfin's Comparative Market Analysis</a>.</p>
-<h2 id="Note">Note<a class="anchor-link" href="#Note">&#182;</a></h2><p>This dataset represents a single snapshot in time and may not reflect current market conditions.</p>
-
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
