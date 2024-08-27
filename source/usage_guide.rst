@@ -208,6 +208,21 @@ Caveats
       if not zero_variance_columns.empty:
           X = X.drop(columns=zero_variance_columns)
 
+   Additionally, ensure that `y` (the target variable) is passed as a Series and not as a DataFrame.
+   Passing `y` as a DataFrame can cause issues such as ``DataConversionWarning: A column-vector y was passed 
+   when a 1d array was expected. Please change the shape of y to (n_samples,)``. 
+
+   If `y` is a DataFrame, you can convert it to a Series using the following code:
+
+   .. code-block:: python
+
+      # Convert y to a Series if it's a DataFrame
+      if isinstance(y, pd.DataFrame):
+          y = y.squeeze()
+
+   This conversion ensures that the target variable `y` has the correct shape, preventing the aforementioned warning.
+
+
 
 Model Calibration
 ==================

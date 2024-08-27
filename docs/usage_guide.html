@@ -279,6 +279,16 @@ and <code class="docutils literal notranslate"><span class="pre">RuntimeWarning:
     <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">zero_variance_columns</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Additionally, ensure that <cite>y</cite> (the target variable) is passed as a Series and not as a DataFrame.
+Passing <cite>y</cite> as a DataFrame can cause issues such as <code class="docutils literal notranslate"><span class="pre">DataConversionWarning:</span> <span class="pre">A</span> <span class="pre">column-vector</span> <span class="pre">y</span> <span class="pre">was</span> <span class="pre">passed</span>
+<span class="pre">when</span> <span class="pre">a</span> <span class="pre">1d</span> <span class="pre">array</span> <span class="pre">was</span> <span class="pre">expected.</span> <span class="pre">Please</span> <span class="pre">change</span> <span class="pre">the</span> <span class="pre">shape</span> <span class="pre">of</span> <span class="pre">y</span> <span class="pre">to</span> <span class="pre">(n_samples,)</span></code>.</p>
+<p>If <cite>y</cite> is a DataFrame, you can convert it to a Series using the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert y to a Series if it&#39;s a DataFrame</span>
+<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This conversion ensures that the target variable <cite>y</cite> has the correct shape, preventing the aforementioned warning.</p>
 </div>
 </section>
 <section id="model-calibration">
