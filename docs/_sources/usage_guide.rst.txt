@@ -619,6 +619,7 @@ Step 8: Fit the Model
    # Get the training and validation data
    X_train, y_train = model_tuner.get_train_data(X, y)
    X_valid, y_valid = model_tuner.get_valid_data(X, y)
+   X_test, y_test = model_tuner.get_test_data(X, y)
 
    # Fit the model with the validation data
    model_tuner.fit(
