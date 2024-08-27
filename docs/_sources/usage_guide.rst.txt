@@ -39,11 +39,11 @@ Binary Classification Examples
 
    - .. raw:: html
 
-      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+      <a href="notebooks/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
 
    - .. raw:: html
 
-      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
+      <a href="notebooks/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
 
 
 
@@ -58,7 +58,7 @@ Column Transformer Example
 
    - .. raw:: html
 
-      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
+      <a href="notebooks/Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
 
 
 Regression Example
@@ -72,7 +72,7 @@ Regression Example
    
    - .. raw:: html
 
-      <a href="C:/Users/lshpaner/Documents/Python_Projects/model_tuner/notebooks/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Column Transformer</a>
+      <a href="notebooks/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Column Transformer</a>
 
 
 
