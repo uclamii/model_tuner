@@ -947,20 +947,27 @@ class Model:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_cols
 
-        if stratify_cols and stratify_y:
+        if stratify_cols is not None and stratify_y:
             # Creating stratification columns out of stratify_cols list
-            stratify_key = pd.concat([X[stratify_cols], y], axis=1)
-        elif stratify_cols:
+            if type(stratify_cols) == pd.DataFrame:
+                stratify_key = pd.concat([stratify_cols, y], axis=1)
+            else:
+                stratify_key = pd.concat([X[stratify_cols], y], axis=1)
+        elif stratify_cols is not None:
             stratify_key = X[stratify_cols]
         elif stratify_y:
             stratify_key = y
         else:
             stratify_key = None
 
+        if stratify_key is not None:
+            stratify_key = stratify_key.copy()
+            stratify_key = stratify_key.fillna('')
+
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
-
+        print(stratify_key)
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -972,16 +979,24 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
-        if stratify_cols and stratify_y:
-            strat_key_val_test = pd.concat(
-                [X_valid_test[stratify_cols], y_valid_test], axis=1
-            )
-        elif stratify_cols:
+        if stratify_cols is not None and stratify_y:
+            # Creating stratification columns out of stratify_cols list
+            if type(stratify_cols) == pd.DataFrame:
+                strat_key_val_test = pd.concat(
+                    [stratify_cols.loc[X_valid_test.index,:], y_valid_test], axis=1
+                )
+            else:
+                strat_key_val_test = pd.concat([X_valid_test[stratify_cols], y], axis=1)
+        elif stratify_cols is not None:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
             strat_key_val_test = y_valid_test
         else:
             strat_key_val_test = None
+
+        if strat_key_val_test is not None:
+            strat_key_val_test = strat_key_val_test.copy()
+            strat_key_val_test = strat_key_val_test.fillna('')
 
         # Further split (validation + test) set into validation and test sets
         X_valid, X_test, y_valid, y_test = train_test_split(
