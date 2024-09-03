@@ -960,9 +960,9 @@ class Model:
         else:
             stratify_key = None
 
-        if stratify_key is not None:
-            stratify_key = stratify_key.copy()
-            stratify_key = stratify_key.fillna('')
+        if stratify_cols is not None:
+            # stratify_key = stratify_key.copy()
+            stratify_key = stratify_key.fillna("")
 
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
@@ -983,10 +983,12 @@ class Model:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
                 strat_key_val_test = pd.concat(
-                    [stratify_cols.loc[X_valid_test.index,:], y_valid_test], axis=1
+                    [stratify_cols.loc[X_valid_test.index, :], y_valid_test], axis=1
                 )
             else:
-                strat_key_val_test = pd.concat([X_valid_test[stratify_cols], y], axis=1)
+                strat_key_val_test = pd.concat(
+                    [X_valid_test[stratify_cols], y_valid_test], axis=1
+                )
         elif stratify_cols is not None:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
@@ -994,9 +996,8 @@ class Model:
         else:
             strat_key_val_test = None
 
-        if strat_key_val_test is not None:
-            strat_key_val_test = strat_key_val_test.copy()
-            strat_key_val_test = strat_key_val_test.fillna('')
+        if stratify_cols is not None:
+            strat_key_val_test = strat_key_val_test.fillna("")
 
         # Further split (validation + test) set into validation and test sets
         X_valid, X_test, y_valid, y_test = train_test_split(
