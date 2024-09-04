@@ -200,7 +200,7 @@ class Model:
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
         self.trained = trained
-        self.labels = ["tp", "fn", "fp", "tn"]
+        self.labels = ["tn", "fp", "fn", "tp"]
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
 
@@ -1214,7 +1214,6 @@ def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
 
 
 def _confusion_matrix_print(conf_matrix, labels):
-
     max_length = max(len(str(conf_matrix.max())), 2)
     border = "-" * 80
     print(border)
@@ -1222,13 +1221,12 @@ def _confusion_matrix_print(conf_matrix, labels):
     print(f"{'':>12}{'Pos':>{max_length+1}}{'Neg':>{max_length+3}}")
     print(border)
     print(
-        f"Actual: Pos {conf_matrix[0,0]:>{max_length}} ({labels[0]})  {conf_matrix[0,1]:>{max_length}} ({labels[1]})"
+        f"Actual: Pos {conf_matrix[1,1]:>{max_length}} ({labels[3]})  {conf_matrix[1,0]:>{max_length}} ({labels[2]})"
     )
     print(
-        f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({labels[2]})  {conf_matrix[1,1]:>{max_length}} ({labels[3]})"
+        f"{'':>8}Neg {conf_matrix[0,1]:>{max_length}} ({labels[1]})  {conf_matrix[0,0]:>{max_length}} ({labels[0]})"
     )
     print(border)
-
 
 ################################################################################
 
