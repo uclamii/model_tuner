@@ -132,13 +132,6 @@ class Model:
 
         if scaler_type == None:
             pipeline_steps = pipeline_steps
-        pipeline_steps = [
-            step
-            for step in pipeline_steps
-            if not isinstance(
-                step[1], (SimpleImputer) or not isinstance(step[1], (StandardScaler))
-            )
-        ]
         if scaler_type == "standard_scaler":
             pipeline_steps.append(("standard_scaler", StandardScaler()))
         if impute:
@@ -214,13 +207,21 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        imputer_test = clone(self.estimator.named_steps["imputer"])
+        if self.impute:
+            preproc_test = clone(self.estimator.named_steps["imputer"])
+        elif self.pipeline:
+            ### Need to detect what the name of a columnt transformer has been called
+            ### if we are using custom pipeline steps
+            preproc_test = clone(self.estimator.named_steps['Preprocessor'])
+        else:
+            pass
+        
         resampler_test = clone(self.estimator.named_steps["Resampler"])
 
-        X_train_imputed = imputer_test.fit_transform(X_train)
+        X_train_preproc = preproc_test.fit_transform(X_train)
 
-        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
-
+        X_res, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
+        
         if not isinstance(y_res, pd.DataFrame):
             y_res = pd.DataFrame(y_res)
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
