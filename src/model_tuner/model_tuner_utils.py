@@ -210,7 +210,7 @@ class Model:
         if self.impute:
             preproc_test = clone(self.estimator.named_steps["imputer"])
         elif self.pipeline:
-            ### Need to detect what the name of a columnt transformer has been called
+            ### Need to detect what the name of a column transformer has been called
             ### if we are using custom pipeline steps
             preproc_test = clone(self.estimator.named_steps['Preprocessor'])
         else:
