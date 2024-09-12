@@ -967,7 +967,6 @@ class Model:
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
-        print(stratify_key)
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
