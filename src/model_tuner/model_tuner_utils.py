@@ -15,8 +15,7 @@ from sklearn.metrics import (
 )
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
-from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -37,44 +36,44 @@ from sklearn.linear_model import LogisticRegression
 | Scoring                        | Function                             | Comment                        |
 |--------------------------------|--------------------------------------|--------------------------------|
 | Classification                 |                                      |                                |
-| ‘accuracy’                     | metrics.accuracy_score               |                                |
-| ‘balanced_accuracy’            | metrics.balanced_accuracy_score      |                                |
-| ‘average_precision’            | metrics.average_precision_score      |                                |
-| ‘neg_brier_score’              | metrics.brier_score_loss             |                                |
-| ‘f1’                           | metrics.f1_score                     | for binary targets             |
-| ‘f1_micro’                     | metrics.f1_score                     | micro-averaged                 |
-| ‘f1_macro’                     | metrics.f1_score                     | macro-averaged                 |
-| ‘f1_weighted’                  | metrics.f1_score                     | weighted average               |
-| ‘f1_samples’                   | metrics.f1_score                     | by multilabel sample           |
-| ‘neg_log_loss’                 | metrics.log_loss                     | requires predict_proba support |
-| ‘precision’ etc.               | metrics.precision_score              | suffixes apply as with ‘f1’    |
-| ‘recall’ etc.                  | metrics.recall_score                 | suffixes apply as with ‘f1’    |
-| ‘jaccard’ etc.                 | metrics.jaccard_score                | suffixes apply as with ‘f1’    |
-| ‘roc_auc’                      | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovr’                  | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovo’                  | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovr_weighted’         | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovo_weighted’         | metrics.roc_auc_score                |                                |
+| `accuracy`                     | metrics.accuracy_score               |                                |
+| `balanced_accuracy`            | metrics.balanced_accuracy_score      |                                |
+| `average_precision`            | metrics.average_precision_score      |                                |
+| `neg_brier_score`              | metrics.brier_score_loss             |                                |
+| `f1`                           | metrics.f1_score                     | for binary targets             |
+| `f1_micro`                     | metrics.f1_score                     | micro-averaged                 |
+| `f1_macro`                     | metrics.f1_score                     | macro-averaged                 |
+| `f1_weighted`                  | metrics.f1_score                     | weighted average               |
+| `f1_samples`                   | metrics.f1_score                     | by multilabel sample           |
+| `neg_log_loss`                 | metrics.log_loss                     | requires predict_proba support |
+| `precision` etc.               | metrics.precision_score              | suffixes apply as with `f1`    |
+| `recall` etc.                  | metrics.recall_score                 | suffixes apply as with `f1`    |
+| `jaccard` etc.                 | metrics.jaccard_score                | suffixes apply as with `f1`    |
+| `roc_auc`                      | metrics.roc_auc_score                |                                |
+| `roc_auc_ovr`                  | metrics.roc_auc_score                |                                |
+| `roc_auc_ovo`                  | metrics.roc_auc_score                |                                |
+| `roc_auc_ovr_weighted`         | metrics.roc_auc_score                |                                |
+| `roc_auc_ovo_weighted`         | metrics.roc_auc_score                |                                |
 | Clustering                     |                                      |                                |
-| ‘adjusted_mutual_info_score’   | metrics.adjusted_mutual_info_score   |                                |
-| ‘adjusted_rand_score’          | metrics.adjusted_rand_score          |                                |
-| ‘completeness_score’           | metrics.completeness_score           |                                |
-| ‘fowlkes_mallows_score’        | metrics.fowlkes_mallows_score        |                                |
-| ‘homogeneity_score’            | metrics.homogeneity_score            |                                |
-| ‘mutual_info_score’            | metrics.mutual_info_score            |                                |
-| ‘normalized_mutual_info_score’ | metrics.normalized_mutual_info_score |                                |
-| ‘v_measure_score’              | metrics.v_measure_score              |                                |
+| `adjusted_mutual_info_score`   | metrics.adjusted_mutual_info_score   |                                |
+| `adjusted_rand_score`          | metrics.adjusted_rand_score          |                                |
+| `completeness_score`           | metrics.completeness_score           |                                |
+| `fowlkes_mallows_score`        | metrics.fowlkes_mallows_score        |                                |
+| `homogeneity_score`            | metrics.homogeneity_score            |                                |
+| `mutual_info_score`            | metrics.mutual_info_score            |                                |
+| `normalized_mutual_info_score` | metrics.normalized_mutual_info_score |                                |
+| `v_measure_score`              | metrics.v_measure_score              |                                |
 | Regression                     |                                      |                                |
-| ‘explained_variance’           | metrics.explained_variance_score     |                                |
-| ‘max_error’                    | metrics.max_error                    |                                |
-| ‘neg_mean_absolute_error’      | metrics.mean_absolute_error          |                                |
-| ‘neg_mean_squared_error’       | metrics.mean_squared_error           |                                |
-| ‘neg_root_mean_squared_error’  | metrics.mean_squared_error           |                                |
-| ‘neg_mean_squared_log_error’   | metrics.mean_squared_log_error       |                                |
-| ‘neg_median_absolute_error’    | metrics.median_absolute_error        |                                |
-| ‘r2’                           | metrics.r2_score                     |                                |
-| ‘neg_mean_poisson_deviance’    | metrics.mean_poisson_deviance        |                                |
-| ‘neg_mean_gamma_deviance’      | metrics.mean_gamma_deviance          |                                |
+| `explained_variance`           | metrics.explained_variance_score     |                                |
+| `max_error`                    | metrics.max_error                    |                                |
+| `neg_mean_absolute_error`      | metrics.mean_absolute_error          |                                |
+| `neg_mean_squared_error`       | metrics.mean_squared_error           |                                |
+| `neg_root_mean_squared_error`  | metrics.mean_squared_error           |                                |
+| `neg_mean_squared_log_error`   | metrics.mean_squared_log_error       |                                |
+| `neg_median_absolute_error`    | metrics.median_absolute_error        |                                |
+| `r2`                           | metrics.r2_score                     |                                |
+| `neg_mean_poisson_deviance`    | metrics.mean_poisson_deviance        |                                |
+| `neg_mean_gamma_deviance`      | metrics.mean_gamma_deviance          |                                |
 
 """
 
@@ -104,12 +103,8 @@ class Model:
         feature_names=None,
         randomized_grid=False,
         n_iter=100,
-        trained=False,
         pipeline=True,
-        scaler_type="min_max_scaler",
-        impute_strategy="mean",
-        impute=False,
-        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
+        pipeline_steps=[],
         xgboost_early=False,
         selectKBest=False,
         model_type="classification",
@@ -130,12 +125,6 @@ class Model:
             calibration_method  # 04_27_24 --> added calibration method
         )
 
-        if scaler_type == None:
-            pipeline_steps = pipeline_steps
-        if scaler_type == "standard_scaler":
-            pipeline_steps.append(("standard_scaler", StandardScaler()))
-        if impute:
-            pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
@@ -192,7 +181,6 @@ class Model:
         self.test_size = test_size
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
-        self.trained = trained
         self.labels = ["tn", "fp", "fn", "tp"]
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
@@ -207,33 +195,25 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        if self.impute:
-            preproc_test = clone(self.estimator.named_steps["imputer"])
-        elif self.pipeline:
+        if self.pipeline:
             ### Need to detect what the name of a column transformer has been called
             ### if we are using custom pipeline steps
-            preproc_test = clone(self.estimator.named_steps['Preprocessor'])
+            preproc_test = clone(self.estimator.named_steps["Preprocessor"])
         else:
             pass
-        
+
         resampler_test = clone(self.estimator.named_steps["Resampler"])
 
         X_train_preproc = preproc_test.fit_transform(X_train)
 
         X_res, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
-        
+
         if not isinstance(y_res, pd.DataFrame):
             y_res = pd.DataFrame(y_res)
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(
-        self,
-        X,
-        y,
-        score=None,
-        stratify=None,
-    ):
+    def calibrateModel(self, X, y, score=None):
         if self.kfold:
             if score == None:
                 if self.calibrate:
@@ -453,7 +433,13 @@ class Model:
                             if not key.startswith(f"{self.estimator_name}__")
                         }
                         if self.imbalance_sampler:
-                            self.estimator[:-2].set_params(**params_no_estimator).fit(
+                            params_no_sampler = {
+                                key: value
+                                for key, value in params_no_estimator.items()
+                                if not key.startswith("Resampler__")
+                            }
+
+                            self.estimator[:-2].set_params(**params_no_sampler).fit(
                                 X, y
                             )
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
@@ -778,9 +764,15 @@ class Model:
                                 if not key.startswith(f"{self.estimator_name}__")
                             }
                             if self.imbalance_sampler:
-                                self.estimator[:-2].set_params(
-                                    **params_no_estimator
-                                ).fit(X_train, y_train)
+                                params_no_sampler = {
+                                    key: value
+                                    for key, value in params_no_estimator.items()
+                                    if not key.startswith("Resampler__")
+                                }
+
+                                self.estimator[:-2].set_params(**params_no_sampler).fit(
+                                    X_train, y_train
+                                )
                                 X_valid_selected = self.estimator[:-2].transform(
                                     X_valid
                                 )
@@ -950,7 +942,10 @@ class Model:
 
         if stratify_cols and stratify_y:
             # Creating stratification columns out of stratify_cols list
-            stratify_key = pd.concat([X[stratify_cols], y], axis=1)
+            if type(stratify_cols) == pd.DataFrame:
+                stratify_key = pd.concat([stratify_cols, y], axis=1)
+            else:
+                stratify_key = pd.concat([X[stratify_cols], y], axis=1)
         elif stratify_cols:
             stratify_key = X[stratify_cols]
         elif stratify_y:
@@ -958,10 +953,15 @@ class Model:
         else:
             stratify_key = None
 
+        if stratify_cols:
+            # stratify_key = stratify_key.copy()
+            stratify_key = stratify_key.fillna("")
+
+        ##### MARKED FOR REMOVAL ######
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
-
+        ##############################
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -974,15 +974,24 @@ class Model:
         proportion = test_size / (validation_size + test_size)
 
         if stratify_cols and stratify_y:
-            strat_key_val_test = pd.concat(
-                [X_valid_test[stratify_cols], y_valid_test], axis=1
-            )
+            # Creating stratification columns out of stratify_cols list
+            if type(stratify_cols) == pd.DataFrame:
+                strat_key_val_test = pd.concat(
+                    [stratify_cols.loc[X_valid_test.index, :], y_valid_test], axis=1
+                )
+            else:
+                strat_key_val_test = pd.concat(
+                    [X_valid_test[stratify_cols], y_valid_test], axis=1
+                )
         elif stratify_cols:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
             strat_key_val_test = y_valid_test
         else:
             strat_key_val_test = None
+
+        if stratify_cols:
+            strat_key_val_test = strat_key_val_test.fillna("")
 
         # Further split (validation + test) set into validation and test sets
         X_valid, X_test, y_valid, y_test = train_test_split(
@@ -1228,6 +1237,7 @@ def _confusion_matrix_print(conf_matrix, labels):
         f"{'':>8}Neg {conf_matrix[0,1]:>{max_length}} ({labels[1]})  {conf_matrix[0,0]:>{max_length}} ({labels[0]})"
     )
     print(border)
+
 
 ################################################################################
 
