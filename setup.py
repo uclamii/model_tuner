@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="model_tuner",
-    version="0.0.14a",
+    version="0.0.15a",
     author="UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis",
     author_email="pp89@ucla.edu",
     description="A Python library for tuning machine learning models.",
