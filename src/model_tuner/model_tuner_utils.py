@@ -985,6 +985,7 @@ class Model:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
         ##############################
+        
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
