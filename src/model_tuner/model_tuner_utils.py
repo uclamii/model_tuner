@@ -1006,7 +1006,7 @@ class Model:
                 strat_key_val_test = pd.concat(
                     [X_valid_test[stratify_cols], y_valid_test], axis=1
                 )
-        elif stratify_cols:
+        elif stratify_cols is not None:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
             strat_key_val_test = y_valid_test
