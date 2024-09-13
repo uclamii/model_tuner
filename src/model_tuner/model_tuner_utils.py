@@ -13,10 +13,10 @@ from sklearn.metrics import (
     median_absolute_error,
     r2_score,
 )
+import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler
-from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -37,44 +37,44 @@ from sklearn.linear_model import LogisticRegression
 | Scoring                        | Function                             | Comment                        |
 |--------------------------------|--------------------------------------|--------------------------------|
 | Classification                 |                                      |                                |
-| ‘accuracy’                     | metrics.accuracy_score               |                                |
-| ‘balanced_accuracy’            | metrics.balanced_accuracy_score      |                                |
-| ‘average_precision’            | metrics.average_precision_score      |                                |
-| ‘neg_brier_score’              | metrics.brier_score_loss             |                                |
-| ‘f1’                           | metrics.f1_score                     | for binary targets             |
-| ‘f1_micro’                     | metrics.f1_score                     | micro-averaged                 |
-| ‘f1_macro’                     | metrics.f1_score                     | macro-averaged                 |
-| ‘f1_weighted’                  | metrics.f1_score                     | weighted average               |
-| ‘f1_samples’                   | metrics.f1_score                     | by multilabel sample           |
-| ‘neg_log_loss’                 | metrics.log_loss                     | requires predict_proba support |
-| ‘precision’ etc.               | metrics.precision_score              | suffixes apply as with ‘f1’    |
-| ‘recall’ etc.                  | metrics.recall_score                 | suffixes apply as with ‘f1’    |
-| ‘jaccard’ etc.                 | metrics.jaccard_score                | suffixes apply as with ‘f1’    |
-| ‘roc_auc’                      | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovr’                  | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovo’                  | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovr_weighted’         | metrics.roc_auc_score                |                                |
-| ‘roc_auc_ovo_weighted’         | metrics.roc_auc_score                |                                |
+| ‘accuracy’                    | metrics.accuracy_score               |                                |
+| ‘balanced_accuracy’           | metrics.balanced_accuracy_score      |                                |
+| ‘average_precision’           | metrics.average_precision_score      |                                |
+| ‘neg_brier_score’             | metrics.brier_score_loss             |                                |
+| ‘f1’                          | metrics.f1_score                     | for binary targets             |
+| ‘f1_micro’                    | metrics.f1_score                     | micro-averaged                 |
+| ‘f1_macro’                    | metrics.f1_score                     | macro-averaged                 |
+| ‘f1_weighted’                 | metrics.f1_score                     | weighted average               |
+| ‘f1_samples’                  | metrics.f1_score                     | by multilabel sample           |
+| ‘neg_log_loss’                | metrics.log_loss                     | requires predict_proba support |
+| ‘precision’etc.               | metrics.precision_score              | suffixes apply as with ‘f1’   |
+| ‘recall’etc.                  | metrics.recall_score                 | suffixes apply as with ‘f1’   |
+| ‘jaccard’etc.                 | metrics.jaccard_score                | suffixes apply as with ‘f1’   |
+| ‘roc_auc’                     | metrics.roc_auc_score                |                                |
+| ‘roc_auc_ovr’                 | metrics.roc_auc_score                |                                |
+| ‘roc_auc_ovo’                 | metrics.roc_auc_score                |                                |
+| ‘roc_auc_ovr_weighted’        | metrics.roc_auc_score                |                                |
+| ‘roc_auc_ovo_weighted’        | metrics.roc_auc_score                |                                |
 | Clustering                     |                                      |                                |
-| ‘adjusted_mutual_info_score’   | metrics.adjusted_mutual_info_score   |                                |
-| ‘adjusted_rand_score’          | metrics.adjusted_rand_score          |                                |
-| ‘completeness_score’           | metrics.completeness_score           |                                |
-| ‘fowlkes_mallows_score’        | metrics.fowlkes_mallows_score        |                                |
-| ‘homogeneity_score’            | metrics.homogeneity_score            |                                |
-| ‘mutual_info_score’            | metrics.mutual_info_score            |                                |
-| ‘normalized_mutual_info_score’ | metrics.normalized_mutual_info_score |                                |
-| ‘v_measure_score’              | metrics.v_measure_score              |                                |
+| ‘adjusted_mutual_info_score’  | metrics.adjusted_mutual_info_score   |                                |
+| ‘adjusted_rand_score’         | metrics.adjusted_rand_score          |                                |
+| ‘completeness_score’          | metrics.completeness_score           |                                |
+| ‘fowlkes_mallows_score’       | metrics.fowlkes_mallows_score        |                                |
+| ‘homogeneity_score’           | metrics.homogeneity_score            |                                |
+| ‘mutual_info_score’           | metrics.mutual_info_score            |                                |
+| ‘normalized_mutual_info_score’| metrics.normalized_mutual_info_score |                                |
+| ‘v_measure_score’             | metrics.v_measure_score              |                                |
 | Regression                     |                                      |                                |
-| ‘explained_variance’           | metrics.explained_variance_score     |                                |
-| ‘max_error’                    | metrics.max_error                    |                                |
-| ‘neg_mean_absolute_error’      | metrics.mean_absolute_error          |                                |
-| ‘neg_mean_squared_error’       | metrics.mean_squared_error           |                                |
-| ‘neg_root_mean_squared_error’  | metrics.mean_squared_error           |                                |
-| ‘neg_mean_squared_log_error’   | metrics.mean_squared_log_error       |                                |
-| ‘neg_median_absolute_error’    | metrics.median_absolute_error        |                                |
-| ‘r2’                           | metrics.r2_score                     |                                |
-| ‘neg_mean_poisson_deviance’    | metrics.mean_poisson_deviance        |                                |
-| ‘neg_mean_gamma_deviance’      | metrics.mean_gamma_deviance          |                                |
+| ‘explained_variance’          | metrics.explained_variance_score     |                                |
+| ‘max_error’                   | metrics.max_error                    |                                |
+| ‘neg_mean_absolute_error’     | metrics.mean_absolute_error          |                                |
+| ‘neg_mean_squared_error’      | metrics.mean_squared_error           |                                |
+| ‘neg_root_mean_squared_error’ | metrics.mean_squared_error           |                                |
+| ‘neg_mean_squared_log_error’  | metrics.mean_squared_log_error       |                                |
+| ‘neg_median_absolute_error’   | metrics.median_absolute_error        |                                |
+| ‘r2’                          | metrics.r2_score                     |                                |
+| ‘neg_mean_poisson_deviance’   | metrics.mean_poisson_deviance        |                                |
+| ‘neg_mean_gamma_deviance’     | metrics.mean_gamma_deviance          |                                |
 
 """
 
@@ -104,12 +104,8 @@ class Model:
         feature_names=None,
         randomized_grid=False,
         n_iter=100,
-        trained=False,
         pipeline=True,
-        scaler_type="min_max_scaler",
-        impute_strategy="mean",
-        impute=False,
-        pipeline_steps=[("min_max_scaler", MinMaxScaler())],
+        pipeline_steps=[],
         xgboost_early=False,
         selectKBest=False,
         model_type="classification",
@@ -130,19 +126,6 @@ class Model:
             calibration_method  # 04_27_24 --> added calibration method
         )
 
-        if scaler_type == None:
-            pipeline_steps = pipeline_steps
-        pipeline_steps = [
-            step
-            for step in pipeline_steps
-            if not isinstance(
-                step[1], (SimpleImputer) or not isinstance(step[1], (StandardScaler))
-            )
-        ]
-        if scaler_type == "standard_scaler":
-            pipeline_steps.append(("standard_scaler", StandardScaler()))
-        if impute:
-            pipeline_steps.append(("imputer", SimpleImputer()))
         if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
@@ -159,7 +142,8 @@ class Model:
         self.pipeline_steps = pipeline_steps
         if self.pipeline:
             self.estimator = self.PipelineClass(
-                self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
+                self.pipeline_steps
+                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
             self.estimator
@@ -199,7 +183,6 @@ class Model:
         self.test_size = test_size
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
-        self.trained = trained
         self.labels = ["tn", "fp", "fn", "tp"]
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
@@ -207,32 +190,33 @@ class Model:
     def reset_estimator(self):
         if self.pipeline:
             self.estimator = self.PipelineClass(
-                self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
+                self.pipeline_steps
+                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
             self.estimator
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        imputer_test = clone(self.estimator.named_steps["imputer"])
+        if self.pipeline:
+            ### Need to detect what the name of a column transformer has been called
+            ### if we are using custom pipeline steps
+            preproc_test = clone(self.estimator.named_steps["Preprocessor"])
+        else:
+            pass
+
         resampler_test = clone(self.estimator.named_steps["Resampler"])
 
-        X_train_imputed = imputer_test.fit_transform(X_train)
+        X_train_preproc = preproc_test.fit_transform(X_train)
 
-        X_res, y_res = resampler_test.fit_resample(X_train_imputed, y_train)
+        X_res, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
 
         if not isinstance(y_res, pd.DataFrame):
             y_res = pd.DataFrame(y_res)
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(
-        self,
-        X,
-        y,
-        score=None,
-        stratify=None,
-    ):
+    def calibrateModel(self, X, y, score=None):
         if self.kfold:
             if score == None:
                 if self.calibrate:
@@ -408,6 +392,7 @@ class Model:
         print("-" * 80)
 
     def fit(self, X, y, validation_data=None, score=None):
+        self.reset_estimator()
         if self.kfold:
             if score == None:
                 classifier = self.estimator.set_params(
@@ -452,7 +437,13 @@ class Model:
                             if not key.startswith(f"{self.estimator_name}__")
                         }
                         if self.imbalance_sampler:
-                            self.estimator[:-2].set_params(**params_no_estimator).fit(
+                            params_no_sampler = {
+                                key: value
+                                for key, value in params_no_estimator.items()
+                                if not key.startswith("Resampler__")
+                            }
+
+                            self.estimator[:-2].set_params(**params_no_sampler).fit(
                                 X, y
                             )
                             X_valid_selected = self.estimator[:-2].transform(X_valid)
@@ -761,6 +752,9 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for index, params in enumerate(tqdm(self.grid)):
+                    ### Resetting the estimator here because catboost requires
+                    ### a new model to be fitted each time.
+                    self.reset_estimator()
                     if self.xgboost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -777,13 +771,27 @@ class Model:
                                 if not key.startswith(f"{self.estimator_name}__")
                             }
                             if self.imbalance_sampler:
-                                self.estimator[:-2].set_params(
-                                    **params_no_estimator
-                                ).fit(X_train, y_train)
+                                
+                                ## Removing all "Resampler" hyperparameters
+                                params_no_sampler = {
+                                    key: value
+                                    for key, value in params_no_estimator.items()
+                                    if not key.startswith("Resampler__")
+                                }
+                                ## We need to select all the pipeline steps apart from
+                                ## the estimator and the resampler. This is for prepping
+                                ## the eval data ready for early stopping.
+                                self.estimator[:-2].set_params(**params_no_sampler).fit(
+                                    X_train, y_train
+                                )
                                 X_valid_selected = self.estimator[:-2].transform(
                                     X_valid
                                 )
                             else:
+                                ## We select all the parts of the pipeline apart from the
+                                ## estimator (estimator is always final step). Then
+                                ## fit on train data and transform valid data, this preps
+                                ## eval data ready for early stopping 
                                 self.estimator[:-1].set_params(
                                     **params_no_estimator
                                 ).fit(X_train, y_train)
@@ -806,6 +814,7 @@ class Model:
                             estimator_verbosity: self.verbosity,
                         }
 
+                        ## TODO: Why are we popping verbosity off?
                         if estimator_verbosity in params:
                             params.pop(estimator_verbosity)
 
@@ -826,9 +835,19 @@ class Model:
                             if param_name in params:
                                 params[param_name] = param_value
 
-                        params[f"{self.estimator_name}__n_estimators"] = clf[
-                            len(clf) - 1
-                        ].best_iteration
+                        ### extracting the number of estimators out of the
+                        ### fitted model, this is stored in best_iteration
+                        ### setting the current item in the grid to this number
+                        try:
+                            ### XGBoost case
+                            params[f"{self.estimator_name}__n_estimators"] = clf[
+                                len(clf) - 1
+                            ].best_iteration
+                        except:
+                            ### catboost case
+                            params[f"{self.estimator_name}__n_estimators"] = clf[
+                                len(clf) - 1
+                            ].best_iteration_
 
                         # Update the parameters in the grid
                         self.grid[index] = params
@@ -943,9 +962,6 @@ class Model:
         calibrate,
     ):
 
-        # if calibrate:
-        #     X = X.join(self.dropped_strat_cols)
-        # Determine the stratify parameter based on stratify and stratify_cols
 
         if stratify_cols is not None and stratify_y:
             # Creating stratification columns out of stratify_cols list
@@ -964,9 +980,12 @@ class Model:
             # stratify_key = stratify_key.copy()
             stratify_key = stratify_key.fillna("")
 
+        ##### MARKED FOR REMOVAL ######
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
+        ##############################
+        
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -1242,6 +1261,7 @@ def _confusion_matrix_print(conf_matrix, labels):
         f"{'':>8}Neg {conf_matrix[0,1]:>{max_length}} ({labels[1]})  {conf_matrix[0,0]:>{max_length}} ({labels[0]})"
     )
     print(border)
+
 
 ################################################################################
 
