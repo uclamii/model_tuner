@@ -13,6 +13,7 @@ from sklearn.metrics import (
     median_absolute_error,
     r2_score,
 )
+import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
 from sklearn.preprocessing import MinMaxScaler
@@ -141,7 +142,8 @@ class Model:
         self.pipeline_steps = pipeline_steps
         if self.pipeline:
             self.estimator = self.PipelineClass(
-                self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
+                self.pipeline_steps
+                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
             self.estimator
@@ -188,7 +190,8 @@ class Model:
     def reset_estimator(self):
         if self.pipeline:
             self.estimator = self.PipelineClass(
-                self.pipeline_steps + [(self.estimator_name, self.original_estimator)]
+                self.pipeline_steps
+                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
             self.estimator
@@ -389,6 +392,7 @@ class Model:
         print("-" * 80)
 
     def fit(self, X, y, validation_data=None, score=None):
+        self.reset_estimator()
         if self.kfold:
             if score == None:
                 classifier = self.estimator.set_params(
@@ -748,6 +752,9 @@ class Model:
             for score in self.scoring:
                 scores = []
                 for index, params in enumerate(tqdm(self.grid)):
+                    ### Resetting the estimator here because catboost requires
+                    ### a new model to be fitted each time.
+                    self.reset_estimator()
                     if self.xgboost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -764,12 +771,16 @@ class Model:
                                 if not key.startswith(f"{self.estimator_name}__")
                             }
                             if self.imbalance_sampler:
+                                
+                                ## Removing all "Resampler" hyperparameters
                                 params_no_sampler = {
                                     key: value
                                     for key, value in params_no_estimator.items()
                                     if not key.startswith("Resampler__")
                                 }
-
+                                ## We need to select all the pipeline steps apart from
+                                ## the estimator and the resampler. This is for prepping
+                                ## the eval data ready for early stopping.
                                 self.estimator[:-2].set_params(**params_no_sampler).fit(
                                     X_train, y_train
                                 )
@@ -777,6 +788,10 @@ class Model:
                                     X_valid
                                 )
                             else:
+                                ## We select all the parts of the pipeline apart from the
+                                ## estimator (estimator is always final step). Then
+                                ## fit on train data and transform valid data, this preps
+                                ## eval data ready for early stopping 
                                 self.estimator[:-1].set_params(
                                     **params_no_estimator
                                 ).fit(X_train, y_train)
@@ -799,6 +814,7 @@ class Model:
                             estimator_verbosity: self.verbosity,
                         }
 
+                        ## TODO: Why are we popping verbosity off?
                         if estimator_verbosity in params:
                             params.pop(estimator_verbosity)
 
@@ -819,9 +835,19 @@ class Model:
                             if param_name in params:
                                 params[param_name] = param_value
 
-                        params[f"{self.estimator_name}__n_estimators"] = clf[
-                            len(clf) - 1
-                        ].best_iteration
+                        ### extracting the number of estimators out of the
+                        ### fitted model, this is stored in best_iteration
+                        ### setting the current item in the grid to this number
+                        try:
+                            ### XGBoost case
+                            params[f"{self.estimator_name}__n_estimators"] = clf[
+                                len(clf) - 1
+                            ].best_iteration
+                        except:
+                            ### catboost case
+                            params[f"{self.estimator_name}__n_estimators"] = clf[
+                                len(clf) - 1
+                            ].best_iteration_
 
                         # Update the parameters in the grid
                         self.grid[index] = params
@@ -940,28 +966,28 @@ class Model:
         #     X = X.join(self.dropped_strat_cols)
         # Determine the stratify parameter based on stratify and stratify_cols
 
-        if stratify_cols is not None and stratify_y:
+        if stratify_cols and stratify_y:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
                 stratify_key = pd.concat([stratify_cols, y], axis=1)
             else:
                 stratify_key = pd.concat([X[stratify_cols], y], axis=1)
-        elif stratify_cols is not None:
+        elif stratify_cols:
             stratify_key = X[stratify_cols]
         elif stratify_y:
             stratify_key = y
         else:
             stratify_key = None
 
-        if stratify_key is not None:
-            stratify_key = stratify_key.fillna('')
+        if stratify_cols:
+            # stratify_key = stratify_key.copy()
+            stratify_key = stratify_key.fillna("")
 
-        ##################### MARKED FOR REMOVAL ###############################
+        ##### MARKED FOR REMOVAL ######
         if self.drop_strat_feat:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
-        ########################################################################
-
+        ##############################
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
@@ -973,23 +999,25 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
-        if stratify_cols is not None and stratify_y:
+        if stratify_cols and stratify_y:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
                 strat_key_val_test = pd.concat(
-                    [stratify_cols.loc[X_valid_test.index,:], y_valid_test], axis=1
+                    [stratify_cols.loc[X_valid_test.index, :], y_valid_test], axis=1
                 )
             else:
-                strat_key_val_test = pd.concat([X_valid_test[stratify_cols], y], axis=1)
-        elif stratify_cols is not None:
+                strat_key_val_test = pd.concat(
+                    [X_valid_test[stratify_cols], y_valid_test], axis=1
+                )
+        elif stratify_cols:
             strat_key_val_test = X_valid_test[stratify_cols]
         elif stratify_y:
             strat_key_val_test = y_valid_test
         else:
             strat_key_val_test = None
 
-        if strat_key_val_test is not None:
-            strat_key_val_test = strat_key_val_test.fillna('')
+        if stratify_cols:
+            strat_key_val_test = strat_key_val_test.fillna("")
 
         # Further split (validation + test) set into validation and test sets
         X_valid, X_test, y_valid, y_test = train_test_split(
@@ -1001,7 +1029,7 @@ class Model:
         )
 
         return X_train, X_valid, X_test, y_train, y_valid, y_test
-    
+
     def get_best_score_params(self, X, y):
 
         for score in self.scoring:
