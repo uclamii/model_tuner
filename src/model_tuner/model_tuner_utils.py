@@ -962,24 +962,21 @@ class Model:
         calibrate,
     ):
 
-        # if calibrate:
-        #     X = X.join(self.dropped_strat_cols)
-        # Determine the stratify parameter based on stratify and stratify_cols
 
-        if stratify_cols and stratify_y:
+        if stratify_cols is not None and stratify_y:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
                 stratify_key = pd.concat([stratify_cols, y], axis=1)
             else:
                 stratify_key = pd.concat([X[stratify_cols], y], axis=1)
-        elif stratify_cols:
+        elif stratify_cols is not None:
             stratify_key = X[stratify_cols]
         elif stratify_y:
             stratify_key = y
         else:
             stratify_key = None
 
-        if stratify_cols:
+        if stratify_cols is not None:
             # stratify_key = stratify_key.copy()
             stratify_key = stratify_key.fillna("")
 
@@ -999,7 +996,7 @@ class Model:
         # Determine the proportion of validation to test size in the remaining dataset
         proportion = test_size / (validation_size + test_size)
 
-        if stratify_cols and stratify_y:
+        if stratify_cols is not None and stratify_y:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
                 strat_key_val_test = pd.concat(
@@ -1016,7 +1013,7 @@ class Model:
         else:
             strat_key_val_test = None
 
-        if stratify_cols:
+        if stratify_cols is not None:
             strat_key_val_test = strat_key_val_test.fillna("")
 
         # Further split (validation + test) set into validation and test sets
