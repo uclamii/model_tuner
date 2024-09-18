@@ -12947,24 +12947,29 @@ ul.typeahead-list  > li > a.pull-right {
 /*# sourceMappingURL=style.min.css.map */
     </style>
 <style type="text/css">
-    .highlight .hll { background-color: #ffffcc }
-.highlight  { background: #f8f8f8; }
-.highlight .c { color: #408080; font-style: italic } /* Comment */
+    pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
 .highlight .err { border: 1px solid #FF0000 } /* Error */
 .highlight .k { color: #008000; font-weight: bold } /* Keyword */
 .highlight .o { color: #666666 } /* Operator */
-.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
-.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
-.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
-.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
-.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gr { color: #E40000 } /* Generic.Error */
 .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.highlight .gi { color: #00A000 } /* Generic.Inserted */
-.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
 .highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
 .highlight .gs { font-weight: bold } /* Generic.Strong */
 .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
@@ -12977,15 +12982,15 @@ ul.typeahead-list  > li > a.pull-right {
 .highlight .kt { color: #B00040 } /* Keyword.Type */
 .highlight .m { color: #666666 } /* Literal.Number */
 .highlight .s { color: #BA2121 } /* Literal.String */
-.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .na { color: #687822 } /* Name.Attribute */
 .highlight .nb { color: #008000 } /* Name.Builtin */
 .highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
 .highlight .no { color: #880000 } /* Name.Constant */
 .highlight .nd { color: #AA22FF } /* Name.Decorator */
-.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
-.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
 .highlight .nf { color: #0000FF } /* Name.Function */
-.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nl { color: #767600 } /* Name.Label */
 .highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
 .highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
 .highlight .nv { color: #19177C } /* Name.Variable */
@@ -13002,11 +13007,11 @@ ul.typeahead-list  > li > a.pull-right {
 .highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
 .highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
 .highlight .s2 { color: #BA2121 } /* Literal.String.Double */
-.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
 .highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
-.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
 .highlight .sx { color: #008000 } /* Literal.String.Other */
-.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
 .highlight .s1 { color: #BA2121 } /* Literal.String.Single */
 .highlight .ss { color: #19177C } /* Literal.String.Symbol */
 .highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
@@ -13173,7 +13178,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="err">!</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">model_tuner</span>
@@ -13193,7 +13198,8 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Requirement already satisfied: model_tuner in /usr/local/lib/python3.10/dist-packages (0.0.13a0)
+<pre>Collecting model_tuner
+  Downloading model_tuner-0.0.15a0-py3-none-any.whl.metadata (3.9 kB)
 Requirement already satisfied: joblib&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.4.2)
 Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
 Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.4)
@@ -13201,10 +13207,13 @@ Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.
 Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.13.1)
 Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.5)
 Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.2)
 Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
 Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=1.0.2-&gt;model_tuner) (3.5.0)
 Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.3.5-&gt;model_tuner) (1.16.0)
+Downloading model_tuner-0.0.15a0-py3-none-any.whl (20 kB)
+Installing collected packages: model_tuner
+Successfully installed model_tuner-0.0.15a0
 </pre>
 </div>
 </div>
@@ -13223,11 +13232,13 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">model_tuner</span>
-<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">model_tuner</span> <span class="c1"># import model_tuner to show version info.</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span> <span class="c1"># Model class from model_tuner lib.</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span> <span class="c1"># for model imputation</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span> <span class="c1"># for feature scaling</span>
 </pre></div>
 
     </div>
@@ -13245,10 +13256,10 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The model_tuner version is </span><span class="si">{</span><span class="n">model_tuner</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">help</span><span class="p">(</span><span class="n">model_tuner</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13265,7 +13276,41 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>The model_tuner version is 0.0.13a.
+<pre>Help on package model_tuner:
+
+NAME
+    model_tuner
+
+DESCRIPTION
+    The `model_tuner` library is a versatile and powerful tool designed to 
+    facilitate the training, evaluation, and tuning of machine learning models. 
+    It supports various functionalities such as handling imbalanced data, applying 
+    different scaling and imputation techniques, calibrating models, and conducting 
+    cross-validation. This library is particularly useful for model selection, 
+    hyperparameter tuning, and ensuring optimal performance across different metrics.
+    
+    Version: 0.0.15a
+
+PACKAGE CONTENTS
+    bootstrapper
+    main
+    model_tuner_utils
+    pickleObjects
+
+DATA
+    __email__ = &#39;lshpaner@ucla.edu; alafunnell@gmail.com; pp89@ucla.edu&#39;
+
+VERSION
+    0.0.15a
+
+AUTHOR
+    Arthur Funnell, Leonid Shpaner, Panayiotis Petousis
+
+FILE
+    /usr/local/lib/python3.10/dist-packages/model_tuner/__init__.py
+
+
+None
 </pre>
 </div>
 </div>
@@ -13283,7 +13328,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -13306,7 +13351,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Load the breast cancer dataset</span>
@@ -13322,7 +13367,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># inspect the first 5 rows of data</span>
@@ -13338,13 +13383,13 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[6]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-eb8637ec-3ac4-4d12-aa79-e9e63d1c3abd" class="colab-df-container">
+  <div id="df-6de6f597-84dc-473b-bf5c-12a7db9f988e" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13514,7 +13559,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-eb8637ec-3ac4-4d12-aa79-e9e63d1c3abd')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-6de6f597-84dc-473b-bf5c-12a7db9f988e')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13566,12 +13611,12 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 
     <script>
       const buttonEl =
-        document.querySelector('#df-eb8637ec-3ac4-4d12-aa79-e9e63d1c3abd button.colab-df-convert');
+        document.querySelector('#df-6de6f597-84dc-473b-bf5c-12a7db9f988e button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-eb8637ec-3ac4-4d12-aa79-e9e63d1c3abd');
+        const element = document.querySelector('#df-6de6f597-84dc-473b-bf5c-12a7db9f988e');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13591,8 +13636,8 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
   </div>
 
 
-<div id="df-8a5a49dd-f2cf-41c3-b277-8d6db05d4915">
-  <button class="colab-df-quickchart" onclick="quickchart('df-8a5a49dd-f2cf-41c3-b277-8d6db05d4915')"
+<div id="df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8">
+  <button class="colab-df-quickchart" onclick="quickchart('df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13711,7 +13756,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-8a5a49dd-f2cf-41c3-b277-8d6db05d4915 button');
+        document.querySelector('#df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -13731,7 +13776,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">y</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -13747,7 +13792,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[7]:</div>
 
 
 
@@ -13805,6 +13850,20 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13814,7 +13873,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Creating an instance of the XGBClassifier</span>
@@ -13837,7 +13896,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
@@ -13882,22 +13941,22 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize ModelTuner</span>
 <span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+    <span class="p">],</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_Breast_Cancer&quot;</span><span class="p">,</span>
     <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name_xgb</span><span class="p">,</span>
     <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
     <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">impute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">scaler_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Turn off scaling for XGBoost</span>
     <span class="n">selectKBest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">grid</span><span class="o">=</span><span class="n">xgb_pipeline_hyperparms_grid</span><span class="p">,</span>
     <span class="c1"># randomized_grid=True,</span>
     <span class="c1"># n_iter=5,</span>
@@ -13921,7 +13980,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Perform grid search parameter tuning</span>
@@ -13942,7 +14001,7 @@ Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-pac
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 324/324 [00:55&lt;00:00,  5.80it/s]</pre>
+<pre>100%|██████████| 324/324 [01:15&lt;00:00,  4.31it/s]</pre>
 </div>
 </div>
 
@@ -13992,7 +14051,7 @@ Best roc_auc: 0.999
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the training and validation data</span>
@@ -14020,7 +14079,7 @@ Best roc_auc: 0.999
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Return metrics for the validation set</span>
@@ -14050,8 +14109,8 @@ Best roc_auc: 0.999
           Predicted:
             Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 46 (tp)   0 (fn)
-        Neg  3 (fp)  65 (tn)
+Actual: Pos 65 (tp)   3 (fn)
+        Neg  0 (fp)  46 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
@@ -14074,7 +14133,7 @@ Feature names selected:
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[14]:</div>
 
 
 
@@ -14136,7 +14195,7 @@ Feature names selected:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -14156,7 +14215,7 @@ Feature names selected:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Calibrate the model</span>
@@ -14187,8 +14246,8 @@ Confusion matrix on validation set for roc_auc
           Predicted:
             Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 46 (tp)   0 (fn)
-        Neg  3 (fp)  65 (tn)
+Actual: Pos 65 (tp)   3 (fn)
+        Neg  0 (fp)  46 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
@@ -14212,7 +14271,7 @@ roc_auc after calibration: 0.9987212276214834
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from the calibrated model</span>
@@ -14249,7 +14308,7 @@ roc_auc after calibration: 0.9987212276214834
 
 
 <div class="output_png output_subarea ">
-<img src="Model_Tuner_Binary_Classification_Breast_Cancer_Example_files/Model_Tuner_Binary_Classification_Breast_Cancer_Example_33_0.png"
+<img src="Model_Tuner_Binary_Classification_Breast_Cancer_Example_files/Model_Tuner_Binary_Classification_Breast_Cancer_Example_34_0.png"
 >
 </div>
 
@@ -14268,7 +14327,7 @@ roc_auc after calibration: 0.9987212276214834
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_tuner</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>

@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>Model_Tuner_ColumnTransformer</title>
+<title>Model_Tuner_Column_Transformer</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -12947,24 +12947,29 @@ ul.typeahead-list  > li > a.pull-right {
 /*# sourceMappingURL=style.min.css.map */
     </style>
 <style type="text/css">
-    .highlight .hll { background-color: #ffffcc }
-.highlight  { background: #f8f8f8; }
-.highlight .c { color: #408080; font-style: italic } /* Comment */
+    pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.highlight .hll { background-color: #ffffcc }
+.highlight { background: #f8f8f8; }
+.highlight .c { color: #3D7B7B; font-style: italic } /* Comment */
 .highlight .err { border: 1px solid #FF0000 } /* Error */
 .highlight .k { color: #008000; font-weight: bold } /* Keyword */
 .highlight .o { color: #666666 } /* Operator */
-.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
-.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
-.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
-.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
-.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
-.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .ch { color: #3D7B7B; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #3D7B7B; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #9C6500 } /* Comment.Preproc */
+.highlight .cpf { color: #3D7B7B; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #3D7B7B; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
-.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gr { color: #E40000 } /* Generic.Error */
 .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
-.highlight .gi { color: #00A000 } /* Generic.Inserted */
-.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gi { color: #008400 } /* Generic.Inserted */
+.highlight .go { color: #717171 } /* Generic.Output */
 .highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
 .highlight .gs { font-weight: bold } /* Generic.Strong */
 .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
@@ -12977,15 +12982,15 @@ ul.typeahead-list  > li > a.pull-right {
 .highlight .kt { color: #B00040 } /* Keyword.Type */
 .highlight .m { color: #666666 } /* Literal.Number */
 .highlight .s { color: #BA2121 } /* Literal.String */
-.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .na { color: #687822 } /* Name.Attribute */
 .highlight .nb { color: #008000 } /* Name.Builtin */
 .highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
 .highlight .no { color: #880000 } /* Name.Constant */
 .highlight .nd { color: #AA22FF } /* Name.Decorator */
-.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
-.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .ni { color: #717171; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #CB3F38; font-weight: bold } /* Name.Exception */
 .highlight .nf { color: #0000FF } /* Name.Function */
-.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nl { color: #767600 } /* Name.Label */
 .highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
 .highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
 .highlight .nv { color: #19177C } /* Name.Variable */
@@ -13002,11 +13007,11 @@ ul.typeahead-list  > li > a.pull-right {
 .highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
 .highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
 .highlight .s2 { color: #BA2121 } /* Literal.String.Double */
-.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .se { color: #AA5D1F; font-weight: bold } /* Literal.String.Escape */
 .highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
-.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .si { color: #A45A77; font-weight: bold } /* Literal.String.Interpol */
 .highlight .sx { color: #008000 } /* Literal.String.Other */
-.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .sr { color: #A45A77 } /* Literal.String.Regex */
 .highlight .s1 { color: #BA2121 } /* Literal.String.Single */
 .highlight .ss { color: #19177C } /* Literal.String.Symbol */
 .highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
@@ -13145,7 +13150,7 @@ $( document ).ready(function(){
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="err">!</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">model_tuner</span>
@@ -13167,26 +13172,27 @@ $( document ).ready(function(){
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Collecting model_tuner
-  Downloading model_tuner-0.0.11a0-py3-none-any.whl (18 kB)
+  Downloading model_tuner-0.0.15a0-py3-none-any.whl.metadata (3.9 kB)
 Requirement already satisfied: joblib&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.4.2)
-Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.25.2)
-Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.0.3)
-Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.2.2)
-Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.11.4)
-Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.4)
+Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
+Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.4)
+Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
+Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.13.1)
+Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.5)
 Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2023.4)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.2)
 Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
 Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=1.0.2-&gt;model_tuner) (3.5.0)
 Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.3.5-&gt;model_tuner) (1.16.0)
+Downloading model_tuner-0.0.15a0-py3-none-any.whl (20 kB)
 Installing collected packages: model_tuner
-Successfully installed model_tuner-0.0.11a0
+Successfully installed model_tuner-0.0.15a0
 Collecting sns
   Downloading sns-0.1.tar.gz (2.1 kB)
   Preparing metadata (setup.py) ... done
 Building wheels for collected packages: sns
   Building wheel for sns (setup.py) ... done
-  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=b5ab1f9fcb759117aa40e86aad0acd7d228d192fd798de8aba5488d45a993a56
+  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=f48e49a12d41c416aeb626123e809a5ff0aab8bfbdf9caa485f07c14de2c0d6c
   Stored in directory: /root/.cache/pip/wheels/76/1a/47/c3b6a8b9d3ae47b1488f4be13c86586327c07e0ac1bb5b3337
 Successfully built sns
 Installing collected packages: sns
@@ -13209,12 +13215,13 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 </pre></div>
 
     </div>
@@ -13238,7 +13245,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;titanic&#39;</span><span class="p">)</span>
@@ -13255,13 +13262,13 @@ Successfully installed sns-0.1
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[3]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7" class="colab-df-container">
+  <div id="df-33fe1e7c-cd74-4531-b962-eeea55eeede5" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13394,7 +13401,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-33fe1e7c-cd74-4531-b962-eeea55eeede5')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13446,12 +13453,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7 button.colab-df-convert');
+        document.querySelector('#df-33fe1e7c-cd74-4531-b962-eeea55eeede5 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-e7c8e065-4d11-434e-9fbf-c0029eb3ede7');
+        const element = document.querySelector('#df-33fe1e7c-cd74-4531-b962-eeea55eeede5');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13471,8 +13478,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4">
-  <button class="colab-df-quickchart" onclick="quickchart('df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4')"
+<div id="df-1f673aa6-21e7-41b9-a36d-1b433580e8a1">
+  <button class="colab-df-quickchart" onclick="quickchart('df-1f673aa6-21e7-41b9-a36d-1b433580e8a1')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13591,7 +13598,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-78f86c85-38f6-4ba7-9c4f-21f2a9139ff4 button');
+        document.querySelector('#df-1f673aa6-21e7-41b9-a36d-1b433580e8a1 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -13618,7 +13625,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">titanic</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">titanic</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s2">&quot;survived&quot;</span><span class="p">]]</span>
@@ -13634,7 +13641,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">class_weight</span><span class="o">=</span><span class="s2">&quot;balanced&quot;</span><span class="p">)</span>
@@ -13667,7 +13674,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
@@ -13683,13 +13690,13 @@ Successfully installed sns-0.1
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[6]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-085dfb37-04c1-4d2a-8777-45eb286c35ba" class="colab-df-container">
+  <div id="df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13798,7 +13805,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-085dfb37-04c1-4d2a-8777-45eb286c35ba')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13850,12 +13857,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-085dfb37-04c1-4d2a-8777-45eb286c35ba button.colab-df-convert');
+        document.querySelector('#df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-085dfb37-04c1-4d2a-8777-45eb286c35ba');
+        const element = document.querySelector('#df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13875,8 +13882,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-271c61b7-db6d-4dab-b468-cb4146683be9">
-  <button class="colab-df-quickchart" onclick="quickchart('df-271c61b7-db6d-4dab-b468-cb4146683be9')"
+<div id="df-d25b77bd-e282-4260-93db-57da7d1a3407">
+  <button class="colab-df-quickchart" onclick="quickchart('df-d25b77bd-e282-4260-93db-57da7d1a3407')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13995,7 +14002,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-271c61b7-db6d-4dab-b468-cb4146683be9 button');
+        document.querySelector('#df-d25b77bd-e282-4260-93db-57da7d1a3407 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -14015,18 +14022,87 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1">### Defining columns to be scaled and columns to be onehotencoded</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># ### Defining columns to be scaled and columns to be onehotencoded</span>
+<span class="c1"># from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder</span>
+<span class="c1"># from sklearn.compose import ColumnTransformer</span>
+<span class="c1"># from sklearn.preprocessing import MinMaxScaler</span>
+<span class="c1"># from sklearn.impute import SimpleImputer</span>
+<span class="c1"># from pprint import pprint</span>
+
+<span class="c1"># ohencoder = OneHotEncoder(handle_unknown=&quot;ignore&quot;)</span>
+
+<span class="c1"># ohcols = [</span>
+<span class="c1">#     &quot;embark_town&quot;,</span>
+<span class="c1">#     &quot;who&quot;,</span>
+<span class="c1">#     &quot;sex&quot;,</span>
+<span class="c1">#     &quot;adult_male&quot;</span>
+<span class="c1"># ]</span>
+
+<span class="c1"># ordencoder = OrdinalEncoder()</span>
+
+<span class="c1"># ordcols = [</span>
+<span class="c1">#     &quot;deck&quot;</span>
+<span class="c1"># ]</span>
+
+<span class="c1"># minmaxscaler = MinMaxScaler()</span>
+
+<span class="c1"># simpleimputer = SimpleImputer()</span>
+
+<span class="c1"># scalercols = [</span>
+<span class="c1">#     &quot;parch&quot;,</span>
+<span class="c1">#     &quot;fare&quot;,</span>
+<span class="c1">#     &quot;age&quot;,</span>
+<span class="c1">#     &quot;pclass&quot;</span>
+<span class="c1"># ]</span>
+
+<span class="c1"># categorical_transformer = Pipeline(</span>
+<span class="c1">#     steps=[</span>
+<span class="c1">#         (</span>
+<span class="c1">#             &quot;imputer&quot;,</span>
+<span class="c1">#             SimpleImputer(strategy=&quot;constant&quot;, fill_value=&quot;missing&quot;),</span>
+<span class="c1">#         ),</span>
+<span class="c1">#         (&quot;onehot&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;)),</span>
+<span class="c1">#     ]</span>
+<span class="c1"># )</span>
+
+<span class="c1"># numeric_transformer = Pipeline(</span>
+<span class="c1">#     steps=[</span>
+<span class="c1">#         (&quot;imputer&quot;, SimpleImputer(strategy=&quot;mean&quot;)),</span>
+<span class="c1">#         (&quot;scaler&quot;, MinMaxScaler()),  # Scaling the data</span>
+<span class="c1">#     ]</span>
+<span class="c1"># )</span>
+
+<span class="c1"># ct = ColumnTransformer(</span>
+<span class="c1">#     [</span>
+<span class="c1">#         (&quot;OneHotEncoder&quot;, ohencoder, ohcols),</span>
+<span class="c1">#         (&quot;OrdinalEncoder&quot;, ordencoder, ordcols),</span>
+<span class="c1">#         (&quot;MinMaxScaler&quot;, minmaxscaler, scalercols),</span>
+<span class="c1">#         (&quot;SimpleImputer&quot;, simpleimputer, numeric_transformer[])</span>
+<span class="c1">#     ],</span>
+<span class="c1">#     remainder=&#39;passthrough&#39;</span>
+<span class="c1"># )</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span>
 <span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
 
-<span class="n">ohencoder</span> <span class="o">=</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-
+<span class="c1"># Define columns</span>
 <span class="n">ohcols</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;embark_town&quot;</span><span class="p">,</span>
     <span class="s2">&quot;who&quot;</span><span class="p">,</span>
@@ -14034,13 +14110,9 @@ Successfully installed sns-0.1
     <span class="s2">&quot;adult_male&quot;</span>
 <span class="p">]</span>
 
-<span class="n">ordencoder</span> <span class="o">=</span> <span class="n">OrdinalEncoder</span><span class="p">()</span>
-
 <span class="n">ordcols</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;deck&quot;</span>
 <span class="p">]</span>
-
-<span class="n">minmaxscaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
 
 <span class="n">scalercols</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;parch&quot;</span><span class="p">,</span>
@@ -14049,14 +14121,38 @@ Successfully installed sns-0.1
     <span class="s2">&quot;pclass&quot;</span>
 <span class="p">]</span>
 
+<span class="c1"># Create the pipeline for categorical features</span>
+<span class="n">categorical_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;missing&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;onehot&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 
+<span class="c1"># Create the pipeline for ordinal features</span>
+<span class="n">ordinal_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;most_frequent&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;ordinal&quot;</span><span class="p">,</span> <span class="n">OrdinalEncoder</span><span class="p">())</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Create the pipeline for numeric features (imputation followed by scaling)</span>
+<span class="n">numeric_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
+    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;scaler&quot;</span><span class="p">,</span> <span class="n">MinMaxScaler</span><span class="p">())</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># Define the ColumnTransformer</span>
 <span class="n">ct</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span>
-    <span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">,</span> <span class="n">ohencoder</span><span class="p">,</span> <span class="n">ohcols</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;OrdinalEncoder&quot;</span><span class="p">,</span> <span class="n">ordencoder</span><span class="p">,</span> <span class="n">ordcols</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;MinMaxScaler&quot;</span><span class="p">,</span> <span class="n">minmaxscaler</span><span class="p">,</span> <span class="n">scalercols</span><span class="p">)</span>
+    <span class="n">transformers</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;OneHotEncoder&quot;</span><span class="p">,</span> <span class="n">categorical_transformer</span><span class="p">,</span> <span class="n">ohcols</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;OrdinalEncoder&quot;</span><span class="p">,</span> <span class="n">ordinal_transformer</span><span class="p">,</span> <span class="n">ordcols</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;Numeric&quot;</span><span class="p">,</span> <span class="n">numeric_transformer</span><span class="p">,</span> <span class="n">scalercols</span><span class="p">),</span>
     <span class="p">],</span>
-    <span class="n">remainder</span><span class="o">=</span><span class="s1">&#39;passthrough&#39;</span>
+    <span class="n">remainder</span><span class="o">=</span><span class="s1">&#39;passthrough&#39;</span>  <span class="c1"># Keep other columns unchanged</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -14067,7 +14163,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
@@ -14077,8 +14173,7 @@ Successfully installed sns-0.1
     <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">estimator</span><span class="o">=</span><span class="n">rf</span><span class="p">,</span>
     <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">impute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">ct</span><span class="p">)],</span>
+    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;Preproccesor&quot;</span><span class="p">,</span> <span class="n">ct</span><span class="p">)],</span>
     <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">grid</span><span class="o">=</span><span class="n">rf_pipeline_hyperparams_grid</span><span class="p">,</span>
     <span class="n">randomized_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -14096,7 +14191,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -14116,7 +14211,7 @@ Successfully installed sns-0.1
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 5/5 [00:01&lt;00:00,  4.38it/s]
+<pre>100%|██████████| 5/5 [00:02&lt;00:00,  2.31it/s]
 </pre>
 </div>
 </div>
@@ -14138,7 +14233,7 @@ Successfully installed sns-0.1
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.97it/s]</pre>
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.43it/s]</pre>
 </div>
 </div>
 
@@ -14149,12 +14244,12 @@ Successfully installed sns-0.1
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;rf__max_depth&#39;: 10,
+{&#39;params&#39;: {&#39;rf__max_depth&#39;: 5,
             &#39;rf__max_features&#39;: 5,
-            &#39;rf__min_samples_leaf&#39;: 3,
-            &#39;rf__n_estimators&#39;: 100},
- &#39;score&#39;: 0.8848262032085563}
-Best roc_auc: 0.885 
+            &#39;rf__min_samples_leaf&#39;: 1,
+            &#39;rf__n_estimators&#39;: 200},
+ &#39;score&#39;: 0.8776069518716578}
+Best roc_auc: 0.878 
 
 </pre>
 </div>
@@ -14177,7 +14272,7 @@ Best roc_auc: 0.885
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14194,7 +14289,7 @@ Best roc_auc: 0.885
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">prob_uncalibrated</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -14220,20 +14315,20 @@ Best roc_auc: 0.885
 <pre>Confusion matrix on validation set:
 --------------------------------------------------------------------------------
           Predicted:
-             Pos   Neg
+            Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 100 (tp)   10 (fn)
-        Neg  21 (fp)   47 (tn)
+Actual: Pos 51 (tp)  17 (fn)
+        Neg 12 (fp)  98 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.83      0.91      0.87       110
-           1       0.82      0.69      0.75        68
+           0       0.85      0.89      0.87       110
+           1       0.81      0.75      0.78        68
 
-    accuracy                           0.83       178
-   macro avg       0.83      0.80      0.81       178
-weighted avg       0.83      0.83      0.82       178
+    accuracy                           0.84       178
+   macro avg       0.83      0.82      0.82       178
+weighted avg       0.84      0.84      0.84       178
 
 --------------------------------------------------------------------------------
 </pre>
@@ -14246,7 +14341,7 @@ weighted avg       0.83      0.83      0.82       178
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
@@ -14271,18 +14366,18 @@ weighted avg       0.83      0.83      0.82       178
           Predicted:
             Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 99 (tp)  11 (fn)
-        Neg 23 (fp)  46 (tn)
+Actual: Pos 50 (tp)  19 (fn)
+        Neg 11 (fp)  99 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.81      0.90      0.85       110
-           1       0.81      0.67      0.73        69
+           0       0.84      0.90      0.87       110
+           1       0.82      0.72      0.77        69
 
-    accuracy                           0.81       179
-   macro avg       0.81      0.78      0.79       179
-weighted avg       0.81      0.81      0.81       179
+    accuracy                           0.83       179
+   macro avg       0.83      0.81      0.82       179
+weighted avg       0.83      0.83      0.83       179
 
 --------------------------------------------------------------------------------
 </pre>
@@ -14295,7 +14390,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14311,13 +14406,13 @@ weighted avg       0.81      0.81      0.81       179
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[&nbsp;]:</div>
+    <div class="prompt output_prompt">Out[14]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&#39;roc_auc&#39;: 0.33}</pre>
+<pre>{&#39;roc_auc&#39;: 0.36}</pre>
 </div>
 
 </div>
@@ -14335,7 +14430,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -14349,7 +14444,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from the calibrated model</span>
@@ -14387,7 +14482,7 @@ weighted avg       0.81      0.81      0.81       179
 
 
 <div class="output_png output_subarea ">
-<img src="Model_Tuner_ColumnTransformer_files/Model_Tuner_ColumnTransformer_26_0.png"
+<img src="Model_Tuner_Column_Transformer_files/Model_Tuner_Column_Transformer_27_0.png"
 >
 </div>
 
@@ -14414,7 +14509,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
@@ -14425,7 +14520,6 @@ weighted avg       0.81      0.81      0.81       179
     <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">estimator</span><span class="o">=</span><span class="n">rf</span><span class="p">,</span>
     <span class="n">kfold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">impute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">ct</span><span class="p">)],</span>
     <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
@@ -14445,7 +14539,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
@@ -14459,10 +14553,252 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre># Tuning hyper-parameters for roc_auc
+Fitting 10 folds for each of 5 candidates, totalling 50 fits
+
+Best score/param set found on development set:
+{0.8738231613937606: {&#39;rf__max_depth&#39;: 10,
+                      &#39;rf__max_features&#39;: 5,
+                      &#39;rf__min_samples_leaf&#39;: 3,
+                      &#39;rf__n_estimators&#39;: 100}}
+
+Grid scores on development set:
+0.848 (+/-0.084) for {&#39;rf__n_estimators&#39;: 10, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: None}
+0.864 (+/-0.093) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 3}
+0.865 (+/-0.099) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: 10}
+0.874 (+/-0.095) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 3, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 10}
+0.871 (+/-0.095) for {&#39;rf__n_estimators&#39;: 200, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 5}
+Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.32it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.61it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.21it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.32it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:02&lt;00:00,  1.18s/it]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.63it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.13it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.41it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.26it/s]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.36it/s]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
@@ -14479,7 +14815,7 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14489,10 +14825,30 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[20]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;roc_auc&#39;: 0.327}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14502,16 +14858,70 @@ weighted avg       0.81      0.81      0.81       179
 </div>
 </div>
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span>
-</pre></div>
+<div class="output_wrapper">
+<div class="output">
 
-    </div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos 292 (tp)   50 (fn)
+        Neg  40 (fp)  509 (tn)
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.91      0.93      0.92       549
+           1       0.88      0.85      0.87       342
+
+    accuracy                           0.90       891
+   macro avg       0.90      0.89      0.89       891
+weighted avg       0.90      0.90      0.90       891
+
+--------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[21]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{&#39;Classification Report&#39;: {&#39;0&#39;: {&#39;precision&#39;: 0.9105545617173524,
+   &#39;recall&#39;: 0.9271402550091075,
+   &#39;f1-score&#39;: 0.9187725631768954,
+   &#39;support&#39;: 549.0},
+  &#39;1&#39;: {&#39;precision&#39;: 0.8795180722891566,
+   &#39;recall&#39;: 0.8538011695906432,
+   &#39;f1-score&#39;: 0.8664688427299703,
+   &#39;support&#39;: 342.0},
+  &#39;accuracy&#39;: 0.898989898989899,
+  &#39;macro avg&#39;: {&#39;precision&#39;: 0.8950363170032545,
+   &#39;recall&#39;: 0.8904707122998754,
+   &#39;f1-score&#39;: 0.8926207029534328,
+   &#39;support&#39;: 891.0},
+  &#39;weighted avg&#39;: {&#39;precision&#39;: 0.8986415657752166,
+   &#39;recall&#39;: 0.898989898989899,
+   &#39;f1-score&#39;: 0.8986963876518129,
+   &#39;support&#39;: 891.0}},
+ &#39;Confusion Matrix&#39;: array([[509,  40],
+        [ 50, 292]])}</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 
