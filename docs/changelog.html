@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-15a">Version 0.0.15a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-014a">Version 0.0.014a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-013a">Version 0.0.013a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-012a">Version 0.0.012a</a></li>
@@ -119,6 +120,17 @@
 <p class="admonition-title">Important</p>
 <p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
+<section id="version-0-0-15a">
+<h2>Version 0.0.15a<a class="headerlink" href="#version-0-0-15a" title="Link to this heading"></a></h2>
+<p>Contains all previous fixes relating to:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CatBoost</span></code> support (early stopping, and support involving resetting estimators).</p></li>
+<li><p>Pipeline steps now support hyperparameter tuning of the resamplers (<code class="docutils literal notranslate"><span class="pre">SMOTE</span></code>, <code class="docutils literal notranslate"><span class="pre">ADASYN</span></code>, etc.).</p></li>
+<li><p>Removed older implementations of impute and scaling and moved onto supporting only custom <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code>.</p></li>
+<li><p>Fixed bugs in stratification with regards to length mismatch of dependent variable when using column names to stratify.</p></li>
+<li><p>Cleaned a removed multiple lines of unused code and unused initialisation parameters.</p></li>
+</ul>
+</section>
 <section id="version-0-0-014a">
 <h2>Version 0.0.014a<a class="headerlink" href="#version-0-0-014a" title="Link to this heading"></a></h2>
 <p>In previous versions, the <code class="docutils literal notranslate"><span class="pre">train_val_test_split</span></code> method allowed for stratification

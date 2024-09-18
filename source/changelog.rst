@@ -25,6 +25,19 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+
+Version 0.0.15a
+--------------------
+
+Contains all previous fixes relating to:
+
+- ``CatBoost`` support (early stopping, and support involving resetting estimators).
+- Pipeline steps now support hyperparameter tuning of the resamplers (``SMOTE``, ``ADASYN``, etc.).
+- Removed older implementations of impute and scaling and moved onto supporting only custom ``pipeline_steps``. 
+- Fixed bugs in stratification with regards to length mismatch of dependent variable when using column names to stratify. 
+- Cleaned a removed multiple lines of unused code and unused initialisation parameters. 
+
+
 Version 0.0.014a
 ------------------
 
