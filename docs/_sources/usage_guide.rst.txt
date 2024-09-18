@@ -65,7 +65,7 @@ Column Transformer Example
 
    - .. raw:: html
 
-      <a href="Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer HTML File</a>
+      <a href="Model_Tuner_Column_Transformer.html" target="_blank">Column Transformer HTML File</a>
 
 
 Regression Example
