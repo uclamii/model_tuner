@@ -22,7 +22,6 @@
 \
 
 
-
 iPython Notebooks
 ===================
 
@@ -594,6 +593,8 @@ Step 1: Import Necessary Libraries
     import pandas as pd
     import numpy as np
     import xgboost as xgb
+    from model_tuner import model_tuner  
+    from sklearn.impute import SimpleImputer
 
 
 Step 2: Load the dataset, define X, y
@@ -673,14 +674,15 @@ Step 6: Initialize and Configure the ``Model``
 
    # Initialize model_tuner
    model_tuner = Model(
+      pipeline_steps=[
+         ("Preprocessor", SimpleImputer()),
+      ],
       name="XGBoost_AIDS",
       estimator_name=estimator_name_xgb,
       calibrate=True,
       estimator=xgb_model,
       xgboost_early=True,
       kfold=False,
-      impute=True,
-      scaler_type=None,  # Turn off scaling for XGBoost
       selectKBest=True,
       stratify_y=False,
       grid=xgb_parameters,
@@ -700,18 +702,18 @@ Step 7: Perform Grid Search Parameter Tuning
 
 .. code-block:: bash
 
-   100%|██████████| 324/324 [01:36<00:00,  3.37it/s]
+   100%|██████████| 324/324 [01:34<00:00,  3.42it/s]
    Best score/param set found on validation set:
-   {'params': {'selectKBest__k': 4,
+   {'params': {'selectKBest__k': 20,
                'xgb__colsample_bytree': 1.0,
                'xgb__early_stopping_rounds': 10,
                'xgb__eval_metric': 'logloss',
-               'xgb__learning_rate': 0.01,
-               'xgb__max_depth': 3,
-               'xgb__n_estimators': 199,
-               'xgb__subsample': 0.8},
-   'score': 0.9364314448541736}
-   Best roc_auc: 0.936 
+               'xgb__learning_rate': 0.05,
+               'xgb__max_depth': 5,
+               'xgb__n_estimators': 100,
+               'xgb__subsample': 1.0},
+   'score': 0.946877967711301}
+   Best roc_auc: 0.947 
 
 Step 8: Fit the Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -752,44 +754,63 @@ You can use this function to evaluate the model by printing the output.
             Predicted:
                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos 291 (tp)   23 (fn)
-         Neg  31 (fp)   83 (tn)
+   Actual: Pos  89 (tp)   15 (fn)
+           Neg  21 (fp)  303 (tn)
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.90      0.93      0.92       314
-            1       0.78      0.73      0.75       114
+            0       0.95      0.94      0.94       324
+            1       0.81      0.86      0.83       104
 
-      accuracy                           0.87       428
-      macro avg       0.84      0.83      0.83       428
-   weighted avg       0.87      0.87      0.87       428
+      accuracy                          0.92       428
+      macro avg     0.88      0.90      0.89       428
+   weighted avg     0.92      0.92      0.92       428
 
    --------------------------------------------------------------------------------
 
    Feature names selected:
-   ['time', 'strat', 'cd40', 'cd420']
+   ['time', 'trt', 'age', 'hemo', 'homo', 'drugs', 'karnof', 'oprior', 'z30', 'preanti', 'race', 'gender', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
-   {'Classification Report': {'0': {'precision': 0.9037267080745341,
-      'recall': 0.9267515923566879,
-      'f1-score': 0.9150943396226415,
-      'support': 314.0},
-   '1': {'precision': 0.7830188679245284,
-      'recall': 0.7280701754385965,
-      'f1-score': 0.7545454545454546,
-      'support': 114.0},
-   'accuracy': 0.8738317757009346,
-   'macro avg': {'precision': 0.8433727879995312,
-      'recall': 0.8274108838976422,
-      'f1-score': 0.8348198970840481,
+   {'Classification Report': {'0': {'precision': 0.9528301886792453,
+      'recall': 0.9351851851851852,
+      'f1-score': 0.9439252336448598,
+      'support': 324.0},
+   '1': {'precision': 0.8090909090909091,
+      'recall': 0.8557692307692307,
+      'f1-score': 0.8317757009345793,
+      'support': 104.0},
+   'accuracy': 0.9158878504672897,
+   'macro avg': {'precision': 0.8809605488850771,
+      'recall': 0.895477207977208,
+      'f1-score': 0.8878504672897196,
       'support': 428.0},
-   'weighted avg': {'precision': 0.8715755543897196,
-      'recall': 0.8738317757009346,
-      'f1-score': 0.8723313188310543,
+   'weighted avg': {'precision': 0.9179028870970327,
+      'recall': 0.9158878504672897,
+      'f1-score': 0.9166739453227356,
       'support': 428.0}},
-   'Confusion Matrix': array([[291,  23],
-         [ 31,  83]]),
-   'K Best Features': ['time', 'strat', 'cd40', 'cd420']}   
+   'Confusion Matrix': array([[303,  21],
+         [ 15,  89]]),
+   'K Best Features': ['time',
+   'trt',
+   'age',
+   'hemo',
+   'homo',
+   'drugs',
+   'karnof',
+   'oprior',
+   'z30',
+   'preanti',
+   'race',
+   'gender',
+   'str2',
+   'strat',
+   'symptom',
+   'treat',
+   'offtrt',
+   'cd40',
+   'cd420',
+   'cd80']}
 
 Step 10: Calibrate the Model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -916,21 +937,21 @@ output it as follows:
 
 .. code-block:: bash
 
-                 precision    recall  f1-score   support
+                precision    recall  f1-score   support
 
-              0       0.90      0.93      0.92       314
-              1       0.79      0.72      0.75       114
+             0       0.95      0.94      0.94       324
+             1       0.81      0.85      0.83       104
 
-       accuracy                           0.87       428
-      macro avg       0.84      0.82      0.83       428
-   weighted avg       0.87      0.87      0.87       428
+      accuracy                           0.92       428
+     macro avg       0.88      0.89      0.89       428
+  weighted avg       0.92      0.92      0.92       428
 
 
 
 Regression
 ===========
 
-Here is an example of using the ``Model`` class for regression using XGBoost on the California Housing dataset.
+Here is an example of using the ``Model`` class for regression using ``XGBoost`` on the California Housing dataset.
 
 California Housing with XGBoost
 --------------------------------
@@ -943,8 +964,10 @@ Step 1: Import Necessary Libraries
    import pandas as pd
    import numpy as np
    import xgboost as xgb
+   from sklearn.impute import SimpleImputer
    from sklearn.datasets import fetch_california_housing
    from model_tuner import model_tuner  
+  
 
 Step 2: Load the Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -975,11 +998,15 @@ Step 4: Define Hyperparameters for XGBoost
    estimator_name_xgb = "xgb"
 
    # Define the hyperparameters for XGBoost
-   xgb_learning_rates = [0.1, 0.01, 0.05]
-   xgb_n_estimators = [100, 200, 300]
-   xgb_max_depths = [3, 5, 7]
-   xgb_subsamples = [0.8, 1.0]
-   xgb_colsample_bytree = [0.8, 1.0]
+   xgb_learning_rates = [0.1, 0.01, 0.05]  # Learning rate or eta
+   # Number of trees. Equivalent to n_estimators in GB
+   xgb_n_estimators = [100, 200, 300]  
+   xgb_max_depths = [3, 5, 7][:1]  # Maximum depth of the trees
+   xgb_subsamples = [0.8, 1.0][:1]  # Subsample ratio of the training instances
+   xgb_colsample_bytree = [0.8, 1.0][:1]
+   xgb_eval_metric = ["logloss"]
+   xgb_early_stopping_rounds = [10]
+   xgb_verbose = [False]
 
    # Combining the hyperparameters in a dictionary
    xgb_parameters = [
@@ -989,10 +1016,11 @@ Step 4: Define Hyperparameters for XGBoost
          "xgb__max_depth": xgb_max_depths,
          "xgb__subsample": xgb_subsamples,
          "xgb__colsample_bytree": xgb_colsample_bytree,
-         "selectKBest__k": [1, 3, 5, 8],
+         "xgb__eval_metric": xgb_eval_metric,
+         "xgb__early_stopping_rounds": xgb_early_stopping_rounds,
+         "xgb__verbose": xgb_verbose,
       }
    ]
-
 
 Step 5: Initialize and Configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1000,22 +1028,22 @@ Step 5: Initialize and Configure the ``Model``
 .. code-block:: python
 
    # Initialize model_tuner
-   model_tuner = Model(
-      name="XGBoost_California_Housing",
+   california_housing = Model(
+      pipeline_steps=[
+         ("Preprocessor", SimpleImputer()),
+      ],
+      name="Redfin_model_XGB",
+      estimator_name="xgb",
       model_type="regression",
-      estimator_name=estimator_name_xgb,
       calibrate=False,
       estimator=xgb_model,
       kfold=False,
-      impute=True,
-      scaler_type=None,
-      selectKBest=True,
       stratify_y=False,
       grid=xgb_parameters,
       randomized_grid=False,
-      scoring=["neg_mean_squared_error"],
-      random_state=222,
-      n_jobs=-1,
+      scoring=["r2"],
+      random_state=3,
+      xgboost_early=True,
    )
 
 Step 6: Fit the Model
@@ -1023,64 +1051,51 @@ Step 6: Fit the Model
 
 .. code-block:: python
 
+   eval_set = [X, y]  # necessary for early stopping
+
+   # Perform grid search parameter tuning
+   california_housing.grid_search_param_tuning(X, y)
+
    # Get the training and validation data
-   X_train, y_train = model_tuner.get_train_data(X, y)
-   X_valid, y_valid = model_tuner.get_valid_data(X, y)
+   X_train, y_train = california_housing.get_train_data(X, y)
+   X_valid, y_valid = california_housing.get_valid_data(X, y)
 
-   # Fit the model with the validation data
-   model_tuner.fit(
-      X_train, y_train, validation_data=(X_valid, y_valid), 
-      score="neg_mean_squared_error",
+   california_housing.fit(
+      X_train,
+      y_train,
+      validation_data=(X_valid, y_valid),
    )
 
-Step 7: Return Metrics (Optional)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-   # Return metrics for the validation set
-   metrics = model_tuner.return_metrics(
-      X_valid,
-      y_valid,
-   )
-   print(metrics)
-
+   california_housing.return_metrics(X_test, y_test)
 
 .. code-block:: bash
 
-   100%|██████████| 432/432 [04:10<00:00,  1.73it/s]
+   100%|██████████| 9/9 [00:01<00:00,  4.81it/s]
    Best score/param set found on validation set:
-   {'params': {'selectKBest__k': 8,
-               'xgb__colsample_bytree': 0.8,
-               'xgb__learning_rate': 0.05,
-               'xgb__max_depth': 7,
-               'xgb__n_estimators': 300,
+   {'params': {'xgb__colsample_bytree': 0.8,
+               'xgb__early_stopping_rounds': 10,
+               'xgb__eval_metric': 'logloss',
+               'xgb__learning_rate': 0.1,
+               'xgb__max_depth': 3,
+               'xgb__n_estimators': 172,
                'xgb__subsample': 0.8},
-   'score': -0.21038206511437127}
-   Best neg_mean_squared_error: -0.210 
+   'score': np.float64(0.7979488661159093)}
+   Best r2: 0.798 
 
    ********************************************************************************
-   {'Explained Variance': 0.8385815985957561,
-   'Mean Absolute Error': 0.3008222037008959,
-   'Mean Squared Error': 0.21038206511437127,
-   'Median Absolute Error': 0.196492121219635,
-   'R2': 0.8385811859863378,
-   'RMSE': 0.45867424727618106}
+   {'Explained Variance': 0.7979060590722392,
+   'Mean Absolute Error': np.float64(0.35007797000749163),
+   'Mean Squared Error': np.float64(0.2633964855111536),
+   'Median Absolute Error': np.float64(0.24205514192581173),
+   'R2': 0.7979050719771986,
+   'RMSE': np.float64(0.5132216728774747)}
    ********************************************************************************
 
-   Feature names selected:
-   ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 
-   'AveOccup', 'Latitude', 'Longitude']
-
-   {'Regression Report': {'Explained Variance': 0.8385815985957561, 'R2': 
-   0.8385811859863378, 'Mean Absolute Error': 0.3008222037008959, 'Median 
-   Absolute Error': 0.196492121219635, 'Mean Squared Error': 
-   0.21038206511437127, 'RMSE': 0.45867424727618106}, 'K Best Features': 
-   ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 
-   'AveOccup', 'Latitude', 'Longitude']}
-
-
-
-
+   {'Explained Variance': 0.7979060590722392,
+   'R2': 0.7979050719771986,
+   'Mean Absolute Error': np.float64(0.35007797000749163),
+   'Median Absolute Error': np.float64(0.24205514192581173),
+   'Mean Squared Error': np.float64(0.2633964855111536),
+   'RMSE': np.float64(0.5132216728774747)}
 
 

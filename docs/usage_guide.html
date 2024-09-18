@@ -121,7 +121,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-fit-the-model">Step 6: Fit the Model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-7-return-metrics-optional">Step 7: Return Metrics (Optional)</a></li>
 </ul>
 </li>
 </ul>
@@ -571,6 +570,8 @@ with a simple command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">model_tuner</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 </pre></div>
 </div>
 </section>
@@ -641,14 +642,15 @@ with a simple command:</p>
 <h3>Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
 <span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+      <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+   <span class="p">],</span>
    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_AIDS&quot;</span><span class="p">,</span>
    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name_xgb</span><span class="p">,</span>
    <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
    <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
    <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
    <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">impute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">scaler_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Turn off scaling for XGBoost</span>
    <span class="n">selectKBest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
    <span class="n">grid</span><span class="o">=</span><span class="n">xgb_parameters</span><span class="p">,</span>
@@ -666,18 +668,18 @@ with a simple command:</p>
 <span class="n">model_tuner</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">324</span>/324<span class="w"> </span><span class="o">[</span><span class="m">01</span>:36&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.37it/s<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">324</span>/324<span class="w"> </span><span class="o">[</span><span class="m">01</span>:34&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.42it/s<span class="o">]</span>
 Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
-<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">4</span>,
+<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">20</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">1</span>.0,
 <span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.01,
-<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">199</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">0</span>.8<span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9364314448541736<span class="o">}</span>
-Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.936
+<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.05,
+<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">5</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">100</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">1</span>.0<span class="o">}</span>,
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.946877967711301<span class="o">}</span>
+Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.947
 </pre></div>
 </div>
 </section>
@@ -714,44 +716,63 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 <span class="w">         </span>Predicted:
 <span class="w">            </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w"> </span><span class="m">291</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">23</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">      </span>Neg<span class="w">  </span><span class="m">31</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">   </span><span class="m">83</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">89</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">15</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">  </span><span class="m">21</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">303</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">314</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.78<span class="w">      </span><span class="m">0</span>.73<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">114</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.94<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.81<span class="w">      </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.83<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.89<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
 
 Feature<span class="w"> </span>names<span class="w"> </span>selected:
-<span class="o">[</span><span class="s1">&#39;time&#39;</span>,<span class="w"> </span><span class="s1">&#39;strat&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd40&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd420&#39;</span><span class="o">]</span>
+<span class="o">[</span><span class="s1">&#39;time&#39;</span>,<span class="w"> </span><span class="s1">&#39;trt&#39;</span>,<span class="w"> </span><span class="s1">&#39;age&#39;</span>,<span class="w"> </span><span class="s1">&#39;hemo&#39;</span>,<span class="w"> </span><span class="s1">&#39;homo&#39;</span>,<span class="w"> </span><span class="s1">&#39;drugs&#39;</span>,<span class="w"> </span><span class="s1">&#39;karnof&#39;</span>,<span class="w"> </span><span class="s1">&#39;oprior&#39;</span>,<span class="w"> </span><span class="s1">&#39;z30&#39;</span>,<span class="w"> </span><span class="s1">&#39;preanti&#39;</span>,<span class="w"> </span><span class="s1">&#39;race&#39;</span>,<span class="w"> </span><span class="s1">&#39;gender&#39;</span>,<span class="w"> </span><span class="s1">&#39;str2&#39;</span>,<span class="w"> </span><span class="s1">&#39;strat&#39;</span>,<span class="w"> </span><span class="s1">&#39;symptom&#39;</span>,<span class="w"> </span><span class="s1">&#39;treat&#39;</span>,<span class="w"> </span><span class="s1">&#39;offtrt&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd40&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd420&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd80&#39;</span><span class="o">]</span>
 
-<span class="o">{</span><span class="s1">&#39;Classification Report&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;0&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9037267080745341,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.9267515923566879,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9150943396226415,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">314</span>.0<span class="o">}</span>,
-<span class="s1">&#39;1&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.7830188679245284,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.7280701754385965,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.7545454545454546,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">114</span>.0<span class="o">}</span>,
-<span class="s1">&#39;accuracy&#39;</span>:<span class="w"> </span><span class="m">0</span>.8738317757009346,
-<span class="s1">&#39;macro avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8433727879995312,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.8274108838976422,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8348198970840481,
+<span class="o">{</span><span class="s1">&#39;Classification Report&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;0&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9528301886792453,
+<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.9351851851851852,
+<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9439252336448598,
+<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">324</span>.0<span class="o">}</span>,
+<span class="s1">&#39;1&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8090909090909091,
+<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.8557692307692307,
+<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8317757009345793,
+<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">104</span>.0<span class="o">}</span>,
+<span class="s1">&#39;accuracy&#39;</span>:<span class="w"> </span><span class="m">0</span>.9158878504672897,
+<span class="s1">&#39;macro avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8809605488850771,
+<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.895477207977208,
+<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8878504672897196,
 <span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">428</span>.0<span class="o">}</span>,
-<span class="s1">&#39;weighted avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8715755543897196,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.8738317757009346,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8723313188310543,
+<span class="s1">&#39;weighted avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9179028870970327,
+<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.9158878504672897,
+<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9166739453227356,
 <span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">428</span>.0<span class="o">}}</span>,
-<span class="s1">&#39;Confusion Matrix&#39;</span>:<span class="w"> </span>array<span class="o">([[</span><span class="m">291</span>,<span class="w">  </span><span class="m">23</span><span class="o">]</span>,
-<span class="w">      </span><span class="o">[</span><span class="w"> </span><span class="m">31</span>,<span class="w">  </span><span class="m">83</span><span class="o">]])</span>,
-<span class="s1">&#39;K Best Features&#39;</span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;time&#39;</span>,<span class="w"> </span><span class="s1">&#39;strat&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd40&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd420&#39;</span><span class="o">]}</span>
+<span class="s1">&#39;Confusion Matrix&#39;</span>:<span class="w"> </span>array<span class="o">([[</span><span class="m">303</span>,<span class="w">  </span><span class="m">21</span><span class="o">]</span>,
+<span class="w">      </span><span class="o">[</span><span class="w"> </span><span class="m">15</span>,<span class="w">  </span><span class="m">89</span><span class="o">]])</span>,
+<span class="s1">&#39;K Best Features&#39;</span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;time&#39;</span>,
+<span class="s1">&#39;trt&#39;</span>,
+<span class="s1">&#39;age&#39;</span>,
+<span class="s1">&#39;hemo&#39;</span>,
+<span class="s1">&#39;homo&#39;</span>,
+<span class="s1">&#39;drugs&#39;</span>,
+<span class="s1">&#39;karnof&#39;</span>,
+<span class="s1">&#39;oprior&#39;</span>,
+<span class="s1">&#39;z30&#39;</span>,
+<span class="s1">&#39;preanti&#39;</span>,
+<span class="s1">&#39;race&#39;</span>,
+<span class="s1">&#39;gender&#39;</span>,
+<span class="s1">&#39;str2&#39;</span>,
+<span class="s1">&#39;strat&#39;</span>,
+<span class="s1">&#39;symptom&#39;</span>,
+<span class="s1">&#39;treat&#39;</span>,
+<span class="s1">&#39;offtrt&#39;</span>,
+<span class="s1">&#39;cd40&#39;</span>,
+<span class="s1">&#39;cd420&#39;</span>,
+<span class="s1">&#39;cd80&#39;</span><span class="o">]}</span>
 </pre></div>
 </div>
 </section>
@@ -854,12 +875,12 @@ output it as follows:</p>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">              </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">314</span>
-<span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.72<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">114</span>
+<span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.94<span class="w">       </span><span class="m">324</span>
+<span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.81<span class="w">      </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">104</span>
 
-<span class="w">    </span>accuracy<span class="w">                           </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
+<span class="w">    </span>accuracy<span class="w">                           </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.89<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
 </pre></div>
 </div>
 </section>
@@ -867,7 +888,7 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </section>
 <section id="regression">
 <h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
-<p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for regression using XGBoost on the California Housing dataset.</p>
+<p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for regression using <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the California Housing dataset.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
 <section id="id1">
@@ -875,6 +896,7 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_california_housing</span>
 <span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">model_tuner</span>
 </pre></div>
@@ -904,11 +926,15 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 
 <span class="c1"># Define the hyperparameters for XGBoost</span>
-<span class="n">xgb_learning_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>
+<span class="n">xgb_learning_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>  <span class="c1"># Learning rate or eta</span>
+<span class="c1"># Number of trees. Equivalent to n_estimators in GB</span>
 <span class="n">xgb_n_estimators</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>
-<span class="n">xgb_max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-<span class="n">xgb_subsamples</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-<span class="n">xgb_colsample_bytree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">xgb_max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Maximum depth of the trees</span>
+<span class="n">xgb_subsamples</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Subsample ratio of the training instances</span>
+<span class="n">xgb_colsample_bytree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">xgb_eval_metric</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">]</span>
+<span class="n">xgb_early_stopping_rounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">xgb_verbose</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
 
 <span class="c1"># Combining the hyperparameters in a dictionary</span>
 <span class="n">xgb_parameters</span> <span class="o">=</span> <span class="p">[</span>
@@ -918,7 +944,9 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
       <span class="s2">&quot;xgb__max_depth&quot;</span><span class="p">:</span> <span class="n">xgb_max_depths</span><span class="p">,</span>
       <span class="s2">&quot;xgb__subsample&quot;</span><span class="p">:</span> <span class="n">xgb_subsamples</span><span class="p">,</span>
       <span class="s2">&quot;xgb__colsample_bytree&quot;</span><span class="p">:</span> <span class="n">xgb_colsample_bytree</span><span class="p">,</span>
-      <span class="s2">&quot;selectKBest__k&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+      <span class="s2">&quot;xgb__eval_metric&quot;</span><span class="p">:</span> <span class="n">xgb_eval_metric</span><span class="p">,</span>
+      <span class="s2">&quot;xgb__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="n">xgb_early_stopping_rounds</span><span class="p">,</span>
+      <span class="s2">&quot;xgb__verbose&quot;</span><span class="p">:</span> <span class="n">xgb_verbose</span><span class="p">,</span>
    <span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
@@ -927,80 +955,73 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <section id="step-5-initialize-and-configure-the-model">
 <h3>Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-5-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
-<span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_California_Housing&quot;</span><span class="p">,</span>
+<span class="n">california_housing</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+      <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+   <span class="p">],</span>
+   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Redfin_model_XGB&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="s2">&quot;xgb&quot;</span><span class="p">,</span>
    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name_xgb</span><span class="p">,</span>
    <span class="n">calibrate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
    <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
    <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">impute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">scaler_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-   <span class="n">selectKBest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
    <span class="n">grid</span><span class="o">=</span><span class="n">xgb_parameters</span><span class="p">,</span>
    <span class="n">randomized_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">],</span>
-   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
-   <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+   <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="step-6-fit-the-model">
 <h3>Step 6: Fit the Model<a class="headerlink" href="#step-6-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the training and validation data</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eval_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>  <span class="c1"># necessary for early stopping</span>
 
-<span class="c1"># Fit the model with the validation data</span>
-<span class="n">model_tuner</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-   <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span>
-   <span class="n">score</span><span class="o">=</span><span class="s2">&quot;neg_mean_squared_error&quot;</span><span class="p">,</span>
+<span class="c1"># Perform grid search parameter tuning</span>
+<span class="n">california_housing</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Get the training and validation data</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">california_housing</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">california_housing</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">california_housing</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+   <span class="n">X_train</span><span class="p">,</span>
+   <span class="n">y_train</span><span class="p">,</span>
+   <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span>
 <span class="p">)</span>
+
+<span class="n">california_housing</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="step-7-return-metrics-optional">
-<h3>Step 7: Return Metrics (Optional)<a class="headerlink" href="#step-7-return-metrics-optional" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Return metrics for the validation set</span>
-<span class="n">metrics</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_valid</span><span class="p">,</span>
-   <span class="n">y_valid</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">432</span>/432<span class="w"> </span><span class="o">[</span><span class="m">04</span>:10&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">1</span>.73it/s<span class="o">]</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:01&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.81it/s<span class="o">]</span>
 Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
-<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">8</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
-<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.05,
-<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">7</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">300</span>,
+<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
+<span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.1,
+<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">172</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">0</span>.8<span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span>-0.21038206511437127<span class="o">}</span>
-Best<span class="w"> </span>neg_mean_squared_error:<span class="w"> </span>-0.210
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.7979488661159093<span class="o">)}</span>
+Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.798
 
 ********************************************************************************
-<span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.8385815985957561,
-<span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span><span class="m">0</span>.3008222037008959,
-<span class="s1">&#39;Mean Squared Error&#39;</span>:<span class="w"> </span><span class="m">0</span>.21038206511437127,
-<span class="s1">&#39;Median Absolute Error&#39;</span>:<span class="w"> </span><span class="m">0</span>.196492121219635,
-<span class="s1">&#39;R2&#39;</span>:<span class="w"> </span><span class="m">0</span>.8385811859863378,
-<span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span><span class="m">0</span>.45867424727618106<span class="o">}</span>
+<span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979060590722392,
+<span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.35007797000749163<span class="o">)</span>,
+<span class="s1">&#39;Mean Squared Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.2633964855111536<span class="o">)</span>,
+<span class="s1">&#39;Median Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.24205514192581173<span class="o">)</span>,
+<span class="s1">&#39;R2&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979050719771986,
+<span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.5132216728774747<span class="o">)}</span>
 ********************************************************************************
 
-Feature<span class="w"> </span>names<span class="w"> </span>selected:
-<span class="o">[</span><span class="s1">&#39;MedInc&#39;</span>,<span class="w"> </span><span class="s1">&#39;HouseAge&#39;</span>,<span class="w"> </span><span class="s1">&#39;AveRooms&#39;</span>,<span class="w"> </span><span class="s1">&#39;AveBedrms&#39;</span>,<span class="w"> </span><span class="s1">&#39;Population&#39;</span>,
-<span class="s1">&#39;AveOccup&#39;</span>,<span class="w"> </span><span class="s1">&#39;Latitude&#39;</span>,<span class="w"> </span><span class="s1">&#39;Longitude&#39;</span><span class="o">]</span>
-
-<span class="o">{</span><span class="s1">&#39;Regression Report&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.8385815985957561,<span class="w"> </span><span class="s1">&#39;R2&#39;</span>:
-<span class="m">0</span>.8385811859863378,<span class="w"> </span><span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span><span class="m">0</span>.3008222037008959,<span class="w"> </span><span class="s1">&#39;Median</span>
-<span class="s1">Absolute Error&#39;</span>:<span class="w"> </span><span class="m">0</span>.196492121219635,<span class="w"> </span><span class="s1">&#39;Mean Squared Error&#39;</span>:
-<span class="m">0</span>.21038206511437127,<span class="w"> </span><span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span><span class="m">0</span>.45867424727618106<span class="o">}</span>,<span class="w"> </span><span class="s1">&#39;K Best Features&#39;</span>:
-<span class="o">[</span><span class="s1">&#39;MedInc&#39;</span>,<span class="w"> </span><span class="s1">&#39;HouseAge&#39;</span>,<span class="w"> </span><span class="s1">&#39;AveRooms&#39;</span>,<span class="w"> </span><span class="s1">&#39;AveBedrms&#39;</span>,<span class="w"> </span><span class="s1">&#39;Population&#39;</span>,
-<span class="s1">&#39;AveOccup&#39;</span>,<span class="w"> </span><span class="s1">&#39;Latitude&#39;</span>,<span class="w"> </span><span class="s1">&#39;Longitude&#39;</span><span class="o">]}</span>
+<span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979060590722392,
+<span class="s1">&#39;R2&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979050719771986,
+<span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.35007797000749163<span class="o">)</span>,
+<span class="s1">&#39;Median Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.24205514192581173<span class="o">)</span>,
+<span class="s1">&#39;Mean Squared Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.2633964855111536<span class="o">)</span>,
+<span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.5132216728774747<span class="o">)}</span>
 </pre></div>
 </div>
 </section>
