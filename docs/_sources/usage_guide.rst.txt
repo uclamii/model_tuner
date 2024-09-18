@@ -165,7 +165,11 @@ Helper Functions
 Input Parameters
 =====================
 
-.. function:: Model(name, estimator_name, estimator, calibrate, kfold, imbalance_sampler, train_size, validation_size, test_size, stratify_y, stratify_cols, drop_strat_feat, grid, scoring, n_splits, random_state, n_jobs, display, feature_names, randomized_grid, n_iter, trained, pipeline, scaler_type, impute_strategy, impute, pipeline_steps, xgboost_early, selectKBest, model_type, class_labels, multi_label, calibration_method, custom_scorer)
+.. class:: Model(name, estimator_name, estimator, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, drop_strat_feat=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, feature_names=None, randomized_grid=False, n_iter=100, pipeline=True, pipeline_steps=[], xgboost_early=False, selectKBest=False, model_type="classification", class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[])
+
+   A class for building, tuning, and evaluating machine learning models, supporting classification, regression, and multi-label tasks.
+
+   **Parameters**
 
    :param name: A name for the model, useful for identifying the model in outputs and logs.
    :type name: str
@@ -173,17 +177,17 @@ Input Parameters
    :type estimator_name: str
    :param estimator: The machine learning model to be tuned and trained.
    :type estimator: object
-   :param calibrate: Whether to calibrate the classifier. Default is False.
+   :param calibrate: Whether to calibrate the classifier. Default is ``False``.
    :type calibrate: bool, optional
-   :param kfold: Whether to use k-fold cross-validation. Default is False.
+   :param kfold: Whether to use k-fold cross-validation. Default is ``False``.
    :type kfold: bool, optional
    :param imbalance_sampler: An imbalanced data sampler from the imblearn library, e.g., ``RandomUnderSampler`` or ``RandomOverSampler``.
    :type imbalance_sampler: object, optional
-   :param train_size: Proportion of the data to use for training. Default is 0.6.
+   :param train_size: Proportion of the data to use for training. Default is ``0.6``.
    :type train_size: float, optional
-   :param validation_size: Proportion of the data to use for validation. Default is 0.2.
+   :param validation_size: Proportion of the data to use for validation. Default is ``0.2``.
    :type validation_size: float, optional
-   :param test_size: Proportion of the data to use for testing. Default is 0.2.
+   :param test_size: Proportion of the data to use for testing. Default is ``0.2``.
    :type test_size: float, optional
    :param stratify_y: Whether to stratify by the target variable during train/validation/test split. Default is ``False``.
    :type stratify_y: bool, optional
@@ -193,7 +197,7 @@ Input Parameters
    :type drop_strat_feat: list, optional
    :param grid: Hyperparameter grid for tuning.
    :type grid: list of dict
-   :param scoring: Scoring metrics for evaluation.
+   :param scoring: List of scoring metrics for evaluation.
    :type scoring: list of str
    :param n_splits: Number of splits for k-fold cross-validation. Default is ``10``.
    :type n_splits: int, optional
@@ -209,21 +213,13 @@ Input Parameters
    :type randomized_grid: bool, optional
    :param n_iter: Number of iterations for randomized grid search. Default is ``100``.
    :type n_iter: int, optional
-   :param trained: Whether the model has been trained. Default is ``False``.
-   :type trained: bool, optional
    :param pipeline: Whether to use a pipeline. Default is ``True``.
    :type pipeline: bool, optional
-   :param scaler_type: Type of scaler to use. Options are ``min_max_scaler``, ``standard_scaler``, ``max_abs_scaler``, or ``None``. Default is ``min_max_scaler``.
-   :type scaler_type: str, optional
-   :param impute_strategy: Strategy for imputation. Options are ``mean``, ``median``, ``most_frequent``, or ``constant``. Default is ``mean``.
-   :type impute_strategy: str, optional
-   :param impute: Whether to impute missing values. Default is ``False``.
-   :type impute: bool, optional
-   :param pipeline_steps: List of pipeline steps. Default is ``[(min_max_scaler, MinMaxScaler())]``.
+   :param pipeline_steps: List of pipeline steps. Default is ``[]``.
    :type pipeline_steps: list, optional
    :param xgboost_early: Whether to use early stopping for ``XGBoost``. Default is ``False``.
    :type xgboost_early: bool, optional
-   :param selectKBest: Whether to select K best features. Default is ``False``.
+   :param selectKBest: Whether to select the K best features. Default is ``False``.
    :type selectKBest: bool, optional
    :param model_type: Type of model, either ``classification`` or ``regression``. Default is ``classification``.
    :type model_type: str, optional
@@ -236,9 +232,8 @@ Input Parameters
    :param custom_scorer: Custom scorers for evaluation. Default is ``[]``.
    :type custom_scorer: dict, optional
 
-
    :raises ImportError: If the ``bootstrapper`` module is not found or not installed.
-   :raises ValueError: In various cases, such as when an invalid parameter is passed to Scikit-learn functions like ``cross_validate``, ``fit``, or ``train_test_split``, or if the shapes of ``X`` and ``y`` do not match during operations.
+   :raises ValueError: In various cases, such as when invalid parameters are passed to Scikit-learn functions, or if the shapes of ``X`` and ``y`` do not match during operations.
    :raises AttributeError: If an expected step in the pipeline (e.g., "imputer", "Resampler") is missing from ``self.estimator.named_steps``, or if ``self.PipelineClass`` or ``self.estimator`` is not properly initialized.
    :raises TypeError: If an incorrect type is passed to a function or method, such as passing ``None`` where a numerical value or a non-NoneType object is expected.
    :raises IndexError: If the dimensions of the confusion matrix are incorrect or unexpected in ``_confusion_matrix_print_ML`` or ``_confusion_matrix_print``.
