@@ -33,7 +33,7 @@ Binary Classification Examples
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+      <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials Colab Notebook</a>
 
    - .. raw:: html
 
@@ -59,14 +59,14 @@ Column Transformer Example
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Column Transformer</a>
+      <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Column Transformer Colab Notebook</a>
       
 
    **HTML File**
 
    - .. raw:: html
 
-      <a href="Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer</a>
+      <a href="Model_Tuner_ColumnTransformer.html" target="_blank">Column Transformer HTML File</a>
 
 
 Regression Example
@@ -76,14 +76,14 @@ Regression Example
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN" target="_blank">Redfin Real Estate - Los Angeles Data</a>
+      <a href="https://colab.research.google.com/drive/151kdlsW-WyJ0pwwt_iWpjXDuqj1Ktam_?authuser=1#scrollTo=UhfZKVoq3sAN" target="_blank">Redfin Real Estate - Los Angeles Data Colab Notebook</a>
       
 
    **HTML File**
    
    - .. raw:: html
 
-      <a href="Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data</a>
+      <a href="Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a>
 
 
 
