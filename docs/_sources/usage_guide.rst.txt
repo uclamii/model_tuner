@@ -168,8 +168,6 @@ Input Parameters
 
    A class for building, tuning, and evaluating machine learning models, supporting classification, regression, and multi-label tasks.
 
-   **Parameters**
-
    :param name: A name for the model, useful for identifying the model in outputs and logs.
    :type name: str
    :param estimator_name: The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + ``__param_name``).
