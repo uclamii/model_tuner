@@ -80,6 +80,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#solution">Solution</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#imputation-before-scaling">Imputation Before Scaling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#accurate-calculation-of-scaling-parameters">1. Accurate Calculation of Scaling Parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consistency-in-data-transformation">2. Consistency in Data Transformation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#prevention-of-distortion-in-scaling">3. Prevention of Distortion in Scaling</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#cross-validation-and-stratification">Cross-Validation and Stratification</a></li>
 </ul>
@@ -424,6 +430,50 @@ If <span class="math notranslate nohighlight">\(y\)</span> is currently a DataFr
 <p>The method <code class="code docutils literal notranslate"><span class="pre">squeeze()</span></code> effectively removes any unnecessary dimensions, converting a 2-dimensional DataFrame
 with a single column into a 1-dimensional Series. This ensures that <span class="math notranslate nohighlight">\(y\)</span> has the correct shape, preventing
 the aforementioned warning and ensuring the model processes the target variable correctly.</p>
+</section>
+</section>
+<section id="imputation-before-scaling">
+<h2>Imputation Before Scaling<a class="headerlink" href="#imputation-before-scaling" title="Link to this heading"></a></h2>
+<p><strong>Ensuring Correct Data Preprocessing Order: Imputation Before Scaling</strong></p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>It is crucial to apply imputation before scaling during the data preprocessing
+pipeline to preserve the mathematical integrity of the transformations. The
+correct sequence for the pipeline is as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline_steps</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+   <span class="p">(</span><span class="s2">&quot;StandardScaler&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<section id="accurate-calculation-of-scaling-parameters">
+<h3>1. Accurate Calculation of Scaling Parameters<a class="headerlink" href="#accurate-calculation-of-scaling-parameters" title="Link to this heading"></a></h3>
+<p>Scaling methods, such as standardization or min-max scaling, rely on the calculation of statistical properties, such as the mean (<span class="math notranslate nohighlight">\(\mu\)</span>), standard deviation (<span class="math notranslate nohighlight">\(\sigma\)</span>), minimum (<span class="math notranslate nohighlight">\(x_{\min}\)</span>), and maximum (<span class="math notranslate nohighlight">\(x_{\max}\)</span>) of the dataset. These statistics are computed over the full set of available data. If missing values are present during this calculation, the resulting parameters will be incorrect, leading to improper scaling.</p>
+<p>For example, in Z-score standardization, the transformation is defined as:</p>
+<div class="math notranslate nohighlight">
+\[z = \frac{x - \mu}{\sigma}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu = \frac{1}{N} \sum_{i=1}^{N} x_i\)</span> and <span class="math notranslate nohighlight">\(\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}\)</span>, with <span class="math notranslate nohighlight">\(N\)</span> representing the number of data points. If missing values are not imputed first, both <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma\)</span> will be computed based on incomplete data, resulting in inaccurate transformations for all values.</p>
+<p>In contrast, if we impute the missing values first (e.g., by replacing them with the mean or median), the complete dataset is used for calculating these parameters. This ensures the scaling transformation is applied consistently across all data points.</p>
+</section>
+<section id="consistency-in-data-transformation">
+<h3>2. Consistency in Data Transformation<a class="headerlink" href="#consistency-in-data-transformation" title="Link to this heading"></a></h3>
+<p>Imputing missing values before scaling ensures that the transformation applied is consistent across the entire dataset, including previously missing values. For instance, consider a feature <span class="math notranslate nohighlight">\(X = [1, 2, \text{NaN}, 4, 5]\)</span>. If we impute the missing value using the mean (<span class="math notranslate nohighlight">\(\mu = \frac{1 + 2 + 4 + 5}{4} = 3\)</span>), the imputed dataset becomes:</p>
+<div class="math notranslate nohighlight">
+\[X_{\text{imputed}} = [1, 2, 3, 4, 5]\]</div>
+<p>Now, applying standardization on the imputed dataset results in consistent Z-scores for each value, based on the correct parameters <span class="math notranslate nohighlight">\(\mu = 3\)</span> and <span class="math notranslate nohighlight">\(\sigma = 1.58\)</span>.</p>
+<p>Had scaling been applied first, without imputing, the calculated mean and standard deviation would be incorrect, leading to inconsistent transformations when imputation is subsequently applied. For example, if we calculated:</p>
+<div class="math notranslate nohighlight">
+\[z_{\text{incomplete}} = \frac{x - 3}{1.58} \quad \text{(based on non-imputed data)}\]</div>
+<p>and later imputed the missing value, the transformed imputed value would not be aligned with the scaled distribution.</p>
+</section>
+<section id="prevention-of-distortion-in-scaling">
+<h3>3. Prevention of Distortion in Scaling<a class="headerlink" href="#prevention-of-distortion-in-scaling" title="Link to this heading"></a></h3>
+<p>Placeholder values used to represent missing data (e.g., large negative numbers like -999) can severely distort scaling transformations if not handled prior to scaling. In min-max scaling, the transformation is:</p>
+<div class="math notranslate nohighlight">
+\[x_{\text{scaled}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{\min}\)</span> and <span class="math notranslate nohighlight">\(x_{\max}\)</span> represent the minimum and maximum values of the feature. If a placeholder value like -999 is included, the range <span class="math notranslate nohighlight">\(x_{\max} - x_{\min}\)</span> will be artificially inflated, leading to a heavily skewed scaling of all values. For instance, the min-max scaling of <span class="math notranslate nohighlight">\(X = [1, 2, -999, 4, 5]\)</span> would produce extreme distortions due to the influence of -999 on <span class="math notranslate nohighlight">\(x_{\min}\)</span>.</p>
+<p>By imputing missing values before scaling, we avoid these distortions, ensuring that the scaling operation reflects the true range of the data.</p>
 </section>
 </section>
 <section id="column-stratification-with-cross-validation">

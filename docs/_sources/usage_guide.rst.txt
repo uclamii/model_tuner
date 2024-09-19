@@ -389,6 +389,75 @@ The method :code:`squeeze()` effectively removes any unnecessary dimensions, con
 with a single column into a 1-dimensional Series. This ensures that :math:`y` has the correct shape, preventing 
 the aforementioned warning and ensuring the model processes the target variable correctly.
 
+
+
+Imputation Before Scaling
+----------------------------
+
+**Ensuring Correct Data Preprocessing Order: Imputation Before Scaling**
+
+.. important:: 
+   It is crucial to apply imputation before scaling during the data preprocessing 
+   pipeline to preserve the mathematical integrity of the transformations. The 
+   correct sequence for the pipeline is as follows:
+
+   .. code:: python
+
+      pipeline_steps = [
+         ("Preprocessor", SimpleImputer()),
+         ("StandardScaler", StandardScaler()),
+      ]
+
+1. Accurate Calculation of Scaling Parameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Scaling methods, such as standardization or min-max scaling, rely on the calculation of statistical properties, such as the mean (:math:`\mu`), standard deviation (:math:`\sigma`), minimum (:math:`x_{\min}`), and maximum (:math:`x_{\max}`) of the dataset. These statistics are computed over the full set of available data. If missing values are present during this calculation, the resulting parameters will be incorrect, leading to improper scaling.
+
+For example, in Z-score standardization, the transformation is defined as:
+
+.. math::
+
+   z = \frac{x - \mu}{\sigma}
+
+where :math:`\mu = \frac{1}{N} \sum_{i=1}^{N} x_i` and :math:`\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}`, with :math:`N` representing the number of data points. If missing values are not imputed first, both :math:`\mu` and :math:`\sigma` will be computed based on incomplete data, resulting in inaccurate transformations for all values.
+
+In contrast, if we impute the missing values first (e.g., by replacing them with the mean or median), the complete dataset is used for calculating these parameters. This ensures the scaling transformation is applied consistently across all data points.
+
+2. Consistency in Data Transformation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Imputing missing values before scaling ensures that the transformation applied is consistent across the entire dataset, including previously missing values. For instance, consider a feature :math:`X = [1, 2, \text{NaN}, 4, 5]`. If we impute the missing value using the mean (:math:`\mu = \frac{1 + 2 + 4 + 5}{4} = 3`), the imputed dataset becomes:
+
+.. math::
+
+   X_{\text{imputed}} = [1, 2, 3, 4, 5]
+
+Now, applying standardization on the imputed dataset results in consistent Z-scores for each value, based on the correct parameters :math:`\mu = 3` and :math:`\sigma = 1.58`.
+
+Had scaling been applied first, without imputing, the calculated mean and standard deviation would be incorrect, leading to inconsistent transformations when imputation is subsequently applied. For example, if we calculated:
+
+.. math::
+
+   z_{\text{incomplete}} = \frac{x - 3}{1.58} \quad \text{(based on non-imputed data)}
+
+and later imputed the missing value, the transformed imputed value would not be aligned with the scaled distribution.
+
+3. Prevention of Distortion in Scaling
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Placeholder values used to represent missing data (e.g., large negative numbers like -999) can severely distort scaling transformations if not handled prior to scaling. In min-max scaling, the transformation is:
+
+.. math::
+
+   x_{\text{scaled}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}}
+
+where :math:`x_{\min}` and :math:`x_{\max}` represent the minimum and maximum values of the feature. If a placeholder value like -999 is included, the range :math:`x_{\max} - x_{\min}` will be artificially inflated, leading to a heavily skewed scaling of all values. For instance, the min-max scaling of :math:`X = [1, 2, -999, 4, 5]` would produce extreme distortions due to the influence of -999 on :math:`x_{\min}`.
+
+By imputing missing values before scaling, we avoid these distortions, ensuring that the scaling operation reflects the true range of the data.
+
+
+
+
 Column Stratification with Cross-Validation
 ---------------------------------------------
 .. important::
