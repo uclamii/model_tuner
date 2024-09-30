@@ -146,7 +146,10 @@ class Model:
                 + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
-            self.estimator
+            self.estimator = self.PipelineClass(                
+                [(self.estimator_name, copy.deepcopy(self.original_estimator))]
+            ) # L.S. --> # If no pipeline, initialize only with the original 
+              # estimator;  Fixed pipeline setup for cases without steps
         self.grid = grid
         self.class_labels = class_labels
         self.kfold = kfold
