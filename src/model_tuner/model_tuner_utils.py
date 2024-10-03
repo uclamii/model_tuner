@@ -124,6 +124,7 @@ class Model:
             calibration_method  # 04_27_24 --> added calibration method
         )
 
+        ###TODO:
         if selectKBest:
             pipeline_steps.append(("selectKBest", SelectKBest()))
 
@@ -146,8 +147,8 @@ class Model:
         else:
             self.estimator = self.PipelineClass(
                 [(self.estimator_name, copy.deepcopy(self.original_estimator))]
-            )  # L.S. --> # If no pipeline, initialize only with the original
-            # estimator;  Fixed pipeline setup for cases without steps
+            )
+
         self.grid = grid
         self.class_labels = class_labels
         self.kfold = kfold
@@ -195,10 +196,15 @@ class Model:
                 + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
-            self.estimator
+            self.estimator = self.PipelineClass(
+                [(self.estimator_name, copy.deepcopy(self.original_estimator))]
+            )
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
+
+        ####  Preprocessor, Resampler, rfe, Estimator
+
         if self.pipeline_steps:
             ### Need to detect what the name of a column transformer has been called
             ### if we are using custom pipeline steps
@@ -210,7 +216,7 @@ class Model:
 
         X_train_preproc = preproc_test.fit_transform(X_train)
 
-        X_res, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
+        _, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
 
         if not isinstance(y_res, pd.DataFrame):
             y_res = pd.DataFrame(y_res)
