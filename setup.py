@@ -24,11 +24,11 @@ setup(
     ],  # Classifiers for the package
     python_requires=">=3.7",  # Minimum version of Python required
     install_requires=[
-        "joblib>=1.3.2",
-        "numpy>=1.21.6",
-        "pandas>=1.3.5",
-        "scikit-learn>=1.0.2",
-        "scipy>=1.7.3",
-        "tqdm>=4.66.4",
+        "joblib==1.4.2",
+        "numpy==1.26.4",
+        "pandas==2.2.2",
+        "scikit-learn==1.5.1",
+        "scipy==1.14.0",
+        "tqdm==4.66.4",
     ],
 )
