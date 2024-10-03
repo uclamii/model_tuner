@@ -4,7 +4,7 @@ import os
 import sys
 
 from sklearn.datasets import make_classification
-
+from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 
 from model_tuner.model_tuner_utils import Model
@@ -31,12 +31,13 @@ tuned_parameters = {
     f"{estimator_name}__learning_rate": [1e-4],
     f"{estimator_name}__n_estimators": [30],
     f"{estimator_name}__early_stopping_rounds": [10],
-    f"{estimator_name}__verbose": [True],
+    f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
 }
 
 kfold = False
 calibrate = False
+
 
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
@@ -45,6 +46,7 @@ model = Model(
     estimator_name=estimator_name,
     calibrate=calibrate,
     estimator=estimator,
+    pipeline_steps=[("impute", SimpleImputer())],
     kfold=kfold,
     stratify_y=True,
     grid=tuned_parameters,
@@ -52,8 +54,6 @@ model = Model(
     n_iter=4,
     xgboost_early=True,
     scoring=["roc_auc"],
-    n_splits=10,
-    selectKBest=False,
     n_jobs=-2,
     random_state=42,
 )
