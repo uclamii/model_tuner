@@ -1,53 +1,34 @@
-import pandas as pd
-import numpy as np
-import os
-import sys
-
-from sklearn.datasets import make_classification
+from catboost import CatBoostClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 from model_tuner.model_tuner_utils import Model
-from model_tuner.bootstrapper import evaluate_bootstrap_metrics
-from model_tuner.pickleObjects import dumpObjects, loadObjects
 
+
+estimator = CatBoostClassifier(verbose=0)
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]
 X = bc[bc_cols]
 y = bc["target"]
 
-from xgboost import XGBClassifier
-
-
-estimator = XGBClassifier(
-    objective="binary:logistic",
-)
-
-estimator_name = "xgb"
 xgbearly = True
 
+estimator_name = "cat"
+
 tuned_parameters = {
-    f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
+    f"{estimator_name}__depth": [10],
     f"{estimator_name}__learning_rate": [1e-4],
     f"{estimator_name}__n_estimators": [30],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
-    f"{estimator_name}__eval_metric": ["logloss"],
+    f"{estimator_name}__eval_metric": ["Logloss"],
 }
 
-kfold = False
-calibrate = False
-
-
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
 model = Model(
-    name="XGBoost Early",
+    name="Catboost Early",
     estimator_name=estimator_name,
-    calibrate=calibrate,
     estimator=estimator,
     pipeline_steps=[],
-    kfold=kfold,
     stratify_y=True,
     grid=tuned_parameters,
     randomized_grid=False,
