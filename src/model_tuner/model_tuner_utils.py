@@ -104,7 +104,6 @@ class Model:
         feature_names=None,
         randomized_grid=False,
         n_iter=100,
-        pipeline=True,
         pipeline_steps=[],
         xgboost_early=False,
         selectKBest=False,
@@ -117,7 +116,6 @@ class Model:
         self.name = name
         self.estimator_name = estimator_name
         self.calibrate = calibrate
-        self.pipeline = pipeline
         self.original_estimator = estimator
         self.selectKBest = selectKBest
         self.model_type = model_type
@@ -140,16 +138,16 @@ class Model:
             self.PipelineClass = Pipeline
 
         self.pipeline_steps = pipeline_steps
-        if self.pipeline:
+        if self.pipeline_steps:
             self.estimator = self.PipelineClass(
                 self.pipeline_steps
                 + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
             )
         else:
-            self.estimator = self.PipelineClass(                
+            self.estimator = self.PipelineClass(
                 [(self.estimator_name, copy.deepcopy(self.original_estimator))]
-            ) # L.S. --> # If no pipeline, initialize only with the original 
-              # estimator;  Fixed pipeline setup for cases without steps
+            )  # L.S. --> # If no pipeline, initialize only with the original
+            # estimator;  Fixed pipeline setup for cases without steps
         self.grid = grid
         self.class_labels = class_labels
         self.kfold = kfold
@@ -191,7 +189,7 @@ class Model:
         self.custom_scorer = custom_scorer
 
     def reset_estimator(self):
-        if self.pipeline:
+        if self.pipeline_steps:
             self.estimator = self.PipelineClass(
                 self.pipeline_steps
                 + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
@@ -201,7 +199,7 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
-        if self.pipeline:
+        if self.pipeline_steps:
             ### Need to detect what the name of a column transformer has been called
             ### if we are using custom pipeline steps
             preproc_test = clone(self.estimator.named_steps["Preprocessor"])
@@ -432,7 +430,7 @@ class Model:
 
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    if self.selectKBest or self.pipeline:
+                    if self.selectKBest or self.pipeline_steps:
 
                         params_no_estimator = {
                             key: value
@@ -479,7 +477,7 @@ class Model:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
                     best_params = self.best_params_per_score[score]["params"]
-                    if self.selectKBest or self.pipeline:
+                    if self.selectKBest or self.pipeline_steps:
 
                         params_no_estimator = {
                             key: value
@@ -767,14 +765,14 @@ class Model:
                         else:
                             self.verbosity = False
 
-                        if self.selectKBest or self.pipeline:
+                        if self.selectKBest or self.pipeline_steps:
                             params_no_estimator = {
                                 key: value
                                 for key, value in params.items()
                                 if not key.startswith(f"{self.estimator_name}__")
                             }
                             if self.imbalance_sampler:
-                                
+
                                 ## Removing all "Resampler" hyperparameters
                                 params_no_sampler = {
                                     key: value
@@ -794,7 +792,7 @@ class Model:
                                 ## We select all the parts of the pipeline apart from the
                                 ## estimator (estimator is always final step). Then
                                 ## fit on train data and transform valid data, this preps
-                                ## eval data ready for early stopping 
+                                ## eval data ready for early stopping
                                 self.estimator[:-1].set_params(
                                     **params_no_estimator
                                 ).fit(X_train, y_train)
@@ -965,7 +963,6 @@ class Model:
         calibrate,
     ):
 
-
         if stratify_cols is not None and stratify_y:
             # Creating stratification columns out of stratify_cols list
             if type(stratify_cols) == pd.DataFrame:
@@ -988,7 +985,7 @@ class Model:
             self.dropped_strat_cols = X[self.drop_strat_feat]
             X = X.drop(columns=self.drop_strat_feat)
         ##############################
-        
+
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
             y,
