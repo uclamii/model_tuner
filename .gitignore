@@ -9,7 +9,7 @@ __pycache__/
 # CSV files (because most (if not all) contain identifying patient information
 *.csv
 .DS_Store
-
+catboost_info/
 # Distribution / packaging
 .Python
 build/
