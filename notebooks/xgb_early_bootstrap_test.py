@@ -77,7 +77,9 @@ y_prob = model.predict_proba(X_test)[:, 1]
 ### F1 Weighted
 y_pred = model.predict(X_test, optimal_threshold=True)
 
-### model type bootstrap
+
+### model type bootstrap no stratify, balance, or class proportions
+print("Bootstrap metrics \n")
 print(
     evaluate_bootstrap_metrics(
         model=model,
@@ -95,24 +97,7 @@ print(
     )
 )
 
-### boostrap metrics
-print(
-    evaluate_bootstrap_metrics(
-        model=None,
-        X=X_test,
-        y=y_test,
-        y_pred_prob=y_prob,
-        n_samples=500,
-        num_resamples=1000,
-        metrics=["roc_auc", "f1_weighted", "average_precision"],
-        random_state=42,
-        threshold=0.5,
-        model_type="classification",
-        stratify=None,
-        balance=False,
-    )
-)
-
+print("Bootstrap metrics - Stratified \n")
 # stratified
 print(
     evaluate_bootstrap_metrics(
@@ -126,11 +111,12 @@ print(
         random_state=42,
         threshold=0.5,
         model_type="classification",
-        stratify=y_prob,
+        stratify=y_test,
         balance=False,
     )
 )
 
+print("Bootstrap metrics - Balanced \n")
 # balanced
 print(
     evaluate_bootstrap_metrics(
@@ -146,5 +132,56 @@ print(
         model_type="classification",
         stratify=None,
         balance=True,
+    )
+)
+
+
+class_proportions = {
+    1: 0.5,
+    0: 0.5,
+}
+print("Bootstrap metrics - Class Proportions \n")
+print("Proportions:\n", class_proportions)
+# class proportions
+print(
+    evaluate_bootstrap_metrics(
+        model=None,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=y_prob,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        class_proportions=class_proportions,
+    )
+)
+
+class_proportions = {
+    1: 0.3,
+    0: 0.7,
+}
+print("Bootstrap metrics - Class Proportions \n")
+print("Proportions:\n", class_proportions)
+# class proportions
+print(
+    evaluate_bootstrap_metrics(
+        model=None,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=y_prob,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=["roc_auc", "f1_weighted", "average_precision"],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        class_proportions=class_proportions,
     )
 )
