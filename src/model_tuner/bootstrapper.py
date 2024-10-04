@@ -24,49 +24,67 @@ def check_input_type(x):
 
 
 def sampling_method(
-    y,
-    n_samples,
-    stratify,
-    balance,
+    y, n_samples, stratify=False, balance=False, class_proportions=None
 ):
-    """Method to resample a dataframe balanced, stratified, or none.
+    """
+    Method to resample a dataframe with options for balanced, stratified,
+    or custom-proportioned sampling.
+
+    Parameters:
+    - y: Pandas Series to resample.
+    - n_samples: Total number of samples to draw.
+    - stratify: Pandas series to specify stratify according to series proportions.
+    - balance: Boolean indicating if classes should be balanced.
+    - class_proportions: Dict specifying the proportion to sample from each class.
 
     Returns resampled y.
     """
-    if balance:
-        # Perform balanced resampling by downsampling the majority classes
-        # resampling the same number of samples as the minority class
-        class_counts = y.value_counts()
-        num_classes = len(class_counts)
+    if class_proportions:
+        # Ensure that the proportions sum to 1
+        if not sum(class_proportions.values()) == 1:
+            raise ValueError("class_proportions values must sum to 1.")
+
         y_resample = pd.DataFrame()
 
-        # append each sample to y_resample
-        for class_label in class_counts.index:
-            class_samples = y[y == class_label]
+        # Sample from each class according to the specified proportions
+        for class_label, proportion in class_proportions.items():
+            class_samples = y[y.values == class_label]
+            n_class_samples = int(n_samples * proportion)
             resampled_class_samples = resample(
                 class_samples,
                 replace=True,
-                n_samples=int(
-                    n_samples / num_classes
-                ),  # same number of samples per class always same fraction
+                n_samples=n_class_samples,
                 random_state=randint(0, 1000000),
             )
             y_resample = pd.concat([y_resample, resampled_class_samples])
 
-        y_resample = y_resample.sort_index()  # to set indx to original shuffled state
+    elif balance:
+        # Perform balanced resampling by downsampling the majority classes
+        class_counts = y.value_counts()
+        num_classes = len(class_counts)
+        y_resample = pd.DataFrame()
+
+        for class_label in class_counts.index:
+            class_samples = y[y.values == class_label]
+            resampled_class_samples = resample(
+                class_samples,
+                replace=True,
+                n_samples=int(n_samples / num_classes),
+                random_state=randint(0, 1000000),
+            )
+            y_resample = pd.concat([y_resample, resampled_class_samples])
+
     else:
-        # Resample the target variable
+        # Resample the target variable with optional stratification to the original dataset
         y_resample = resample(
             y,
             replace=True,
             n_samples=n_samples,
             stratify=stratify,
-            random_state=randint(
-                0,
-                1000000,
-            ),
+            random_state=randint(0, 1000000),
         )
-    return y_resample
+
+    return y_resample.sort_index()
 
 
 def evaluate_bootstrap_metrics(
@@ -82,6 +100,7 @@ def evaluate_bootstrap_metrics(
     model_type="classification",
     stratify=None,
     balance=False,
+    class_proportions=None,
 ):
     """
     Evaluate various classification metrics on bootstrap samples using a
@@ -152,6 +171,7 @@ def evaluate_bootstrap_metrics(
             n_samples=n_samples,
             stratify=stratify,
             balance=balance,
+            class_proportions=class_proportions,
         )
 
         # If pre-computed predicted probabilities are provided
