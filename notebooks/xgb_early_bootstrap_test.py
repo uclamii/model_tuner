@@ -3,8 +3,6 @@ import numpy as np
 import os
 import sys
 
-sys.path.append("src")
-
 from sklearn.datasets import make_classification
 
 from sklearn.datasets import load_breast_cancer
