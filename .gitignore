@@ -146,3 +146,6 @@ mlruns/
 Images/
 --stdin*/
 .DS_store
+
+# autokeras
+structured_data_classifier/
