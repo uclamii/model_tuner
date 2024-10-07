@@ -8,3 +8,6 @@ tqdm==4.66.4
 # companion libs used with model tuner
 catboost==1.2.7
 xgboost==2.1.1
+tensorflow[and-cuda]==2.14.1
+git+https://github.com/keras-team/keras-tuner.git
+autokeras==1.1.0
