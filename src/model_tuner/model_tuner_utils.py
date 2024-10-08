@@ -94,7 +94,6 @@ class Model:
         test_size=0.2,
         stratify_y=False,
         stratify_cols=None,
-        drop_strat_feat=None,
         grid=None,
         scoring=["roc_auc"],
         n_splits=10,
@@ -106,7 +105,7 @@ class Model:
         n_iter=100,
         pipeline_steps=[],
         xgboost_early=False,
-        selectKBest=False,
+        feature_selection=False,
         model_type="classification",
         class_labels=None,
         multi_label=False,
@@ -117,22 +116,18 @@ class Model:
         self.estimator_name = estimator_name
         self.calibrate = calibrate
         self.original_estimator = estimator
-        self.selectKBest = selectKBest
+        self.feature_selection = feature_selection
         self.model_type = model_type
         self.multi_label = multi_label
         self.calibration_method = (
             calibration_method  # 04_27_24 --> added calibration method
         )
-
-        ###TODO:
-        if selectKBest:
-            pipeline_steps.append(("selectKBest", SelectKBest()))
+        self.imbalance_sampler = imbalance_sampler
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
 
             self.PipelineClass = Pipeline
-            pipeline_steps.append(("Resampler", imbalance_sampler))
         else:
             from sklearn.pipeline import Pipeline
 
@@ -140,10 +135,7 @@ class Model:
 
         self.pipeline_steps = pipeline_steps
         if self.pipeline_steps:
-            self.estimator = self.PipelineClass(
-                self.pipeline_steps
-                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
-            )
+            self.pipeline_assembly()
         else:
             self.estimator = self.PipelineClass(
                 [(self.estimator_name, copy.deepcopy(self.original_estimator))]
@@ -169,12 +161,10 @@ class Model:
             self.grid = ParameterGrid(grid)
         if scoring == ["roc_auc"] and model_type == "regression":
             scoring == ["r2"]
-        self.imbalance_sampler = imbalance_sampler
         self.kf = None
         self.xval_output = None
         self.stratify_y = stratify_y
         self.stratify_cols = stratify_cols
-        self.drop_strat_feat = drop_strat_feat
         self.n_splits = n_splits
         self.scoring = scoring
         self.best_params_per_score = {score: 0 for score in self.scoring}
@@ -189,12 +179,108 @@ class Model:
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
 
+    def get_preprocessing_pipeline(self, pipeline):
+        # Extract steps names that start with 'preprocess_'
+        preprocessing_steps = [
+            (name, transformer)
+            for name, transformer in pipeline.steps
+            if name.startswith("preprocess_")
+        ]
+        # Create a new pipeline with just the preprocessing steps
+        return self.PipelineClass(preprocessing_steps)
+
+    def pipeline_assembly(self):
+
+        def is_preprocessing_step(transformer):
+            module = transformer.__class__.__module__
+            # Identifies transformers from sklearn.preprocessing or sklearn.impute
+            return (
+                module.startswith("sklearn.preprocessing")
+                or module.startswith("sklearn.impute")
+                or module.startswith("sklearn.decomposition")
+                or module.startswith("sklearn.pipeline")
+                or module.startswith("sklearn.kernel_approximation")
+                or module.startswith("category_encoders")
+            )
+
+        def is_feature_selection_step(transformer):
+            module = transformer.__class__.__module__
+            return module.startswith("sklearn.feature_selection")
+
+        def is_imbalance_sampler(transformer):
+            from imblearn.base import SamplerMixin
+
+            return isinstance(transformer, SamplerMixin)
+
+        preprocessing_steps = []
+        feature_selection_steps = []
+        other_steps = []
+
+        for step in self.pipeline_steps:
+
+            ## This ensures it works for when a name is specified and
+            ## when no name is specified when building the pipeline
+            if isinstance(step, tuple):
+                name, transformer = step
+            else:
+                name = None
+                transformer = step
+
+            if is_preprocessing_step(transformer):
+                if not name:
+                    name = f"preprocess_step_{len(preprocessing_steps)}"
+                else:
+                    name = f"preprocess_{name}"
+                preprocessing_steps.append((name, transformer))
+            elif is_feature_selection_step(transformer):
+                if not name:
+                    name = f"feature_selection_step_{len(feature_selection_steps)}"
+                else:
+                    name = f"feature_selection_{name}"
+                feature_selection_steps.append((name, transformer))
+            elif is_imbalance_sampler(transformer):
+                raise ValueError(
+                    "Imbalance sampler should be specified via the 'imbalance_sampler' parameter."
+                )
+            else:
+                if not name:
+                    name = f"other_step_{len(other_steps)}"
+                else:
+                    name = f"other_{name}"
+                other_steps.append((name, transformer))
+
+        # Initialize the main pipeline steps list
+        main_pipeline_steps = []
+
+        # Add preprocessing steps with prefixed names
+        main_pipeline_steps.extend(preprocessing_steps)
+
+        # Add the imbalance sampler
+        if self.imbalance_sampler:
+            main_pipeline_steps.append(("resampler", self.imbalance_sampler))
+            from imblearn.pipeline import Pipeline
+        else:
+            from sklearn.pipeline import Pipeline
+
+        # Add feature selection steps with prefixed names
+        main_pipeline_steps.extend(feature_selection_steps)
+
+        # Add any other steps
+        main_pipeline_steps.extend(other_steps)
+
+        # Add the estimator
+        main_pipeline_steps.append(
+            (self.estimator_name, copy.deepcopy(self.original_estimator))
+        )
+
+        # Construct the final pipeline
+        self.PipelineClass = Pipeline
+        self.pipeline_steps = main_pipeline_steps
+        self.estimator = self.PipelineClass(self.pipeline_steps)
+
     def reset_estimator(self):
         if self.pipeline_steps:
-            self.estimator = self.PipelineClass(
-                self.pipeline_steps
-                + [(self.estimator_name, copy.deepcopy(self.original_estimator))]
-            )
+            self.estimator = self.PipelineClass(copy.deepcopy(self.pipeline_steps))
         else:
             self.estimator = self.PipelineClass(
                 [(self.estimator_name, copy.deepcopy(self.original_estimator))]
@@ -206,13 +292,11 @@ class Model:
         ####  Preprocessor, Resampler, rfe, Estimator
 
         if self.pipeline_steps:
-            ### Need to detect what the name of a column transformer has been called
-            ### if we are using custom pipeline steps
-            preproc_test = clone(self.estimator.named_steps["Preprocessor"])
+            preproc_test = self.get_preprocessing_pipeline(self.estimator)
         else:
             pass
 
-        resampler_test = clone(self.estimator.named_steps["Resampler"])
+        resampler_test = clone(self.estimator.named_steps["resampler"])
 
         X_train_preproc = preproc_test.fit_transform(X_train)
 
@@ -436,37 +520,55 @@ class Model:
 
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    if self.selectKBest or self.pipeline_steps:
-
-                        params_no_estimator = {
+                    if self.feature_selection or self.pipeline_steps:
+                        # Extract parameters for preprocessing and feature selection
+                        params_preprocessing = {
                             key: value
                             for key, value in best_params.items()
-                            if not key.startswith(f"{self.estimator_name}__")
+                            if key.startswith("preprocess_")
                         }
+                        params_feature_selection = {
+                            key: value
+                            for key, value in best_params.items()
+                            if key.startswith("feature_selection_")
+                        }
+                        params_no_estimator = {
+                            **params_preprocessing,
+                            **params_feature_selection,
+                        }
+
+                        # Exclude the resampler if present
                         if self.imbalance_sampler:
-                            params_no_sampler = {
+                            params_no_estimator = {
                                 key: value
                                 for key, value in params_no_estimator.items()
-                                if not key.startswith("Resampler__")
+                                if not key.startswith("resampler__")
                             }
 
-                            self.estimator[:-2].set_params(**params_no_sampler).fit(
-                                X, y
+                        # Get the combined preprocessing and feature selection pipeline
+                        preproc_feat_select_pipe = (
+                            self.get_preprocessing_and_feature_selection_pipeline(
+                                self.estimator
                             )
-                            X_valid_selected = self.estimator[:-2].transform(X_valid)
-                        else:
-                            self.estimator[:-1].set_params(**params_no_estimator).fit(
-                                X, y
-                            )
-                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        )
+
+                        # Set parameters and fit the pipeline
+                        preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
+                            X, y
+                        )
+
+                        # Transform the validation data
+                        X_valid_transformed = preproc_feat_select_pipe.transform(
+                            X_valid
+                        )
                     else:
-                        X_valid_selected = X_valid
+                        X_valid_transformed = X_valid
 
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
-                        eval_set = [(X_valid_selected, y_valid.values)]
+                        eval_set = [(X_valid_transformed, y_valid.values)]
                     else:
-                        eval_set = [(X_valid_selected, y_valid)]
+                        eval_set = [(X_valid_transformed, y_valid)]
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -482,32 +584,55 @@ class Model:
             else:
                 if self.xgboost_early:
                     X_valid, y_valid = validation_data
-                    best_params = self.best_params_per_score[score]["params"]
-                    if self.selectKBest or self.pipeline_steps:
-
-                        params_no_estimator = {
+                    if self.feature_selection or self.pipeline_steps:
+                        # Extract parameters for preprocessing and feature selection
+                        params_preprocessing = {
                             key: value
                             for key, value in best_params.items()
-                            if not key.startswith(f"{self.estimator_name}__")
+                            if key.startswith("preprocess_")
                         }
+                        params_feature_selection = {
+                            key: value
+                            for key, value in best_params.items()
+                            if key.startswith("feature_selection_")
+                        }
+                        params_no_estimator = {
+                            **params_preprocessing,
+                            **params_feature_selection,
+                        }
+
+                        # Exclude the resampler if present
                         if self.imbalance_sampler:
-                            self.estimator[:-2].set_params(**params_no_estimator).fit(
-                                X, y
+                            params_no_estimator = {
+                                key: value
+                                for key, value in params_no_estimator.items()
+                                if not key.startswith("resampler__")
+                            }
+
+                        # Get the combined preprocessing and feature selection pipeline
+                        preproc_feat_select_pipe = (
+                            self.get_preprocessing_and_feature_selection_pipeline(
+                                self.estimator
                             )
-                            X_valid_selected = self.estimator[:-2].transform(X_valid)
-                        else:
-                            self.estimator[:-1].set_params(**params_no_estimator).fit(
-                                X, y
-                            )
-                            X_valid_selected = self.estimator[:-1].transform(X_valid)
+                        )
+
+                        # Set parameters and fit the pipeline
+                        preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
+                            X, y
+                        )
+
+                        # Transform the validation data
+                        X_valid_transformed = preproc_feat_select_pipe.transform(
+                            X_valid
+                        )
                     else:
-                        X_valid_selected = X_valid
+                        X_valid_transformed = X_valid
 
                     X_valid, y_valid = validation_data
                     if isinstance(X_valid, pd.DataFrame):
-                        eval_set = [(X_valid_selected, y_valid.values)]
+                        eval_set = [(X_valid_transformed, y_valid.values)]
                     else:
-                        eval_set = [(X_valid_selected, y_valid)]
+                        eval_set = [(X_valid_transformed, y_valid)]
                     estimator_eval_set = f"{self.estimator_name}__eval_set"
                     estimator_verbosity = f"{self.estimator_name}__verbose"
 
@@ -593,7 +718,7 @@ class Model:
                 else:
                     self.regression_report_kfold(X_test, y_test, self.test_model, score)
 
-                if self.selectKBest:
+                if self.feature_selection:
                     self.print_k_best_features(X_test)
         else:
             y_pred_valid = self.predict(X_test, optimal_threshold=optimal_threshold)
@@ -614,7 +739,7 @@ class Model:
                 print(classification_report(y_test, y_pred_valid))
                 print("-" * 80)
 
-                if self.selectKBest:
+                if self.feature_selection:
                     k_best_features = self.print_k_best_features(X_test)
 
                     return {
@@ -629,7 +754,7 @@ class Model:
                     }
             else:
                 reg_report = self.regression_report(y_test, y_pred_valid)
-                if self.selectKBest:
+                if self.feature_selection:
                     k_best_features = self.print_k_best_features(X_test)
                     return {
                         "Regression Report": reg_report,
@@ -771,47 +896,54 @@ class Model:
                         else:
                             self.verbosity = False
 
-                        if self.selectKBest or self.pipeline_steps:
-                            params_no_estimator = {
+                        if self.feature_selection or self.pipeline_steps:
+                            # Extract parameters for preprocessing and feature selection
+                            params_preprocessing = {
                                 key: value
                                 for key, value in params.items()
-                                if not key.startswith(f"{self.estimator_name}__")
+                                if key.startswith("preprocess_")
                             }
-                            if self.imbalance_sampler:
+                            params_feature_selection = {
+                                key: value
+                                for key, value in params.items()
+                                if key.startswith("feature_selection_")
+                            }
+                            params_no_estimator = {
+                                **params_preprocessing,
+                                **params_feature_selection,
+                            }
 
-                                ## Removing all "Resampler" hyperparameters
-                                params_no_sampler = {
+                            # Exclude the resampler if present
+                            if self.imbalance_sampler:
+                                params_no_estimator = {
                                     key: value
                                     for key, value in params_no_estimator.items()
-                                    if not key.startswith("Resampler__")
+                                    if not key.startswith("resampler__")
                                 }
-                                ## We need to select all the pipeline steps apart from
-                                ## the estimator and the resampler. This is for prepping
-                                ## the eval data ready for early stopping.
-                                self.estimator[:-2].set_params(**params_no_sampler).fit(
-                                    X_train, y_train
+
+                            # Get the combined preprocessing and feature selection pipeline
+                            preproc_feat_select_pipe = (
+                                self.get_preprocessing_and_feature_selection_pipeline(
+                                    self.estimator
                                 )
-                                X_valid_selected = self.estimator[:-2].transform(
-                                    X_valid
-                                )
-                            else:
-                                ## We select all the parts of the pipeline apart from the
-                                ## estimator (estimator is always final step). Then
-                                ## fit on train data and transform valid data, this preps
-                                ## eval data ready for early stopping
-                                self.estimator[:-1].set_params(
-                                    **params_no_estimator
-                                ).fit(X_train, y_train)
-                                X_valid_selected = self.estimator[:-1].transform(
-                                    X_valid
-                                )
+                            )
+
+                            # Set parameters and fit the pipeline
+                            preproc_feat_select_pipe.set_params(
+                                **params_no_estimator
+                            ).fit(X, y)
+
+                            # Transform the validation data
+                            X_valid_transformed = preproc_feat_select_pipe.transform(
+                                X_valid
+                            )
                         else:
-                            X_valid_selected = X_valid
+                            X_valid_transformed = X_valid
 
                         if isinstance(X_valid, pd.DataFrame):
-                            eval_set = [(X_valid_selected, y_valid.values)]
+                            eval_set = [(X_valid_transformed, y_valid.values)]
                         else:
-                            eval_set = [(X_valid_selected, y_valid)]
+                            eval_set = [(X_valid_transformed, y_valid)]
 
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
@@ -895,7 +1027,7 @@ class Model:
 
     def print_k_best_features(self, X):
         print()
-        support = self.estimator.named_steps["selectKBest"].get_support()
+        support = self.estimator.named_steps["selection"].get_support()
         if isinstance(X, pd.DataFrame):
             print("Feature names selected:")
             support = X.columns[support].to_list()
@@ -985,12 +1117,6 @@ class Model:
         if stratify_cols is not None:
             # stratify_key = stratify_key.copy()
             stratify_key = stratify_key.fillna("")
-
-        ##### MARKED FOR REMOVAL ######
-        if self.drop_strat_feat:
-            self.dropped_strat_cols = X[self.drop_strat_feat]
-            X = X.drop(columns=self.drop_strat_feat)
-        ##############################
 
         X_train, X_valid_test, y_train, y_valid_test = train_test_split(
             X,
@@ -1213,6 +1339,14 @@ class Model:
                 f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})  {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})"
             )
             print(border)
+
+    def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
+        steps = [
+            (name, transformer)
+            for name, transformer in pipeline.steps
+            if name.startswith("preprocess_") or name.startswith("feature_selection_")
+        ]
+        return self.PipelineClass(steps)
 
 
 def kfold_split(
