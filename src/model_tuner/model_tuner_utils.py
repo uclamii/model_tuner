@@ -746,7 +746,7 @@ class Model:
                     self.regression_report_kfold(X_test, y_test, self.test_model, score)
 
                 if self.feature_selection:
-                    self.print_k_best_features(X_test)
+                    self.print_selected_best_features(X_test)
         else:
             y_pred_valid = self.predict(X_test, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
@@ -767,7 +767,7 @@ class Model:
                 print("-" * 80)
 
                 if self.feature_selection:
-                    k_best_features = self.print_k_best_features(X_test)
+                    k_best_features = self.print_selected_best_features(X_test)
 
                     return {
                         "Classification Report": self.classification_report,
@@ -782,7 +782,7 @@ class Model:
             else:
                 reg_report = self.regression_report(y_test, y_pred_valid)
                 if self.feature_selection:
-                    k_best_features = self.print_k_best_features(X_test)
+                    k_best_features = self.print_selected_best_features(X_test)
                     return {
                         "Regression Report": reg_report,
                         "K Best Features": k_best_features,
@@ -1052,9 +1052,11 @@ class Model:
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
-    def print_k_best_features(self, X):
+    def print_selected_best_features(self, X):
+
+        feat_select_pipeline = self.get_feature_selection_pipeline(self.estimator)
         print()
-        support = self.estimator.named_steps["selection"].get_support()
+        support = feat_select_pipeline.get_support()
         if isinstance(X, pd.DataFrame):
             print("Feature names selected:")
             support = X.columns[support].to_list()
