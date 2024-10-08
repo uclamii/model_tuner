@@ -35,7 +35,8 @@ tuned_parameters = {
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
-    f"feature_selection_rfe__n_features_to_select": [5, 10],
+    f"feature_selection_step_0__n_features_to_select": [5, 10],
+    "preprocessing_imputer": [],
 }
 
 kfold = False
@@ -51,11 +52,12 @@ model = Model(
     estimator_name=estimator_name,
     calibrate=calibrate,
     estimator=estimator,
-    pipeline_steps=[("imputer", SimpleImputer()), ("rfe", rfe)],
+    pipeline_steps=[SimpleImputer(), rfe],
     kfold=kfold,
     stratify_y=True,
     grid=tuned_parameters,
     randomized_grid=False,
+    feature_selection=True,
     n_iter=4,
     xgboost_early=True,
     scoring=["roc_auc"],
