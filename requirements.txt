@@ -2,14 +2,10 @@
 joblib==1.4.2
 numpy==1.26.4
 pandas==2.2.2
-scikit-learn==1.2.2
-scipy==1.10.1
+scikit-learn==1.5.1
+scipy==1.14.0
 tqdm==4.66.4
 -e .
 # companion libs used with model tuner
 catboost==1.2.7
 xgboost==2.1.1
-tensorflow[and-cuda]==2.14.1
-git+https://github.com/keras-team/keras-tuner.git
-autokeras==1.1.0
-keras_nlp==0.6.4
