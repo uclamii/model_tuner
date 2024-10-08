@@ -1,20 +1,26 @@
 import pandas as pd
 import numpy as np
 import os
-import sys
+import random
 
-from sklearn.datasets import make_classification
-from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
-from model_tuner.model_tuner_utils import Model, AutoKerasClassifier
-from model_tuner.bootstrapper import evaluate_bootstrap_metrics
-from model_tuner.pickleObjects import dumpObjects, loadObjects
-
+from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-import random
+import tensorflow as tf
+import autokeras as ak
+
+from model_tuner.model_tuner_utils import AutoKerasClassifier
+
+from sklearn.metrics import roc_auc_score, average_precision_score
+
+# Set seeds for reproducibility
+os.environ["PYTHONHASHSEED"] = str(222)
+random.seed(222)
+np.random.seed(222)
+tf.random.set_seed(222)
 
 
 # temporary method
@@ -89,47 +95,11 @@ def train_val_test_split(
     return X_train, X_valid, X_test, y_train, y_valid, y_test
 
 
-import keras
-import tensorflow as tf
-from autokeras import StructuredDataClassifier
-
-
-from keras_tuner import Objective, RandomSearch
-
+# Load data
 bc = load_breast_cancer(as_frame=True)["frame"]
-bc_cols = [cols for cols in bc.columns if "target" not in cols]
+bc_cols = [col for col in bc.columns if "target" not in col]
 X = bc[bc_cols]
 y = bc["target"]
-
-
-# Set seed for TensorFlow
-tf.random.set_seed(222)
-
-# Set seed for NumPy
-np.random.seed(222)
-
-# Set seed for Python's built-in random module
-random.seed(222)
-
-# Ensure reproducibility for Python hash-based operations
-os.environ["PYTHONHASHSEED"] = str(222)
-
-# Set environment variable for Keras Tuner
-os.environ["KERAS_TUNER_SEED"] = str(222)
-
-ak_max_trials = 3
-ak_epochs = 10
-
-ak_clf = AutoKerasClassifier(
-    StructuredDataClassifier(
-        max_trials=ak_max_trials,
-        loss="binary_crossentropy",
-        metrics=[keras.metrics.Accuracy()],
-        seed=222,
-        overwrite=True,
-    ),
-    Pipeline([("impute", SimpleImputer()), ("scaler", StandardScaler())]),
-)
 
 X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
     X,
@@ -142,14 +112,96 @@ X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
     stratify_cols=None,
 )
 
+X_train, X_valid, X_test, y_train, y_valid, y_test = (
+    X_train.values,
+    X_valid.values,
+    X_test.values,
+    y_train.values,
+    y_valid.values,
+    y_test.values,
+)
+
+# Preprocessing pipeline (done outside AutoKeras)
+preprocessing_pipeline = Pipeline(
+    [("imputer", SimpleImputer(strategy="mean")), ("scaler", StandardScaler())]
+)
+
+
+print(np.bincount(y_valid))
+
+ak_max_trials = 10
+ak_epochs = 10
+
+import keras
+import kerastuner
+
+import autokeras as ak
+
+from tensorflow.keras import backend as K
+
+
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    return recall
+
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    return precision
+
+
+def f1_score(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    return 2 * ((precision * recall) / (precision + recall + K.epsilon()))
+
+
+opt = keras.optimizers.Adam(learning_rate=0.01)
+
+# Initialize the input and output
+auto_AK_model = ak.AutoModel(
+    inputs=[ak.Input()],
+    outputs=[
+        ak.ClassificationHead(
+            loss="binary_crossentropy",
+            metrics=["f1_score"],
+        ),
+    ],
+    # loss="binary_crossentropy",
+    objective=kerastuner.Objective("val_f1_score", direction="max"),
+    tuner="greedy",
+    overwrite=True,
+    max_trials=ak_max_trials,
+    seed=222,
+)
+
+ak_clf = AutoKerasClassifier(
+    auto_AK_model,
+    Pipeline([("impute", SimpleImputer()), ("scaler", StandardScaler())]),
+)
+
+
 ak_clf.fit(
     X_train,
     y_train,
     epochs=ak_epochs,
-    validation_data=(X_valid, y_valid),
+    batch_size=10,
+    validation_data=(
+        [X_valid],
+        [y_valid],
+    ),
+    verbose=1,
 )
 
+ak_clf.summarize_auto_keras_params(ak_clf.model_export.get_config())
+
 y_prob = ak_clf.predict_proba(X_test)[:, 1]
+
+print(y_prob)
 
 ### F1 Weighted
 y_pred = ak_clf.predict(X_test)

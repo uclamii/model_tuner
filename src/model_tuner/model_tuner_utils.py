@@ -1281,7 +1281,11 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
     def fit(self, X, y, **params):
         if self.pipeline:
             X = self.pipeline.fit_transform(X)
-        self.model.fit(X, y, **params)
+        self.model.fit(
+            [X],
+            [y],
+            **params,
+        )
         self.model_export = self.model.export_model()
         self.best_params_per_score = self.summarize_auto_keras_params(
             self.model_export.get_config()
