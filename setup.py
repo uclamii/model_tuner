@@ -22,13 +22,13 @@ setup(
         # "License :: OSI Approved :: Apache License, Version 2.0 (Apache-2.0)",
         "Operating System :: OS Independent",
     ],  # Classifiers for the package
-    python_requires=">=3.7",  # Minimum version of Python required
+    python_requires=">=3.9",  # Minimum version of Python required
     install_requires=[
-        "joblib>=1.4.2, <2.0.0",
-        "numpy>=1.26.4, <2.0.0",
-        "pandas>=1.3.5, <2.2.2",
-        "scikit-learn>=1.5.1, <2.0.0",
-        "scipy>=1.14.0, <2.0.0",
-        "tqdm>=4.66.4, <5.0.0",
+        "joblib>=1.4.2,<=2.0.0",
+        "numpy>=1.26.4,<=2.0.0",
+        "pandas>=2.2.2,<=2.2.3",
+        "scikit-learn>=1.5.1,<=2.0.0",
+        "scipy>=1.13.1,<=2.0.0",
+        "tqdm>=4.66.4,<=5.0.0",
     ],
 )
