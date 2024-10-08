@@ -179,6 +179,22 @@ class Model:
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
 
+    def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
+        steps = [
+            (name, transformer)
+            for name, transformer in pipeline.steps
+            if name.startswith("preprocess_") or name.startswith("feature_selection_")
+        ]
+        return self.PipelineClass(steps)
+
+    def get_feature_selection_pipeline(self, pipeline):
+        steps = [
+            (name, transformer)
+            for name, transformer in pipeline.steps
+            if name.startswith("feature_selection_")
+        ]
+        return self.PipelineClass(steps)
+
     def get_preprocessing_pipeline(self, pipeline):
         # Extract steps names that start with 'preprocess_'
         preprocessing_steps = [
@@ -190,6 +206,16 @@ class Model:
         return self.PipelineClass(preprocessing_steps)
 
     def pipeline_assembly(self):
+        """
+        This method will assemble the pipeline in the correct order. It contains
+        helper functions which determine whether the steps are preprocessing, feature
+        selection or imbalance sampler steps.
+
+        These are then used to sort and categorise each step so we ensure the correct
+        ordering of the pipeline no matter the input order from users. Users can
+        also have unnamed pipeline steps and these will still be ordered in the correct
+        format.
+        """
 
         def is_preprocessing_step(transformer):
             module = transformer.__class__.__module__
@@ -225,7 +251,7 @@ class Model:
             else:
                 name = None
                 transformer = step
-
+            ## Building the lists of each transformer type
             if is_preprocessing_step(transformer):
                 if not name:
                     name = f"preprocess_step_{len(preprocessing_steps)}"
@@ -255,7 +281,8 @@ class Model:
         # Add preprocessing steps with prefixed names
         main_pipeline_steps.extend(preprocessing_steps)
 
-        # Add the imbalance sampler
+        # Add the imbalance sampler and import the appropriate pipeline
+        # based on whether imbalanced sampling is occuring or not.
         if self.imbalance_sampler:
             main_pipeline_steps.append(("resampler", self.imbalance_sampler))
             from imblearn.pipeline import Pipeline
@@ -1339,14 +1366,6 @@ class Model:
                 f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})  {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})"
             )
             print(border)
-
-    def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
-        steps = [
-            (name, transformer)
-            for name, transformer in pipeline.steps
-            if name.startswith("preprocess_") or name.startswith("feature_selection_")
-        ]
-        return self.PipelineClass(steps)
 
 
 def kfold_split(
