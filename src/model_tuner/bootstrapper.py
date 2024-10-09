@@ -123,6 +123,10 @@ def evaluate_bootstrap_metrics(
     - DataFrame: Confidence intervals for various metrics.
     """
 
+    # Check if y is provided
+    if y is None:
+        raise ValueError("The y parameter is required and cannot be None.")
+
     regression_metrics = [
         "explained_variance",
         "max_error",
