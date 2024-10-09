@@ -113,6 +113,8 @@ celerybeat-schedule
 env/
 venv/
 venvpy37/
+venvpy38/
+venvpy39/
 ENV/
 env.bak/
 venv.bak/
