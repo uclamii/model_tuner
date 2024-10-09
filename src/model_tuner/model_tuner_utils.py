@@ -179,6 +179,11 @@ class Model:
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
 
+    """
+    Multiple helper methods that are used to fetch different parts of the pipeline.
+    These use the naming convention that we enforce in the assemble_pipeline method.
+    """
+
     def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
         steps = [
             (name, transformer)
@@ -215,9 +220,9 @@ class Model:
         ordering of the pipeline no matter the input order from users. Users can
         also have unnamed pipeline steps and these will still be ordered in the correct
         format.
-        
+
         Below we define several helper functions that will be used to type check parts
-        of the pipeline in order to put them in the right sections. 
+        of the pipeline in order to put them in the right sections.
         """
 
         def is_preprocessing_step(transformer):
