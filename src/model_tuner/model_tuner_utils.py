@@ -1277,6 +1277,7 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
         super().__init__()
         self.model = model
         self.pipeline = pipeline
+        self.keras_model_export = None
 
     def fit(self, X, y, **params):
         if self.pipeline:
@@ -1286,42 +1287,63 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
             [y],
             **params,
         )
-        self.model_export = self.model.export_model()
-        self.best_params_per_score = self.summarize_auto_keras_params(
-            self.model_export.get_config()
-        )
+        self.keras_model_export = self.model.export_model()
 
-    def predict(self, X):
+    def predict(self, X, threshold=0.5):
         if self.pipeline:
             X = self.pipeline.transform(X)
-        y_pos = self.model_export.predict(X)
-        return 1 * (y_pos > 0.5)
+        y_pos = self.keras_model_export.predict(X)
+        return 1 * (y_pos > threshold)
 
     def predict_proba(self, X):
+        # https://github.com/keras-team/autokeras/issues/1395
         if self.pipeline:
             X = self.pipeline.transform(X)
-        y_pos = self.model_export.predict(X)
-        return np.c_[1 - y_pos, y_pos]
+        y_pos = self.keras_model_export.predict(X)
+        return np.c_[1 - y_pos, y_pos]  # concatenation of 2 arrays
 
-    def summarize_auto_keras_params(self, params):
-        # Importing the 'deepcopy' function from the 'copy' module
-        from copy import deepcopy
+    def summarize_auto_keras_params(self, detailed=False):
+        params = self.keras_model_export.get_config()
 
-        # Creating a deep copy of the 'params' dictionary and storing it in 'res'
-        res = deepcopy(params)
+        if detailed:
+            print("Number of layers: ", len(params["layers"]))
+            for num_layer in range(len(params["layers"])):
+                print(
+                    params["layers"][num_layer]["class_name"],
+                    params["layers"][num_layer]["config"],
+                )
+        else:
+            print("Number of layers: ", len(params["layers"]))
+            for num_layer in range(len(params["layers"])):
+                print(
+                    params["layers"][num_layer]["class_name"],
+                )
+        return
 
-        # Initializing an empty list for the 'layers' key in the 'res' dictionary
-        res["layers"] = len(params["layers"])
-        print(res)
-        # Returning the modified 'res' dictionary
-        return res
+    def save_AK_model(self, model_name="toy_model.keras"):
+        self.model.save(model_name)
+        return
 
-    def save_model_object(self):
-        d = {}
-        d["pipeline"] = self.pipeline
-        d["model_export"] = self.model_export
-        return d
+    def save_pipeline(self, pipeline_name):
+        from .pickleObjects import dumpObjects
 
-    def load_model_object(d):
-        self.pipeline = d["pipeline"]
-        self.model_export = d["model_export"]
+        dumpObjects(self.pipeline, pipeline_name, use_pickle=True)
+
+    def load_AK_model(model_name):
+        from keras.models import load_model
+        import autokeras as ak
+
+        return load_model(
+            model_name,
+            custom_objects=ak.CUSTOM_OBJECTS,
+        )
+
+    def load_pipeline(pipeline_name):
+        from .pickleObjects import loadObjects
+
+        return loadObjects(pipeline_name)
+
+    def load_model(self, model_name, pipeline_name):
+        self.pipeline = self.load_pipeline(pipeline_name)
+        self.model = self.load_AK_model(model_name)
+        self.keras_model_export = self.model.export_model()

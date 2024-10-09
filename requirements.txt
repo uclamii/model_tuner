@@ -20,3 +20,4 @@ tensorflow[and-cuda]==2.17.0
 # python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
 git+https://github.com/keras-team/keras-tuner.git
 autokeras==2.0.0
+imbalanced-learn==0.12.4

@@ -129,8 +129,8 @@ preprocessing_pipeline = Pipeline(
 
 print(np.bincount(y_valid))
 
-ak_max_trials = 50
-ak_epochs = 20
+ak_max_trials = 1
+ak_epochs = 10
 
 import keras
 import kerastuner
@@ -192,21 +192,34 @@ auto_AK_model = ak.AutoModel(
     ),  # Optimizing for AUC-ROC
     # tuner="greedy",
     tuner="bayesian",
+    # tuner="hyperband",
     overwrite=True,
     max_trials=ak_max_trials,
     max_model_size=100000,
     seed=222,
 )
 
+
+from imblearn.over_sampling import RandomOverSampler
+
+ros = RandomOverSampler(random_state=0)
+X__train_resampled, y__train_resampled = ros.fit_resample(X_train, y_train)
+
+
 ak_clf = AutoKerasClassifier(
     auto_AK_model,
-    Pipeline([("impute", SimpleImputer()), ("scaler", StandardScaler())]),
+    pipeline=Pipeline(
+        [
+            ("impute", SimpleImputer()),
+            ("scaler", StandardScaler()),
+        ]
+    ),
 )
 
 
 ak_clf.fit(
-    X_train,
-    y_train,
+    X__train_resampled,
+    y__train_resampled,
     epochs=ak_epochs,
     batch_size=10,
     validation_data=(
@@ -216,14 +229,14 @@ ak_clf.fit(
     verbose=1,
 )
 
-ak_clf.summarize_auto_keras_params(ak_clf.model_export.get_config())
+ak_clf.summarize_auto_keras_params()
 
 y_prob = ak_clf.predict_proba(X_test)[:, 1]
 
 print(y_prob)
 
 ### F1 Weighted
-y_pred = ak_clf.predict(X_test)
+y_pred = ak_clf.predict(X_test, threshold=0.5)
 
 ## report metrics
 
