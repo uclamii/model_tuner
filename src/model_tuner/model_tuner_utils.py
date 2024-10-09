@@ -193,7 +193,7 @@ class Model:
             for name, transformer in pipeline.steps
             if name.startswith("feature_selection_")
         ]
-        return self.PipelineClass(steps)
+        return steps
 
     def get_preprocessing_pipeline(self, pipeline):
         # Extract steps names that start with 'preprocess_'
@@ -1055,6 +1055,7 @@ class Model:
     def print_selected_best_features(self, X):
 
         feat_select_pipeline = self.get_feature_selection_pipeline(self.estimator)
+        feat_select_pipeline = feat_select_pipeline[0][1]
         print()
         support = feat_select_pipeline.get_support()
         if isinstance(X, pd.DataFrame):
