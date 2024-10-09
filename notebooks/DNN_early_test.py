@@ -129,8 +129,8 @@ preprocessing_pipeline = Pipeline(
 
 print(np.bincount(y_valid))
 
-ak_max_trials = 10
-ak_epochs = 10
+ak_max_trials = 50
+ak_epochs = 20
 
 import keras
 import kerastuner
@@ -139,8 +139,14 @@ import autokeras as ak
 
 from tensorflow.keras import backend as K
 
+# https://github.com/keras-team/autokeras/blob/master/docs/templates/tutorial/faq.md
+# https://github.com/keras-team/autokeras/issues/867
+
 
 def recall_m(y_true, y_pred):
+    # Cast y_true and y_pred to float32 to avoid data type mismatches
+    y_true = K.cast(y_true, "float32")
+    y_pred = K.cast(y_pred, "float32")
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
     recall = true_positives / (possible_positives + K.epsilon())
@@ -148,6 +154,9 @@ def recall_m(y_true, y_pred):
 
 
 def precision_m(y_true, y_pred):
+    # Cast y_true and y_pred to float32 to avoid data type mismatches
+    y_true = K.cast(y_true, "float32")
+    y_pred = K.cast(y_pred, "float32")
     true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
     predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
     precision = true_positives / (predicted_positives + K.epsilon())
@@ -155,6 +164,9 @@ def precision_m(y_true, y_pred):
 
 
 def f1_score(y_true, y_pred):
+    # Cast y_true and y_pred to float32 to avoid data type mismatches
+    y_true = K.cast(y_true, "float32")
+    y_pred = K.cast(y_pred, "float32")
     precision = precision_m(y_true, y_pred)
     recall = recall_m(y_true, y_pred)
     return 2 * ((precision * recall) / (precision + recall + K.epsilon()))
@@ -168,14 +180,21 @@ auto_AK_model = ak.AutoModel(
     outputs=[
         ak.ClassificationHead(
             loss="binary_crossentropy",
-            metrics=["f1_score"],
+            # metrics=["f1_score"],
+            metrics=[tf.keras.metrics.AUC(name="auc")],  # Adding AUC-ROC as a metric
+            # metrics=["auc"],  # Adding AUC-ROC as a metric
         ),
     ],
     # loss="binary_crossentropy",
-    objective=kerastuner.Objective("val_f1_score", direction="max"),
-    tuner="greedy",
+    # objective=kerastuner.Objective("val_f1_score", direction="max"),
+    objective=kerastuner.Objective(
+        "val_auc", direction="max"
+    ),  # Optimizing for AUC-ROC
+    # tuner="greedy",
+    tuner="bayesian",
     overwrite=True,
     max_trials=ak_max_trials,
+    max_model_size=100000,
     seed=222,
 )
 
