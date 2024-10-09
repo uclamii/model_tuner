@@ -215,18 +215,31 @@ class Model:
         ordering of the pipeline no matter the input order from users. Users can
         also have unnamed pipeline steps and these will still be ordered in the correct
         format.
+        
+        Below we define several helper functions that will be used to type check parts
+        of the pipeline in order to put them in the right sections. 
         """
 
         def is_preprocessing_step(transformer):
             module = transformer.__class__.__module__
-            # Identifies transformers from sklearn.preprocessing or sklearn.impute
             return (
                 module.startswith("sklearn.preprocessing")
                 or module.startswith("sklearn.impute")
                 or module.startswith("sklearn.decomposition")
-                or module.startswith("sklearn.pipeline")
+                or module.startswith("sklearn.feature_extraction")
                 or module.startswith("sklearn.kernel_approximation")
                 or module.startswith("category_encoders")
+            )
+
+        def is_imputer(transformer):
+            module = transformer.__class__.__module__
+            return module.startswith("sklearn.impute")
+
+        def is_scaler(transformer):
+            module = transformer.__class__.__module__
+            return (
+                module.startswith("sklearn.preprocessing")
+                and "scal" in transformer.__class__.__name__.lower()
             )
 
         def is_feature_selection_step(transformer):
@@ -238,27 +251,46 @@ class Model:
 
             return isinstance(transformer, SamplerMixin)
 
-        preprocessing_steps = []
+        # Initialize lists for different types of steps
+        imputation_steps = []
+        scaling_steps = []
+        other_preprocessing_steps = []
         feature_selection_steps = []
         other_steps = []
 
         for step in self.pipeline_steps:
-
-            ## This ensures it works for when a name is specified and
-            ## when no name is specified when building the pipeline
+            # Unpack the step
             if isinstance(step, tuple):
                 name, transformer = step
             else:
                 name = None
                 transformer = step
-            ## Building the lists of each transformer type
+
+            # Categorize the transformer
             if is_preprocessing_step(transformer):
-                if not name:
-                    name = f"preprocess_step_{len(preprocessing_steps)}"
+                if is_imputer(transformer):
+                    # Imputation steps
+                    if not name:
+                        name = f"preprocess_imputer_step_{len(imputation_steps)}"
+                    else:
+                        name = f"preprocess_imputer_{name}"
+                    imputation_steps.append((name, transformer))
+                elif is_scaler(transformer):
+                    # Scaling steps
+                    if not name:
+                        name = f"preprocess_scaler_step_{len(scaling_steps)}"
+                    else:
+                        name = f"preprocess_scaler_{name}"
+                    scaling_steps.append((name, transformer))
                 else:
-                    name = f"preprocess_{name}"
-                preprocessing_steps.append((name, transformer))
+                    # Other preprocessing steps
+                    if not name:
+                        name = f"preprocess_step_{len(other_preprocessing_steps)}"
+                    else:
+                        name = f"preprocess_{name}"
+                    other_preprocessing_steps.append((name, transformer))
             elif is_feature_selection_step(transformer):
+                # Feature selection steps
                 if not name:
                     name = f"feature_selection_step_{len(feature_selection_steps)}"
                 else:
@@ -269,27 +301,32 @@ class Model:
                     "Imbalance sampler should be specified via the 'imbalance_sampler' parameter."
                 )
             else:
+                # Other steps
                 if not name:
                     name = f"other_step_{len(other_steps)}"
                 else:
                     name = f"other_{name}"
                 other_steps.append((name, transformer))
 
+        # Assemble the preprocessing steps in the correct order
+        preprocessing_steps = (
+            imputation_steps + scaling_steps + other_preprocessing_steps
+        )
+
         # Initialize the main pipeline steps list
         main_pipeline_steps = []
 
-        # Add preprocessing steps with prefixed names
+        # Add preprocessing steps
         main_pipeline_steps.extend(preprocessing_steps)
 
         # Add the imbalance sampler and import the appropriate pipeline
-        # based on whether imbalanced sampling is occuring or not.
         if self.imbalance_sampler:
             main_pipeline_steps.append(("resampler", self.imbalance_sampler))
             from imblearn.pipeline import Pipeline
         else:
             from sklearn.pipeline import Pipeline
 
-        # Add feature selection steps with prefixed names
+        # Add feature selection steps
         main_pipeline_steps.extend(feature_selection_steps)
 
         # Add any other steps
