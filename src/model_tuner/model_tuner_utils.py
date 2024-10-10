@@ -1273,7 +1273,7 @@ def _confusion_matrix_print(conf_matrix, labels):
 
 
 class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
-    def __init__(self, model, pipeline=None):
+    def __init__(self, model=None, pipeline=None):
         super().__init__()
         self.model = model
         self.pipeline = pipeline
@@ -1321,15 +1321,21 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
         return
 
     def save_AK_model(self, model_name="toy_model.keras"):
-        self.model.save(model_name)
+        self.model.export_model().save(model_name)
         return
 
     def save_pipeline(self, pipeline_name):
         from .pickleObjects import dumpObjects
 
         dumpObjects(self.pipeline, pipeline_name, use_pickle=True)
+        return
 
-    def load_AK_model(model_name):
+    def save_model(self, model_name, pipeline_name):
+        self.save_AK_model(model_name)
+        self.save_pipeline(pipeline_name)
+        return
+
+    def load_AK_model(self, model_name):
         from keras.models import load_model
         import autokeras as ak
 
@@ -1338,12 +1344,13 @@ class AutoKerasClassifier(BaseEstimator, ClassifierMixin):
             custom_objects=ak.CUSTOM_OBJECTS,
         )
 
-    def load_pipeline(pipeline_name):
+    def load_pipeline(self, pipeline_name):
         from .pickleObjects import loadObjects
 
         return loadObjects(pipeline_name)
 
-    def load_model(self, model_name, pipeline_name):
+    def load_saved_model(self, model_name, pipeline_name):
+
+        self.keras_model_export = self.load_AK_model(model_name)
+        # self.keras_model_export = self.model.export_model()
         self.pipeline = self.load_pipeline(pipeline_name)
-        self.model = self.load_AK_model(model_name)
-        self.keras_model_export = self.model.export_model()

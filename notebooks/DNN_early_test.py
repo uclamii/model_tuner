@@ -244,3 +244,31 @@ from sklearn.metrics import roc_auc_score, average_precision_score
 
 print("AUCROC:", roc_auc_score(y_score=y_prob, y_true=y_test))
 print("AP:", roc_auc_score(y_score=y_prob, y_true=y_test))
+
+
+ak_clf.save_model(
+    model_name="auto_model/best_test_model.keras",
+    pipeline_name="auto_model/best_sk_pipeline",
+)
+
+ak_clf_loaded = AutoKerasClassifier()
+
+ak_clf_loaded.load_saved_model(
+    model_name="auto_model/best_test_model.keras",
+    pipeline_name="auto_model/best_sk_pipeline",
+)
+
+
+y_prob = ak_clf_loaded.predict_proba(X_test)[:, 1]
+
+print(y_prob)
+
+### F1 Weighted
+y_pred = ak_clf_loaded.predict(X_test, threshold=0.5)
+
+## report metrics
+
+from sklearn.metrics import roc_auc_score, average_precision_score
+
+print("AUCROC:", roc_auc_score(y_score=y_prob, y_true=y_test))
+print("AP:", roc_auc_score(y_score=y_prob, y_true=y_test))
