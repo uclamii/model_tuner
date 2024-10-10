@@ -53,7 +53,6 @@ model = Model(
     xgboost_early=True,
     scoring=["roc_auc"],
     n_splits=10,
-    selectKBest=False,
     n_jobs=-2,
     random_state=42,
 )
