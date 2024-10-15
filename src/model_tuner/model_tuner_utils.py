@@ -13,6 +13,8 @@ from sklearn.metrics import (
     median_absolute_error,
     r2_score,
 )
+
+from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
@@ -111,6 +113,7 @@ class Model:
         multi_label=False,
         calibration_method="sigmoid",  # 04_27_24 --> added calibration method
         custom_scorer=[],
+        bayesian=False,
     ):
         self.name = name
         self.estimator_name = estimator_name
@@ -178,6 +181,12 @@ class Model:
         self.labels = ["tn", "fp", "fn", "tp"]
         self.xgboost_early = xgboost_early
         self.custom_scorer = custom_scorer
+        self.bayesian = bayesian
+
+        ### for the moment bayesian only works using cross validation, so
+        ### we use the structure that already exists for kfold
+        if self.bayesian:
+            self.kfold = True
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
@@ -563,7 +572,6 @@ class Model:
                     X,
                     y,
                     self.kf,
-                    stratify=self.stratify_y,
                     scoring=self.scoring[0],
                 )
             else:
@@ -579,7 +587,6 @@ class Model:
                     X,
                     y,
                     self.kf,
-                    stratify=self.stratify_y,
                     scoring=scorer,
                 )
 
@@ -1120,54 +1127,54 @@ class Model:
         """
         Tune the classification threshold for a model based on the F-beta score.
 
-        This method finds the optimal threshold for classifying validation data, 
-        aiming to maximize the F-beta score for a given set of beta values. The 
-        F-beta score balances precision and recall, with the beta parameter 
-        determining the weight of recall in the score. A range of thresholds 
-        (from 0 to 1) is evaluated, and the best performing threshold for each 
+        This method finds the optimal threshold for classifying validation data,
+        aiming to maximize the F-beta score for a given set of beta values. The
+        F-beta score balances precision and recall, with the beta parameter
+        determining the weight of recall in the score. A range of thresholds
+        (from 0 to 1) is evaluated, and the best performing threshold for each
         beta value is identified.
 
         Parameters
         ----------
         score : str
-            A label or name for the score that will be used to store the best 
+            A label or name for the score that will be used to store the best
             threshold.
-        
+
         y_valid : array-like of shape (n_samples,)
             Ground truth (actual) labels for the validation dataset.
-        
+
         betas : list of float
-            A list of beta values to consider when calculating the F-beta score. 
-            The beta parameter controls the balance between precision and recall, 
+            A list of beta values to consider when calculating the F-beta score.
+            The beta parameter controls the balance between precision and recall,
             where higher beta values give more weight to recall.
-        
+
         y_valid_proba : array-like of shape (n_samples,)
-            Predicted probabilities for the positive class for the validation 
-            dataset. This is used to apply different thresholds and generate 
+            Predicted probabilities for the positive class for the validation
+            dataset. This is used to apply different thresholds and generate
             binary predictions.
-        
+
         kfold : bool, optional, default=False
-            If True, the method will return the optimal threshold based on 
-            k-fold cross-validation rather than updating the class's `threshold` 
-            attribute. Otherwise, the method updates the `threshold` attribute 
+            If True, the method will return the optimal threshold based on
+            k-fold cross-validation rather than updating the class's `threshold`
+            attribute. Otherwise, the method updates the `threshold` attribute
             for the specified score.
 
         Returns
         -------
         float or None
-            If `kfold` is True, the method returns the best threshold for the 
-            given score. If `kfold` is False, it updates the `threshold` 
+            If `kfold` is True, the method returns the best threshold for the
+            given score. If `kfold` is False, it updates the `threshold`
             attribute in place and returns None.
 
         Notes
         -----
-        - The method iterates over a range of thresholds (0 to 1, with step 
-          size of 0.01) and evaluates each threshold by calculating binary 
+        - The method iterates over a range of thresholds (0 to 1, with step
+          size of 0.01) and evaluates each threshold by calculating binary
           predictions and computing the confusion matrix.
-        - To avoid undesirable results (e.g., excessive false positives), 
-          thresholds leading to cases where false positives exceed true 
+        - To avoid undesirable results (e.g., excessive false positives),
+          thresholds leading to cases where false positives exceed true
           negatives are penalized.
-        - The method selects the beta value that produces the maximum F-beta 
+        - The method selects the beta value that produces the maximum F-beta
           score, and for that beta, it identifies the best threshold.
         """
 
@@ -1301,6 +1308,18 @@ class Model:
                     random_state=self.random_state,
                     n_iter=self.n_iter,
                     n_jobs=self.n_jobs,
+                    verbose=2,
+                )
+
+            elif self.bayesian:
+                clf = BayesSearchCV(
+                    estimator=self.estimator,
+                    search_spaces=self.grid,
+                    n_iter=100,
+                    cv=self.kf,
+                    n_jobs=self.n_jobs,
+                    scoring=scorer,
+                    random_state=self.random_state,
                     verbose=2,
                 )
 
