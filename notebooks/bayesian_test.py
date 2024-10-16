@@ -41,7 +41,7 @@ tuned_parameters = {
 kfold = False
 calibrate = False
 
-rfe_estim = LogisticRegression(C=0.1, max_iter=2000)
+rfe_estim = LogisticRegression(C=0.1, max_iter=10)
 
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
