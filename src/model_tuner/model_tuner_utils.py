@@ -106,7 +106,7 @@ class Model:
         randomized_grid=False,
         n_iter=100,
         pipeline_steps=[],
-        xgboost_early=False,
+        early_boost=False,
         feature_selection=False,
         model_type="classification",
         class_labels=None,
@@ -179,7 +179,7 @@ class Model:
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
         self.labels = ["tn", "fp", "fn", "tp"]
-        self.xgboost_early = xgboost_early
+        self.boost_early = boost_early
         self.custom_scorer = custom_scorer
         self.bayesian = bayesian
 
@@ -762,7 +762,7 @@ class Model:
             if score is None:
                 best_params = self.best_params_per_score[self.scoring[0]]["params"]
 
-                if self.xgboost_early:
+                if self.boost_early:
                     X_valid, y_valid = validation_data
                     if self.feature_selection or self.pipeline_steps:
                         # Extract parameters for preprocessing and feature selection
@@ -826,7 +826,7 @@ class Model:
                 else:
                     self.estimator.set_params(**best_params).fit(X, y)
             else:
-                if self.xgboost_early:
+                if self.boost_early:
                     X_valid, y_valid = validation_data
                     if self.feature_selection or self.pipeline_steps:
                         # Extract parameters for preprocessing and feature selection
@@ -1131,7 +1131,7 @@ class Model:
                     ### Resetting the estimator here because catboost requires
                     ### a new model to be fitted each time.
                     self.reset_estimator()
-                    if self.xgboost_early:
+                    if self.boost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
