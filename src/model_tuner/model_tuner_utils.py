@@ -102,11 +102,10 @@ class Model:
         random_state=3,
         n_jobs=1,
         display=True,
-        feature_names=None,
         randomized_grid=False,
         n_iter=100,
         pipeline_steps=[],
-        early_boost=False,
+        boost_early=False,
         feature_selection=False,
         model_type="classification",
         class_labels=None,
@@ -172,7 +171,6 @@ class Model:
         self.scoring = scoring
         self.best_params_per_score = {score: 0 for score in self.scoring}
         self.display = display
-        self.feature_names = feature_names
         self.train_size = train_size
         self.validation_size = validation_size
         self.test_size = test_size
