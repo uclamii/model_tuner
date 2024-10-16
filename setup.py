@@ -48,7 +48,7 @@ setup(
             "scikit-learn>=1.0.2, <1.2.2",
             "scipy>=1.6.3, <1.10.1",
             "imbalanced-learn==0.12.4",
-            "scikit-optimize==0.9.0",
+            "scikit-optimize==0.10.2",
         ],
         # For Python 3.9-3.10
         ':python_version >= "3.9" and python_version < "3.11"': [
@@ -59,6 +59,7 @@ setup(
             "pandas>=1.3.5, <2.2.2",
             "scikit-learn>=1.0.2, <1.3",
             "scipy>=1.6.3, <1.11",
+            "scikit-optimize==0.10.2",
             "imbalanced-learn==0.12.4",
         ],
         # For Python 3.11 and later
@@ -71,6 +72,7 @@ setup(
             "scikit-learn==1.5.1",
             "scipy==1.14.0",
             "imbalanced-learn==0.12.4",
+            "scikit-optimize==0.10.2",
         ],
     },
 )
