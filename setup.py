@@ -39,19 +39,7 @@ setup(
             "scikit-optimize==0.8.1",
         ],
         # For Python 3.8
-        ':python_version >= "3.8" and python_version <"3.9"': [
-            "pip==24.2",
-            "setuptools==75.1.0",
-            "wheel==0.44.0",
-            "numpy>=1.21.4, <1.26",
-            "pandas>=1.3.5, <1.5.3",
-            "scikit-learn>=1.0.2, <1.2.2",
-            "scipy>=1.6.3, <1.10.1",
-            "imbalanced-learn==0.12.4",
-            "scikit-optimize==0.10.2",
-        ],
-        # For Python 3.9-3.10
-        ':python_version >= "3.9" and python_version < "3.11"': [
+        ':python_version >= "3.8" and python_version <"3.11"': [
             "pip==24.2",
             "setuptools==75.1.0",
             "wheel==0.44.0",
