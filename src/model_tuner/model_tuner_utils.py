@@ -1483,7 +1483,7 @@ class Model:
                 clf = BayesSearchCV(
                     estimator=self.estimator,
                     search_spaces=self.grid,
-                    n_iter=100,
+                    n_iter=10,
                     cv=self.kf,
                     n_jobs=self.n_jobs,
                     scoring=scorer,

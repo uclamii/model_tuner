@@ -33,9 +33,10 @@ setup(
             "pip==24.0",
             "numpy==1.21.4",
             "pandas==1.1.5",
-            "scikit-learn==1.0.2",
-            "scipy==1.7.3",
-            "imbalanced-learn==0.9.0"
+            "scikit-learn==0.23.2",
+            "scipy==1.4.1",
+            "imbalanced-learn==0.7.0",
+            "scikit-optimize==0.8.1",
         ],
         # For Python 3.8
         ':python_version >= "3.8" and python_version <"3.9"': [
@@ -46,18 +47,19 @@ setup(
             "pandas>=1.3.5, <1.5.3",
             "scikit-learn>=1.0.2, <1.2.2",
             "scipy>=1.6.3, <1.10.1",
-            "imbalanced-learn==0.12.4"
+            "imbalanced-learn==0.12.4",
+            "scikit-optimize==0.9.0",
         ],
         # For Python 3.9-3.10
         ':python_version >= "3.9" and python_version < "3.11"': [
             "pip==24.2",
             "setuptools==75.1.0",
             "wheel==0.44.0",
-            "numpy>=1.21.4, <1.26",
+            "numpy>=1.19.5, <1.24",
             "pandas>=1.3.5, <2.2.2",
             "scikit-learn>=1.0.2, <1.3",
             "scipy>=1.6.3, <1.11",
-            "imbalanced-learn==0.12.4"
+            "imbalanced-learn==0.12.4",
         ],
         # For Python 3.11 and later
         ':python_version >= "3.11"': [
@@ -68,7 +70,7 @@ setup(
             "pandas==2.2.2",
             "scikit-learn==1.5.1",
             "scipy==1.14.0",
-            "imbalanced-learn==0.12.4"
+            "imbalanced-learn==0.12.4",
         ],
     },
 )
