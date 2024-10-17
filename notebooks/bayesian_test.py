@@ -59,6 +59,6 @@ model.fit(X, y)
 
 print("Validation Metrics")
 model.return_metrics(X, y)
-model.kfold = False
+# model.kfold = False
 
 predictions = model.predict(X)
