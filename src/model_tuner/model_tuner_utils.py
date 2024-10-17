@@ -753,13 +753,13 @@ class Model:
                 )
                 classifier.fit(X, y)
                 self.estimator = classifier
-                self.xval_output = get_cross_validate(
-                    classifier,
-                    X,
-                    y,
-                    self.kf,
-                    scoring=scorer,
-                )
+                # self.xval_output = get_cross_validate(
+                #     classifier,
+                #     X,
+                #     y,
+                #     self.kf,
+                #     scoring=scorer,
+                # )
 
         else:
             if score is None:
