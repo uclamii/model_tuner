@@ -35,23 +35,17 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
+    kfold=True,
 )
 
 
 model.grid_search_param_tuning(X, y)
 
-X_train, y_train = model.get_train_data(X, y)
-X_test, y_test = model.get_test_data(X, y)
-X_valid, y_valid = model.get_valid_data(X, y)
 
-model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+model.fit(X, y)
 
-print("Validation Metrics")
-model.return_metrics(X_valid, y_valid)
-print("Test Metrics")
-model.return_metrics(X_test, y_test)
 
-y_prob = model.predict_proba(X_test)
+y_prob = model.predict_proba(X)
 
 ### F1 Weighted
-y_pred = model.predict(X_test, optimal_threshold=True)
+y_pred = model.predict(X)

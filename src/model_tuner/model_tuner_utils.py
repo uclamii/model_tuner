@@ -102,11 +102,10 @@ class Model:
         random_state=3,
         n_jobs=1,
         display=True,
-        feature_names=None,
         randomized_grid=False,
         n_iter=100,
         pipeline_steps=[],
-        xgboost_early=False,
+        boost_early=False,
         feature_selection=False,
         model_type="classification",
         class_labels=None,
@@ -172,14 +171,13 @@ class Model:
         self.scoring = scoring
         self.best_params_per_score = {score: 0 for score in self.scoring}
         self.display = display
-        self.feature_names = feature_names
         self.train_size = train_size
         self.validation_size = validation_size
         self.test_size = test_size
         self.threshold = {score: 0 for score in self.scoring}
         self.beta = 2
         self.labels = ["tn", "fp", "fn", "tp"]
-        self.xgboost_early = xgboost_early
+        self.boost_early = boost_early
         self.custom_scorer = custom_scorer
         self.bayesian = bayesian
 
@@ -434,7 +432,7 @@ class Model:
                         y_train,
                         y_valid,
                         y_test,
-                    ) = self.train_val_test_split(
+                    ) = train_val_test_split(
                         X=X,
                         y=y,
                         stratify_y=self.stratify_y,
@@ -442,7 +440,6 @@ class Model:
                         train_size=self.train_size,
                         validation_size=self.validation_size,
                         test_size=self.test_size,
-                        calibrate=True,
                         random_state=self.random_state,
                     )
                     if isinstance(X, pd.DataFrame):
@@ -479,14 +476,13 @@ class Model:
                         y_train,
                         y_valid,
                         y_test,
-                    ) = self.train_val_test_split(
+                    ) = train_val_test_split(
                         X=X,
                         y=y,
                         stratify_y=self.stratify_y,
                         stratify_cols=self.stratify_cols,
                         train_size=self.train_size,
                         validation_size=self.validation_size,
-                        calibrate=True,
                         test_size=self.test_size,
                         random_state=self.random_state,
                     )
@@ -567,6 +563,8 @@ class Model:
                 classifier = self.estimator.set_params(
                     **self.best_params_per_score[self.scoring[0]]["params"]
                 )
+                classifier.fit(X, y)
+                self.estimator = classifier
                 self.xval_output = get_cross_validate(
                     classifier,
                     X,
@@ -574,6 +572,7 @@ class Model:
                     self.kf,
                     scoring=self.scoring[0],
                 )
+                # self.estimator = self.x_valoutput['estimator']
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -582,6 +581,8 @@ class Model:
                 classifier = self.estimator.set_params(
                     **self.best_params_per_score[score]["params"]
                 )
+                classifier.fit(X, y)
+                self.estimator = classifier
                 self.xval_output = get_cross_validate(
                     classifier,
                     X,
@@ -594,7 +595,7 @@ class Model:
             if score is None:
                 best_params = self.best_params_per_score[self.scoring[0]]["params"]
 
-                if self.xgboost_early:
+                if self.boost_early:
                     X_valid, y_valid = validation_data
                     if self.feature_selection or self.pipeline_steps:
                         # Extract parameters for preprocessing and feature selection
@@ -658,7 +659,7 @@ class Model:
                 else:
                     self.estimator.set_params(**best_params).fit(X, y)
             else:
-                if self.xgboost_early:
+                if self.boost_early:
                     X_valid, y_valid = validation_data
                     if self.feature_selection or self.pipeline_steps:
                         # Extract parameters for preprocessing and feature selection
@@ -842,7 +843,7 @@ class Model:
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
             optimal_threshold = False
-        if self.kfold:
+        if self.kfold and y is not None:
             return cross_val_predict(estimator=self.estimator, X=X, y=y, cv=self.kf)
         else:
             if optimal_threshold:
@@ -856,7 +857,7 @@ class Model:
                 return self.estimator.predict(X)
 
     def predict_proba(self, X, y=None):
-        if self.kfold:
+        if self.kfold and y is not None:
             return cross_val_predict(
                 self.estimator, X, y, cv=self.kf, method="predict_proba"
             )
@@ -927,18 +928,15 @@ class Model:
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
         else:
-            X_train, X_valid, X_test, y_train, y_valid, y_test = (
-                self.train_val_test_split(
-                    X=X,
-                    y=y,
-                    stratify_y=self.stratify_y,
-                    stratify_cols=self.stratify_cols,
-                    train_size=self.train_size,
-                    validation_size=self.validation_size,
-                    test_size=self.test_size,
-                    calibrate=False,
-                    random_state=self.random_state,
-                )
+            X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+                X=X,
+                y=y,
+                stratify_y=self.stratify_y,
+                stratify_cols=self.stratify_cols,
+                train_size=self.train_size,
+                validation_size=self.validation_size,
+                test_size=self.test_size,
+                random_state=self.random_state,
             )
             if isinstance(X, pd.DataFrame):
                 self.X_train_index = X_train.index.to_list()
@@ -963,7 +961,7 @@ class Model:
                     ### Resetting the estimator here because catboost requires
                     ### a new model to be fitted each time.
                     self.reset_estimator()
-                    if self.xgboost_early:
+                    if self.boost_early:
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
                         if params.get(estimator_verbosity):
@@ -1216,78 +1214,6 @@ class Model:
             ]
             return
 
-    def train_val_test_split(
-        self,
-        X,
-        y,
-        stratify_y,
-        train_size,
-        validation_size,
-        test_size,
-        random_state,
-        stratify_cols,
-        calibrate,
-    ):
-
-        if stratify_cols is not None and stratify_y:
-            # Creating stratification columns out of stratify_cols list
-            if type(stratify_cols) == pd.DataFrame:
-                stratify_key = pd.concat([stratify_cols, y], axis=1)
-            else:
-                stratify_key = pd.concat([X[stratify_cols], y], axis=1)
-        elif stratify_cols is not None:
-            stratify_key = X[stratify_cols]
-        elif stratify_y:
-            stratify_key = y
-        else:
-            stratify_key = None
-
-        if stratify_cols is not None:
-            # stratify_key = stratify_key.copy()
-            stratify_key = stratify_key.fillna("")
-
-        X_train, X_valid_test, y_train, y_valid_test = train_test_split(
-            X,
-            y,
-            test_size=1 - train_size,
-            stratify=stratify_key,  # Use stratify_key here
-            random_state=random_state,
-        )
-
-        # Determine the proportion of validation to test size in the remaining dataset
-        proportion = test_size / (validation_size + test_size)
-
-        if stratify_cols is not None and stratify_y:
-            # Creating stratification columns out of stratify_cols list
-            if type(stratify_cols) == pd.DataFrame:
-                strat_key_val_test = pd.concat(
-                    [stratify_cols.loc[X_valid_test.index, :], y_valid_test], axis=1
-                )
-            else:
-                strat_key_val_test = pd.concat(
-                    [X_valid_test[stratify_cols], y_valid_test], axis=1
-                )
-        elif stratify_cols is not None:
-            strat_key_val_test = X_valid_test[stratify_cols]
-        elif stratify_y:
-            strat_key_val_test = y_valid_test
-        else:
-            strat_key_val_test = None
-
-        if stratify_cols is not None:
-            strat_key_val_test = strat_key_val_test.fillna("")
-
-        # Further split (validation + test) set into validation and test sets
-        X_valid, X_test, y_valid, y_test = train_test_split(
-            X_valid_test,
-            y_valid_test,
-            test_size=proportion,
-            stratify=strat_key_val_test,
-            random_state=random_state,
-        )
-
-        return X_train, X_valid, X_test, y_train, y_valid, y_test
-
     def get_best_score_params(self, X, y):
 
         for score in self.scoring:
@@ -1312,15 +1238,25 @@ class Model:
                 )
 
             elif self.bayesian:
+                ### removing any bayes_params
+                bayes_params = {
+                    key.replace("bayes__", ""): value
+                    for key, value in self.grid.items()
+                    if key.startswith("bayes__")
+                }
+                for key in bayes_params.keys():
+                    self.grid.pop(f"bayes__{key}")
+
+                print("Performing Bayesian search:")
                 clf = BayesSearchCV(
                     estimator=self.estimator,
                     search_spaces=self.grid,
-                    n_iter=100,
                     cv=self.kf,
                     n_jobs=self.n_jobs,
                     scoring=scorer,
                     random_state=self.random_state,
                     verbose=2,
+                    **bayes_params,
                 )
 
             else:
@@ -1479,6 +1415,73 @@ class Model:
                 f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})  {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})"
             )
             print(border)
+
+
+def train_val_test_split(
+    X,
+    y,
+    stratify_y,
+    train_size,
+    validation_size,
+    test_size,
+    random_state,
+    stratify_cols,
+):
+
+    if stratify_cols is not None and stratify_y is not None:
+        if type(stratify_cols) == pd.DataFrame:
+            stratify_key = pd.concat([stratify_cols, y], axis=1)
+        else:
+            stratify_key = pd.concat([X[stratify_cols], y], axis=1)
+    elif stratify_cols is not None:
+        stratify_key = X[stratify_cols]
+    elif stratify_y is not None:
+        stratify_key = y
+    else:
+        stratify_key = None
+
+    if stratify_cols is not None:
+        stratify_key = stratify_key.fillna("")
+
+    X_train, X_valid_test, y_train, y_valid_test = train_test_split(
+        X,
+        y,
+        test_size=1 - train_size,
+        stratify=stratify_key,  # Use stratify_key here
+        random_state=random_state,
+    )
+
+    proportion = test_size / (validation_size + test_size)
+
+    if stratify_cols is not None and stratify_y:
+        # Creating stratification columns out of stratify_cols list
+        if type(stratify_cols) == pd.DataFrame:
+            strat_key_val_test = pd.concat(
+                [stratify_cols.loc[X_valid_test.index, :], y_valid_test], axis=1
+            )
+        else:
+            strat_key_val_test = pd.concat(
+                [X_valid_test[stratify_cols], y_valid_test], axis=1
+            )
+    elif stratify_cols is not None:
+        strat_key_val_test = X_valid_test[stratify_cols]
+    elif stratify_y is not None:
+        strat_key_val_test = y_valid_test
+    else:
+        strat_key_val_test = None
+
+    if stratify_cols is not None:
+        strat_key_val_test = strat_key_val_test.fillna("")
+
+    X_valid, X_test, y_valid, y_test = train_test_split(
+        X_valid_test,
+        y_valid_test,
+        test_size=proportion,
+        stratify=strat_key_val_test,
+        random_state=random_state,
+    )
+
+    return X_train, X_valid, X_test, y_train, y_valid, y_test
 
 
 def kfold_split(
