@@ -733,13 +733,16 @@ class Model:
                 classifier = self.estimator.set_params(
                     **self.best_params_per_score[self.scoring[0]]["params"]
                 )
-                self.xval_output = get_cross_validate(
-                    classifier,
-                    X,
-                    y,
-                    self.kf,
-                    scoring=self.scoring[0],
-                )
+                classifier.fit(X, y)
+                self.estimator = classifier
+                # self.xval_output = get_cross_validate(
+                #     classifier,
+                #     X,
+                #     y,
+                #     self.kf,
+                #     scoring=self.scoring[0],
+                # )
+                # self.estimator = self.x_valoutput['estimator']
             else:
                 if score in self.custom_scorer:
                     scorer = self.custom_scorer[score]
@@ -748,6 +751,8 @@ class Model:
                 classifier = self.estimator.set_params(
                     **self.best_params_per_score[score]["params"]
                 )
+                classifier.fit(X, y)
+                self.estimator = classifier
                 self.xval_output = get_cross_validate(
                     classifier,
                     X,
