@@ -25,8 +25,8 @@ tuned_parameters = {
     f"{estimator_name}__learning_rate": Real(1e-5, 1e-1, "log-uniform"),
     f"{estimator_name}__n_estimators": Integer(3, 1000),
     f"{estimator_name}__gamma": Real(0, 4, "uniform"),
-    "bayes__n_points": 20,
-    "bayes__n_iter": 100,
+    "bayes__n_points": 1,
+    "bayes__n_iter": 1,
 }
 
 kfold = False
@@ -59,3 +59,6 @@ model.fit(X, y)
 
 print("Validation Metrics")
 model.return_metrics(X, y)
+# model.kfold = False
+
+predictions = model.predict(X)
