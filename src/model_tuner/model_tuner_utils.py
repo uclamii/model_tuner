@@ -1478,15 +1478,25 @@ class Model:
                 )
 
             elif self.bayesian:
+                ### removing any bayes_params
+                bayes_params = {
+                    key.replace("bayes__", ""): value
+                    for key, value in self.grid.items()
+                    if key.startswith("bayes__")
+                }
+                for key in bayes_params.keys():
+                    self.grid.pop(f"bayes__{key}")
+
+                print("Performing Bayesian search:")
                 clf = BayesSearchCV(
                     estimator=self.estimator,
                     search_spaces=self.grid,
-                    n_iter=10,
                     cv=self.kf,
                     n_jobs=self.n_jobs,
                     scoring=scorer,
                     random_state=self.random_state,
                     verbose=2,
+                    **bayes_params,
                 )
 
             else:
