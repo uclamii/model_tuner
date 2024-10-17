@@ -733,13 +733,13 @@ class Model:
                 )
                 classifier.fit(X, y)
                 self.estimator = classifier
-                # self.xval_output = get_cross_validate(
-                #     classifier,
-                #     X,
-                #     y,
-                #     self.kf,
-                #     scoring=self.scoring[0],
-                # )
+                self.xval_output = get_cross_validate(
+                    classifier,
+                    X,
+                    y,
+                    self.kf,
+                    scoring=self.scoring[0],
+                )
                 # self.estimator = self.x_valoutput['estimator']
             else:
                 if score in self.custom_scorer:
@@ -751,13 +751,13 @@ class Model:
                 )
                 classifier.fit(X, y)
                 self.estimator = classifier
-                # self.xval_output = get_cross_validate(
-                #     classifier,
-                #     X,
-                #     y,
-                #     self.kf,
-                #     scoring=scorer,
-                # )
+                self.xval_output = get_cross_validate(
+                    classifier,
+                    X,
+                    y,
+                    self.kf,
+                    scoring=scorer,
+                )
 
         else:
             if score is None:
@@ -1011,7 +1011,7 @@ class Model:
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
             optimal_threshold = False
-        if self.kfold:
+        if self.kfold and y is not None:
             return cross_val_predict(estimator=self.estimator, X=X, y=y, cv=self.kf)
         else:
             if optimal_threshold:
@@ -1025,7 +1025,7 @@ class Model:
                 return self.estimator.predict(X)
 
     def predict_proba(self, X, y=None):
-        if self.kfold:
+        if self.kfold and y is not None:
             return cross_val_predict(
                 self.estimator, X, y, cv=self.kf, method="predict_proba"
             )
