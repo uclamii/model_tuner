@@ -1,20 +1,9 @@
-import pandas as pd
-import numpy as np
-import os
-import sys
-from skopt import BayesSearchCV
-
 from sklearn.datasets import make_classification
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import StandardScaler
 from model_tuner.model_tuner_utils import Model
-from model_tuner.bootstrapper import evaluate_bootstrap_metrics
-from model_tuner.pickleObjects import dumpObjects, loadObjects
 from imblearn.over_sampling import SMOTE
-from sklearn.feature_selection import RFE
 from skopt.space import Real, Categorical, Integer
-from sklearn.linear_model import LogisticRegression
 
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]
