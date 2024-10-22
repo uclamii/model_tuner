@@ -1,17 +1,10 @@
-import pandas as pd
-import numpy as np
-import os
-import sys
-
-from sklearn.datasets import make_classification
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import StandardScaler
 from model_tuner.model_tuner_utils import Model
-from model_tuner.bootstrapper import evaluate_bootstrap_metrics
-from model_tuner.pickleObjects import dumpObjects, loadObjects
 from imblearn.over_sampling import SMOTE
 from sklearn.feature_selection import RFE
+from sklearn.linear_model import ElasticNet
+
 
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]
@@ -31,7 +24,7 @@ xgbearly = True
 tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
     f"{estimator_name}__learning_rate": [1e-4],
-    f"{estimator_name}__n_estimators": [30],
+    f"{estimator_name}__n_estimators": [100000],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
@@ -41,10 +34,9 @@ tuned_parameters = {
 kfold = False
 calibrate = False
 
+rfe_estimator = ElasticNet()
 
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-rfe = RFE(estimator)
+rfe = RFE(rfe_estimator)
 
 model = Model(
     name="XGBoost Early",
