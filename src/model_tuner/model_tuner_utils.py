@@ -12,6 +12,11 @@ from sklearn.metrics import (
     mean_absolute_error,
     median_absolute_error,
     r2_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+    average_precision_score,
+    brier_score_loss,
 )
 
 from skopt import BayesSearchCV
@@ -791,6 +796,7 @@ class Model:
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
+                    # self.report_model_metrics(X_test, y_test)
 
                 else:
                     self.regression_report_kfold(X_test, y_test, self.test_model, score)
@@ -808,6 +814,7 @@ class Model:
                     conf_mat = confusion_matrix(y_test, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
+                    self.report_model_metrics(X_test, y_test)
 
                 print()
                 self.classification_report = classification_report(
@@ -1419,6 +1426,62 @@ class Model:
             )
             print(border)
 
+    def report_model_metrics(
+        self,
+        X_valid=None,
+        y_valid=None,
+    ):
+        """
+        Generate a DataFrame of model performance metrics for given models,
+        predictions, or probability estimates.
+
+        Parameters:
+        -----------
+
+        X_valid : DataFrame, optional
+            The feature set used for validating the model(s).
+
+        y_valid : Series, optional
+            The true labels for the validation set.
+
+
+        Returns:
+        --------
+        metrics_df : DataFrame
+            A DataFrame containing calculated metrics for each model or prediction
+            column, with metrics including:
+            - Precision/PPV
+            - Average Precision
+            - Sensitivity (Recall)
+            - Specificity
+            - AUC ROC
+            - Brier Score
+        """
+
+        metrics = {}
+
+        y_pred = self.predict(X_valid, optimal_threshold=True)
+        y_pred_proba = self.predict_proba(X_valid)
+
+        tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
+        precision = precision_score(y_valid, y_pred)
+        recall = recall_score(y_valid, y_pred)
+        roc_auc = roc_auc_score(y_valid, y_pred_proba)
+        brier_score = brier_score_loss(y_valid, y_pred_proba)
+        avg_precision = average_precision_score(y_valid, y_pred_proba)
+        specificity = tn / (tn + fp)
+        metrics = {
+            "Precision/PPV": precision,
+            "Average Precision": avg_precision,
+            "Sensitivity": recall,
+            "Specificity": specificity,
+            "AUC ROC": roc_auc,
+            "Brier Score": brier_score,
+        }
+
+        metrics_df = pd.DataFrame(metrics).round(3)
+        return metrics_df
+
 
 def train_val_test_split(
     X,
@@ -1598,5 +1661,3 @@ def print_pipeline(pipeline):
             print(connector_padding + down_arrow)
 
     print()
-
-
