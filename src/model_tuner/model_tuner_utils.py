@@ -872,6 +872,9 @@ class Model:
         betas=[1, 2],
     ):
 
+        if self.display:
+            print_pipeline(self.estimator)
+
         if self.kfold:
             self.kf = kfold_split(
                 self.estimator,
@@ -1536,6 +1539,65 @@ def _confusion_matrix_print(conf_matrix, labels):
         f"{'':>8}Neg {conf_matrix[0,1]:>{max_length}} ({labels[1]})  {conf_matrix[0,0]:>{max_length}} ({labels[0]})"
     )
     print(border)
+
+
+def print_pipeline(pipeline):
+    """
+    Prints an ASCII art representation of a scikit-learn pipeline.
+
+    Parameters:
+    pipeline : sklearn.pipeline.Pipeline or similar
+        The pipeline object containing different steps to display.
+    """
+    steps = pipeline.steps if hasattr(pipeline, "steps") else []
+
+    if not steps:
+        print("No steps found in the pipeline!")
+        return
+
+    print("\nPipeline Steps:")
+    print("========================")
+
+    # Box Drawing Characters
+    vertical_connector = "│"
+    down_arrow = "▼"
+
+    max_width = 0
+
+    # First pass: calculate the maximum width needed for the boxes
+    for idx, (name, step) in enumerate(steps, 1):
+        step_name = f"Step {idx}: {name}"
+        step_class = step.__class__.__name__
+        max_length = max(len(step_name), len(step_class)) + 4  # Padding of 4
+        if max_length > max_width:
+            max_width = max_length
+
+    # Second pass: print the pipeline with aligned boxes
+    for idx, (name, step) in enumerate(steps, 1):
+        step_name = f"Step {idx}: {name}"
+        step_class = step.__class__.__name__
+
+        # Create the box top, bottom, and content with dynamic width
+        top_border = "┌" + "─" * max_width + "┐"
+        bottom_border = "└" + "─" * max_width + "┘"
+
+        # Ensure that text is aligned properly
+        step_name_line = f"│ {step_name.ljust(max_width - 2)} │"
+        step_class_line = f"│ {step_class.ljust(max_width - 2)} │"
+
+        # Print the box with dynamic width
+        print(top_border)
+        print(step_name_line)
+        print(step_class_line)
+        print(bottom_border)
+
+        # Connect the steps unless it's the last one
+        if idx < len(steps):
+            connector_padding = " " * (max_width // 2)
+            print(connector_padding + vertical_connector)
+            print(connector_padding + down_arrow)
+
+    print()
 
 
 ################################################################################
