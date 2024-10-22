@@ -13,19 +13,54 @@ def report_model_metrics(
     pred_probs_df=None,
 ):
     """
-    Generate a DataFrame of model metrics for given models or predictions.
+    Generate a DataFrame of model performance metrics for given models, 
+    predictions, or probability estimates.
+
+    The function can evaluate model metrics for outcome-prediction column pairs 
+    from a DataFrame, for specified models on validation data, or for columns 
+    containing predicted probabilities.
 
     Parameters:
-    df (DataFrame, optional): DataFrame containing outcome and prediction cols.
-    outcome_cols (list, optional): List of outcome column names in df.
-    pred_cols (list, optional): List of prediction column names in df.
-    models (dict, optional): Dict where key is model name and value is model.
-    X_valid (DataFrame, optional): DataFrame with validation data.
-    y_valid (Series, optional): Series with outcome data for validation set.
-    pred_probs_df (DataFrame, optional): DataFrame with predicted probabilities.
+    -----------
+    df : DataFrame, optional
+        A DataFrame containing both the true outcome columns and corresponding 
+        predicted probability columns for binary classification tasks.
+    
+    outcome_cols : list of str, optional
+        A list of column names representing the true binary outcome in the 
+        DataFrame `df`.
+    
+    pred_cols : list of str, optional
+        A list of column names representing the predicted probabilities in the 
+        DataFrame `df`.
+    
+    models : dict, optional
+        A dictionary where the keys are model names (str) and the values are 
+        model objects that implement the `.predict()` and `.predict_proba()` 
+        methods.
+    
+    X_valid : DataFrame, optional
+        The feature set used for validating the model(s).
+    
+    y_valid : Series, optional
+        The true labels for the validation set.
+    
+    pred_probs_df : DataFrame, optional
+        A DataFrame containing columns of predicted probabilities for evaluation.
 
     Returns:
-    metrics_df (DataFrame): DataFrame containing model metrics.
+    --------
+    metrics_df : DataFrame
+        A DataFrame containing calculated metrics for each model or prediction 
+        column, with metrics including:
+        - Precision/PPV
+        - Average Precision
+        - Sensitivity (Recall)
+        - Specificity
+        - AUC ROC
+        - Brier Score
+        A "Mean" column is also provided, which gives the average score across 
+        all metrics for each model or prediction column.
     """
 
     metrics = {}
