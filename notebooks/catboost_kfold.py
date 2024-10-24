@@ -17,9 +17,6 @@ tuned_parameters = {
     f"{estimator_name}__depth": [10],
     f"{estimator_name}__learning_rate": [1e-4],
     f"{estimator_name}__n_estimators": [30],
-    f"{estimator_name}__early_stopping_rounds": [10],
-    f"{estimator_name}__verbose": [0],
-    f"{estimator_name}__eval_metric": ["Logloss"],
 }
 
 model = Model(
@@ -31,7 +28,7 @@ model = Model(
     grid=tuned_parameters,
     randomized_grid=False,
     n_iter=4,
-    boost_early=True,
+    boost_early=False,
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
@@ -39,7 +36,7 @@ model = Model(
 )
 
 
-model.grid_search_param_tuning(X, y)
+model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
 
 model.fit(X, y)
@@ -49,3 +46,5 @@ y_prob = model.predict_proba(X)
 
 ### F1 Weighted
 y_pred = model.predict(X)
+
+metrics = model.return_metrics(X, y)

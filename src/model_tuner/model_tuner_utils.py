@@ -595,7 +595,6 @@ class Model:
                     self.kf,
                     scoring=scorer,
                 )
-
         else:
             if score is None:
                 best_params = self.best_params_per_score[self.scoring[0]]["params"]
@@ -796,7 +795,7 @@ class Model:
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
-                    # self.report_model_metrics(X_test, y_test)
+                    self.return_metrics_kfold(X_test, y_test, self.test_model, score)
 
                 else:
                     self.regression_report_kfold(X_test, y_test, self.test_model, score)
@@ -814,8 +813,10 @@ class Model:
                     conf_mat = confusion_matrix(y_test, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
-                    self.report_model_metrics(X_test, y_test)
-
+                    model_metrics_df = report_model_metrics(self, X_test, y_test)
+                    print("-" * 80)
+                    pprint(model_metrics_df.iloc[0].to_dict())
+                    print("-" * 80)
                 print()
                 self.classification_report = classification_report(
                     y_test, y_pred_valid, output_dict=True
@@ -901,13 +902,11 @@ class Model:
                         thresh_list = []
                         self.kfold = False
                         for train, test in self.kf.split(X, y):
+
                             self.fit(X.iloc[train], y.iloc[train])
                             y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
-                                X.iloc[train],
-                                y.iloc[train],
-                                X.iloc[test],
                                 y.iloc[test],
                                 betas,
                                 y_pred_proba,
@@ -916,18 +915,18 @@ class Model:
                             thresh_list.append(thresh)
                         average_threshold = np.mean(thresh_list)
                         self.threshold[score] = average_threshold
+                        self.kfold = True
+
                 else:
                     for score in self.scoring:
                         thresh_list = []
                         self.kfold = False
                         for train, test in self.kf.split(X, y):
+
                             self.fit(X[train], y[train])
                             y_pred_proba = self.predict_proba(X[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
-                                X[train],
-                                y[train],
-                                X[test],
                                 y[test],
                                 betas,
                                 y_pred_proba,
@@ -972,13 +971,6 @@ class Model:
                     ### a new model to be fitted each time.
                     self.reset_estimator()
                     if self.boost_early:
-                        estimator_verbosity = f"{self.estimator_name}__verbose"
-
-                        if params.get(estimator_verbosity):
-                            self.verbosity = params[estimator_verbosity]
-                            params.pop(estimator_verbosity)
-                        else:
-                            self.verbosity = False
 
                         if self.feature_selection or self.pipeline_steps:
                             # Extract parameters for preprocessing and feature selection
@@ -1032,14 +1024,16 @@ class Model:
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
+                        if params.get(estimator_verbosity):
+                            self.verbosity = params[estimator_verbosity]
+                            params.pop(estimator_verbosity)
+                        else:
+                            self.verbosity = False
+
                         xgb_params = {
                             estimator_eval_set: eval_set,
                             estimator_verbosity: self.verbosity,
                         }
-
-                        ## TODO: Why are we popping verbosity off?
-                        if estimator_verbosity in params:
-                            params.pop(estimator_verbosity)
 
                         clf = self.estimator.set_params(**params).fit(
                             X_train, y_train, **xgb_params
@@ -1299,6 +1293,44 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
+    def return_metrics_kfold(self, X, y, test_model, score=None):
+
+        aggregated_pred_list = []
+        if score is not None:
+            threshold = self.threshold[score]
+        else:
+            threshold = self.threshold[self.scoring[0]]
+
+        if threshold == 0:
+            threshold = 0.5
+
+        if isinstance(X, pd.DataFrame):
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X.iloc[train], X.iloc[test]
+                y_train, y_test = y.iloc[train], y.iloc[test]
+                test_model.fit(X_train, y_train)
+                aggregated_pred_list.append(
+                    report_model_metrics(test_model, X_test, y_test, threshold),
+                )
+        else:
+            for train, test in self.kf.split(X, y):
+                X_train, X_test = X[train], X[test]
+                y_train, y_test = y[train], y[test]
+                test_model.fit(X_train, y_train)
+                aggregated_pred_list.append(
+                    report_model_metrics(test_model, X_test, y_test, threshold),
+                )
+
+        concat_df = pd.concat(aggregated_pred_list)
+        # Calculate the mean for each column
+        mean_df = concat_df.groupby(concat_df.index).mean()
+        mean_dict = mean_df.iloc[0].to_dict()
+        print("-" * 80)
+        print(f"Average performance across {len(aggregated_pred_list)} Folds:")
+        pprint(mean_dict)
+        print("-" * 80)
+        return mean_dict
+
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
         aggregated_true_labels = []
@@ -1344,7 +1376,13 @@ class Model:
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
-        print(self.classification_report)
+        print(
+            classification_report(
+                aggregated_true_labels,
+                aggregated_predictions,
+                zero_division=0,
+            )
+        )
         print("-" * 80)
         return {
             "Classification Report": self.classification_report,
@@ -1425,62 +1463,6 @@ class Model:
                 f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})  {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})"
             )
             print(border)
-
-    def report_model_metrics(
-        self,
-        X_valid=None,
-        y_valid=None,
-    ):
-        """
-        Generate a DataFrame of model performance metrics for given models,
-        predictions, or probability estimates.
-
-        Parameters:
-        -----------
-
-        X_valid : DataFrame, optional
-            The feature set used for validating the model(s).
-
-        y_valid : Series, optional
-            The true labels for the validation set.
-
-
-        Returns:
-        --------
-        metrics_df : DataFrame
-            A DataFrame containing calculated metrics for each model or prediction
-            column, with metrics including:
-            - Precision/PPV
-            - Average Precision
-            - Sensitivity (Recall)
-            - Specificity
-            - AUC ROC
-            - Brier Score
-        """
-
-        metrics = {}
-
-        y_pred = self.predict(X_valid, optimal_threshold=True)
-        y_pred_proba = self.predict_proba(X_valid)
-
-        tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
-        precision = precision_score(y_valid, y_pred)
-        recall = recall_score(y_valid, y_pred)
-        roc_auc = roc_auc_score(y_valid, y_pred_proba)
-        brier_score = brier_score_loss(y_valid, y_pred_proba)
-        avg_precision = average_precision_score(y_valid, y_pred_proba)
-        specificity = tn / (tn + fp)
-        metrics = {
-            "Precision/PPV": precision,
-            "Average Precision": avg_precision,
-            "Sensitivity": recall,
-            "Specificity": specificity,
-            "AUC ROC": roc_auc,
-            "Brier Score": brier_score,
-        }
-
-        metrics_df = pd.DataFrame(metrics).round(3)
-        return metrics_df
 
 
 def train_val_test_split(
@@ -1661,3 +1643,59 @@ def print_pipeline(pipeline):
             print(connector_padding + down_arrow)
 
     print()
+
+
+def report_model_metrics(
+    model,
+    X_valid=None,
+    y_valid=None,
+    threshold=0.5,
+):
+    """
+    Generate a DataFrame of model performance metrics for given models,
+    predictions, or probability estimates.
+
+    Parameters:
+    -----------
+
+    X_valid : DataFrame, optional
+        The feature set used for validating the model(s).
+
+    y_valid : Series, optional
+        The true labels for the validation set.
+
+
+    Returns:
+    --------
+    metrics_df : DataFrame
+        A DataFrame containing calculated metrics for each model or prediction
+        column, with metrics including:
+        - Precision/PPV
+        - Average Precision
+        - Sensitivity (Recall)
+        - Specificity
+        - AUC ROC
+        - Brier Score
+    """
+
+    metrics = {}
+    y_pred_proba = model.predict_proba(X_valid)[:, 1]
+    y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
+    tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
+    precision = precision_score(y_valid, y_pred)
+    recall = recall_score(y_valid, y_pred)
+    roc_auc = roc_auc_score(y_valid, y_pred_proba)
+    brier_score = brier_score_loss(y_valid, y_pred_proba)
+    avg_precision = average_precision_score(y_valid, y_pred_proba)
+    specificity = tn / (tn + fp)
+    metrics = {
+        "Precision/PPV": precision,
+        "Average Precision": avg_precision,
+        "Sensitivity": recall,
+        "Specificity": specificity,
+        "AUC ROC": roc_auc,
+        "Brier Score": brier_score,
+    }
+
+    metrics_df = pd.DataFrame(metrics, index=[0])
+    return metrics_df
