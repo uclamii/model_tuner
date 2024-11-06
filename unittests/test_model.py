@@ -150,7 +150,7 @@ def test_grid_search_param_tuning_early(classification_data):
         estimator=XGBClassifier(),
         grid=tuned_parameters,
         scoring=["accuracy"],
-        xgboost_early=True,
+        boost_early=True,
     )
     model.grid_search_param_tuning(X, y)
     assert model.best_params_per_score["accuracy"]["params"] is not None
