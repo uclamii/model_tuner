@@ -238,6 +238,7 @@ class Model:
         """
 
         def is_preprocessing_step(transformer):
+            from sklearn.compose import ColumnTransformer
             module = transformer.__class__.__module__
             return (
                 module.startswith("sklearn.preprocessing")
@@ -246,6 +247,7 @@ class Model:
                 or module.startswith("sklearn.feature_extraction")
                 or module.startswith("sklearn.kernel_approximation")
                 or module.startswith("category_encoders")
+                or isinstance(transformer, ColumnTransformer)
             )
 
         def is_imputer(transformer):
