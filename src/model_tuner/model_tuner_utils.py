@@ -226,19 +226,20 @@ class Model:
         """
         This method will assemble the pipeline in the correct order. It contains
         helper functions which determine whether the steps are preprocessing, feature
-        selection or imbalance sampler steps.
+        selection, or imbalance sampler steps.
 
-        These are then used to sort and categorise each step so we ensure the correct
+        These are then used to sort and categorize each step so we ensure the correct
         ordering of the pipeline no matter the input order from users. Users can
         also have unnamed pipeline steps and these will still be ordered in the correct
         format.
 
-        Below we define several helper functions that will be used to type check parts
+        Below we define several helper functions that will be used to type-check parts
         of the pipeline in order to put them in the right sections.
         """
 
         def is_preprocessing_step(transformer):
             from sklearn.compose import ColumnTransformer
+
             module = transformer.__class__.__module__
             return (
                 module.startswith("sklearn.preprocessing")
@@ -249,6 +250,11 @@ class Model:
                 or module.startswith("category_encoders")
                 or isinstance(transformer, ColumnTransformer)
             )
+
+        def is_column_transformer(transformer):
+            from sklearn.compose import ColumnTransformer
+
+            return isinstance(transformer, ColumnTransformer)
 
         def is_imputer(transformer):
             module = transformer.__class__.__module__
@@ -271,6 +277,7 @@ class Model:
             return isinstance(transformer, SamplerMixin)
 
         # Initialize lists for different types of steps
+        column_transformer_steps = []
         imputation_steps = []
         scaling_steps = []
         other_preprocessing_steps = []
@@ -286,7 +293,14 @@ class Model:
                 transformer = step
 
             # Categorize the transformer
-            if is_preprocessing_step(transformer):
+            if is_column_transformer(transformer):
+                # ColumnTransformer steps
+                if not name:
+                    name = f"preprocess_column_transformer_step_{len(column_transformer_steps)}"
+                else:
+                    name = f"preprocess_column_transformer_{name}"
+                column_transformer_steps.append((name, transformer))
+            elif is_preprocessing_step(transformer):
                 if is_imputer(transformer):
                     # Imputation steps
                     if not name:
@@ -329,7 +343,10 @@ class Model:
 
         # Assemble the preprocessing steps in the correct order
         preprocessing_steps = (
-            imputation_steps + scaling_steps + other_preprocessing_steps
+            column_transformer_steps
+            + imputation_steps
+            + scaling_steps
+            + other_preprocessing_steps
         )
 
         # Initialize the main pipeline steps list
@@ -1006,10 +1023,9 @@ class Model:
                                 )
                             )
 
-                            # Set parameters and fit the pipeline
                             preproc_feat_select_pipe.set_params(
                                 **params_no_estimator
-                            ).fit(X, y)
+                            ).fit(X_train, y_train)
 
                             # Transform the validation data
                             X_valid_transformed = preproc_feat_select_pipe.transform(
@@ -1089,9 +1105,7 @@ class Model:
 
                 if f1_beta_tune:  # tune threshold
                     y_pred_proba = clf.predict_proba(X_valid)[:, 1]
-                    self.tune_threshold_Fbeta(
-                        score, X_train, y_train, X_valid, y_valid, betas, y_pred_proba
-                    )
+                    self.tune_threshold_Fbeta(score, y_valid, betas, y_pred_proba)
 
                 if not self.calibrate:
                     if self.display:
