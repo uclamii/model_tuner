@@ -25,7 +25,7 @@ Welcome to Model Tuner's Documentation!
 =======================================
 
 .. important::
-   This documentation is for ``model_tuner`` version ``0.0.015a``.
+   This documentation is for ``model_tuner`` version ``0.0.017a``.
 
 
 What Does Model Tuner Offer?
@@ -40,8 +40,8 @@ Model Tuner is a versatile and powerful tool designed to facilitate the training
 - **Custom Pipelines**: Enables the creation of custom pipelines for flexible and robust model workflows.
 - **K-Fold Cross-Validation**: Implements ``K-Fold cross-validation`` to assess model performance across different data splits.
 - **Stratified Splits**: Ensures balanced splits of data based on target variable distribution.
-- **Model Compatibility**: Compatible with all scikit-learn models and select deep learning models (e.g. ``AutoKeras``).
-- **XGBoost Integration**: Includes early stopping for ``XGBoost`` to prevent overfitting and improve model performance.
+- **Model Compatibility**: Compatible with all scikit-learn models.
+- **XGBoost and CatBoost Integration**: Includes early stopping for ``XGBoost`` and ``CatBoost`` to prevent overfitting and improve model performance.
 - **Data Imputation**: Supports imputation using ``SimpleImputer`` and is compatible with other imputation strategies.
 - **Feature Scaling**: Includes feature scaling methods like ``MinMax`` scaling.
 - **Feature Selection**: Offers feature selection techniques such as ``SelectKBest`` and ``Recursive Feature Elimination (RFE)``.
@@ -54,18 +54,41 @@ Model Tuner is a versatile and powerful tool designed to facilitate the training
 
 Prerequisites
 -------------
-Before you install ``model_tuner``, ensure your system meets the following requirements:
+Before installing ``model_tuner``, ensure your system meets the following requirements:
 
-- **Python**: version ``3.7`` or higher.
+- **Python:** version ``3.7`` or higher.
 
-Additionally, ``model_tuner`` depends on the following packages, which will be automatically installed when you install ``model_tuner`` using pip:
+The ``model_tuner`` library includes different dependencies based on Python versions, 
+which will be automatically installed when you install ``model_tuner`` using pip. Below are the key dependencies:
 
-- ``NumPy``: version ``1.21.6`` or higher
-- ``Pandas``: version ``1.3.5`` or higher
-- ``Joblib``: version ``1.3.2`` or higher
-- ``Scikit-Learn``: version ``1.0.2`` or higher
-- ``Scipy``: version ``1.7.3`` or higher
-- ``Tqdm``: version ``4.66.4`` or higher
+- For Python ``3.7``:
+
+   - ``numpy``: version ``1.21.4``
+   - ``pandas``: version ``1.1.5``
+   - ``scikit-learn``: version ``0.23.2``
+   - ``scipy``: version ``1.4.1``
+   - ``joblib``: version ``1.3.2``
+   - ``tqdm``: version ``4.66.4``
+   - ``imbalanced-learn``: ``version 0.7.0``
+   - ``scikit-optimize``: ``version 0.8.1``
+
+- For Python ``3.8`` to ``<3.11``:
+
+   - ``numpy``: versions between ``1.19.5`` and ``<1.24``
+   - ``pandas``: versions between ``1.3.5`` and ``<2.2.2``
+   - ``scikit-learn``: versions between ``1.0.2`` and ``<1.3``
+   - ``scipy``: versions between ``1.6.3`` and ``<1.11``
+   - ``imbalanced-learn``: version ``0.12.4``
+   - ``scikit-optimize``: version ``0.10.2``
+      
+- For Python ``3.11`` or higher:
+
+   - ``numpy``: version ``1.26``
+   - ``pandas``: version ``2.2.2``
+   - ``scikit-learn``: version ``1.5.1``
+   - ``scipy``: version ``1.14.0``
+   - ``imbalanced-learn``: version ``0.12.4``
+   - ``scikit-optimize``: version ``0.10.2``
 
 .. _installation:
 
