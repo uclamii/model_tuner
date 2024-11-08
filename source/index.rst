@@ -43,6 +43,13 @@ Model Tuner Documentation
 
 .. toctree::
    :maxdepth: 4
+   :caption: Caveats
+
+   caveats
+
+
+.. toctree::
+   :maxdepth: 4
    :caption: About Model Tuner
 
    about

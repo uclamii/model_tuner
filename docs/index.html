@@ -59,10 +59,22 @@
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#helper-functions">Helper Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#input-parameters">Input Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#caveats">Caveats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#model-calibration">Model Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Zero Variance Columns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#dependent-variable">Dependent Variable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#imputation-before-scaling">Imputation Before Scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#goal-of-calibration">Goal of Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#calibration-curve">Calibration Curve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#brier-score">Brier Score</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#platt-scaling">Platt Scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#isotonic-regression">Isotonic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#summary">Summary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -127,38 +139,6 @@
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#caveats">Caveats</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#zero-variance-columns">Zero Variance Columns</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#effects-on-model-training">Effects on Model Training</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#dependent-variable">Dependent Variable</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#target-variable-shape-and-its-effects">Target Variable Shape and Its Effects</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#solution">Solution</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#imputation-before-scaling">Imputation Before Scaling</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#accurate-calculation-of-scaling-parameters">1. Accurate Calculation of Scaling Parameters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#consistency-in-data-transformation">2. Consistency in Data Transformation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#prevention-of-distortion-in-scaling">3. Prevention of Distortion in Scaling</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#cross-validation-and-stratification">Cross-Validation and Stratification</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#model-calibration">Model Calibration</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#goal-of-calibration">Goal of Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#calibration-curve">Calibration Curve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#brier-score">Brier Score</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#platt-scaling">Platt Scaling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#isotonic-regression">Isotonic Regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#summary">Summary</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#aids-clinical-trials-group-study">AIDS Clinical Trials Group Study</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-1-import-necessary-libraries">Step 1: Import Necessary Libraries</a></li>
@@ -188,6 +168,40 @@
 </li>
 </ul>
 </li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Caveats</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html">Zero Variance Columns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#effects-on-model-training">Effects on Model Training</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#dependent-variable">Dependent Variable</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#target-variable-shape-and-its-effects">Target Variable Shape and Its Effects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#solution">Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#imputation-before-scaling">Imputation Before Scaling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#accurate-calculation-of-scaling-parameters">1. Accurate Calculation of Scaling Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#consistency-in-data-transformation">2. Consistency in Data Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#prevention-of-distortion-in-scaling">3. Prevention of Distortion in Scaling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#cross-validation-and-stratification">Cross-Validation and Stratification</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="caveats.html#model-calibration">Model Calibration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#goal-of-calibration">Goal of Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#calibration-curve">Calibration Curve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#brier-score">Brier Score</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#platt-scaling">Platt Scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#isotonic-regression">Isotonic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#summary">Summary</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
