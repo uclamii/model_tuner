@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,24 +8,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Changelog &mdash; Model Tuner 0.0.15a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f712845e" />
 
   
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/changelog.html" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=e34472b7"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-        <script src="_static/copybutton.js?v=f281be69"></script>
-        <script src="_static/custom.js?v=59429b38"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e34472b7"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/custom.js?v=59429b38"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -72,6 +70,7 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-16a">Version 0.0.16a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-15a">Version 0.0.15a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-014a">Version 0.0.014a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-013a">Version 0.0.013a</a></li>
@@ -112,7 +111,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="no-click"><a class="reference internal image-reference" href="_images/ModelTunerTarget.png"><img alt="Model Tuner Logo" class="align-left" src="_images/ModelTunerTarget.png" style="width: 350px;" /></a>
+  <div class="no-click"><a class="reference internal image-reference" href="_images/ModelTunerTarget.png"><img alt="Model Tuner Logo" class="align-left" src="_images/ModelTunerTarget.png" style="width: 350px;" />
+</a>
 </div><div style="height: 200px;"></div><p></p>
 <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
@@ -120,6 +120,22 @@
 <p class="admonition-title">Important</p>
 <p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
+<section id="version-0-0-16a">
+<h2>Version 0.0.16a<a class="headerlink" href="#version-0-0-16a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Custom pipeline steps now updated (our pipeline usage has been completely changed and should now order itself and support non named steps) always ensures correct order</p></li>
+<li><p>This fixed multiple other issues that were occuring to do with logging of imbalanced learn</p></li>
+<li><p>Reporting model metrics now works.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AutoKeras</span></code> code deprecated and removed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">KFold</span></code> bug introduced because of <code class="docutils literal notranslate"><span class="pre">CatBoost</span></code>. This has now been fixed.</p></li>
+<li><p>Pretty print of pipeline.</p></li>
+<li><p>Boosting variable has been renamed.</p></li>
+<li><p>Version constraints have been updated and refactored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta</span></code> has been cleaned up to remove unused parameters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">train_val_test</span></code> unnecessary self removed and taken outside of class method.</p></li>
+<li><p>deprecated <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> in favor of <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> per forthcoming <code class="docutils literal notranslate"><span class="pre">pip25</span></code> update.</p></li>
+</ul>
+</section>
 <section id="version-0-0-15a">
 <h2>Version 0.0.15a<a class="headerlink" href="#version-0-0-15a" title="Link to this heading"></a></h2>
 <p>Contains all previous fixes relating to:</p>

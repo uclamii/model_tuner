@@ -26,6 +26,21 @@ Changelog
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
 
+Version 0.0.16a
+--------------------
+
+- Custom pipeline steps now updated (our pipeline usage has been completely changed and should now order itself and support non named steps) always ensures correct order
+- This fixed multiple other issues that were occuring to do with logging of imbalanced learn 
+- Reporting model metrics now works.
+- ``AutoKeras`` code deprecated and removed.
+- ``KFold`` bug introduced because of ``CatBoost``. This has now been fixed.
+- Pretty print of pipeline.
+- Boosting variable has been renamed.
+- Version constraints have been updated and refactored.
+- ``tune_threshold_Fbeta`` has been cleaned up to remove unused parameters.
+- ``train_val_test`` unnecessary self removed and taken outside of class method.
+- deprecated ``setup.py`` in favor of ``pyproject.toml`` per forthcoming ``pip25`` update.
+
 Version 0.0.15a
 --------------------
 
