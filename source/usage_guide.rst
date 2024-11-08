@@ -85,74 +85,78 @@ Regression Example
       <a href="Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a>
 
 
-
-
 Key Methods and Functionalities
 ========================================
 
 ``__init__(...)``
-    Initializes the model_tuner with configurations such as estimator, cross-validation settings, scoring metrics, etc.
+    Initializes the model tuner with configurations, including estimator, cross-validation settings, scoring metrics, pipeline steps, feature selection, imbalance sampler, Bayesian search, and model calibration options.
 
 ``reset_estimator()``
-    Resets the estimator.
+    Resets the estimator and pipeline configuration.
 
 ``process_imbalance_sampler(X_train, y_train)``
-    Processes imbalance sampler.
+    Processes the imbalance sampler, applying it to resample the training data.
 
-``calibrateModel(X, y, score=None, stratify=None)``
-    Calibrates the model.
+``calibrateModel(X, y, score=None)``
+    Calibrates the model with cross-validation support and configurable calibration methods, improving probability estimates.
 
 ``get_train_data(X, y), get_valid_data(X, y), get_test_data(X, y)``
-    Retrieves train, validation, and test data.
+    Retrieves train, validation, and test data based on specified indices.
 
 ``calibrate_report(X, y, score=None)``
-    Generates a calibration report.
+    Generates a calibration report, including a confusion matrix and classification report.
 
 ``fit(X, y, validation_data=None, score=None)``
-    Fits the model to the data.
+    Fits the model to training data and, if applicable, tunes threshold and performs early stopping. Allows feature selection and processing steps as part of the pipeline.
 
-``return_metrics(X_test, y_test)``
-    Returns evaluation metrics.
+``return_metrics(X_test, y_test, optimal_threshold=False)``
+    Returns evaluation metrics with confusion matrix and classification report, optionally using optimized classification thresholds.
 
 ``predict(X, y=None, optimal_threshold=False), predict_proba(X, y=None)``
-    Makes predictions and predicts probabilities.
+    Makes predictions and predicts probabilities, allowing threshold tuning.
 
 ``grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])``
-    Performs grid search parameter tuning.
+    Performs grid or Bayesian search parameter tuning, optionally tuning F-beta score thresholds for classification.
 
-``print_k_best_features(X)``
-    Prints the top K best features.
+``print_selected_best_features(X)``
+    Prints and returns the selected top K best features based on the feature selection step.
 
-``tune_threshold_Fbeta(score, X_train, y_train, X_valid, y_valid, betas, kfold=False)``
-    Tunes the threshold for F-beta score.
+``tune_threshold_Fbeta(score, y_valid, betas, y_valid_proba, kfold=False)``
+    Tunes classification threshold for optimal F-beta score, balancing precision and recall across various thresholds.
 
-``train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols, calibrate)``
-    Splits the data into train, validation, and test sets.
+``train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols)``
+    Splits data into train, validation, and test sets, supporting stratification by specific columns or the target variable.
 
 ``get_best_score_params(X, y)``
-    Retrieves the best score parameters.
+    Retrieves the best hyperparameters for the model based on cross-validation scores for specified metrics.
 
 ``conf_mat_class_kfold(X, y, test_model, score=None)``
-    Generates confusion matrix for k-fold cross-validation.
+    Generates and averages confusion matrices across k-folds, producing a combined classification report.
 
 ``regression_report_kfold(X, y, test_model, score=None)``
-    Generates regression report for k-fold cross-validation.
+    Generates averaged regression metrics across k-folds.
 
 ``regression_report(y_true, y_pred, print_results=True)``
-    Generates a regression report.
+    Generates a regression report with metrics like Mean Absolute Error, R-squared, and Root Mean Squared Error.
 
 
 Helper Functions
 =================
 
-``kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)`` 
-      Splits data using k-fold cross-validation.
+``kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)``
+    Splits data using k-fold or stratified k-fold cross-validation.
 
-``get_cross_validate(classifier, X, y, kf, stratify=False, scoring=["roc_auc"])``
-      Performs cross-validation.
+``get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"])``
+    Performs cross-validation and returns training scores and estimator instances.
 
 ``_confusion_matrix_print(conf_matrix, labels)``
-      Prints the confusion matrix.
+    Prints the formatted confusion matrix for binary classification.
+
+``print_pipeline(pipeline)``
+    Displays an ASCII representation of the pipeline steps for visual clarity.
+
+``report_model_metrics(model, X_valid=None, y_valid=None, threshold=0.5)``
+    Generates a DataFrame of key model performance metrics, including Precision, Sensitivity, Specificity, and AUC-ROC.
 
 
 .. note::
@@ -164,78 +168,74 @@ Helper Functions
 Input Parameters
 =====================
 
-.. class:: Model(name, estimator_name, estimator, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, drop_strat_feat=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, feature_names=None, randomized_grid=False, n_iter=100, pipeline=True, pipeline_steps=[], xgboost_early=False, selectKBest=False, model_type="classification", class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[])
+.. class:: Model(name, estimator_name, estimator, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, randomized_grid=False, n_iter=100, pipeline_steps=[], boost_early=False, feature_selection=False, model_type="classification", class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[], bayesian=False)
 
-   A class for building, tuning, and evaluating machine learning models, supporting classification, regression, and multi-label tasks.
+   A class for building, tuning, and evaluating machine learning models, supporting both classification and regression tasks, as well as multi-label classification.
 
-   :param name: A name for the model, useful for identifying the model in outputs and logs.
+   :param name: A unique name for the model, helpful for tracking outputs and logs.
    :type name: str
-   :param estimator_name: The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + ``__param_name``).
+   :param estimator_name: Prefix for the estimator in the pipeline, used for setting parameters in tuning (e.g., estimator_name + ``__param_name``).
    :type estimator_name: str
-   :param estimator: The machine learning model to be tuned and trained.
+   :param estimator: The machine learning model to be trained and tuned.
    :type estimator: object
-   :param calibrate: Whether to calibrate the classifier. Default is ``False``.
+   :param calibrate: Whether to calibrate the model's probability estimates. Default is ``False``.
    :type calibrate: bool, optional
-   :param kfold: Whether to use k-fold cross-validation. Default is ``False``.
+   :param kfold: Whether to perform k-fold cross-validation. Default is ``False``.
    :type kfold: bool, optional
    :param imbalance_sampler: An imbalanced data sampler from the imblearn library, e.g., ``RandomUnderSampler`` or ``RandomOverSampler``.
    :type imbalance_sampler: object, optional
-   :param train_size: Proportion of the data to use for training. Default is ``0.6``.
+   :param train_size: Proportion of the data to be used for training. Default is ``0.6``.
    :type train_size: float, optional
-   :param validation_size: Proportion of the data to use for validation. Default is ``0.2``.
+   :param validation_size: Proportion of the data to be used for validation. Default is ``0.2``.
    :type validation_size: float, optional
-   :param test_size: Proportion of the data to use for testing. Default is ``0.2``.
+   :param test_size: Proportion of the data to be used for testing. Default is ``0.2``.
    :type test_size: float, optional
-   :param stratify_y: Whether to stratify by the target variable during train/validation/test split. Default is ``False``.
+   :param stratify_y: Whether to stratify by the target variable during data splitting. Default is ``False``.
    :type stratify_y: bool, optional
-   :param stratify_cols: List of columns to stratify by during train/validation/test split. Default is ``None``.
+   :param stratify_cols: List of columns to use for stratification during data splitting. Default is ``None``.
    :type stratify_cols: list, optional
-   :param drop_strat_feat: List of columns to drop after stratification. Default is ``None``.
-   :type drop_strat_feat: list, optional
-   :param grid: Hyperparameter grid for tuning.
+   :param grid: Hyperparameter grid for model tuning, supporting both regular and Bayesian search.
    :type grid: list of dict
-   :param scoring: List of scoring metrics for evaluation.
+   :param scoring: List of scoring metrics for evaluation, e.g., ``["roc_auc", "accuracy"]``.
    :type scoring: list of str
    :param n_splits: Number of splits for k-fold cross-validation. Default is ``10``.
    :type n_splits: int, optional
-   :param random_state: Random state for reproducibility. Default is ``3``.
+   :param random_state: Seed for random number generation to ensure reproducibility. Default is ``3``.
    :type random_state: int, optional
-   :param n_jobs: Number of jobs to run in parallel for model fitting. Default is ``1``.
+   :param n_jobs: Number of parallel jobs to run for model fitting. Default is ``1``.
    :type n_jobs: int, optional
-   :param display: Whether to display output messages during the tuning process. Default is ``True``.
+   :param display: Whether to print messages during the tuning and training process. Default is ``True``.
    :type display: bool, optional
-   :param feature_names: List of feature names. Default is ``None``.
-   :type feature_names: list, optional
    :param randomized_grid: Whether to use randomized grid search. Default is ``False``.
    :type randomized_grid: bool, optional
    :param n_iter: Number of iterations for randomized grid search. Default is ``100``.
    :type n_iter: int, optional
-   :param pipeline: Whether to use a pipeline. Default is ``True``.
-   :type pipeline: bool, optional
-   :param pipeline_steps: List of pipeline steps. Default is ``[]``.
+   :param pipeline_steps: List of steps for the pipeline, e.g., preprocessing and feature selection steps. Default is ``[]``.
    :type pipeline_steps: list, optional
-   :param xgboost_early: Whether to use early stopping for ``XGBoost``. Default is ``False``.
-   :type xgboost_early: bool, optional
-   :param selectKBest: Whether to select the K best features. Default is ``False``.
-   :type selectKBest: bool, optional
-   :param model_type: Type of model, either ``classification`` or ``regression``. Default is ``classification``.
+   :param boost_early: Whether to enable early stopping for boosting algorithms like XGBoost. Default is ``False``.
+   :type boost_early: bool, optional
+   :param feature_selection: Whether to enable feature selection. Default is ``False``.
+   :type feature_selection: bool, optional
+   :param model_type: Specifies the model type, either ``classification`` or ``regression``. Default is ``classification``.
    :type model_type: str, optional
-   :param class_labels: List of class labels for multi-class classification. Default is ``None``.
+   :param class_labels: List of labels for multi-class classification. Default is ``None``.
    :type class_labels: list, optional
-   :param multi_label: Whether the problem is a multi-label classification problem. Default is ``False``.
+   :param multi_label: Whether the task is a multi-label classification problem. Default is ``False``.
    :type multi_label: bool, optional
-   :param calibration_method: Method for calibration, options are ``sigmoid`` or ``isotonic``. Default is ``sigmoid``.
+   :param calibration_method: Method for calibration; options include ``sigmoid`` and ``isotonic``. Default is ``sigmoid``.
    :type calibration_method: str, optional
-   :param custom_scorer: Custom scorers for evaluation. Default is ``[]``.
+   :param custom_scorer: Dictionary of custom scoring functions, allowing additional metrics to be evaluated. Default is ``[]``.
    :type custom_scorer: dict, optional
+   :param bayesian: Whether to perform Bayesian hyperparameter tuning using ``BayesSearchCV``. Default is ``False``.
+   :type bayesian: bool, optional
 
    :raises ImportError: If the ``bootstrapper`` module is not found or not installed.
-   :raises ValueError: In various cases, such as when invalid parameters are passed to Scikit-learn functions, or if the shapes of ``X`` and ``y`` do not match during operations.
-   :raises AttributeError: If an expected step in the pipeline (e.g., "imputer", "Resampler") is missing from ``self.estimator.named_steps``, or if ``self.PipelineClass`` or ``self.estimator`` is not properly initialized.
-   :raises TypeError: If an incorrect type is passed to a function or method, such as passing ``None`` where a numerical value or a non-NoneType object is expected.
-   :raises IndexError: If the dimensions of the confusion matrix are incorrect or unexpected in ``_confusion_matrix_print_ML`` or ``_confusion_matrix_print``.
-   :raises KeyError: If a key is not found in a dictionary, such as when accessing ``self.best_params_per_score`` with a score that is not in the dictionary, or when accessing configuration keys in the ``summarize_auto_keras_params`` method.
-   :raises RuntimeError: If there is an unexpected issue during model fitting or transformation that does not fit into the other categories of exceptions.
+   :raises ValueError: Raised for various issues, such as invalid hyperparameter configurations, or mismatched ``X`` and ``y`` shapes.
+   :raises AttributeError: Raised if an expected pipeline step is missing, or if ``self.estimator`` is improperly initialized.
+   :raises TypeError: Raised when an incorrect parameter type is provided, such as passing ``None`` instead of a valid object.
+   :raises IndexError: Raised for indexing issues, particularly in confusion matrix formatting functions.
+   :raises KeyError: Raised when accessing dictionary keys that are not available, such as missing scores in ``self.best_params_per_score``.
+   :raises RuntimeError: Raised for unexpected issues during model fitting or transformations that do not fit into the other exception categories.
 
 
 Caveats
