@@ -49,7 +49,7 @@ Citing Model Tuner
       month        = jul,
       year         = 2024,
       publisher    = {Zenodo},
-      version      = {0.0.15a},
+      version      = {0.0.16a},
       doi          = {10.5281/zenodo.12727322},
       url          = {https://doi.org/10.5281/zenodo.12727322}
    }

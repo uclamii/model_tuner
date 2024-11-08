@@ -81,19 +81,19 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#cross-validation-and-stratification">Cross-Validation and Stratification</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#model-calibration">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#cross-validation-and-stratification">Cross-Validation and Stratification</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#model-calibration">Model Calibration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#goal-of-calibration">Goal of Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calibration-curve">Calibration Curve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#brier-score">Brier Score</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#platt-scaling">Platt Scaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#isotonic-regression">Isotonic Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#goal-of-calibration">Goal of Calibration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#calibration-curve">Calibration Curve</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#brier-score">Brier Score</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#platt-scaling">Platt Scaling</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#isotonic-regression">Isotonic Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#example-calibration-in-logistic-regression">Example: Calibration in Logistic Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -312,21 +312,20 @@ of the target variable across the different training and validation sets.</p>
 <p>On the other hand, <code class="code docutils literal notranslate"><span class="pre">stratify_cols</span></code> stratifies based on specific columns of <span class="math notranslate nohighlight">\(X\)</span>. However, in cross-validation, the primary focus is on the target variable <span class="math notranslate nohighlight">\(y\)</span>.</p>
 <p>Attempting to stratify based on <span class="math notranslate nohighlight">\(X\)</span> columns during cross-validation can disrupt the process of ensuring a representative sample of <span class="math notranslate nohighlight">\(y\)</span> in each fold. This can lead to unreliable performance estimates and, in some cases, errors.</p>
 <p>Therefore, the use of <code class="code docutils literal notranslate"><span class="pre">stratify_y</span></code> is recommended during cross-validation to maintain consistency in the target variable distribution across folds, while <code class="code docutils literal notranslate"><span class="pre">stratify_cols</span></code> should be avoided.</p>
+</section>
+</section>
 <section id="model-calibration">
-<h3>Model Calibration<a class="headerlink" href="#model-calibration" title="Link to this heading"></a></h3>
+<h1>Model Calibration<a class="headerlink" href="#model-calibration" title="Link to this heading"></a></h1>
 <p>Model calibration refers to the process of adjusting the predicted probabilities of a model so that they more accurately reflect the true likelihood of outcomes. This is crucial in machine learning, particularly for classification problems where the model outputs probabilities rather than just class labels.</p>
-</section>
-</section>
-</section>
 <section id="goal-of-calibration">
-<h1>Goal of Calibration<a class="headerlink" href="#goal-of-calibration" title="Link to this heading"></a></h1>
+<h2>Goal of Calibration<a class="headerlink" href="#goal-of-calibration" title="Link to this heading"></a></h2>
 <p>The goal of calibration is to ensure that the predicted probability <span class="math notranslate nohighlight">\(\hat{p}(x)\)</span> is equal to the true probability that <span class="math notranslate nohighlight">\(y = 1\)</span> given <span class="math notranslate nohighlight">\(x\)</span>. Mathematically, this can be expressed as:</p>
 <div class="math notranslate nohighlight">
 \[\hat{p}(x) = P(y = 1 \mid \hat{p}(x) = p)\]</div>
 <p>This equation states that for all instances where the model predicts a probability <span class="math notranslate nohighlight">\(p\)</span>, the true fraction of positive cases should also be <span class="math notranslate nohighlight">\(p\)</span>.</p>
 </section>
 <section id="calibration-curve">
-<h1>Calibration Curve<a class="headerlink" href="#calibration-curve" title="Link to this heading"></a></h1>
+<h2>Calibration Curve<a class="headerlink" href="#calibration-curve" title="Link to this heading"></a></h2>
 <p>To assess calibration, we often use a <em>calibration curve</em>. This involves:</p>
 <ol class="arabic simple">
 <li><p><strong>Binning</strong> the predicted probabilities <span class="math notranslate nohighlight">\(\hat{p}(x)\)</span> into intervals (e.g., [0.0, 0.1), [0.1, 0.2), …, [0.9, 1.0]).</p></li>
@@ -338,7 +337,7 @@ of the target variable across the different training and validation sets.</p>
 \[\hat{p}_i = f_i \quad \text{for all bins } i\]</div>
 </section>
 <section id="brier-score">
-<h1>Brier Score<a class="headerlink" href="#brier-score" title="Link to this heading"></a></h1>
+<h2>Brier Score<a class="headerlink" href="#brier-score" title="Link to this heading"></a></h2>
 <p>The <strong>Brier score</strong> is one way to measure the calibration of a model. It’s calculated as:</p>
 <div class="math notranslate nohighlight">
 \[\text{Brier Score} = \frac{1}{N} \sum_{i=1}^{N} (\hat{p}(x_i) - y_i)^2\]</div>
@@ -351,7 +350,7 @@ of the target variable across the different training and validation sets.</p>
 <p>The Brier score penalizes predictions that are far from the true outcome. A lower Brier score indicates better calibration and accuracy.</p>
 </section>
 <section id="platt-scaling">
-<h1>Platt Scaling<a class="headerlink" href="#platt-scaling" title="Link to this heading"></a></h1>
+<h2>Platt Scaling<a class="headerlink" href="#platt-scaling" title="Link to this heading"></a></h2>
 <p>One common method to calibrate a model is <strong>Platt Scaling</strong>. This involves fitting a logistic regression model to the predictions of the original model. The logistic regression model adjusts the raw predictions <span class="math notranslate nohighlight">\(\hat{p}(x)\)</span> to output calibrated probabilities.</p>
 <p>Mathematically, Platt scaling is expressed as:</p>
 <div class="math notranslate nohighlight">
@@ -359,7 +358,7 @@ of the target variable across the different training and validation sets.</p>
 <p>Where <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are parameters learned from the data. These parameters adjust the original probability estimates to better align with the true probabilities.</p>
 </section>
 <section id="isotonic-regression">
-<h1>Isotonic Regression<a class="headerlink" href="#isotonic-regression" title="Link to this heading"></a></h1>
+<h2>Isotonic Regression<a class="headerlink" href="#isotonic-regression" title="Link to this heading"></a></h2>
 <p>Another method is <strong>Isotonic Regression</strong>, a non-parametric approach that fits a piecewise constant function. Unlike Platt Scaling, which assumes a logistic function, Isotonic Regression only assumes that the function is monotonically increasing. The goal is to find a set of probabilities <span class="math notranslate nohighlight">\(p_i\)</span> that are as close as possible to the true probabilities while maintaining a monotonic relationship.</p>
 <p>The isotonic regression problem can be formulated as:</p>
 <div class="math notranslate nohighlight">
@@ -367,7 +366,7 @@ of the target variable across the different training and validation sets.</p>
 <p>Where <span class="math notranslate nohighlight">\(p_i\)</span> are the adjusted probabilities, and the constraint ensures that the probabilities are non-decreasing.</p>
 </section>
 <section id="example-calibration-in-logistic-regression">
-<h1>Example: Calibration in Logistic Regression<a class="headerlink" href="#example-calibration-in-logistic-regression" title="Link to this heading"></a></h1>
+<h2>Example: Calibration in Logistic Regression<a class="headerlink" href="#example-calibration-in-logistic-regression" title="Link to this heading"></a></h2>
 <p>In a standard logistic regression model, the predicted probability is given by:</p>
 <div class="math notranslate nohighlight">
 \[\hat{p}(x) = \sigma(w^\top x) = \frac{1}{1 + \exp(-w^\top x)}\]</div>
@@ -375,7 +374,7 @@ of the target variable across the different training and validation sets.</p>
 <p>If this model is well-calibrated, <span class="math notranslate nohighlight">\(\hat{p}(x)\)</span> should closely match the true conditional probability <span class="math notranslate nohighlight">\(P(y = 1 \mid x)\)</span>. If not, techniques like Platt Scaling or Isotonic Regression can be applied to adjust <span class="math notranslate nohighlight">\(\hat{p}(x)\)</span> to be more accurate.</p>
 </section>
 <section id="summary">
-<h1>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h1>
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>Model calibration</strong> is about aligning predicted probabilities with actual outcomes.</p></li>
 <li><p><strong>Mathematically</strong>, calibration ensures <span class="math notranslate nohighlight">\(\hat{p}(x) = P(y = 1 \mid \hat{p}(x) = p)\)</span>.</p></li>
@@ -383,6 +382,7 @@ of the target variable across the different training and validation sets.</p>
 <li><p><strong>Brier Score</strong> is a metric that captures both the calibration and accuracy of probabilistic predictions.</p></li>
 </ul>
 <p>Calibration is essential when the probabilities output by a model need to be trusted, such as in risk assessment, medical diagnosis, and other critical applications.</p>
+</section>
 </section>
 
 
