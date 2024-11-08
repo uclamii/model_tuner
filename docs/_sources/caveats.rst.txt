@@ -290,15 +290,13 @@ Attempting to stratify based on :math:`X` columns during cross-validation can di
 Therefore, the use of :code:`stratify_y` is recommended during cross-validation to maintain consistency in the target variable distribution across folds, while :code:`stratify_cols` should be avoided.
 
 
-
-
 Model Calibration
-==================
+--------------------
 
 Model calibration refers to the process of adjusting the predicted probabilities of a model so that they more accurately reflect the true likelihood of outcomes. This is crucial in machine learning, particularly for classification problems where the model outputs probabilities rather than just class labels.
 
 Goal of Calibration
---------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 The goal of calibration is to ensure that the predicted probability :math:`\hat{p}(x)` is equal to the true probability that :math:`y = 1` given :math:`x`. Mathematically, this can be expressed as:
 
@@ -309,7 +307,7 @@ The goal of calibration is to ensure that the predicted probability :math:`\hat{
 This equation states that for all instances where the model predicts a probability :math:`p`, the true fraction of positive cases should also be :math:`p`.
 
 Calibration Curve
-------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 To assess calibration, we often use a *calibration curve*. This involves:
 
@@ -324,7 +322,7 @@ For a perfectly calibrated model:
     \hat{p}_i = f_i \quad \text{for all bins } i
 
 Brier Score
-------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 The **Brier score** is one way to measure the calibration of a model. It’s calculated as:
 
@@ -341,7 +339,7 @@ Where:
 The Brier score penalizes predictions that are far from the true outcome. A lower Brier score indicates better calibration and accuracy.
 
 Platt Scaling
---------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 One common method to calibrate a model is **Platt Scaling**. This involves fitting a logistic regression model to the predictions of the original model. The logistic regression model adjusts the raw predictions :math:`\hat{p}(x)` to output calibrated probabilities.
 
@@ -354,7 +352,7 @@ Mathematically, Platt scaling is expressed as:
 Where :math:`A` and :math:`B` are parameters learned from the data. These parameters adjust the original probability estimates to better align with the true probabilities.
 
 Isotonic Regression
---------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Another method is **Isotonic Regression**, a non-parametric approach that fits a piecewise constant function. Unlike Platt Scaling, which assumes a logistic function, Isotonic Regression only assumes that the function is monotonically increasing. The goal is to find a set of probabilities :math:`p_i` that are as close as possible to the true probabilities while maintaining a monotonic relationship.
 
@@ -367,7 +365,7 @@ The isotonic regression problem can be formulated as:
 Where :math:`p_i` are the adjusted probabilities, and the constraint ensures that the probabilities are non-decreasing.
 
 Example: Calibration in Logistic Regression
----------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In a standard logistic regression model, the predicted probability is given by:
 
@@ -380,7 +378,7 @@ Where :math:`w` is the vector of weights, and :math:`x` is the input feature vec
 If this model is well-calibrated, :math:`\hat{p}(x)` should closely match the true conditional probability :math:`P(y = 1 \mid x)`. If not, techniques like Platt Scaling or Isotonic Regression can be applied to adjust :math:`\hat{p}(x)` to be more accurate.
 
 Summary
---------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - **Model calibration** is about aligning predicted probabilities with actual outcomes.
 - **Mathematically**, calibration ensures :math:`\hat{p}(x) = P(y = 1 \mid \hat{p}(x) = p)`.
