@@ -8,6 +8,8 @@ from model_tuner.model_tuner_utils import Model
 estimator = CatBoostClassifier(verbose=0)
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]
+
+
 X = bc[bc_cols]
 y = bc["target"]
 
