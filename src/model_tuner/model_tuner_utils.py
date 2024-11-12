@@ -832,7 +832,9 @@ class Model:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
-                    model_metrics_df = report_model_metrics(self, X, y)
+                    model_metrics_df = report_model_metrics(
+                        self, X, y, self.threshold[self.scoring[0]]
+                    )
                     print("-" * 80)
                     pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
@@ -1042,7 +1044,7 @@ class Model:
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
-                        if params.get(estimator_verbosity):
+                        if estimator_verbosity in params:
                             self.verbosity = params[estimator_verbosity]
                             params.pop(estimator_verbosity)
                         else:
@@ -1484,12 +1486,12 @@ class Model:
 def train_val_test_split(
     X,
     y,
-    stratify_y,
-    train_size,
-    validation_size,
-    test_size,
-    random_state,
-    stratify_cols,
+    stratify_y=None,
+    train_size=0.6,
+    validation_size=0.2,
+    test_size=0.2,
+    random_state=3,
+    stratify_cols=None,
 ):
 
     if stratify_cols is not None and stratify_y is not None:
