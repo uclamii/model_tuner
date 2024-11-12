@@ -832,7 +832,9 @@ class Model:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
-                    model_metrics_df = report_model_metrics(self, X, y)
+                    model_metrics_df = report_model_metrics(
+                        self, X, y, self.threshold[self.scoring[0]]
+                    )
                     print("-" * 80)
                     pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
