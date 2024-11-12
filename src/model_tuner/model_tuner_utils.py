@@ -1484,12 +1484,12 @@ class Model:
 def train_val_test_split(
     X,
     y,
-    stratify_y,
-    train_size,
-    validation_size,
-    test_size,
-    random_state,
-    stratify_cols,
+    stratify_y=None,
+    train_size=0.6,
+    validation_size=0.2,
+    test_size=0.2,
+    random_state=3,
+    stratify_cols=None,
 ):
 
     if stratify_cols is not None and stratify_y is not None:
