@@ -11,10 +11,42 @@ from model_tuner.model_tuner_utils import Model
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects
 
-bc = load_breast_cancer(as_frame=True)["frame"]
-bc_cols = [cols for cols in bc.columns if "target" not in cols]
-X = bc[bc_cols]
-y = bc["target"]
+### Defining columns to be scaled and columns to be onehotencoded
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.impute import SimpleImputer
+from pprint import pprint
+import seaborn as sns
+
+titanic = sns.load_dataset("titanic")
+X = titanic[[col for col in titanic.columns if col != "survived"]]
+### Removing repeated data
+X = X.drop(columns=["alive", "class", "embarked"])
+y = titanic["survived"]
+
+
+ohencoder = OneHotEncoder(handle_unknown="ignore")
+
+ohcols = ["embark_town", "who", "sex", "adult_male"]
+
+ordencoder = OrdinalEncoder()
+
+ordcols = ["deck"]
+
+minmaxscaler = MinMaxScaler()
+
+scalercols = ["parch", "fare", "age", "pclass"]
+
+
+ct = ColumnTransformer(
+    [
+        ("OneHotEncoder", ohencoder, ohcols),
+        ("OrdinalEncoder", ordencoder, ordcols),
+        ("MinMaxScaler", minmaxscaler, scalercols),
+    ],
+    remainder="passthrough",
+)
 
 from xgboost import XGBClassifier
 
@@ -43,6 +75,7 @@ calibrate = False
 model = Model(
     name="XGBoost Early",
     estimator_name=estimator_name,
+    pipeline_steps=[("column_transformer", ct)],
     calibrate=calibrate,
     estimator=estimator,
     kfold=kfold,
@@ -52,7 +85,6 @@ model = Model(
     n_iter=4,
     boost_early=True,
     scoring=["roc_auc"],
-    n_splits=10,
     n_jobs=-2,
     random_state=42,
 )
