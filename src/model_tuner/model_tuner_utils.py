@@ -226,18 +226,20 @@ class Model:
         """
         This method will assemble the pipeline in the correct order. It contains
         helper functions which determine whether the steps are preprocessing, feature
-        selection or imbalance sampler steps.
+        selection, or imbalance sampler steps.
 
-        These are then used to sort and categorise each step so we ensure the correct
+        These are then used to sort and categorize each step so we ensure the correct
         ordering of the pipeline no matter the input order from users. Users can
         also have unnamed pipeline steps and these will still be ordered in the correct
         format.
 
-        Below we define several helper functions that will be used to type check parts
+        Below we define several helper functions that will be used to type-check parts
         of the pipeline in order to put them in the right sections.
         """
 
         def is_preprocessing_step(transformer):
+            from sklearn.compose import ColumnTransformer
+
             module = transformer.__class__.__module__
             return (
                 module.startswith("sklearn.preprocessing")
@@ -246,7 +248,13 @@ class Model:
                 or module.startswith("sklearn.feature_extraction")
                 or module.startswith("sklearn.kernel_approximation")
                 or module.startswith("category_encoders")
+                or isinstance(transformer, ColumnTransformer)
             )
+
+        def is_column_transformer(transformer):
+            from sklearn.compose import ColumnTransformer
+
+            return isinstance(transformer, ColumnTransformer)
 
         def is_imputer(transformer):
             module = transformer.__class__.__module__
@@ -269,6 +277,7 @@ class Model:
             return isinstance(transformer, SamplerMixin)
 
         # Initialize lists for different types of steps
+        column_transformer_steps = []
         imputation_steps = []
         scaling_steps = []
         other_preprocessing_steps = []
@@ -284,7 +293,14 @@ class Model:
                 transformer = step
 
             # Categorize the transformer
-            if is_preprocessing_step(transformer):
+            if is_column_transformer(transformer):
+                # ColumnTransformer steps
+                if not name:
+                    name = f"preprocess_column_transformer_step_{len(column_transformer_steps)}"
+                else:
+                    name = f"preprocess_column_transformer_{name}"
+                column_transformer_steps.append((name, transformer))
+            elif is_preprocessing_step(transformer):
                 if is_imputer(transformer):
                     # Imputation steps
                     if not name:
@@ -327,7 +343,10 @@ class Model:
 
         # Assemble the preprocessing steps in the correct order
         preprocessing_steps = (
-            imputation_steps + scaling_steps + other_preprocessing_steps
+            column_transformer_steps
+            + imputation_steps
+            + scaling_steps
+            + other_preprocessing_steps
         )
 
         # Initialize the main pipeline steps list
@@ -781,7 +800,7 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X_test, y_test, optimal_threshold=False):
+    def return_metrics(self, X, y, optimal_threshold=False):
 
         if self.kfold:
             for score in self.scoring:
@@ -791,41 +810,41 @@ class Model:
                         + "Detailed classification report for %s:" % self.name
                         + "\n"
                     )
-                    self.conf_mat_class_kfold(X_test, y_test, self.test_model, score)
+                    self.conf_mat_class_kfold(X, y, self.test_model, score)
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
-                    self.return_metrics_kfold(X_test, y_test, self.test_model, score)
+                    self.return_metrics_kfold(X, y, self.test_model, score)
 
                 else:
-                    self.regression_report_kfold(X_test, y_test, self.test_model, score)
+                    self.regression_report_kfold(X, y, self.test_model, score)
 
                 if self.feature_selection:
-                    self.print_selected_best_features(X_test)
+                    self.print_selected_best_features(X)
         else:
-            y_pred_valid = self.predict(X_test, optimal_threshold=optimal_threshold)
+            y_pred_valid = self.predict(X, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
 
                 if self.multi_label:
-                    conf_mat = multilabel_confusion_matrix(y_test, y_pred_valid)
+                    conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
-                    conf_mat = confusion_matrix(y_test, y_pred_valid)
+                    conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
-                    model_metrics_df = report_model_metrics(self, X_test, y_test)
+                    model_metrics_df = report_model_metrics(self, X, y)
                     print("-" * 80)
                     pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
                 print()
                 self.classification_report = classification_report(
-                    y_test, y_pred_valid, output_dict=True
+                    y, y_pred_valid, output_dict=True
                 )
-                print(classification_report(y_test, y_pred_valid))
+                print(classification_report(y, y_pred_valid))
                 print("-" * 80)
 
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X_test)
+                    k_best_features = self.print_selected_best_features(X)
 
                     return {
                         "Classification Report": self.classification_report,
@@ -838,9 +857,9 @@ class Model:
                         "Confusion Matrix": conf_mat,
                     }
             else:
-                reg_report = self.regression_report(y_test, y_pred_valid)
+                reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X_test)
+                    k_best_features = self.print_selected_best_features(X)
                     return {
                         "Regression Report": reg_report,
                         "K Best Features": k_best_features,
@@ -1004,10 +1023,9 @@ class Model:
                                 )
                             )
 
-                            # Set parameters and fit the pipeline
                             preproc_feat_select_pipe.set_params(
                                 **params_no_estimator
-                            ).fit(X, y)
+                            ).fit(X_train, y_train)
 
                             # Transform the validation data
                             X_valid_transformed = preproc_feat_select_pipe.transform(
@@ -1087,9 +1105,7 @@ class Model:
 
                 if f1_beta_tune:  # tune threshold
                     y_pred_proba = clf.predict_proba(X_valid)[:, 1]
-                    self.tune_threshold_Fbeta(
-                        score, X_train, y_train, X_valid, y_valid, betas, y_pred_proba
-                    )
+                    self.tune_threshold_Fbeta(score, y_valid, betas, y_pred_proba)
 
                 if not self.calibrate:
                     if self.display:
