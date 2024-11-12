@@ -1044,7 +1044,7 @@ class Model:
                         estimator_eval_set = f"{self.estimator_name}__eval_set"
                         estimator_verbosity = f"{self.estimator_name}__verbose"
 
-                        if params.get(estimator_verbosity):
+                        if estimator_verbosity in params:
                             self.verbosity = params[estimator_verbosity]
                             params.pop(estimator_verbosity)
                         else:
