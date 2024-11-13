@@ -16,7 +16,7 @@ different scaling and imputation techniques, calibrating models, and conducting
 cross-validation. This library is particularly useful for model selection, 
 hyperparameter tuning, and ensuring optimal performance across different metrics.
 
-Version: 0.0.17a
+Version: 0.0.18a
 
 """
 
