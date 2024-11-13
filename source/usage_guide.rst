@@ -321,34 +321,29 @@ Step 5: Define Hyperparameters for XGBoost
 
 .. code-block:: python
 
-   # Estimator name prefix for use in GridSearchCV or similar tools
-   estimator_name_xgb = "xgb"
+   xgb_name = "xgb"
+   xgb = XGBClassifier(
+      objective="binary:logistic",
+      random_state=222,
+   )
+   xgbearly = True
+   tuned_parameters_xgb = {
+      f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
+      f"{xgb_name}__learning_rate": [1e-4],
+      f"{xgb_name}__n_estimators": [1000],
+      f"{xgb_name}__early_stopping_rounds": [100],
+      f"{xgb_name}__verbose": [0],
+      f"{xgb_name}__eval_metric": ["logloss"],
+   }
 
-   # Define the hyperparameters for XGBoost
-   xgb_learning_rates = [0.1, 0.01, 0.05]  # Learning rate or eta
-   xgb_n_estimators = [100, 200, 300]  # Number of trees. Equivalent to n_estimators in GB
-   xgb_max_depths = [3, 5, 7]  # Maximum depth of the trees
-   xgb_subsamples = [0.8, 1.0]  # Subsample ratio of the training instances
-   xgb_colsample_bytree = [0.8, 1.0]
-
-   xgb_eval_metric = ["logloss"]  # Check out "pr_auc"
-   xgb_early_stopping_rounds = [10]
-   xgb_verbose = [False]  # Subsample ratio of columns when constructing each tree
-
-   # Combining the hyperparameters in a dictionary
-   xgb_parameters = [
-      {
-         "xgb__learning_rate": xgb_learning_rates,
-         "xgb__n_estimators": xgb_n_estimators,
-         "xgb__max_depth": xgb_max_depths,
-         "xgb__subsample": xgb_subsamples,
-         "xgb__colsample_bytree": xgb_colsample_bytree,
-         "xgb__eval_metric": xgb_eval_metric,
-         "xgb__early_stopping_rounds": xgb_early_stopping_rounds,
-         "xgb__verbose": xgb_verbose,
-         "selectKBest__k": [5, 10, 20],
-      }
-   ]
+   xgb_definition = {
+      "clc": xgb,
+      "estimator_name": xgb_name,
+      "tuned_parameters": tuned_parameters_xgb,
+      "randomized_grid": False,
+      "n_iter": 5,
+      "early": xgbearly,
+   }
 
 
 Step 6: Initialize and Configure the ``Model``
@@ -356,24 +351,36 @@ Step 6: Initialize and Configure the ``Model``
 
 .. code-block:: python
 
+   model_type = "xgb"
+   clc = xgb_definition["clc"]
+   estimator_name = xgb_definition["estimator_name"]
+
+   tuned_parameters = xgb_definition["tuned_parameters"]
+   n_iter = xgb_definition["n_iter"]
+   rand_grid = xgb_definition["randomized_grid"]
+   early_stop = xgb_definition["early"]
+   kfold = False
+   calibrate = True
+
    # Initialize model_tuner
-   model_tuner = Model(
+   model_xgb = Model(
+      name=f"AIDS_Clinical_{model_type}",
+      estimator_name=estimator_name,
+      calibrate=calibrate,
+      estimator=clc,
+      kfold=kfold,
       pipeline_steps=[
-         ("Preprocessor", SimpleImputer()),
+         ("Imputer", SimpleImputer()),
+         ("StandardScalar", StandardScaler()),
       ],
-      name="XGBoost_AIDS",
-      estimator_name=estimator_name_xgb,
-      calibrate=True,
-      estimator=xgb_model,
-      xgboost_early=True,
-      kfold=False,
-      selectKBest=True,
-      stratify_y=False,
-      grid=xgb_parameters,
-      randomized_grid=False,
+      stratify_y=True,
+      stratify_cols=["gender", "race"],
+      grid=tuned_parameters,
+      randomized_grid=rand_grid,
+      boost_early=early_stop,
       scoring=["roc_auc"],
       random_state=222,
-      n_jobs=-1,
+      n_jobs=2,
    )
 
 Step 7: Perform Grid Search Parameter Tuning
@@ -382,22 +389,39 @@ Step 7: Perform Grid Search Parameter Tuning
 .. code-block:: python
 
    # Perform grid search parameter tuning
-   model_tuner.grid_search_param_tuning(X, y)
+   model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
 .. code-block:: bash
 
-   100%|██████████| 324/324 [01:34<00:00,  3.42it/s]
-   Best score/param set found on validation set:
-   {'params': {'selectKBest__k': 20,
-               'xgb__colsample_bytree': 1.0,
-               'xgb__early_stopping_rounds': 10,
+   Pipeline Steps:
+   ========================
+   ┌────────────────────────────────────────────┐
+   │ Step 1: preprocess_imputer_Imputer         │
+   │ SimpleImputer                              │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 2: preprocess_scaler_StandardScalar   │
+   │ StandardScaler                             │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 3: xgb                                │
+   │ XGBClassifier                              │
+   └────────────────────────────────────────────┘
+
+   100%|██████████| 5/5 [00:19<00:00,  3.84s/it]
+   Fitting model with best params and tuning for best threshold ...
+   100%|██████████| 2/2 [00:00<00:00,  3.30it/s]Best score/param set found on validation set:
+   {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
-               'xgb__learning_rate': 0.05,
-               'xgb__max_depth': 5,
-               'xgb__n_estimators': 100,
-               'xgb__subsample': 1.0},
-   'score': 0.946877967711301}
-   Best roc_auc: 0.947 
+               'xgb__learning_rate': 0.0001,
+               'xgb__max_depth': 3,
+               'xgb__n_estimators': 999},
+   'score': 0.9260891500474834}
+   Best roc_auc: 0.926 
 
 Step 8: Fit the Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -409,13 +433,7 @@ Step 8: Fit the Model
    X_valid, y_valid = model_tuner.get_valid_data(X, y)
    X_test, y_test = model_tuner.get_test_data(X, y)
 
-   # Fit the model with the validation data
-   model_tuner.fit(
-      X_train,
-      y_train,
-      validation_data=(X_valid, y_valid),
-      score="roc_auc",
-   )
+   model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
 Step 9: Return Metrics (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -424,103 +442,98 @@ You can use this function to evaluate the model by printing the output.
 
 .. code-block:: python
 
-   # Return metrics for the validation set
-   metrics = model_tuner.return_metrics(
-      X_valid,
-      y_valid,
-   )
-   print(metrics)
+   # ------------------------- VALID AND TEST METRICS -----------------------------
+
+   print("Validation Metrics")
+   class_report_val, cm_val = model_xgb.return_metrics(X_valid, y_valid, optimal_threshold=True)
+   print()
+   print("Test Metrics")
+   class_report_test, cm_test = model_xgb.return_metrics(X_test, y_test, optimal_threshold=True)
 
 .. code-block:: bash
 
+   Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  89 (tp)   15 (fn)
-           Neg  21 (fp)  303 (tn)
+   Actual: Pos  93 (tp)   11 (fn)
+         Neg  76 (fp)  248 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.9260891500474834,
+   'Average Precision': 0.8025676192819657,
+   'Brier Score': 0.16665653153377272,
+   'Precision/PPV': 0.5502958579881657,
+   'Sensitivity': 0.8942307692307693,
+   'Specificity': 0.7654320987654321}
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.95      0.94      0.94       324
-            1       0.81      0.86      0.83       104
+            0       0.96      0.77      0.85       324
+            1       0.55      0.89      0.68       104
 
-      accuracy                          0.92       428
-      macro avg     0.88      0.90      0.89       428
-   weighted avg     0.92      0.92      0.92       428
+      accuracy                           0.80       428
+      macro avg       0.75      0.83      0.77       428
+   weighted avg       0.86      0.80      0.81       428
 
    --------------------------------------------------------------------------------
 
-   Feature names selected:
-   ['time', 'trt', 'age', 'hemo', 'homo', 'drugs', 'karnof', 'oprior', 'z30', 'preanti', 'race', 'gender', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
+   Test Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  99 (tp)    6 (fn)
+         Neg  82 (fp)  241 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.9343063541205956,
+   'Average Precision': 0.8169018952192892,
+   'Brier Score': 0.16737745981389285,
+   'Precision/PPV': 0.5469613259668509,
+   'Sensitivity': 0.9428571428571428,
+   'Specificity': 0.7461300309597523}
+   --------------------------------------------------------------------------------
 
-   {'Classification Report': {'0': {'precision': 0.9528301886792453,
-      'recall': 0.9351851851851852,
-      'f1-score': 0.9439252336448598,
-      'support': 324.0},
-   '1': {'precision': 0.8090909090909091,
-      'recall': 0.8557692307692307,
-      'f1-score': 0.8317757009345793,
-      'support': 104.0},
-   'accuracy': 0.9158878504672897,
-   'macro avg': {'precision': 0.8809605488850771,
-      'recall': 0.895477207977208,
-      'f1-score': 0.8878504672897196,
-      'support': 428.0},
-   'weighted avg': {'precision': 0.9179028870970327,
-      'recall': 0.9158878504672897,
-      'f1-score': 0.9166739453227356,
-      'support': 428.0}},
-   'Confusion Matrix': array([[303,  21],
-         [ 15,  89]]),
-   'K Best Features': ['time',
-   'trt',
-   'age',
-   'hemo',
-   'homo',
-   'drugs',
-   'karnof',
-   'oprior',
-   'z30',
-   'preanti',
-   'race',
-   'gender',
-   'str2',
-   'strat',
-   'symptom',
-   'treat',
-   'offtrt',
-   'cd40',
-   'cd420',
-   'cd80']}
+               precision    recall  f1-score   support
 
+            0       0.98      0.75      0.85       323
+            1       0.55      0.94      0.69       105
+
+      accuracy                           0.79       428
+      macro avg       0.76      0.84      0.77       428
+   weighted avg       0.87      0.79      0.81       428
+
+   --------------------------------------------------------------------------------
+   
 Step 10: Calibrate the Model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
+   import matplotlib.pyplot as plt
    from sklearn.calibration import calibration_curve
 
-   # Get the predicted probabilities for the validation data from the 
-   # uncalibrated model
-   y_prob_uncalibrated = model_tuner.predict_proba(X_test)[:, 1]
+   # Get the predicted probabilities for the validation data from the uncalibrated model
+   y_prob_uncalibrated = model_xgb.predict_proba(X_test)[:, 1]
 
    # Compute the calibration curve for the uncalibrated model
    prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
       y_test,
       y_prob_uncalibrated,
-      n_bins=10,
+      n_bins=6,
    )
 
-
    # Calibrate the model
-   if model_tuner.calibrate:
-      model_tuner.calibrateModel(X, y, score="roc_auc")
+   if model_xgb.calibrate:
+   model_xgb.calibrateModel(X, y, score="roc_auc")
 
    # Predict on the validation set
-   y_test_pred = model_tuner.predict_proba(X_test)[:,1]
+   y_test_pred = model_xgb.predict_proba(X_test)[:,1]
 
 
 .. code-block:: bash
@@ -532,57 +545,56 @@ Step 10: Calibrate the Model (if needed)
             Predicted:
                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos 292 (tp)   22 (fn)
-         Neg  32 (fp)   82 (tn)
+   Actual: Pos  74 (tp)   30 (fn)
+         Neg  20 (fp)  304 (tn)
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.90      0.93      0.92       314
-            1       0.79      0.72      0.75       114
+            0       0.91      0.94      0.92       324
+            1       0.79      0.71      0.75       104
 
-      accuracy                           0.87       428
-      macro avg       0.84      0.82      0.83       428
-   weighted avg       0.87      0.87      0.87       428
+      accuracy                           0.88       428
+      macro avg       0.85      0.82      0.84       428
+   weighted avg       0.88      0.88      0.88       428
 
    --------------------------------------------------------------------------------
-   roc_auc after calibration: 0.9364035087719298
+   roc_auc after calibration: 0.9260891500474834
+
 
 
 .. code-block:: python
 
-   import matplotlib.pyplot as plt
-
    # Get the predicted probabilities for the validation data from calibrated model
-   y_prob_calibrated = model_tuner.predict_proba(X_test)[:, 1]
+   y_prob_calibrated = model_xgb.predict_proba(X_test)[:, 1]
 
    # Compute the calibration curve for the calibrated model
    prob_true_calibrated, prob_pred_calibrated = calibration_curve(
-      y_test,
-      y_prob_calibrated,
-      n_bins=5,
+   y_test,
+   y_prob_calibrated,
+   n_bins=6,
    )
 
 
    # Plot the calibration curves
    plt.figure(figsize=(5, 5))
    plt.plot(
-      prob_pred_uncalibrated,
-      prob_true_uncalibrated,
-      marker="o",
-      label="Uncalibrated XGBoost",
+   prob_pred_uncalibrated,
+   prob_true_uncalibrated,
+   marker="o",
+   label="Uncalibrated XGBoost",
    )
    plt.plot(
-      prob_pred_calibrated,
-      prob_true_calibrated,
-      marker="o",
-      label="Calibrated XGBoost",
+   prob_pred_calibrated,
+   prob_true_calibrated,
+   marker="o",
+   label="Calibrated XGBoost",
    )
    plt.plot(
-      [0, 1],
-      [0, 1],
-      linestyle="--",
-      label="Perfectly calibrated",
+   [0, 1],
+   [0, 1],
+   linestyle="--",
+   label="Perfectly calibrated",
    )
    plt.xlabel("Predicted probability")
    plt.ylabel("True probability in each bin")
@@ -595,8 +607,8 @@ Step 10: Calibrate the Model (if needed)
 
    <div class="no-click">
 
-.. image:: /../assets/calibration_curves.png
-   :alt: Model Tuner Logo
+.. image:: /../assets/calibration_curve_aids.png
+   :alt: Calibration Curve AIDs
    :align: center
    :width: 400px
 
