@@ -365,57 +365,64 @@ with a simple command:</p>
 </section>
 <section id="step-5-define-hyperparameters-for-xgboost">
 <h3>Step 5: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-5-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
-<span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+   <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;binary:logistic&quot;</span><span class="p">,</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
 
-<span class="c1"># Define the hyperparameters for XGBoost</span>
-<span class="n">xgb_learning_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>  <span class="c1"># Learning rate or eta</span>
-<span class="n">xgb_n_estimators</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>  <span class="c1"># Number of trees. Equivalent to n_estimators in GB</span>
-<span class="n">xgb_max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>  <span class="c1"># Maximum depth of the trees</span>
-<span class="n">xgb_subsamples</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>  <span class="c1"># Subsample ratio of the training instances</span>
-<span class="n">xgb_colsample_bytree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-
-<span class="n">xgb_eval_metric</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">]</span>  <span class="c1"># Check out &quot;pr_auc&quot;</span>
-<span class="n">xgb_early_stopping_rounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
-<span class="n">xgb_verbose</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>  <span class="c1"># Subsample ratio of columns when constructing each tree</span>
-
-<span class="c1"># Combining the hyperparameters in a dictionary</span>
-<span class="n">xgb_parameters</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="p">{</span>
-      <span class="s2">&quot;xgb__learning_rate&quot;</span><span class="p">:</span> <span class="n">xgb_learning_rates</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__n_estimators&quot;</span><span class="p">:</span> <span class="n">xgb_n_estimators</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__max_depth&quot;</span><span class="p">:</span> <span class="n">xgb_max_depths</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__subsample&quot;</span><span class="p">:</span> <span class="n">xgb_subsamples</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__colsample_bytree&quot;</span><span class="p">:</span> <span class="n">xgb_colsample_bytree</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__eval_metric&quot;</span><span class="p">:</span> <span class="n">xgb_eval_metric</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="n">xgb_early_stopping_rounds</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__verbose&quot;</span><span class="p">:</span> <span class="n">xgb_verbose</span><span class="p">,</span>
-      <span class="s2">&quot;selectKBest__k&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
-   <span class="p">}</span>
-<span class="p">]</span>
+<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+   <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+   <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+   <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+   <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+   <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="step-6-initialize-and-configure-the-model">
 <h3>Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
-<span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">clc</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
+<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
+
+<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
+<span class="n">n_iter</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;n_iter&quot;</span><span class="p">]</span>
+<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
+<span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1"># Initialize model_tuner</span>
+<span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AIDS_Clinical_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+   <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+   <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+   <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
-      <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+      <span class="p">(</span><span class="s2">&quot;Imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+      <span class="p">(</span><span class="s2">&quot;StandardScalar&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
    <span class="p">],</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_AIDS&quot;</span><span class="p">,</span>
-   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name_xgb</span><span class="p">,</span>
-   <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
-   <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">selectKBest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">grid</span><span class="o">=</span><span class="n">xgb_parameters</span><span class="p">,</span>
-   <span class="n">randomized_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">stratify_cols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;race&quot;</span><span class="p">],</span>
+   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+   <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+   <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
-   <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -423,21 +430,38 @@ with a simple command:</p>
 <section id="step-7-perform-grid-search-parameter-tuning">
 <h3>Step 7: Perform Grid Search Parameter Tuning<a class="headerlink" href="#step-7-perform-grid-search-parameter-tuning" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Perform grid search parameter tuning</span>
-<span class="n">model_tuner</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">324</span>/324<span class="w"> </span><span class="o">[</span><span class="m">01</span>:34&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.42it/s<span class="o">]</span>
-Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
-<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;selectKBest__k&#39;</span>:<span class="w"> </span><span class="m">20</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">1</span>.0,
-<span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
+<span class="o">========================</span>
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>preprocess_imputer_Imputer<span class="w">         </span>│
+│<span class="w"> </span>SimpleImputer<span class="w">                              </span>│
+└────────────────────────────────────────────┘
+<span class="w">                     </span>│
+<span class="w">                     </span>▼
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>preprocess_scaler_StandardScalar<span class="w">   </span>│
+│<span class="w"> </span>StandardScaler<span class="w">                             </span>│
+└────────────────────────────────────────────┘
+<span class="w">                     </span>│
+<span class="w">                     </span>▼
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>xgb<span class="w">                                </span>│
+│<span class="w"> </span>XGBClassifier<span class="w">                              </span>│
+└────────────────────────────────────────────┘
+
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.84s/it<span class="o">]</span>
+Fitting<span class="w"> </span>model<span class="w"> </span>with<span class="w"> </span>best<span class="w"> </span>params<span class="w"> </span>and<span class="w"> </span>tuning<span class="w"> </span><span class="k">for</span><span class="w"> </span>best<span class="w"> </span>threshold<span class="w"> </span>...
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.30it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">100</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.05,
-<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">5</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">100</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">1</span>.0<span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.946877967711301<span class="o">}</span>
-Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.947
+<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.0001,
+<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">999</span><span class="o">}</span>,
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9260891500474834<span class="o">}</span>
+Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.926
 </pre></div>
 </div>
 </section>
@@ -448,114 +472,103 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-<span class="c1"># Fit the model with the validation data</span>
-<span class="n">model_tuner</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-   <span class="n">X_train</span><span class="p">,</span>
-   <span class="n">y_train</span><span class="p">,</span>
-   <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span>
-   <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
 <section id="step-9-return-metrics-optional">
 <h3>Step 9: Return Metrics (Optional)<a class="headerlink" href="#step-9-return-metrics-optional" title="Link to this heading"></a></h3>
 <p>You can use this function to evaluate the model by printing the output.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Return metrics for the validation set</span>
-<span class="n">metrics</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_valid</span><span class="p">,</span>
-   <span class="n">y_valid</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Validation<span class="w"> </span>Metrics
+Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
 <span class="w">            </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">89</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">15</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">        </span>Neg<span class="w">  </span><span class="m">21</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">303</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">93</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">11</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">      </span>Neg<span class="w">  </span><span class="m">76</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">248</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9260891500474834,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8025676192819657,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16665653153377272,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5502958579881657,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.8942307692307693,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7654320987654321<span class="o">}</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.94<span class="w">       </span><span class="m">324</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.81<span class="w">      </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">104</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.77<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.68<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.89<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.80<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.83<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.80<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
 
-Feature<span class="w"> </span>names<span class="w"> </span>selected:
-<span class="o">[</span><span class="s1">&#39;time&#39;</span>,<span class="w"> </span><span class="s1">&#39;trt&#39;</span>,<span class="w"> </span><span class="s1">&#39;age&#39;</span>,<span class="w"> </span><span class="s1">&#39;hemo&#39;</span>,<span class="w"> </span><span class="s1">&#39;homo&#39;</span>,<span class="w"> </span><span class="s1">&#39;drugs&#39;</span>,<span class="w"> </span><span class="s1">&#39;karnof&#39;</span>,<span class="w"> </span><span class="s1">&#39;oprior&#39;</span>,<span class="w"> </span><span class="s1">&#39;z30&#39;</span>,<span class="w"> </span><span class="s1">&#39;preanti&#39;</span>,<span class="w"> </span><span class="s1">&#39;race&#39;</span>,<span class="w"> </span><span class="s1">&#39;gender&#39;</span>,<span class="w"> </span><span class="s1">&#39;str2&#39;</span>,<span class="w"> </span><span class="s1">&#39;strat&#39;</span>,<span class="w"> </span><span class="s1">&#39;symptom&#39;</span>,<span class="w"> </span><span class="s1">&#39;treat&#39;</span>,<span class="w"> </span><span class="s1">&#39;offtrt&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd40&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd420&#39;</span>,<span class="w"> </span><span class="s1">&#39;cd80&#39;</span><span class="o">]</span>
+Test<span class="w"> </span>Metrics
+Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
+--------------------------------------------------------------------------------
+<span class="w">         </span>Predicted:
+<span class="w">            </span>Pos<span class="w">   </span>Neg
+--------------------------------------------------------------------------------
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">99</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">6</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">      </span>Neg<span class="w">  </span><span class="m">82</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">241</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9343063541205956,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8169018952192892,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16737745981389285,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5469613259668509,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9428571428571428,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7461300309597523<span class="o">}</span>
+--------------------------------------------------------------------------------
 
-<span class="o">{</span><span class="s1">&#39;Classification Report&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;0&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9528301886792453,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.9351851851851852,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9439252336448598,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">324</span>.0<span class="o">}</span>,
-<span class="s1">&#39;1&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8090909090909091,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.8557692307692307,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8317757009345793,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">104</span>.0<span class="o">}</span>,
-<span class="s1">&#39;accuracy&#39;</span>:<span class="w"> </span><span class="m">0</span>.9158878504672897,
-<span class="s1">&#39;macro avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8809605488850771,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.895477207977208,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.8878504672897196,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">428</span>.0<span class="o">}</span>,
-<span class="s1">&#39;weighted avg&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9179028870970327,
-<span class="w">   </span><span class="s1">&#39;recall&#39;</span>:<span class="w"> </span><span class="m">0</span>.9158878504672897,
-<span class="w">   </span><span class="s1">&#39;f1-score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9166739453227356,
-<span class="w">   </span><span class="s1">&#39;support&#39;</span>:<span class="w"> </span><span class="m">428</span>.0<span class="o">}}</span>,
-<span class="s1">&#39;Confusion Matrix&#39;</span>:<span class="w"> </span>array<span class="o">([[</span><span class="m">303</span>,<span class="w">  </span><span class="m">21</span><span class="o">]</span>,
-<span class="w">      </span><span class="o">[</span><span class="w"> </span><span class="m">15</span>,<span class="w">  </span><span class="m">89</span><span class="o">]])</span>,
-<span class="s1">&#39;K Best Features&#39;</span>:<span class="w"> </span><span class="o">[</span><span class="s1">&#39;time&#39;</span>,
-<span class="s1">&#39;trt&#39;</span>,
-<span class="s1">&#39;age&#39;</span>,
-<span class="s1">&#39;hemo&#39;</span>,
-<span class="s1">&#39;homo&#39;</span>,
-<span class="s1">&#39;drugs&#39;</span>,
-<span class="s1">&#39;karnof&#39;</span>,
-<span class="s1">&#39;oprior&#39;</span>,
-<span class="s1">&#39;z30&#39;</span>,
-<span class="s1">&#39;preanti&#39;</span>,
-<span class="s1">&#39;race&#39;</span>,
-<span class="s1">&#39;gender&#39;</span>,
-<span class="s1">&#39;str2&#39;</span>,
-<span class="s1">&#39;strat&#39;</span>,
-<span class="s1">&#39;symptom&#39;</span>,
-<span class="s1">&#39;treat&#39;</span>,
-<span class="s1">&#39;offtrt&#39;</span>,
-<span class="s1">&#39;cd40&#39;</span>,
-<span class="s1">&#39;cd420&#39;</span>,
-<span class="s1">&#39;cd80&#39;</span><span class="o">]}</span>
+<span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
+
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">323</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.69<span class="w">       </span><span class="m">105</span>
+
+<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.79<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
+
+--------------------------------------------------------------------------------
 </pre></div>
 </div>
 </section>
 <section id="step-10-calibrate-the-model-if-needed">
 <h3>Step 10: Calibrate the Model (if needed)<a class="headerlink" href="#step-10-calibrate-the-model-if-needed" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 
-<span class="c1"># Get the predicted probabilities for the validation data from the</span>
-<span class="c1"># uncalibrated model</span>
-<span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="c1"># Get the predicted probabilities for the validation data from the uncalibrated model</span>
+<span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
 <span class="c1"># Compute the calibration curve for the uncalibrated model</span>
 <span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
    <span class="n">y_test</span><span class="p">,</span>
    <span class="n">y_prob_uncalibrated</span><span class="p">,</span>
-   <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+   <span class="n">n_bins</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
 <span class="p">)</span>
 
-
 <span class="c1"># Calibrate the model</span>
-<span class="k">if</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">calibrate</span><span class="p">:</span>
-   <span class="n">model_tuner</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrate</span><span class="p">:</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
 
 <span class="c1"># Predict on the validation set</span>
-<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Change<span class="w"> </span>back<span class="w"> </span>to<span class="w"> </span>CPU
@@ -564,55 +577,53 @@ Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"
 <span class="w">         </span>Predicted:
 <span class="w">            </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w"> </span><span class="m">292</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">22</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">      </span>Neg<span class="w">  </span><span class="m">32</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">   </span><span class="m">82</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">74</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">30</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">      </span>Neg<span class="w">  </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">304</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">314</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.72<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">114</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.71<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.83<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.87<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
-roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span class="w"> </span><span class="m">0</span>.9364035087719298
+roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span class="w"> </span><span class="m">0</span>.9260891500474834
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-<span class="c1"># Get the predicted probabilities for the validation data from calibrated model</span>
-<span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from calibrated model</span>
+<span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
 <span class="c1"># Compute the calibration curve for the calibrated model</span>
 <span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
-   <span class="n">y_test</span><span class="p">,</span>
-   <span class="n">y_prob_calibrated</span><span class="p">,</span>
-   <span class="n">n_bins</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="n">y_test</span><span class="p">,</span>
+<span class="n">y_prob_calibrated</span><span class="p">,</span>
+<span class="n">n_bins</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
 <span class="p">)</span>
 
 
 <span class="c1"># Plot the calibration curves</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-   <span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
-   <span class="n">prob_true_uncalibrated</span><span class="p">,</span>
-   <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
+<span class="n">prob_true_uncalibrated</span><span class="p">,</span>
+<span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-   <span class="n">prob_pred_calibrated</span><span class="p">,</span>
-   <span class="n">prob_true_calibrated</span><span class="p">,</span>
-   <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="n">prob_pred_calibrated</span><span class="p">,</span>
+<span class="n">prob_true_calibrated</span><span class="p">,</span>
+<span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-   <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
-   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">,</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted probability&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True probability in each bin&quot;</span><span class="p">)</span>
@@ -621,7 +632,7 @@ roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="no-click"><a class="reference internal image-reference" href="_images/calibration_curves.png"><img alt="Model Tuner Logo" class="align-center" src="_images/calibration_curves.png" style="width: 400px;" />
+<div class="no-click"><a class="reference internal image-reference" href="_images/calibration_curve_aids.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/calibration_curve_aids.png" style="width: 400px;" />
 </a>
 </div><div style="height: 50px;"></div></section>
 <section id="classification-report-optional">
