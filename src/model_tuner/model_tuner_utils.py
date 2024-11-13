@@ -682,6 +682,7 @@ class Model:
                 else:
                     self.estimator.set_params(**best_params).fit(X, y)
             else:
+                best_params = self.best_params_per_score[score]["params"]
                 if self.boost_early:
                     X_valid, y_valid = validation_data
                     if self.feature_selection or self.pipeline_steps:
@@ -832,9 +833,11 @@ class Model:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
-                    model_metrics_df = report_model_metrics(
-                        self, X, y, self.threshold[self.scoring[0]]
-                    )
+                    if optimal_threshold:
+                        threshold = self.threshold[self.scoring[0]]
+                    else:
+                        threshold = 0.5
+                    model_metrics_df = report_model_metrics(self, X, y, threshold)
                     print("-" * 80)
                     pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
