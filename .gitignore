@@ -140,3 +140,6 @@ mlruns/
 Images/
 --stdin*/
 .DS_store
+
+
+venv*/
