@@ -45,13 +45,18 @@ Binary Classification Examples
 
    **HTML Files**
 
-   - .. raw:: html
-
-      <a href="Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
 
    - .. raw:: html
 
-      <a href="Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
+      <a href="./example_htmls/Model_Tuner_Titanic_KFold.html" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
+
+   - .. raw:: html
+
+      <a href="./example_htmls/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+
+   - .. raw:: html
+
+      <a href="./example_htmls/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
 
 
 
@@ -69,7 +74,7 @@ Regression Example
    
    - .. raw:: html
 
-      <a href="Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a>
+      <a href="./example_htmls/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a>
 
 
 Key Methods and Functionalities
@@ -633,14 +638,14 @@ output it as follows:
 
 .. code-block:: bash
 
-                precision    recall  f1-score   support
+               precision    recall  f1-score   support
 
-             0       0.95      0.94      0.94       324
-             1       0.81      0.85      0.83       104
+            0       0.91      0.94      0.92       324
+            1       0.79      0.71      0.75       104
 
-      accuracy                           0.92       428
-     macro avg       0.88      0.89      0.89       428
-  weighted avg       0.92      0.92      0.92       428
+      accuracy                           0.88       428
+      macro avg       0.85      0.82      0.84       428
+   weighted avg       0.88      0.88      0.88       428
 
 
 
