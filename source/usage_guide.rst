@@ -38,10 +38,6 @@ Binary Classification Examples
 
       <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials - Numerical Data</a>
 
-   - .. raw:: html
-
-      <a href="https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1" target="_blank">Binary Classification: Breast Cancer - Numerical Data</a>
-
 
    **HTML Files**
 
@@ -54,9 +50,6 @@ Binary Classification Examples
 
       <a href="./example_htmls/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
 
-   - .. raw:: html
-
-      <a href="./example_htmls/Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
 
 
 
