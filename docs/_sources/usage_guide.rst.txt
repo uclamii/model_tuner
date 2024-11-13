@@ -32,11 +32,15 @@ Binary Classification Examples
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials Colab Notebook</a>
+   <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1" target="_blank">Binary Classification: Breast Cancer Colab Notebook</a>
+      <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials - Numerical Data</a>
+
+   - .. raw:: html
+
+      <a href="https://colab.research.google.com/drive/1D9nl8rLdwxPEpiZplsU0I0lFSAec7NzP?authuser=1#scrollTo=tumIjsNpSAKC&uniqifier=1" target="_blank">Binary Classification: Breast Cancer - Numerical Data</a>
 
 
    **HTML Files**
@@ -49,23 +53,6 @@ Binary Classification Examples
 
       <a href="Model_Tuner_Binary_Classification_Breast_Cancer_Example.html" target="_blank">Binary Classification: Breast Cancer HTML File</a>
 
-
-
-Column Transformer Example
-----------------------------
-
-   **Google Colab Notebook**
-
-   - .. raw:: html
-
-      <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Column Transformer Colab Notebook</a>
-      
-
-   **HTML File**
-
-   - .. raw:: html
-
-      <a href="Model_Tuner_Column_Transformer.html" target="_blank">Column Transformer HTML File</a>
 
 
 Regression Example
