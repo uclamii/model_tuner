@@ -1497,6 +1497,12 @@ def train_val_test_split(
     stratify_cols=None,
 ):
 
+    # Standardize stratification parameters
+    if stratify_y is False:
+        stratify_y = None
+    if stratify_cols is False:
+        stratify_cols = None
+
     if stratify_cols is not None and stratify_y is not None:
         if type(stratify_cols) == pd.DataFrame:
             stratify_key = pd.concat([stratify_cols, y], axis=1)
