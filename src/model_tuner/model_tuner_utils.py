@@ -119,6 +119,11 @@ class Model:
         custom_scorer=[],
         bayesian=False,
     ):
+
+        # Check if model_type is provided and valid
+        if model_type not in ["classification", "regression"]:
+            raise ValueError("You must specify model_type as either 'classification' or 'regression'.")
+
         self.name = name
         self.estimator_name = estimator_name
         self.calibrate = calibrate
