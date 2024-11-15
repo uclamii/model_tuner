@@ -775,6 +775,10 @@ class Model:
         n_samples=500,
         balance=False,
     ):
+        # Custom type check for X_test and y_test
+        if not isinstance(X_test, pd.DataFrame) or not isinstance(y_test, (pd.Series, pd.DataFrame)):
+            raise ValueError("Specifying X_test and/or y_test as anything other than pandas DataFrames is not supported.")
+        
         if self.model_type != "regression":
             y_pred_prob = pd.Series(self.predict_proba(X_test)[:, 1])
             bootstrap_metrics = evaluate_bootstrap_metrics(
