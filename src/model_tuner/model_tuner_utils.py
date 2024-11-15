@@ -93,6 +93,7 @@ class Model:
         name,
         estimator_name,
         estimator,
+        model_type,
         calibrate=False,
         kfold=False,
         imbalance_sampler=None,
@@ -112,13 +113,17 @@ class Model:
         pipeline_steps=[],
         boost_early=False,
         feature_selection=False,
-        model_type="classification",
         class_labels=None,
         multi_label=False,
         calibration_method="sigmoid",  # 04_27_24 --> added calibration method
         custom_scorer=[],
         bayesian=False,
     ):
+
+        # Check if model_type is provided and valid
+        if model_type not in ["classification", "regression"]:
+            raise ValueError("You must specify model_type as either 'classification' or 'regression'.")
+
         self.name = name
         self.estimator_name = estimator_name
         self.calibrate = calibrate
@@ -166,8 +171,6 @@ class Model:
             self.grid = grid
         else:
             self.grid = ParameterGrid(grid)
-        if scoring == ["roc_auc"] and model_type == "regression":
-            scoring == ["r2"]
         self.kf = None
         self.xval_output = None
         self.stratify_y = stratify_y
