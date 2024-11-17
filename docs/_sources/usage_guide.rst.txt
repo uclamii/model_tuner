@@ -153,7 +153,10 @@ Helper Functions
 Input Parameters
 =====================
 
-.. class:: Model(name, estimator_name, estimator, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, randomized_grid=False, n_iter=100, pipeline_steps=[], boost_early=False, feature_selection=False, model_type="classification", class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[], bayesian=False)
+Input Parameters
+=====================
+
+.. class:: Model(name, estimator_name, estimator, model_type, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, randomized_grid=False, n_iter=100, pipeline_steps=[], boost_early=False, feature_selection=False, class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[], bayesian=False)
 
    A class for building, tuning, and evaluating machine learning models, supporting both classification and regression tasks, as well as multi-label classification.
 
@@ -163,6 +166,8 @@ Input Parameters
    :type estimator_name: str
    :param estimator: The machine learning model to be trained and tuned.
    :type estimator: object
+   :param model_type: Specifies the type of model, must be either ``classification`` or ``regression``.
+   :type model_type: str
    :param calibrate: Whether to calibrate the model's probability estimates. Default is ``False``.
    :type calibrate: bool, optional
    :param kfold: Whether to perform k-fold cross-validation. Default is ``False``.
@@ -201,8 +206,6 @@ Input Parameters
    :type boost_early: bool, optional
    :param feature_selection: Whether to enable feature selection. Default is ``False``.
    :type feature_selection: bool, optional
-   :param model_type: Specifies the model type, either ``classification`` or ``regression``. Default is ``classification``.
-   :type model_type: str, optional
    :param class_labels: List of labels for multi-class classification. Default is ``None``.
    :type class_labels: list, optional
    :param multi_label: Whether the task is a multi-label classification problem. Default is ``False``.
@@ -215,13 +218,14 @@ Input Parameters
    :type bayesian: bool, optional
 
    :raises ImportError: If the ``bootstrapper`` module is not found or not installed.
-   :raises ValueError: Raised for various issues, such as invalid hyperparameter configurations, or mismatched ``X`` and ``y`` shapes.
+   :raises ValueError: Raised for various issues, such as:
+       - Invalid ``model_type`` value. The ``model_type`` must be explicitly specified as either ``classification`` or ``regression``.
+       - Invalid hyperparameter configurations or mismatched ``X`` and ``y`` shapes.
    :raises AttributeError: Raised if an expected pipeline step is missing, or if ``self.estimator`` is improperly initialized.
    :raises TypeError: Raised when an incorrect parameter type is provided, such as passing ``None`` instead of a valid object.
    :raises IndexError: Raised for indexing issues, particularly in confusion matrix formatting functions.
    :raises KeyError: Raised when accessing dictionary keys that are not available, such as missing scores in ``self.best_params_per_score``.
    :raises RuntimeError: Raised for unexpected issues during model fitting or transformations that do not fit into the other exception categories.
-
 
 Binary Classification
 ======================
