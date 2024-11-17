@@ -87,10 +87,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">Step 1: Import Necessary Libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the Dataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbclassifier">Step 3: Create an Instance of the XGBClassifier</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an Instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-6-fit-the-model">Step 6: Fit the Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return Metrics (Optional)</a></li>
 </ul>
 </li>
 </ul>
@@ -661,10 +663,10 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
+<span class="n">ifrom</span> <span class="n">xgboost</span> <span class="kn">import</span> <span class="nn">XGBRegressor</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_california_housing</span>
-<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">model_tuner</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 </pre></div>
 </div>
 </section>
@@ -677,117 +679,142 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </pre></div>
 </div>
 </section>
-<section id="step-3-create-an-instance-of-the-xgbclassifier">
-<h3>Step 3: Create an Instance of the XGBClassifier<a class="headerlink" href="#step-3-create-an-instance-of-the-xgbclassifier" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating an instance of the XGBRegressor</span>
-<span class="n">xgb_model</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBRegressor</span><span class="p">(</span>
-   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
-<span class="p">)</span>
+<section id="step-3-create-an-instance-of-the-xgbregressor">
+<h3>Step 3: Create an Instance of the XGBRegressor<a class="headerlink" href="#step-3-create-an-instance-of-the-xgbregressor" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBRegressor</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="step-4-define-hyperparameters-for-xgboost">
 <h3>Step 4: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-4-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
-<span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
-
-<span class="c1"># Define the hyperparameters for XGBoost</span>
-<span class="n">xgb_learning_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>  <span class="c1"># Learning rate or eta</span>
-<span class="c1"># Number of trees. Equivalent to n_estimators in GB</span>
-<span class="n">xgb_n_estimators</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>
-<span class="n">xgb_max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Maximum depth of the trees</span>
-<span class="n">xgb_subsamples</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Subsample ratio of the training instances</span>
-<span class="n">xgb_colsample_bytree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">]</span>
-<span class="n">xgb_eval_metric</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">]</span>
-<span class="n">xgb_early_stopping_rounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
-<span class="n">xgb_verbose</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
-
-<span class="c1"># Combining the hyperparameters in a dictionary</span>
-<span class="n">xgb_parameters</span> <span class="o">=</span> <span class="p">[</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">[</span>
    <span class="p">{</span>
-      <span class="s2">&quot;xgb__learning_rate&quot;</span><span class="p">:</span> <span class="n">xgb_learning_rates</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__n_estimators&quot;</span><span class="p">:</span> <span class="n">xgb_n_estimators</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__max_depth&quot;</span><span class="p">:</span> <span class="n">xgb_max_depths</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__subsample&quot;</span><span class="p">:</span> <span class="n">xgb_subsamples</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__colsample_bytree&quot;</span><span class="p">:</span> <span class="n">xgb_colsample_bytree</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__eval_metric&quot;</span><span class="p">:</span> <span class="n">xgb_eval_metric</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="n">xgb_early_stopping_rounds</span><span class="p">,</span>
-      <span class="s2">&quot;xgb__verbose&quot;</span><span class="p">:</span> <span class="n">xgb_verbose</span><span class="p">,</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>  <span class="c1"># Number of trees.</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>    <span class="c1"># Maximum depth of the trees</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__subsample&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>   <span class="c1"># Subsample ratio of the</span>
+                                                   <span class="c1"># training instances</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__colsample_bytree&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__tree_method&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hist&quot;</span><span class="p">],</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
    <span class="p">}</span>
 <span class="p">]</span>
+
+<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+   <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+   <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+   <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+   <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">model_definition</span> <span class="o">=</span> <span class="p">{</span><span class="n">xgb_name</span><span class="p">:</span> <span class="n">xgb_definition</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
 <section id="step-5-initialize-and-configure-the-model">
 <h3>Step 5: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-5-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Initialize model_tuner</span>
-<span class="n">california_housing</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
-      <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
-   <span class="p">],</span>
-   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Redfin_model_XGB&quot;</span><span class="p">,</span>
-   <span class="n">estimator_name</span><span class="o">=</span><span class="s2">&quot;xgb&quot;</span><span class="p">,</span>
+<p><code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code> inherently handles missing values (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) without requiring explicit
+imputation strategies. During training, <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> treats missing values as a
+separate category and learns how to route them within its decision trees.
+Therefore, passing a <code class="docutils literal notranslate"><span class="pre">SimpleImputer</span></code> or using an imputation strategy is unnecessary
+when using <code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Define model object</span>
+<span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">clc</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
+<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
+
+<span class="c1"># Set the parameters by cross-validation</span>
+<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
+<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
+
+<span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;xgb_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-   <span class="n">calibrate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
-   <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">grid</span><span class="o">=</span><span class="n">xgb_parameters</span><span class="p">,</span>
-   <span class="n">randomized_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+   <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+   <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+   <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+   <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
-   <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-   <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="step-6-fit-the-model">
-<h3>Step 6: Fit the Model<a class="headerlink" href="#step-6-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eval_set</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>  <span class="c1"># necessary for early stopping</span>
+<section id="step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">
+<h3>Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="headerlink" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,)</span>
 
-<span class="c1"># Perform grid search parameter tuning</span>
-<span class="n">california_housing</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="c1"># Get the training and validation data</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">california_housing</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">california_housing</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">california_housing</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-   <span class="n">X_train</span><span class="p">,</span>
-   <span class="n">y_train</span><span class="p">,</span>
-   <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span>
-<span class="p">)</span>
-
-<span class="n">california_housing</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:01&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.81it/s<span class="o">]</span>
-Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
+<span class="o">========================</span>
+┌────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>xgb<span class="w">    </span>│
+│<span class="w"> </span>XGBRegressor<span class="w">   </span>│
+└────────────────┘
+
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:05&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">1</span>.60it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
 <span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.1,
 <span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">172</span>,
-<span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">0</span>.8<span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.7979488661159093<span class="o">)}</span>
-Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.798
-
-********************************************************************************
-<span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979060590722392,
-<span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.35007797000749163<span class="o">)</span>,
-<span class="s1">&#39;Mean Squared Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.2633964855111536<span class="o">)</span>,
-<span class="s1">&#39;Median Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.24205514192581173<span class="o">)</span>,
-<span class="s1">&#39;R2&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979050719771986,
-<span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.5132216728774747<span class="o">)}</span>
-********************************************************************************
-
-<span class="o">{</span><span class="s1">&#39;Explained Variance&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979060590722392,
-<span class="s1">&#39;R2&#39;</span>:<span class="w"> </span><span class="m">0</span>.7979050719771986,
-<span class="s1">&#39;Mean Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.35007797000749163<span class="o">)</span>,
-<span class="s1">&#39;Median Absolute Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.24205514192581173<span class="o">)</span>,
-<span class="s1">&#39;Mean Squared Error&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.2633964855111536<span class="o">)</span>,
-<span class="s1">&#39;RMSE&#39;</span>:<span class="w"> </span>np.float64<span class="o">(</span><span class="m">0</span>.5132216728774747<span class="o">)}</span>
+<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">67</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__subsample&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
+<span class="w">            </span><span class="s1">&#39;xgb__tree_method&#39;</span>:<span class="w"> </span><span class="s1">&#39;hist&#39;</span><span class="o">}</span>,
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.7651490279157868<span class="o">}</span>
+Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.765
+</pre></div>
+</div>
+</section>
+<section id="step-7-fit-the-model">
+<h3>Step 7: Fit the Model<a class="headerlink" href="#step-7-fit-the-model" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="step-8-return-metrics-optional">
+<h3>Step 8: Return Metrics (Optional)<a class="headerlink" href="#step-8-return-metrics-optional" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Validation</span> <span class="n">Metrics</span>
+<span class="o">********************************************************************************</span>
+<span class="p">{</span><span class="s1">&#39;Explained Variance&#39;</span><span class="p">:</span> <span class="mf">0.7647451659057567</span><span class="p">,</span>
+<span class="s1">&#39;Mean Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.3830825326824073</span><span class="p">,</span>
+<span class="s1">&#39;Mean Squared Error&#39;</span><span class="p">:</span> <span class="mf">0.3066172248224347</span><span class="p">,</span>
+<span class="s1">&#39;Median Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.2672762813568116</span><span class="p">,</span>
+<span class="s1">&#39;R2&#39;</span><span class="p">:</span> <span class="mf">0.7647433075624044</span><span class="p">,</span>
+<span class="s1">&#39;RMSE&#39;</span><span class="p">:</span> <span class="mf">0.5537302816556403</span><span class="p">}</span>
+<span class="o">********************************************************************************</span>
+<span class="n">Test</span> <span class="n">Metrics</span>
+<span class="o">********************************************************************************</span>
+<span class="p">{</span><span class="s1">&#39;Explained Variance&#39;</span><span class="p">:</span> <span class="mf">0.7888942913974833</span><span class="p">,</span>
+<span class="s1">&#39;Mean Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.3743548199982513</span><span class="p">,</span>
+<span class="s1">&#39;Mean Squared Error&#39;</span><span class="p">:</span> <span class="mf">0.28411432705731066</span><span class="p">,</span>
+<span class="s1">&#39;Median Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.26315186452865597</span><span class="p">,</span>
+<span class="s1">&#39;R2&#39;</span><span class="p">:</span> <span class="mf">0.7888925135381788</span><span class="p">,</span>
+<span class="s1">&#39;RMSE&#39;</span><span class="p">:</span> <span class="mf">0.533023758436067</span><span class="p">}</span>
+<span class="o">********************************************************************************</span>
+<span class="p">{</span><span class="s1">&#39;Explained Variance&#39;</span><span class="p">:</span> <span class="mf">0.7888942913974833</span><span class="p">,</span>
+<span class="s1">&#39;R2&#39;</span><span class="p">:</span> <span class="mf">0.7888925135381788</span><span class="p">,</span>
+<span class="s1">&#39;Mean Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.3743548199982513</span><span class="p">,</span>
+<span class="s1">&#39;Median Absolute Error&#39;</span><span class="p">:</span> <span class="mf">0.26315186452865597</span><span class="p">,</span>
+<span class="s1">&#39;Mean Squared Error&#39;</span><span class="p">:</span> <span class="mf">0.28411432705731066</span><span class="p">,</span>
+<span class="s1">&#39;RMSE&#39;</span><span class="p">:</span> <span class="mf">0.533023758436067</span><span class="p">}</span>
 </pre></div>
 </div>
 </section>
