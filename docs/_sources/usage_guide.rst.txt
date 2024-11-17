@@ -657,10 +657,10 @@ Step 1: Import Necessary Libraries
 
    import pandas as pd
    import numpy as np
-   import xgboost as xgb
+   ifrom xgboost import XGBRegressor
    from sklearn.impute import SimpleImputer
    from sklearn.datasets import fetch_california_housing
-   from model_tuner import model_tuner  
+   from model_tuner import Model  
   
 
 Step 2: Load the Dataset
@@ -673,123 +673,153 @@ Step 2: Load the Dataset
    X = pd.DataFrame(data.data, columns=data.feature_names)
    y = pd.Series(data.target, name="target")
 
-Step 3: Create an Instance of the XGBClassifier
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Step 3: Create an Instance of the XGBRegressor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-   # Creating an instance of the XGBRegressor
-   xgb_model = xgb.XGBRegressor(
-      random_state=222,
-   )
+   xgb_name = "xgb"
+   xgb = XGBRegressor(random_state=222)
+
 
 Step 4: Define Hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-   # Estimator name prefix for use in GridSearchCV or similar tools
-   estimator_name_xgb = "xgb"
-
-   # Define the hyperparameters for XGBoost
-   xgb_learning_rates = [0.1, 0.01, 0.05]  # Learning rate or eta
-   # Number of trees. Equivalent to n_estimators in GB
-   xgb_n_estimators = [100, 200, 300]  
-   xgb_max_depths = [3, 5, 7][:1]  # Maximum depth of the trees
-   xgb_subsamples = [0.8, 1.0][:1]  # Subsample ratio of the training instances
-   xgb_colsample_bytree = [0.8, 1.0][:1]
-   xgb_eval_metric = ["logloss"]
-   xgb_early_stopping_rounds = [10]
-   xgb_verbose = [False]
-
-   # Combining the hyperparameters in a dictionary
-   xgb_parameters = [
+   tuned_parameters_xgb = [
       {
-         "xgb__learning_rate": xgb_learning_rates,
-         "xgb__n_estimators": xgb_n_estimators,
-         "xgb__max_depth": xgb_max_depths,
-         "xgb__subsample": xgb_subsamples,
-         "xgb__colsample_bytree": xgb_colsample_bytree,
-         "xgb__eval_metric": xgb_eval_metric,
-         "xgb__early_stopping_rounds": xgb_early_stopping_rounds,
-         "xgb__verbose": xgb_verbose,
+         f"{xgb_name}__learning_rate": [0.1, 0.01, 0.05],
+         f"{xgb_name}__n_estimators": [100, 200, 300],  # Number of trees.  
+         f"{xgb_name}__max_depth": [3, 5, 7][:1],    # Maximum depth of the trees
+         f"{xgb_name}__subsample": [0.8, 1.0][:1],   # Subsample ratio of the 
+                                                      # training instances
+         f"{xgb_name}__colsample_bytree": [0.8, 1.0][:1],
+         f"{xgb_name}__eval_metric": ["logloss"],
+         f"{xgb_name}__early_stopping_rounds": [10],
+         f"{xgb_name}__tree_method": ["hist"],
+         f"{xgb_name}__verbose": [False],
       }
    ]
+
+   xgb_definition = {
+      "clc": xgb,
+      "estimator_name": xgb_name,
+      "tuned_parameters": tuned_parameters_xgb,
+      "randomized_grid": False,
+      "early": True,
+   }
+
+   model_definition = {xgb_name: xgb_definition}
 
 Step 5: Initialize and Configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+``XGBRegressor`` inherently handles missing values (``NaN``) without requiring explicit 
+imputation strategies. During training, ``XGBoost`` treats missing values as a 
+separate category and learns how to route them within its decision trees. 
+Therefore, passing a ``SimpleImputer`` or using an imputation strategy is unnecessary 
+when using ``XGBRegressor``.
+
 .. code-block:: python
 
-   # Initialize model_tuner
-   california_housing = Model(
-      pipeline_steps=[
-         ("Preprocessor", SimpleImputer()),
-      ],
-      name="Redfin_model_XGB",
-      estimator_name="xgb",
+   kfold = False
+   calibrate = False
+
+   # Define model object
+   model_type = "xgb"
+   clc = model_definition[model_type]["clc"]
+   estimator_name = model_definition[model_type]["estimator_name"]
+
+   # Set the parameters by cross-validation
+   tuned_parameters = model_definition[model_type]["tuned_parameters"]
+   rand_grid = model_definition[model_type]["randomized_grid"]
+   early_stop = model_definition[model_type]["early"]
+
+   model_xgb = Model(
+      name=f"xgb_{model_type}",
+      estimator_name=estimator_name,
       model_type="regression",
-      calibrate=False,
-      estimator=xgb_model,
-      kfold=False,
-      stratify_y=False,
-      grid=xgb_parameters,
-      randomized_grid=False,
+      calibrate=calibrate,
+      estimator=clc,
+      kfold=kfold,
+      stratify_y=None,
+      grid=tuned_parameters,
+      randomized_grid=rand_grid,
+      boost_early=early_stop,
       scoring=["r2"],
-      random_state=3,
-      xgboost_early=True,
+      random_state=222,
+      n_jobs=2,
    )
 
-Step 6: Fit the Model
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-   eval_set = [X, y]  # necessary for early stopping
+   model_xgb.grid_search_param_tuning(X, y,)
 
-   # Perform grid search parameter tuning
-   california_housing.grid_search_param_tuning(X, y)
+   X_train, y_train = model_xgb.get_train_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+   X_valid, y_valid = model_xgb.get_valid_data(X, y)
 
-   # Get the training and validation data
-   X_train, y_train = california_housing.get_train_data(X, y)
-   X_valid, y_valid = california_housing.get_valid_data(X, y)
-
-   california_housing.fit(
-      X_train,
-      y_train,
-      validation_data=(X_valid, y_valid),
-   )
-
-   california_housing.return_metrics(X_test, y_test)
 
 .. code-block:: bash
 
-   100%|██████████| 9/9 [00:01<00:00,  4.81it/s]
-   Best score/param set found on validation set:
+   Pipeline Steps:
+   ========================
+   ┌────────────────┐
+   │ Step 1: xgb    │
+   │ XGBRegressor   │
+   └────────────────┘
+
+   100%|██████████| 9/9 [00:05<00:00,  1.60it/s]Best score/param set found on validation set:
    {'params': {'xgb__colsample_bytree': 0.8,
                'xgb__early_stopping_rounds': 10,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.1,
                'xgb__max_depth': 3,
-               'xgb__n_estimators': 172,
-               'xgb__subsample': 0.8},
-   'score': np.float64(0.7979488661159093)}
-   Best r2: 0.798 
+               'xgb__n_estimators': 67,
+               'xgb__subsample': 0.8,
+               'xgb__tree_method': 'hist'},
+   'score': 0.7651490279157868}
+   Best r2: 0.765
 
+
+Step 7: Fit the Model
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+
+Step 8: Return Metrics (Optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   Validation Metrics
    ********************************************************************************
-   {'Explained Variance': 0.7979060590722392,
-   'Mean Absolute Error': np.float64(0.35007797000749163),
-   'Mean Squared Error': np.float64(0.2633964855111536),
-   'Median Absolute Error': np.float64(0.24205514192581173),
-   'R2': 0.7979050719771986,
-   'RMSE': np.float64(0.5132216728774747)}
+   {'Explained Variance': 0.7647451659057567,
+   'Mean Absolute Error': 0.3830825326824073,
+   'Mean Squared Error': 0.3066172248224347,
+   'Median Absolute Error': 0.2672762813568116,
+   'R2': 0.7647433075624044,
+   'RMSE': 0.5537302816556403}
    ********************************************************************************
-
-   {'Explained Variance': 0.7979060590722392,
-   'R2': 0.7979050719771986,
-   'Mean Absolute Error': np.float64(0.35007797000749163),
-   'Median Absolute Error': np.float64(0.24205514192581173),
-   'Mean Squared Error': np.float64(0.2633964855111536),
-   'RMSE': np.float64(0.5132216728774747)}
-
-
+   Test Metrics
+   ********************************************************************************
+   {'Explained Variance': 0.7888942913974833,
+   'Mean Absolute Error': 0.3743548199982513,
+   'Mean Squared Error': 0.28411432705731066,
+   'Median Absolute Error': 0.26315186452865597,
+   'R2': 0.7888925135381788,
+   'RMSE': 0.533023758436067}
+   ********************************************************************************
+   {'Explained Variance': 0.7888942913974833,
+   'R2': 0.7888925135381788,
+   'Mean Absolute Error': 0.3743548199982513,
+   'Median Absolute Error': 0.26315186452865597,
+   'Mean Squared Error': 0.28411432705731066,
+   'RMSE': 0.533023758436067}
