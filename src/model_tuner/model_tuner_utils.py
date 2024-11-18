@@ -122,7 +122,9 @@ class Model:
 
         # Check if model_type is provided and valid
         if model_type not in ["classification", "regression"]:
-            raise ValueError("You must specify model_type as either 'classification' or 'regression'.")
+            raise ValueError(
+                "You must specify model_type as either 'classification' or 'regression'."
+            )
 
         self.name = name
         self.estimator_name = estimator_name
@@ -779,9 +781,13 @@ class Model:
         balance=False,
     ):
         # Custom type check for X_test and y_test
-        if not isinstance(X_test, pd.DataFrame) or not isinstance(y_test, (pd.Series, pd.DataFrame)):
-            raise ValueError("Specifying X_test and/or y_test as anything other than pandas DataFrames is not supported.")
-        
+        if not isinstance(X_test, pd.DataFrame) or not isinstance(
+            y_test, (pd.Series, pd.DataFrame)
+        ):
+            raise ValueError(
+                "Specifying X_test and/or y_test as anything other than pandas DataFrames is not supported."
+            )
+
         if self.model_type != "regression":
             y_pred_prob = pd.Series(self.predict_proba(X_test)[:, 1])
             bootstrap_metrics = evaluate_bootstrap_metrics(
@@ -1635,8 +1641,7 @@ def print_pipeline(pipeline):
         return
 
     print("\nPipeline Steps:")
-    print("========================")
-
+    print()
     # Box Drawing Characters
     vertical_connector = "│"
     down_arrow = "▼"
