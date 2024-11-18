@@ -22,6 +22,7 @@
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
       <script src="_static/custom.js?v=59429b38"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -62,8 +63,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#helper-functions">Helper Functions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#input-parameters">Input Parameters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#id1">Input Parameters</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#input-parameters">Input Parameters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 </ul>
 </li>
@@ -96,6 +96,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return Metrics (Optional)</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#bootstrap-metrics">Bootstrap Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#check_input_type"><code class="docutils literal notranslate"><span class="pre">check_input_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sampling_method"><code class="docutils literal notranslate"><span class="pre">sampling_method()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#evaluate_bootstrap_metrics"><code class="docutils literal notranslate"><span class="pre">evaluate_bootstrap_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return_bootstrap_metrics"><code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bootstrap-metrics-example">Bootstrap Metrics Example</a></li>
 </ul>
 </li>
 </ul>
@@ -237,9 +245,6 @@
 </section>
 <section id="input-parameters">
 <h1>Input Parameters<a class="headerlink" href="#input-parameters" title="Link to this heading"></a></h1>
-</section>
-<section id="id1">
-<h1>Input Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="Model">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibrate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kfold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imbalance_sampler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['roc_auc']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">randomized_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_steps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boost_early</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_scorer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bayesian</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Model" title="Link to this definition"></a></dt>
@@ -661,7 +666,7 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </section>
 </section>
 <section id="regression">
-<h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for regression using <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the California Housing dataset.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
@@ -824,6 +829,147 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 </pre></div>
 </div>
 </section>
+</section>
+</section>
+<section id="bootstrap-metrics">
+<h1>Bootstrap Metrics<a class="headerlink" href="#bootstrap-metrics" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">bootstrapper.py</span></code> module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="check_input_type">
+<span class="sig-name descname"><span class="pre">check_input_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#check_input_type" title="Link to this definition"></a></dt>
+<dd><p>Validates and normalizes the input type for data processing. Converts NumPy arrays, Pandas Series, and DataFrames into a standard Pandas DataFrame with a reset index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>array-like</em>) – Input data (NumPy array, Pandas Series, or DataFrame).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized input as a Pandas DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the input type is not supported.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="sampling_method">
+<span class="sig-name descname"><span class="pre">sampling_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_proportions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sampling_method" title="Link to this definition"></a></dt>
+<dd><p>Resamples a dataset based on specified options for balancing, stratification, or custom class proportions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>pandas.Series</em>) – Target variable to resample.</p></li>
+<li><p><strong>n_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of samples to draw.</p></li>
+<li><p><strong>stratify</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to stratify based on the provided target variable.</p></li>
+<li><p><strong>balance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to balance class distributions equally.</p></li>
+<li><p><strong>class_proportions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>, </em><em>optional</em>) – Custom proportions for each class. Must sum to 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resampled target variable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If class proportions do not sum to 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="evaluate_bootstrap_metrics">
+<span class="sig-name descname"><span class="pre">evaluate_bootstrap_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred_prob</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_resamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['roc_auc',</span> <span class="pre">'f1_weighted',</span> <span class="pre">'average_precision']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'classification'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_proportions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#evaluate_bootstrap_metrics" title="Link to this definition"></a></dt>
+<dd><p>Evaluates classification or regression metrics on bootstrap samples using a pre-trained model or pre-computed predictions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a><em>, </em><em>optional</em>) – Pre-trained model with a <code class="docutils literal notranslate"><span class="pre">predict_proba</span></code> method. Required if <code class="docutils literal notranslate"><span class="pre">y_pred_prob</span></code> is not provided.</p></li>
+<li><p><strong>X</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Input features. Not required if <code class="docutils literal notranslate"><span class="pre">y_pred_prob</span></code> is provided.</p></li>
+<li><p><strong>y</strong> (<em>array-like</em>) – Ground truth labels.</p></li>
+<li><p><strong>y_pred_prob</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Pre-computed predicted probabilities.</p></li>
+<li><p><strong>n_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of samples per bootstrap iteration. Default is 500.</p></li>
+<li><p><strong>num_resamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap iterations. Default is 1000.</p></li>
+<li><p><strong>metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – List of metrics to calculate (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;roc_auc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;f1_weighted&quot;</span></code>).</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility. Default is 42.</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Classification threshold for probability predictions. Default is 0.5.</p></li>
+<li><p><strong>model_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Specifies the task type, either <code class="docutils literal notranslate"><span class="pre">&quot;classification&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;regression&quot;</span></code>.</p></li>
+<li><p><strong>stratify</strong> (<em>pandas.Series</em><em>, </em><em>optional</em>) – Variable for stratified sampling.</p></li>
+<li><p><strong>balance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to balance class distributions.</p></li>
+<li><p><strong>class_proportions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>, </em><em>optional</em>) – Custom class proportions for sampling.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with mean and confidence intervals for each metric.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If invalid parameters or metrics are provided.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If sample size is insufficient for metric calculation.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> module includes utility functions for evaluating bootstrap metrics in the context of model tuning.</p>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="return_bootstrap_metrics">
+<span class="sig-name descname"><span class="pre">return_bootstrap_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_resamples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">balance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#return_bootstrap_metrics" title="Link to this definition"></a></dt>
+<dd><p>Evaluates bootstrap metrics for a trained model using the test dataset. This function supports both classification and regression tasks by leveraging <cite>evaluate_bootstrap_metrics</cite> to compute confidence intervals for the specified metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_test</strong> (<em>pandas.DataFrame</em>) – Test dataset features.</p></li>
+<li><p><strong>y_test</strong> (<em>pandas.Series</em><em> or </em><em>pandas.DataFrame</em>) – Test dataset labels.</p></li>
+<li><p><strong>metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – List of metric names to calculate (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;roc_auc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;f1_weighted&quot;</span></code>).</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Threshold for converting predicted probabilities into class predictions. Default is 0.5.</p></li>
+<li><p><strong>num_resamples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of bootstrap iterations. Default is 500.</p></li>
+<li><p><strong>n_samples</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of samples per bootstrap iteration. Default is 500.</p></li>
+<li><p><strong>balance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to balance the class distribution during resampling. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing mean and confidence intervals for the specified metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">X_test</span></code> or <code class="docutils literal notranslate"><span class="pre">y_test</span></code> are not provided as Pandas DataFrames or if unsupported input types are specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="bootstrap-metrics-example">
+<h2>Bootstrap Metrics Example<a class="headerlink" href="#bootstrap-metrics-example" title="Link to this heading"></a></h2>
+<p>Continuing from the model output object (<code class="docutils literal notranslate"><span class="pre">model_xgb</span></code>) from the <a class="reference internal" href="#regression"><span class="std std-ref">regression example</span></a> above, we leverage the <code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics</span></code> method from <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> to print bootstrap performance metrics (<span class="math notranslate nohighlight">\(R^2\)</span> and <cite>explained_variance</cite>) at 95% confidence levels as shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bootstrap Metrics&quot;</span><span class="p">)</span>
+
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_bootstrap_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+   <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span> <span class="s2">&quot;explained_variance&quot;</span><span class="p">],</span>
+   <span class="n">n_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+   <span class="n">num_resamples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Bootstrap<span class="w"> </span>Metrics
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">300</span>/300<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">358</span>.05it/s<span class="o">]</span>
+Metric<span class="w">                     </span>Mean<span class="w">  </span><span class="m">95</span>%<span class="w"> </span>CI<span class="w"> </span>Lower<span class="w">  </span><span class="m">95</span>%<span class="w"> </span>CI<span class="w"> </span>Upper
+<span class="m">0</span><span class="w">                 </span>r2<span class="w">   </span><span class="m">0</span>.781523<span class="w">      </span><span class="m">0</span>.770853<span class="w">      </span><span class="m">0</span>.792193
+<span class="m">1</span><span class="w"> </span>explained_variance<span class="w">   </span><span class="m">0</span>.788341<span class="w">      </span><span class="m">0</span>.777898<span class="w">      </span><span class="m">0</span>.798785
+</pre></div>
+</div>
 </section>
 </section>
 
