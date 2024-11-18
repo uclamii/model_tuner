@@ -51,8 +51,6 @@ Binary Classification Examples
       <a href="./example_htmls/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
 
 
-
-
 Regression Example
 ----------------------
 
@@ -153,8 +151,6 @@ Helper Functions
 Input Parameters
 =====================
 
-Input Parameters
-=====================
 
 .. class:: Model(name, estimator_name, estimator, model_type, calibrate=False, kfold=False, imbalance_sampler=None, train_size=0.6, validation_size=0.2, test_size=0.2, stratify_y=False, stratify_cols=None, grid=None, scoring=["roc_auc"], n_splits=10, random_state=3, n_jobs=1, display=True, randomized_grid=False, n_iter=100, pipeline_steps=[], boost_early=False, feature_selection=False, class_labels=None, multi_label=False, calibration_method="sigmoid", custom_scorer=[], bayesian=False)
 
@@ -645,6 +641,7 @@ output it as follows:
    weighted avg       0.88      0.88      0.88       428
 
 
+.. _Regression:
 
 Regression
 ===========
@@ -827,3 +824,126 @@ Step 8: Return Metrics (Optional)
    'Median Absolute Error': 0.26315186452865597,
    'Mean Squared Error': 0.28411432705731066,
    'RMSE': 0.533023758436067}
+
+Bootstrap Metrics
+===========================
+
+The ``bootstrapper.py`` module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.
+
+.. function:: check_input_type(x)
+
+   Validates and normalizes the input type for data processing. Converts NumPy arrays, Pandas Series, and DataFrames into a standard Pandas DataFrame with a reset index.
+
+   :param x: Input data (NumPy array, Pandas Series, or DataFrame).
+   :type x: array-like
+   :returns: Normalized input as a Pandas DataFrame.
+   :rtype: pandas.DataFrame
+   :raises ValueError: If the input type is not supported.
+
+.. function:: sampling_method(y, n_samples, stratify=False, balance=False, class_proportions=None)
+
+   Resamples a dataset based on specified options for balancing, stratification, or custom class proportions.
+
+   :param y: Target variable to resample.
+   :type y: pandas.Series
+   :param n_samples: Number of samples to draw.
+   :type n_samples: int
+   :param stratify: Whether to stratify based on the provided target variable.
+   :type stratify: bool, optional
+   :param balance: Whether to balance class distributions equally.
+   :type balance: bool, optional
+   :param class_proportions: Custom proportions for each class. Must sum to 1.
+   :type class_proportions: dict, optional
+   :returns: Resampled target variable.
+   :rtype: pandas.DataFrame
+   :raises ValueError: If class proportions do not sum to 1.
+
+.. function:: evaluate_bootstrap_metrics(model=None, X=None, y=None, y_pred_prob=None, n_samples=500, num_resamples=1000, metrics=["roc_auc", "f1_weighted", "average_precision"], random_state=42, threshold=0.5, model_type="classification", stratify=None, balance=False, class_proportions=None)
+
+   Evaluates classification or regression metrics on bootstrap samples using a pre-trained model or pre-computed predictions.
+
+   :param model: Pre-trained model with a ``predict_proba`` method. Required if ``y_pred_prob`` is not provided.
+   :type model: object, optional
+   :param X: Input features. Not required if ``y_pred_prob`` is provided.
+   :type X: array-like, optional
+   :param y: Ground truth labels.
+   :type y: array-like
+   :param y_pred_prob: Pre-computed predicted probabilities.
+   :type y_pred_prob: array-like, optional
+   :param n_samples: Number of samples per bootstrap iteration. Default is 500.
+   :type n_samples: int, optional
+   :param num_resamples: Number of bootstrap iterations. Default is 1000.
+   :type num_resamples: int, optional
+   :param metrics: List of metrics to calculate (e.g., ``"roc_auc"``, ``"f1_weighted"``).
+   :type metrics: list of str
+   :param random_state: Random seed for reproducibility. Default is 42.
+   :type random_state: int, optional
+   :param threshold: Classification threshold for probability predictions. Default is 0.5.
+   :type threshold: float, optional
+   :param model_type: Specifies the task type, either ``"classification"`` or ``"regression"``.
+   :type model_type: str
+   :param stratify: Variable for stratified sampling.
+   :type stratify: pandas.Series, optional
+   :param balance: Whether to balance class distributions.
+   :type balance: bool, optional
+   :param class_proportions: Custom class proportions for sampling.
+   :type class_proportions: dict, optional
+   :returns: DataFrame with mean and confidence intervals for each metric.
+   :rtype: pandas.DataFrame
+   :raises ValueError: If invalid parameters or metrics are provided.
+   :raises RuntimeError: If sample size is insufficient for metric calculation.
+
+
+.. note::
+
+   The ``model_tuner_utils.py`` module includes utility functions for evaluating bootstrap metrics in the context of model tuning.
+
+.. function:: return_bootstrap_metrics(X_test, y_test, metrics, threshold=0.5, num_resamples=500, n_samples=500, balance=False)
+
+   Evaluates bootstrap metrics for a trained model using the test dataset. This function supports both classification and regression tasks by leveraging `evaluate_bootstrap_metrics` to compute confidence intervals for the specified metrics.
+
+   :param X_test: Test dataset features.
+   :type X_test: pandas.DataFrame
+   :param y_test: Test dataset labels.
+   :type y_test: pandas.Series or pandas.DataFrame
+   :param metrics: List of metric names to calculate (e.g., ``"roc_auc"``, ``"f1_weighted"``).
+   :type metrics: list of str
+   :param threshold: Threshold for converting predicted probabilities into class predictions. Default is 0.5.
+   :type threshold: float, optional
+   :param num_resamples: Number of bootstrap iterations. Default is 500.
+   :type num_resamples: int, optional
+   :param n_samples: Number of samples per bootstrap iteration. Default is 500.
+   :type n_samples: int, optional
+   :param balance: Whether to balance the class distribution during resampling. Default is False.
+   :type balance: bool, optional
+   :returns: DataFrame containing mean and confidence intervals for the specified metrics.
+   :rtype: pandas.DataFrame
+   :raises ValueError: If ``X_test`` or ``y_test`` are not provided as Pandas DataFrames or if unsupported input types are specified.
+
+
+Bootstrap Metrics Example
+-----------------------------
+
+Continuing from the model output object (``model_xgb``) from the :ref:`regression example <Regression>` above, we leverage the ``return_bootstrap_metrics`` method from ``model_tuner_utils.py`` to print bootstrap performance metrics (:math:`R^2` and `explained_variance`) at 95% confidence levels as shown below: 
+
+.. code-block:: python
+
+   print("Bootstrap Metrics")
+
+   model_xgb.return_bootstrap_metrics(
+      X_test=X_test,
+      y_test=y_test,
+      metrics=["r2", "explained_variance"],
+      n_samples=30,
+      num_resamples=300,
+   )
+
+
+.. code-block:: bash
+
+   Bootstrap Metrics
+   100%|██████████| 300/300 [00:00<00:00, 358.05it/s]
+   Metric	              Mean  95% CI Lower  95% CI Upper  
+   0	             r2   0.781523      0.770853      0.792193  
+   1 explained_variance	  0.788341	0.777898      0.798785
+
