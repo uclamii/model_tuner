@@ -224,7 +224,6 @@ class Model:
             for name, transformer in pipeline.steps
             if name.startswith("preprocess_")
         ]
-        # Create a new pipeline with just the preprocessing steps
         return self.PipelineClass(preprocessing_steps)
 
     def pipeline_assembly(self):
@@ -403,7 +402,11 @@ class Model:
 
         resampler_test = clone(self.estimator.named_steps["resampler"])
 
-        X_train_preproc = preproc_test.fit_transform(X_train)
+        ### Only apply the preprocessing when there are valid pipeline steps
+        if preproc_test:
+            X_train_preproc = preproc_test.fit_transform(X_train)
+        else:
+            X_train_preproc = X_train
 
         _, y_res = resampler_test.fit_resample(X_train_preproc, y_train)
 
@@ -418,7 +421,6 @@ class Model:
                 if self.calibrate:
                     # reset estimator in case of calibrated model
                     self.reset_estimator()
-                    ### FIXING CODE: More efficient by removing unnecessary fit
 
                     classifier = self.estimator.set_params(
                         **self.best_params_per_score[self.scoring[0]]["params"]
