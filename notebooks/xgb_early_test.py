@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+from imblearn.over_sampling import SMOTE
 
 from sklearn.datasets import make_classification
 from sklearn.impute import SimpleImputer
@@ -43,6 +44,7 @@ calibrate = False
 
 model = Model(
     name="XGBoost Early",
+    model_type="classification",
     estimator_name=estimator_name,
     calibrate=calibrate,
     estimator=estimator,
@@ -56,6 +58,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
+    imbalance_sampler=SMOTE(),
 )
 
 
