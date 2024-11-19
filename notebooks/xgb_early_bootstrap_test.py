@@ -51,9 +51,7 @@ ct = ColumnTransformer(
 from xgboost import XGBClassifier
 
 
-estimator = XGBClassifier(
-    objective="binary:logistic",
-)
+estimator = XGBClassifier(objective="binary:logistic", device="cuda")
 
 estimator_name = "xgb"
 xgbearly = True
@@ -61,9 +59,9 @@ xgbearly = True
 tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
     f"{estimator_name}__learning_rate": [1e-4],
-    f"{estimator_name}__n_estimators": [30],
+    f"{estimator_name}__n_estimators": [5000],
     f"{estimator_name}__early_stopping_rounds": [10],
-    f"{estimator_name}__verbose": [True],
+    f"{estimator_name}__verbose": [False],
     f"{estimator_name}__eval_metric": ["logloss"],
 }
 
@@ -74,6 +72,7 @@ calibrate = False
 
 model = Model(
     name="XGBoost Early",
+    model_type="classification",
     estimator_name=estimator_name,
     pipeline_steps=[("column_transformer", ct)],
     calibrate=calibrate,
@@ -90,7 +89,7 @@ model = Model(
 )
 
 
-model.grid_search_param_tuning(X, y)
+model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
 X_train, y_train = model.get_train_data(X, y)
 X_test, y_test = model.get_test_data(X, y)
@@ -99,9 +98,9 @@ X_valid, y_valid = model.get_valid_data(X, y)
 model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
 print("Validation Metrics")
-model.return_metrics(X_valid, y_valid)
+model.return_metrics(X_valid, y_valid, optimal_threshold=True)
 print("Test Metrics")
-model.return_metrics(X_test, y_test)
+model.return_metrics(X_test, y_test, optimal_threshold=True)
 
 y_prob = model.predict_proba(X_test)[:, 1]
 
