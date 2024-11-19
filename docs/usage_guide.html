@@ -95,6 +95,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#initalize-and-configure-the-model">Initalize and Configure The Model</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#perform-grid-search-parameter-tuning-and-retrieve-split-data">Perform Grid Search Parameter Tuning and Retrieve Split Data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#smote-distribution-of-y-values-after-resampling">SMOTE: Distribution of y values after resampling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fit-the-model">Fit The Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#return-metrics-optional">Return Metrics (Optional)</a></li>
 </ul>
 </li>
 </ul>
@@ -942,6 +944,95 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 <h4>SMOTE: Distribution of y values after resampling<a class="headerlink" href="#smote-distribution-of-y-values-after-resampling" title="Link to this heading"></a></h4>
 <p>Notice that the target has been redistributed after SMOTE to 540 observations
 for the minority class and 540 observations for the majority class.</p>
+</section>
+<section id="fit-the-model">
+<h4>Fit The Model<a class="headerlink" href="#fit-the-model" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+   <span class="n">X_train</span><span class="p">,</span>
+   <span class="n">y_train</span><span class="p">,</span>
+   <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="return-metrics-optional">
+<h4>Return Metrics (Optional)<a class="headerlink" href="#return-metrics-optional" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Validation<span class="w"> </span>Metrics
+Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
+--------------------------------------------------------------------------------
+<span class="w">         </span>Predicted:
+<span class="w">            </span>Pos<span class="w">   </span>Neg
+--------------------------------------------------------------------------------
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">   </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">177</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9904166666666667,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8520172219085262,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.2096258193295803,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.8695652173913043,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">1</span>.0,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9833333333333333<span class="o">}</span>
+--------------------------------------------------------------------------------
+
+<span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
+
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">180</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.93<span class="w">        </span><span class="m">20</span>
+
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.98<span class="w">       </span><span class="m">200</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.96<span class="w">       </span><span class="m">200</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">200</span>
+
+--------------------------------------------------------------------------------
+
+Test<span class="w"> </span>Metrics
+Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
+--------------------------------------------------------------------------------
+<span class="w">         </span>Predicted:
+<span class="w">            </span>Pos<span class="w">   </span>Neg
+--------------------------------------------------------------------------------
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">19</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">   </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">178</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9951388888888888,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9722222222222222,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.20989021789332263,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.9047619047619048,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.95,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9888888888888889<span class="o">}</span>
+--------------------------------------------------------------------------------
+
+<span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
+
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">180</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.93<span class="w">        </span><span class="m">20</span>
+
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.98<span class="w">       </span><span class="m">200</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.96<span class="w">       </span><span class="m">200</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">200</span>
+
+--------------------------------------------------------------------------------
+</pre></div>
+</div>
 </section>
 </section>
 </section>

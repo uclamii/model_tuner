@@ -944,6 +944,98 @@ SMOTE: Distribution of y values after resampling
 Notice that the target has been redistributed after SMOTE to 540 observations 
 for the minority class and 540 observations for the majority class.
 
+Fit The Model
+~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   xgb_smote.fit(
+      X_train,
+      y_train,
+      validation_data=[X_valid, y_valid],
+   )
+
+Return Metrics (Optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   # ------------------------- VALID AND TEST METRICS -----------------------------
+
+   print("Validation Metrics")
+   class_report_val, cm_val = xgb_smote.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+   )
+   print()
+   print("Test Metrics")
+   class_report_test, cm_test = xgb_smote.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+   )
+
+.. code-block:: bash
+
+   Validation Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  20 (tp)    0 (fn)
+           Neg   3 (fp)  177 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.9904166666666667,
+   'Average Precision': 0.8520172219085262,
+   'Brier Score': 0.2096258193295803,
+   'Precision/PPV': 0.8695652173913043,
+   'Sensitivity': 1.0,
+   'Specificity': 0.9833333333333333}
+   --------------------------------------------------------------------------------
+
+               precision    recall  f1-score   support
+
+            0       1.00      0.98      0.99       180
+            1       0.87      1.00      0.93        20
+
+      accuracy                          0.98       200
+      macro avg     0.93      0.99      0.96       200
+   weighted avg     0.99      0.98      0.99       200
+
+   --------------------------------------------------------------------------------
+
+   Test Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  19 (tp)    1 (fn)
+           Neg   2 (fp)  178 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.9951388888888888,
+   'Average Precision': 0.9722222222222222,
+   'Brier Score': 0.20989021789332263,
+   'Precision/PPV': 0.9047619047619048,
+   'Sensitivity': 0.95,
+   'Specificity': 0.9888888888888889}
+   --------------------------------------------------------------------------------
+
+               precision    recall  f1-score   support
+
+            0       0.99      0.99      0.99       180
+            1       0.90      0.95      0.93        20
+
+      accuracy                          0.98       200
+      macro avg     0.95      0.97      0.96       200
+   weighted avg     0.99      0.98      0.99       200
+
+   --------------------------------------------------------------------------------
+
 .. _Regression:
 
 Regression
