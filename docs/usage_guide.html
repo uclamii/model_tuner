@@ -713,19 +713,18 @@ parameters are specified:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">flip_y=0</span></code>: No label noise is added to the target variable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">random_state=42</span></code>: Ensures reproducibility by using a fixed random seed.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an imbalanced dataset using make_classification</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
-   <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># Total number of samples</span>
-   <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>   <span class="c1"># Total number of features</span>
-   <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># Number of informative features</span>
-   <span class="n">n_redundant</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>   <span class="c1"># Number of redundant features</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+   <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+   <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+   <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+   <span class="n">n_redundant</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
    <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-   <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>  <span class="c1"># Proportion of classes, creating imbalance</span>
-   <span class="n">flip_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># No label noise</span>
+   <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+   <span class="n">flip_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Convert to a pandas DataFrame for better visualization</span>
+<span class="c1">## Convert to a pandas DataFrame for better visualization</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;feature_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)])</span>
 <span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
 
@@ -735,7 +734,7 @@ parameters are specified:</p>
 </div>
 <p>Below, you will see that the dataset we have generated is severely imbalanced with
 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a bar plot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Create a bar plot</span>
 <span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">value_counts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
@@ -743,24 +742,23 @@ parameters are specified:</p>
    <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Add labels inside the bars</span>
+<span class="c1">## Add labels inside the bars</span>
 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value_counts</span><span class="p">):</span>
    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
-      <span class="n">index</span><span class="p">,</span>  <span class="c1"># x-coordinate of the bar</span>
-      <span class="n">count</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># y-coordinate (middle of the bar)</span>
-      <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>  <span class="c1"># Text to display (count)</span>
+      <span class="n">index</span><span class="p">,</span>
+      <span class="n">count</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>
       <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
-      <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>  <span class="c1"># Center alignment</span>
-      <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>  <span class="c1"># Text color</span>
+      <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+      <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
    <span class="p">)</span>
 
-<span class="c1"># Customize labels and title</span>
+<span class="c1">## Customize labels and title</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Class&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Class Distribution&quot;</span><span class="p">)</span>
 
-<span class="c1"># Show the plot</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span> <span class="c1">## Show the plot</span>
 </pre></div>
 </div>
 <div class="no-click"><a class="reference internal image-reference" href="_images/imbalanced_classes.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/imbalanced_classes.png" style="width: 400px;" />
@@ -771,7 +769,6 @@ parameters are specified:</p>
 <p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
-   <span class="c1"># objective=&quot;binary:logistic&quot;,</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>

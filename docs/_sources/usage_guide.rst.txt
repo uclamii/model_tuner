@@ -679,20 +679,18 @@ parameters are specified:
 
 .. code-block:: python
 
-
-   # Create an imbalanced dataset using make_classification
    X, y = make_classification(
-      n_samples=1000,  # Total number of samples
-      n_features=20,   # Total number of features
-      n_informative=2, # Number of informative features
-      n_redundant=2,   # Number of redundant features
+      n_samples=1000,  
+      n_features=20,  
+      n_informative=2, 
+      n_redundant=2,  
       n_clusters_per_class=1,
-      weights=[0.9, 0.1],  # Proportion of classes, creating imbalance
-      flip_y=0,  # No label noise
+      weights=[0.9, 0.1],  
+      flip_y=0,  
       random_state=42,
    )
 
-   # Convert to a pandas DataFrame for better visualization
+   ## Convert to a pandas DataFrame for better visualization
    data = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(1, 21)])
    data['target'] = y
 
@@ -705,7 +703,7 @@ Below, you will see that the dataset we have generated is severely imbalanced wi
 
 .. code-block:: python
 
-   # Create a bar plot
+   ## Create a bar plot
    value_counts = pd.Series(y).value_counts()
    ax = value_counts.plot(
       kind="bar",
@@ -713,24 +711,23 @@ Below, you will see that the dataset we have generated is severely imbalanced wi
       width=0.9,
    )
 
-   # Add labels inside the bars
+   ## Add labels inside the bars
    for index, count in enumerate(value_counts):
       plt.text(
-         index,  # x-coordinate of the bar
-         count / 2,  # y-coordinate (middle of the bar)
-         str(count),  # Text to display (count)
+         index,  
+         count / 2,  
+         str(count),  
          ha="center",
-         va="center",  # Center alignment
-         color="yellow",  # Text color
+         va="center",  
+         color="yellow",  
       )
 
-   # Customize labels and title
+   ## Customize labels and title
    plt.xlabel("Class")
    plt.ylabel("Count")
    plt.title("Class Distribution")
 
-   # Show the plot
-   plt.show()
+   plt.show() ## Show the plot
 
 
 .. raw:: html
@@ -760,7 +757,6 @@ Below, we will use an XGBoost classifier with the following hyperparameters:
 
    xgb_name = "xgb"
    xgb = XGBClassifier(
-      # objective="binary:logistic",
       random_state=222,
    )
    xgbearly = True
