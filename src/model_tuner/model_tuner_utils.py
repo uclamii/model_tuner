@@ -184,7 +184,7 @@ class Model:
         self.train_size = train_size
         self.validation_size = validation_size
         self.test_size = test_size
-        self.threshold = {score: 0 for score in self.scoring}
+        self.threshold = {score: 0.5 for score in self.scoring}
         self.beta = 2
         self.labels = ["tn", "fp", "fn", "tp"]
         self.boost_early = boost_early
