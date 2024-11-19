@@ -641,6 +641,304 @@ output it as follows:
    weighted avg       0.88      0.88      0.88       428
 
 
+Imbalanced Learning
+------------------------
+
+In machine learning, imbalanced datasets are a frequent challenge, especially in 
+real-world scenarios. These datasets have an unequal distribution of target classes, 
+with one class (e.g., fraudulent transactions, rare diseases, or other low-frequency events) 
+being underrepresented compared to the majority class. Models trained on imbalanced data 
+often struggle to generalize, as they tend to favor the majority class, leading to 
+poor performance on the minority class.
+
+To mitigate these issues, it is crucial to:
+
+1. Understand the nature of the imbalance in the dataset.
+2. Apply appropriate resampling techniques (oversampling, undersampling, or hybrid methods).
+3. Use metrics beyond accuracy, such as precision, recall, and F1-score, to evaluate model performance fairly.
+
+Generating an Imbalanced Dataset
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Demonstrated below are the steps to generate an imbalanced dataset using 
+``make_classification`` from the ``sklearn.datasets`` module. The following 
+parameters are specified:
+
+- ``n_samples=1000``: The dataset contains 1,000 samples.    
+- ``n_features=20``: Each sample has 20 features.    
+- ``n_informative=2``: Two features are informative for predicting the target.  
+- ``n_redundant=2``: Two features are linear combinations of the informative features.  
+- ``weights=[0.9, 0.1]``: The target class distribution is 90% for the majority class and 10% for the minority class, creating an imbalance.  
+- ``flip_y=0``: No label noise is added to the target variable.  
+- ``random_state=42``: Ensures reproducibility by using a fixed random seed.
+
+.. code-block:: python
+
+
+   # Create an imbalanced dataset using make_classification
+   X, y = make_classification(
+      n_samples=1000,  # Total number of samples
+      n_features=20,   # Total number of features
+      n_informative=2, # Number of informative features
+      n_redundant=2,   # Number of redundant features
+      n_clusters_per_class=1,
+      weights=[0.9, 0.1],  # Proportion of classes, creating imbalance
+      flip_y=0,  # No label noise
+      random_state=42,
+   )
+
+   # Convert to a pandas DataFrame for better visualization
+   data = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(1, 21)])
+   data['target'] = y
+
+   X = data[[col for col in data.columns if "target" not in col]]
+   y = pd.Series(data["target"])
+
+
+Below, you will see that the dataset we have generated is severely imbalanced with 
+900 observations allocated to the majority class (0) and 100 observations to the minority class (1).
+
+.. code-block:: python
+
+   # Create a bar plot
+   value_counts = pd.Series(y).value_counts()
+   ax = value_counts.plot(
+      kind="bar",
+      rot=0,
+      width=0.9,
+   )
+
+   # Add labels inside the bars
+   for index, count in enumerate(value_counts):
+      plt.text(
+         index,  # x-coordinate of the bar
+         count / 2,  # y-coordinate (middle of the bar)
+         str(count),  # Text to display (count)
+         ha="center",
+         va="center",  # Center alignment
+         color="yellow",  # Text color
+      )
+
+   # Customize labels and title
+   plt.xlabel("Class")
+   plt.ylabel("Count")
+   plt.title("Class Distribution")
+
+   # Show the plot
+   plt.show()
+
+
+.. raw:: html
+
+   <div class="no-click">
+
+.. image:: /../assets/imbalanced_classes.png
+   :alt: Calibration Curve AIDs
+   :align: center
+   :width: 400px
+
+.. raw:: html
+
+   </div>
+
+.. raw:: html
+
+   <div style="height: 50px;"></div>
+
+
+Define Hyperparameters for XGBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below, we will use an XGBoost classifier with the following hyperparameters:
+
+.. code-block:: python
+
+   xgb_name = "xgb"
+   xgb = XGBClassifier(
+      # objective="binary:logistic",
+      random_state=222,
+   )
+   xgbearly = True
+   tuned_parameters_xgb = {
+      f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
+      f"{xgb_name}__learning_rate": [1e-4],
+      f"{xgb_name}__n_estimators": [1000],
+      f"{xgb_name}__early_stopping_rounds": [100],
+      f"{xgb_name}__verbose": [0],
+      f"{xgb_name}__eval_metric": ["logloss"],
+   }
+
+   xgb_definition = {
+      "clc": xgb,
+      "estimator_name": xgb_name,
+      "tuned_parameters": tuned_parameters_xgb,
+      "randomized_grid": False,
+      "n_iter": 5,
+      "early": xgbearly,
+   }
+
+Define The Model object
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   model_type = "xgb"
+   clc = xgb_definition["clc"]
+   estimator_name = xgb_definition["estimator_name"]
+
+   tuned_parameters = xgb_definition["tuned_parameters"]
+   n_iter = xgb_definition["n_iter"]
+   rand_grid = xgb_definition["randomized_grid"]
+   early_stop = xgb_definition["early"]
+   kfold = False
+   calibrate = True
+
+
+Addressing Class Imbalance in Machine Learning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Class imbalance occurs when one class significantly outweighs another in the 
+dataset, leading to biased models that perform well on the majority class but 
+poorly on the minority class. Techniques like SMOTE and others aim to address 
+this issue by improving the representation of the minority class, ensuring balanced 
+learning and better generalization.
+
+Techniques to Address Class Imbalance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Resampling Techniques**
+
+- **SMOTE (Synthetic Minority Oversampling Technique)**: SMOTE generates synthetic samples for the minority class by interpolating between existing minority class data points and their nearest neighbors. This helps create a more balanced class distribution without merely duplicating data, thus avoiding overfitting.
+
+- **Oversampling**: Randomly duplicates examples from the minority class to balance the dataset. While simple, it risks overfitting to the duplicated examples.  
+
+- **Undersampling**: Reduces the majority class by randomly removing samples. While effective, it can lead to loss of important information.
+
+Purpose of Using These Techniques
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The goal of using these techniques is to improve model performance on imbalanced datasets, specifically by:
+
+- Ensuring the model captures meaningful patterns in the minority class.
+- Reducing bias toward the majority class, which often dominates predictions in imbalanced datasets.
+- Improving metrics like recall, F1-score, and AUC-ROC for the minority class, which are critical in applications like fraud detection, healthcare, and rare event prediction.
+
+.. note::
+
+   While we provide comprehensive examples for SMOTE, ADASYN, and 
+   RandomUnderSampler in the `accompanying notebook <https://colab.research.google.com/drive/16gWnRAJvpUjTIes5y1gFRdX1soASdV6m#scrollTo=3NYa_tQWy6HR>`_, 
+   this documentation section demonstrates the implementation of SMOTE. The other 
+   examples follow a similar workflow and can be executed by simply passing the 
+   respective ``imbalance_sampler`` input to ``ADASYN()`` or ``RandomUnderSampler()``, as 
+   needed. For detailed examples of all methods, please refer to the linked notebook.
+
+Synthetic Minority Oversampling Technique (SMOTE)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SMOTE (Synthetic Minority Oversampling Technique) is a method used to address 
+class imbalance in datasets. It generates synthetic samples for the minority 
+class by interpolating between existing minority samples and their nearest neighbors, 
+effectively increasing the size of the minority class without duplicating data. 
+This helps models better learn patterns from the minority class, improving 
+classification performance on imbalanced datasets.
+
+Initalize and Configure The Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. important::
+
+   In the code block below, we initalize and configure the model by calling the 
+   ``Model`` class, and assign it to a new variable call ``xgb_smote``. Notice that 
+   we pass the ``imbalance_sampler=SMOTE()`` as a necessary step of activating 
+   this imbalanced sampler. 
+
+.. code-block:: python
+
+   xgb_smote = Model(
+      name=f"Make_Classification_{model_type}",
+      estimator_name=estimator_name,
+      calibrate=calibrate,
+      pipeline_steps=[
+         ("Imputer", SimpleImputer()),
+         ("StandardScalar", StandardScaler()),
+      ],
+      estimator=clc,
+      kfold=kfold,
+      stratify_y=True,
+      stratify_cols=False,
+      grid=tuned_parameters,
+      randomized_grid=rand_grid,
+      boost_early=early_stop,
+      scoring=["roc_auc"],
+      random_state=222,
+      n_jobs=2,
+      imbalance_sampler=SMOTE(),
+   )
+
+Perform Grid Search Parameter Tuning and Retrieve Split Data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   xgb_smote.grid_search_param_tuning(
+      X,
+      y,
+      f1_beta_tune=True,
+   )
+
+   X_train, y_train = xgb_smote.get_train_data(X, y)
+   X_test, y_test = xgb_smote.get_test_data(X, y)
+   X_valid, y_valid = xgb_smote.get_valid_data(X, y)
+
+
+.. code-block:: bash
+
+   Pipeline Steps:
+   ========================
+   ┌────────────────────────────────────────────┐
+   │ Step 1: preprocess_imputer_Imputer         │
+   │ SimpleImputer                              │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 2: preprocess_scaler_StandardScalar   │
+   │ StandardScaler                             │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 3: resampler                          │
+   │ SMOTE                                      │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 4: xgb                                │
+   │ XGBClassifier                              │
+   └────────────────────────────────────────────┘
+
+   Distribution of y values after resampling: target
+   0         540
+   1         540
+   Name: count, dtype: int64
+
+   100%|██████████| 5/5 [00:47<00:00,  9.41s/it]
+   Fitting model with best params and tuning for best threshold ...
+   100%|██████████| 2/2 [00:00<00:00,  4.01it/s]Best score/param set found on validation set:
+   {'params': {'xgb__early_stopping_rounds': 100,
+               'xgb__eval_metric': 'logloss',
+               'xgb__learning_rate': 0.0001,
+               'xgb__max_depth': 3,
+               'xgb__n_estimators': 999},
+   'score': 0.9994444444444446}
+   Best roc_auc: 0.999 
+
+SMOTE: Distribution of y values after resampling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Notice that the target has been redistributed after SMOTE to 540 observations 
+for the minority class and 540 observations for the majority class.
+
 .. _Regression:
 
 Regression

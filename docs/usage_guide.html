@@ -82,6 +82,23 @@
 <li class="toctree-l3"><a class="reference internal" href="#classification-report-optional">Classification Report (Optional)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#imbalanced-learning">Imbalanced Learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#generating-an-imbalanced-dataset">Generating an Imbalanced Dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#define-hyperparameters-for-xgboost">Define Hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#define-the-model-object">Define The Model object</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#addressing-class-imbalance-in-machine-learning">Addressing Class Imbalance in Machine Learning</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#techniques-to-address-class-imbalance">Techniques to Address Class Imbalance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#purpose-of-using-these-techniques">Purpose of Using These Techniques</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#synthetic-minority-oversampling-technique-smote">Synthetic Minority Oversampling Technique (SMOTE)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#initalize-and-configure-the-model">Initalize and Configure The Model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perform-grid-search-parameter-tuning-and-retrieve-split-data">Perform Grid Search Parameter Tuning and Retrieve Split Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smote-distribution-of-y-values-after-resampling">SMOTE: Distribution of y values after resampling</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#regression">Regression</a><ul>
@@ -662,6 +679,269 @@ output it as follows:</p>
 weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="imbalanced-learning">
+<h2>Imbalanced Learning<a class="headerlink" href="#imbalanced-learning" title="Link to this heading"></a></h2>
+<p>In machine learning, imbalanced datasets are a frequent challenge, especially in
+real-world scenarios. These datasets have an unequal distribution of target classes,
+with one class (e.g., fraudulent transactions, rare diseases, or other low-frequency events)
+being underrepresented compared to the majority class. Models trained on imbalanced data
+often struggle to generalize, as they tend to favor the majority class, leading to
+poor performance on the minority class.</p>
+<p>To mitigate these issues, it is crucial to:</p>
+<ol class="arabic simple">
+<li><p>Understand the nature of the imbalance in the dataset.</p></li>
+<li><p>Apply appropriate resampling techniques (oversampling, undersampling, or hybrid methods).</p></li>
+<li><p>Use metrics beyond accuracy, such as precision, recall, and F1-score, to evaluate model performance fairly.</p></li>
+</ol>
+<section id="generating-an-imbalanced-dataset">
+<h3>Generating an Imbalanced Dataset<a class="headerlink" href="#generating-an-imbalanced-dataset" title="Link to this heading"></a></h3>
+<p>Demonstrated below are the steps to generate an imbalanced dataset using
+<code class="docutils literal notranslate"><span class="pre">make_classification</span></code> from the <code class="docutils literal notranslate"><span class="pre">sklearn.datasets</span></code> module. The following
+parameters are specified:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_samples=1000</span></code>: The dataset contains 1,000 samples.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_features=20</span></code>: Each sample has 20 features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_informative=2</span></code>: Two features are informative for predicting the target.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_redundant=2</span></code>: Two features are linear combinations of the informative features.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weights=[0.9,</span> <span class="pre">0.1]</span></code>: The target class distribution is 90% for the majority class and 10% for the minority class, creating an imbalance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flip_y=0</span></code>: No label noise is added to the target variable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">random_state=42</span></code>: Ensures reproducibility by using a fixed random seed.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create an imbalanced dataset using make_classification</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+   <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># Total number of samples</span>
+   <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>   <span class="c1"># Total number of features</span>
+   <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># Number of informative features</span>
+   <span class="n">n_redundant</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>   <span class="c1"># Number of redundant features</span>
+   <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+   <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>  <span class="c1"># Proportion of classes, creating imbalance</span>
+   <span class="n">flip_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># No label noise</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Convert to a pandas DataFrame for better visualization</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;feature_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)])</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s2">&quot;target&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Below, you will see that the dataset we have generated is severely imbalanced with
+900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a bar plot</span>
+<span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">value_counts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+   <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+   <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+   <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Add labels inside the bars</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value_counts</span><span class="p">):</span>
+   <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+      <span class="n">index</span><span class="p">,</span>  <span class="c1"># x-coordinate of the bar</span>
+      <span class="n">count</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>  <span class="c1"># y-coordinate (middle of the bar)</span>
+      <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>  <span class="c1"># Text to display (count)</span>
+      <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+      <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>  <span class="c1"># Center alignment</span>
+      <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>  <span class="c1"># Text color</span>
+   <span class="p">)</span>
+
+<span class="c1"># Customize labels and title</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Class&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Class Distribution&quot;</span><span class="p">)</span>
+
+<span class="c1"># Show the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="no-click"><a class="reference internal image-reference" href="_images/imbalanced_classes.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/imbalanced_classes.png" style="width: 400px;" />
+</a>
+</div><div style="height: 50px;"></div></section>
+<section id="define-hyperparameters-for-xgboost">
+<h3>Define Hyperparameters for XGBoost<a class="headerlink" href="#define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
+<p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+   <span class="c1"># objective=&quot;binary:logistic&quot;,</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+   <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+   <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+   <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+   <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+   <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="define-the-model-object">
+<h3>Define The Model object<a class="headerlink" href="#define-the-model-object" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">clc</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
+<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
+
+<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
+<span class="n">n_iter</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;n_iter&quot;</span><span class="p">]</span>
+<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
+<span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+<section id="addressing-class-imbalance-in-machine-learning">
+<h3>Addressing Class Imbalance in Machine Learning<a class="headerlink" href="#addressing-class-imbalance-in-machine-learning" title="Link to this heading"></a></h3>
+<p>Class imbalance occurs when one class significantly outweighs another in the
+dataset, leading to biased models that perform well on the majority class but
+poorly on the minority class. Techniques like SMOTE and others aim to address
+this issue by improving the representation of the minority class, ensuring balanced
+learning and better generalization.</p>
+<section id="techniques-to-address-class-imbalance">
+<h4>Techniques to Address Class Imbalance<a class="headerlink" href="#techniques-to-address-class-imbalance" title="Link to this heading"></a></h4>
+<p><strong>Resampling Techniques</strong></p>
+<ul class="simple">
+<li><p><strong>SMOTE (Synthetic Minority Oversampling Technique)</strong>: SMOTE generates synthetic samples for the minority class by interpolating between existing minority class data points and their nearest neighbors. This helps create a more balanced class distribution without merely duplicating data, thus avoiding overfitting.</p></li>
+<li><p><strong>Oversampling</strong>: Randomly duplicates examples from the minority class to balance the dataset. While simple, it risks overfitting to the duplicated examples.</p></li>
+<li><p><strong>Undersampling</strong>: Reduces the majority class by randomly removing samples. While effective, it can lead to loss of important information.</p></li>
+</ul>
+</section>
+<section id="purpose-of-using-these-techniques">
+<h4>Purpose of Using These Techniques<a class="headerlink" href="#purpose-of-using-these-techniques" title="Link to this heading"></a></h4>
+<p>The goal of using these techniques is to improve model performance on imbalanced datasets, specifically by:</p>
+<ul class="simple">
+<li><p>Ensuring the model captures meaningful patterns in the minority class.</p></li>
+<li><p>Reducing bias toward the majority class, which often dominates predictions in imbalanced datasets.</p></li>
+<li><p>Improving metrics like recall, F1-score, and AUC-ROC for the minority class, which are critical in applications like fraud detection, healthcare, and rare event prediction.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While we provide comprehensive examples for SMOTE, ADASYN, and
+RandomUnderSampler in the <a class="reference external" href="https://colab.research.google.com/drive/16gWnRAJvpUjTIes5y1gFRdX1soASdV6m#scrollTo=3NYa_tQWy6HR">accompanying notebook</a>,
+this documentation section demonstrates the implementation of SMOTE. The other
+examples follow a similar workflow and can be executed by simply passing the
+respective <code class="docutils literal notranslate"><span class="pre">imbalance_sampler</span></code> input to <code class="docutils literal notranslate"><span class="pre">ADASYN()</span></code> or <code class="docutils literal notranslate"><span class="pre">RandomUnderSampler()</span></code>, as
+needed. For detailed examples of all methods, please refer to the linked notebook.</p>
+</div>
+</section>
+</section>
+<section id="synthetic-minority-oversampling-technique-smote">
+<h3>Synthetic Minority Oversampling Technique (SMOTE)<a class="headerlink" href="#synthetic-minority-oversampling-technique-smote" title="Link to this heading"></a></h3>
+<p>SMOTE (Synthetic Minority Oversampling Technique) is a method used to address
+class imbalance in datasets. It generates synthetic samples for the minority
+class by interpolating between existing minority samples and their nearest neighbors,
+effectively increasing the size of the minority class without duplicating data.
+This helps models better learn patterns from the minority class, improving
+classification performance on imbalanced datasets.</p>
+<section id="initalize-and-configure-the-model">
+<h4>Initalize and Configure The Model<a class="headerlink" href="#initalize-and-configure-the-model" title="Link to this heading"></a></h4>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>In the code block below, we initalize and configure the model by calling the
+<code class="docutils literal notranslate"><span class="pre">Model</span></code> class, and assign it to a new variable call <code class="docutils literal notranslate"><span class="pre">xgb_smote</span></code>. Notice that
+we pass the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE()</span></code> as a necessary step of activating
+this imbalanced sampler.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+   <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+      <span class="p">(</span><span class="s2">&quot;Imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+      <span class="p">(</span><span class="s2">&quot;StandardScalar&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+   <span class="p">],</span>
+   <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+   <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+   <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+   <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
+   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+   <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="perform-grid-search-parameter-tuning-and-retrieve-split-data">
+<h4>Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="headerlink" href="#perform-grid-search-parameter-tuning-and-retrieve-split-data" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span>
+   <span class="n">X</span><span class="p">,</span>
+   <span class="n">y</span><span class="p">,</span>
+   <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
+<span class="o">========================</span>
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>preprocess_imputer_Imputer<span class="w">         </span>│
+│<span class="w"> </span>SimpleImputer<span class="w">                              </span>│
+└────────────────────────────────────────────┘
+<span class="w">                     </span>│
+<span class="w">                     </span>▼
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>preprocess_scaler_StandardScalar<span class="w">   </span>│
+│<span class="w"> </span>StandardScaler<span class="w">                             </span>│
+└────────────────────────────────────────────┘
+<span class="w">                     </span>│
+<span class="w">                     </span>▼
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>resampler<span class="w">                          </span>│
+│<span class="w"> </span>SMOTE<span class="w">                                      </span>│
+└────────────────────────────────────────────┘
+<span class="w">                     </span>│
+<span class="w">                     </span>▼
+┌────────────────────────────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">4</span>:<span class="w"> </span>xgb<span class="w">                                </span>│
+│<span class="w"> </span>XGBClassifier<span class="w">                              </span>│
+└────────────────────────────────────────────┘
+
+Distribution<span class="w"> </span>of<span class="w"> </span>y<span class="w"> </span>values<span class="w"> </span>after<span class="w"> </span>resampling:<span class="w"> </span>target
+<span class="m">0</span><span class="w">         </span><span class="m">540</span>
+<span class="m">1</span><span class="w">         </span><span class="m">540</span>
+Name:<span class="w"> </span>count,<span class="w"> </span>dtype:<span class="w"> </span>int64
+
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:47&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">9</span>.41s/it<span class="o">]</span>
+Fitting<span class="w"> </span>model<span class="w"> </span>with<span class="w"> </span>best<span class="w"> </span>params<span class="w"> </span>and<span class="w"> </span>tuning<span class="w"> </span><span class="k">for</span><span class="w"> </span>best<span class="w"> </span>threshold<span class="w"> </span>...
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.01it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">100</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.0001,
+<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">999</span><span class="o">}</span>,
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9994444444444446<span class="o">}</span>
+Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.999
+</pre></div>
+</div>
+</section>
+<section id="smote-distribution-of-y-values-after-resampling">
+<h4>SMOTE: Distribution of y values after resampling<a class="headerlink" href="#smote-distribution-of-y-values-after-resampling" title="Link to this heading"></a></h4>
+<p>Notice that the target has been redistributed after SMOTE to 540 observations
+for the minority class and 540 observations for the majority class.</p>
+</section>
 </section>
 </section>
 </section>
