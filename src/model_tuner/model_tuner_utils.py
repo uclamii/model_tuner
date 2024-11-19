@@ -148,7 +148,7 @@ class Model:
             self.PipelineClass = Pipeline
 
         self.pipeline_steps = pipeline_steps
-        if self.pipeline_steps:
+        if self.pipeline_steps or self.imbalance_sampler:
             self.pipeline_assembly()
         else:
             self.estimator = self.PipelineClass(
