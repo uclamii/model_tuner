@@ -22,6 +22,7 @@ tuned_parameters = {
 model = Model(
     name="Catboost Early",
     estimator_name=estimator_name,
+    model_type="classification",
     estimator=estimator,
     pipeline_steps=[],
     stratify_y=True,
