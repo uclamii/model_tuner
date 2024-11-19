@@ -659,15 +659,20 @@ class Model:
                             )
                         )
 
-                        # Set parameters and fit the pipeline
-                        preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                            X, y
-                        )
+                        ### IF we have preprocessing steps then they need applying
+                        ### Otherwise do not apply them
+                        if preproc_feat_select_pipe:
+                            # Set parameters and fit the pipeline
+                            preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
+                                X, y
+                            )
 
-                        # Transform the validation data
-                        X_valid_transformed = preproc_feat_select_pipe.transform(
-                            X_valid
-                        )
+                            # Transform the validation data
+                            X_valid_transformed = preproc_feat_select_pipe.transform(
+                                X_valid
+                            )
+                        else:
+                            X_valid_transformed = X_valid
                     else:
                         X_valid_transformed = X_valid
 
@@ -724,15 +729,20 @@ class Model:
                             )
                         )
 
-                        # Set parameters and fit the pipeline
-                        preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                            X, y
-                        )
+                        ### IF we have preprocessing steps then they need applying
+                        ### Otherwise do not apply them
+                        if preproc_feat_select_pipe:
+                            # Set parameters and fit the pipeline
+                            preproc_feat_select_pipe.set_params(
+                                **params_no_estimator
+                            ).fit(X, y)
 
-                        # Transform the validation data
-                        X_valid_transformed = preproc_feat_select_pipe.transform(
-                            X_valid
-                        )
+                            # Transform the validation data
+                            X_valid_transformed = preproc_feat_select_pipe.transform(
+                                X_valid
+                            )
+                        else:
+                            X_valid_transformed = X_valid
                     else:
                         X_valid_transformed = X_valid
 
@@ -1028,7 +1038,6 @@ class Model:
                                 **params_feature_selection,
                             }
 
-                            # Exclude the resampler if present
                             if self.imbalance_sampler:
                                 params_no_estimator = {
                                     key: value
@@ -1036,21 +1045,26 @@ class Model:
                                     if not key.startswith("resampler__")
                                 }
 
-                            # Get the combined preprocessing and feature selection pipeline
                             preproc_feat_select_pipe = (
                                 self.get_preprocessing_and_feature_selection_pipeline(
                                     self.estimator
                                 )
                             )
 
-                            preproc_feat_select_pipe.set_params(
-                                **params_no_estimator
-                            ).fit(X_train, y_train)
+                            ### IF we have preprocessing steps then they need applying 
+                            ### Otherwise do not apply them 
+                            if preproc_feat_select_pipe:
+                                # Set parameters and fit the pipeline
+                                preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
+                                    X, y
+                                )
 
-                            # Transform the validation data
-                            X_valid_transformed = preproc_feat_select_pipe.transform(
-                                X_valid
-                            )
+                                # Transform the validation data
+                                X_valid_transformed = preproc_feat_select_pipe.transform(
+                                    X_valid
+                                )
+                            else:
+                                X_valid_transformed = X_valid
                         else:
                             X_valid_transformed = X_valid
 
