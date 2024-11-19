@@ -42,6 +42,7 @@ model = Model(
     name="XGBoost Early",
     estimator_name=estimator_name,
     calibrate=calibrate,
+    model_type="classification",
     estimator=estimator,
     pipeline_steps=[SimpleImputer(), ("rfe", rfe)],
     kfold=kfold,
