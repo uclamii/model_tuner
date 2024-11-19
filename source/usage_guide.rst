@@ -38,6 +38,11 @@ Binary Classification Examples
 
       <a href="https://colab.research.google.com/drive/12XywbGBiwlZIbi0C3JKu9NOQPPRgVwcp?usp=sharing#scrollTo=rm5TA__pC3M-" target="_blank">Binary Classification: AIDS Clinical Trials - Numerical Data</a>
 
+   - .. raw:: html
+
+      <a href="https://colab.research.google.com/drive/16gWnRAJvpUjTIes5y1gFRdX1soASdV6m#scrollTo=3NYa_tQWy6HR" target="_blank">Binary Classification: Imbalanced Learning</a>
+
+
 
    **HTML Files**
 
