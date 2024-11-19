@@ -387,3 +387,155 @@ Summary
 
 Calibration is essential when the probabilities output by a model need to be trusted, such as in risk assessment, medical diagnosis, and other critical applications.
 
+
+Caveats in Imbalanced Learning
+----------------------------------
+
+Working with imbalanced datasets introduces several challenges that must be carefully addressed 
+to ensure model performance is both effective and fair. Below are key caveats to consider:
+
+Bias from Class Distribution
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In imbalanced datasets, the prior probabilities of the classes are highly skewed:
+
+.. math::
+
+    P(Y = c_{\text{minority}}) \ll P(Y = c_{\text{majority}})
+
+This imbalance can lead models to prioritize the majority class, resulting in biased predictions 
+that overlook the minority class. Models may optimize for accuracy but fail to capture the true 
+distribution of minority class instances.
+
+Threshold-Dependent Predictions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Many classifiers rely on a decision threshold :math:`\tau` to make predictions:
+
+.. math::
+
+    \text{Predict } c_{\text{minority}} \text{ if } \hat{P}(Y = c_{\text{minority}} \mid X) \geq \tau
+
+With imbalanced data, the default threshold may favor the majority class, causing a high rate of 
+false negatives for the minority class. Adjusting the threshold to account for imbalance can 
+help mitigate this issue, but it requires careful tuning and validation.
+
+Limitations of Accuracy
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Traditional accuracy is a misleading metric in imbalanced datasets. For example, a model predicting 
+only the majority class can achieve high accuracy despite failing to identify any minority class instances. 
+Instead, alternative metrics should be used:
+
+- **Precision** for the minority class:
+
+   Measures the proportion of correctly predicted minority class instances out of all 
+   instances predicted as the minority class.
+  
+  .. math::
+
+      \text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}
+
+- **Recall** for the minority class:
+
+   Measures the proportion of correctly predicted minority class instances out of all actual 
+   minority class instances.
+
+  .. math::
+
+      \text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
+
+- **F1-Score**, the harmonic mean of precision and recall:
+
+   Balances precision and recall to provide a single performance measure.
+
+  .. math::
+
+      F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+
+These metrics provide a more balanced evaluation of model performance on imbalanced datasets.
+
+
+Impact of Resampling Techniques
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Resampling methods such as oversampling and undersampling can address class imbalance but come with trade-offs:
+
+- **Oversampling Caveats**:
+  - Methods like SMOTE may introduce synthetic data that does not fully reflect the true distribution of the minority class.
+  - Overfitting to the minority class is a risk if too much synthetic data is added.
+
+- **Undersampling Caveats**:
+  - Removing samples from the majority class can lead to loss of important information, reducing the model's generalizability.
+
+
+SMOTE: A Mathematical Illustration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SMOTE (Synthetic Minority Over-sampling Technique) is a widely used algorithm for addressing 
+class imbalance by generating synthetic samples for the minority class. However, while powerful, 
+SMOTE comes with inherent caveats that practitioners should understand. Below is a mathematical 
+illustration highlighting these caveats.
+
+**Synthetic Sample Generation**
+
+SMOTE generates synthetic samples by interpolating between a minority class sample and its nearest 
+neighbors. Mathematically, a synthetic sample :math:`x_{synthetic}` is defined as:
+
+.. math::
+
+    \mathbf{x}_{\text{synthetic}} = \mathbf{x}_i + \delta \cdot (\mathbf{x}_k - \mathbf{x}_i)
+
+where:
+
+- :math:`\mathbf{x}_i`: A minority class sample.
+- :math:`\mathbf{x}_k`: One of its :math:`k` nearest neighbors (from the same class).
+- :math:`\delta`: A random value drawn from a uniform distribution, :math:`\delta \sim U(0, 1)`.
+
+This process ensures that synthetic samples are generated along the line segments connecting 
+minority class samples and their neighbors.
+
+**Caveats in Application**
+
+1. **Overlapping Classes**:
+   - SMOTE assumes that the minority class samples are well-clustered and separable from the majority class.
+   - If the minority class overlaps significantly with the majority class, synthetic samples may fall into regions dominated by the majority class, leading to misclassification.
+
+2. **Noise Sensitivity**:
+   - SMOTE generates synthetic samples based on existing minority class samples, including noisy or mislabeled ones.
+   - Synthetic samples created from noisy data can amplify the noise, degrading model performance.
+
+3. **Feature Space Assumptions**:
+   - SMOTE relies on linear interpolation in the feature space, which assumes that the feature space is homogeneous.
+   - In highly non-linear spaces, this assumption may not hold, leading to unrealistic synthetic samples.
+
+4. **Dimensionality Challenges**:
+   - In high-dimensional spaces, nearest neighbor calculations may become less meaningful due to the curse of dimensionality.
+   - Synthetic samples may not adequately represent the true distribution of the minority class.
+
+5. **Risk of Overfitting**:
+   - If SMOTE is applied excessively, the model may overfit to the synthetic minority class samples, reducing generalizability to unseen data.
+
+Example of Synthetic Sample Creation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To illustrate, consider a minority class sample :math:`f{x}_i = [1, 2]` and its nearest neighbor 
+:math:`f{x}_k = [3, 4]`. If :math:`\delta = 0.5`, the synthetic sample is computed as:
+
+.. math:: 
+   \mathbf{x}_{\text{synthetic}} = [1, 2] + 0.5 \cdot ([3, 4] - [1, 2])
+
+.. math:: 
+   \mathbf{x}_{\text{synthetic}} = [2, 3]
+
+This synthetic sample lies midway between the two points in the feature space.
+
+Mitigating the Caveats
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Combine SMOTE with Undersampling**: Techniques like SMOTEENN or SMOTETomek remove noisy or overlapping samples after synthetic generation.  
+
+- **Apply with Feature Engineering**: Ensure the feature space is meaningful and represents the underlying data structure.  
+
+- **Tune Oversampling Ratio**: Avoid generating excessive synthetic samples to reduce overfitting.
+
