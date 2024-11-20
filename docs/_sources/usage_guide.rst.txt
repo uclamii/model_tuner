@@ -531,10 +531,18 @@ You can use this function to evaluate the model by printing the output.
    # ------------------------- VALID AND TEST METRICS -----------------------------
 
    print("Validation Metrics")
-   class_report_val, cm_val = model_xgb.return_metrics(X_valid, y_valid, optimal_threshold=True)
+   class_report_val, cm_val = model_xgb.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+   )
    print()
    print("Test Metrics")
-   class_report_test, cm_test = model_xgb.return_metrics(X_test, y_test, optimal_threshold=True)
+   class_report_test, cm_test = model_xgb.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+   )
 
 .. code-block:: bash
 
@@ -604,22 +612,22 @@ Step 10: Calibrate the Model (if needed)
    import matplotlib.pyplot as plt
    from sklearn.calibration import calibration_curve
 
-   # Get the predicted probabilities for the validation data from the uncalibrated model
+   ## Get the predicted probabilities for the validation data from uncalibrated model
    y_prob_uncalibrated = model_xgb.predict_proba(X_test)[:, 1]
 
-   # Compute the calibration curve for the uncalibrated model
+   ## Compute the calibration curve for the uncalibrated model
    prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
       y_test,
       y_prob_uncalibrated,
-      n_bins=6,
+      n_bins=10,
    )
 
-   # Calibrate the model
+   ## Calibrate the model
    if model_xgb.calibrate:
-   model_xgb.calibrateModel(X, y, score="roc_auc")
+      model_xgb.calibrateModel(X, y, score="roc_auc")
 
-   # Predict on the validation set
-   y_test_pred = model_xgb.predict_proba(X_test)[:,1]
+   ## Predict on the validation set
+   y_test_pred = model_xgb.predict_proba(X_test)[:, 1]
 
 
 .. code-block:: bash
@@ -651,43 +659,42 @@ Step 10: Calibrate the Model (if needed)
 
 .. code-block:: python
 
-   # Get the predicted probabilities for the validation data from calibrated model
+   ## Get the predicted probabilities for the validation data from calibrated model
    y_prob_calibrated = model_xgb.predict_proba(X_test)[:, 1]
 
-   # Compute the calibration curve for the calibrated model
+   ## Compute the calibration curve for the calibrated model
    prob_true_calibrated, prob_pred_calibrated = calibration_curve(
-   y_test,
-   y_prob_calibrated,
-   n_bins=6,
+      y_test,
+      y_prob_calibrated,
+      n_bins=10,
    )
 
 
-   # Plot the calibration curves
+   ## Plot the calibration curves
    plt.figure(figsize=(5, 5))
    plt.plot(
-   prob_pred_uncalibrated,
-   prob_true_uncalibrated,
-   marker="o",
-   label="Uncalibrated XGBoost",
+      prob_pred_uncalibrated,
+      prob_true_uncalibrated,
+      marker="o",
+      label="Uncalibrated XGBoost",
    )
    plt.plot(
-   prob_pred_calibrated,
-   prob_true_calibrated,
-   marker="o",
-   label="Calibrated XGBoost",
+      prob_pred_calibrated,
+      prob_true_calibrated,
+      marker="o",
+      label="Calibrated XGBoost",
    )
    plt.plot(
-   [0, 1],
-   [0, 1],
-   linestyle="--",
-   label="Perfectly calibrated",
+      [0, 1],
+      [0, 1],
+      linestyle="--",
+      label="Perfectly calibrated",
    )
    plt.xlabel("Predicted probability")
    plt.ylabel("True probability in each bin")
    plt.title("Calibration plot (reliability curve)")
    plt.legend()
    plt.show()
-
 
 .. raw:: html
 
@@ -762,6 +769,10 @@ parameters are specified:
 
 .. code-block:: python
 
+   import pandas as pd
+   import numpy as np
+   from sklearn.datasets import make_classification
+
    X, y = make_classification(
       n_samples=1000,  
       n_features=20,  
@@ -785,6 +796,8 @@ Below, you will see that the dataset we have generated is severely imbalanced wi
 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).
 
 .. code-block:: python
+
+   import matplotlib.pyplot as plt
 
    ## Create a bar plot
    value_counts = pd.Series(y).value_counts()
@@ -837,6 +850,8 @@ Define Hyperparameters for XGBoost
 Below, we will use an XGBoost classifier with the following hyperparameters:
 
 .. code-block:: python
+
+   from xgboost import XGBClassifier
 
    xgb_name = "xgb"
    xgb = XGBClassifier(
@@ -937,14 +952,13 @@ Initalize and Configure The Model
 
 .. code-block:: python
 
+   from model_tuner import Model
+
    xgb_smote = Model(
       name=f"Make_Classification_{model_type}",
       estimator_name=estimator_name,
       calibrate=calibrate,
-      pipeline_steps=[
-         ("Imputer", SimpleImputer()),
-         ("StandardScalar", StandardScaler()),
-      ],
+      model_type="classification",
       estimator=clc,
       kfold=kfold,
       stratify_y=True,
@@ -977,44 +991,32 @@ Perform Grid Search Parameter Tuning and Retrieve Split Data
 .. code-block:: bash
 
    Pipeline Steps:
-   ========================
-   ┌────────────────────────────────────────────┐
-   │ Step 1: preprocess_imputer_Imputer         │
-   │ SimpleImputer                              │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 2: preprocess_scaler_StandardScalar   │
-   │ StandardScaler                             │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 3: resampler                          │
-   │ SMOTE                                      │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 4: xgb                                │
-   │ XGBClassifier                              │
-   └────────────────────────────────────────────┘
+
+   ┌─────────────────────┐
+   │ Step 1: resampler   │
+   │ SMOTE               │
+   └─────────────────────┘
+            │
+            ▼
+   ┌─────────────────────┐
+   │ Step 2: xgb         │
+   │ XGBClassifier       │
+   └─────────────────────┘
 
    Distribution of y values after resampling: target
    0         540
    1         540
    Name: count, dtype: int64
 
-   100%|██████████| 5/5 [00:47<00:00,  9.41s/it]
+   100%|██████████| 5/5 [00:34<00:00,  6.87s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  4.01it/s]Best score/param set found on validation set:
+   100%|██████████| 2/2 [00:00<00:00,  4.37it/s]Best score/param set found on validation set:
    {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
-               'xgb__max_depth': 3,
+               'xgb__max_depth': 10,
                'xgb__n_estimators': 999},
-   'score': 0.9994444444444446}
+   'score': 0.9990277777777777}
    Best roc_auc: 0.999 
 
 SMOTE: Distribution of y values after resampling
@@ -1037,52 +1039,34 @@ Fit The Model
 Return Metrics (Optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
-
-   # ------------------------- VALID AND TEST METRICS -----------------------------
-
-   print("Validation Metrics")
-   class_report_val, cm_val = xgb_smote.return_metrics(
-      X_valid,
-      y_valid,
-      optimal_threshold=True,
-   )
-   print()
-   print("Test Metrics")
-   class_report_test, cm_test = xgb_smote.return_metrics(
-      X_test,
-      y_test,
-      optimal_threshold=True,
-   )
-
 .. code-block:: bash
 
    Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-               Pos   Neg
+                Pos   Neg
    --------------------------------------------------------------------------------
    Actual: Pos  20 (tp)    0 (fn)
-           Neg   3 (fp)  177 (tn)
+           Neg   6 (fp)  174 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9904166666666667,
-   'Average Precision': 0.8520172219085262,
-   'Brier Score': 0.2096258193295803,
-   'Precision/PPV': 0.8695652173913043,
+   {'AUC ROC': 0.9955555555555555,
+   'Average Precision': 0.9378696741854636,
+   'Brier Score': 0.20835571676988004,
+   'Precision/PPV': 0.7692307692307693,
    'Sensitivity': 1.0,
-   'Specificity': 0.9833333333333333}
+   'Specificity': 0.9666666666666667}
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       1.00      0.98      0.99       180
-            1       0.87      1.00      0.93        20
+            0       1.00      0.97      0.98       180
+            1       0.77      1.00      0.87        20
 
-      accuracy                          0.98       200
-      macro avg     0.93      0.99      0.96       200
-   weighted avg     0.99      0.98      0.99       200
+      accuracy                          0.97       200
+      macro avg     0.88      0.98      0.93       200
+   weighted avg     0.98      0.97      0.97       200
 
    --------------------------------------------------------------------------------
 
@@ -1090,31 +1074,30 @@ Return Metrics (Optional)
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-               Pos   Neg
+                Pos   Neg
    --------------------------------------------------------------------------------
    Actual: Pos  19 (tp)    1 (fn)
-           Neg   2 (fp)  178 (tn)
+           Neg   3 (fp)  177 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9951388888888888,
-   'Average Precision': 0.9722222222222222,
-   'Brier Score': 0.20989021789332263,
-   'Precision/PPV': 0.9047619047619048,
+   {'AUC ROC': 0.9945833333333333,
+   'Average Precision': 0.9334649122807017,
+   'Brier Score': 0.20820269480995568,
+   'Precision/PPV': 0.8636363636363636,
    'Sensitivity': 0.95,
-   'Specificity': 0.9888888888888889}
+   'Specificity': 0.9833333333333333}
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.99      0.99      0.99       180
-            1       0.90      0.95      0.93        20
+            0       0.99      0.98      0.99       180
+            1       0.86      0.95      0.90        20
 
       accuracy                          0.98       200
-      macro avg     0.95      0.97      0.96       200
-   weighted avg     0.99      0.98      0.99       200
+      macro avg     0.93      0.97      0.95       200
+   weighted avg     0.98      0.98      0.98       200
 
    --------------------------------------------------------------------------------
-
 .. _Regression:
 
 Regression
@@ -1132,7 +1115,7 @@ Step 1: Import Necessary Libraries
 
    import pandas as pd
    import numpy as np
-   ifrom xgboost import XGBRegressor
+   from xgboost import XGBRegressor
    from sklearn.impute import SimpleImputer
    from sklearn.datasets import fetch_california_housing
    from model_tuner import Model  
@@ -1219,7 +1202,7 @@ when using ``XGBRegressor``.
       calibrate=calibrate,
       estimator=clc,
       kfold=kfold,
-      stratify_y=None,
+      stratify_y=False,
       grid=tuned_parameters,
       randomized_grid=rand_grid,
       boost_early=early_stop,
@@ -1243,13 +1226,13 @@ Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data
 .. code-block:: bash
 
    Pipeline Steps:
-   ========================
+
    ┌────────────────┐
    │ Step 1: xgb    │
    │ XGBRegressor   │
    └────────────────┘
 
-   100%|██████████| 9/9 [00:05<00:00,  1.60it/s]Best score/param set found on validation set:
+   100%|██████████| 9/9 [00:22<00:00,  2.45s/it]Best score/param set found on validation set:
    {'params': {'xgb__colsample_bytree': 0.8,
                'xgb__early_stopping_rounds': 10,
                'xgb__eval_metric': 'logloss',
@@ -1259,7 +1242,7 @@ Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data
                'xgb__subsample': 0.8,
                'xgb__tree_method': 'hist'},
    'score': 0.7651490279157868}
-   Best r2: 0.765
+   Best r2: 0.765 
 
 
 Step 7: Fit the Model
@@ -1267,7 +1250,11 @@ Step 7: Fit the Model
 
 .. code-block:: python
 
-   model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+   model_xgb.fit(
+      X_train,
+      y_train,
+      validation_data=[X_valid, y_valid],
+   )
 
 Step 8: Return Metrics (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1398,7 +1385,7 @@ The ``bootstrapper.py`` module provides utility functions for input type checkin
 Bootstrap Metrics Example
 -----------------------------
 
-Continuing from the model output object (``model_xgb``) from the :ref:`regression example <Regression>` above, we leverage the ``return_bootstrap_metrics`` method from ``model_tuner_utils.py`` to print bootstrap performance metrics (:math:`R^2` and `explained_variance`) at 95% confidence levels as shown below: 
+Continuing from the model output object (``model_xgb``) from the :ref:`regression example <Regression>` above, we leverage the ``return_bootstrap_metrics`` method from ``model_tuner_utils.py`` to print bootstrap performance metrics (:math:`R^2` and :math:`\text{explained variance}`) at 95% confidence levels as shown below: 
 
 .. code-block:: python
 
