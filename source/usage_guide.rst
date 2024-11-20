@@ -246,7 +246,7 @@ The ``pipeline_assembly`` method automatically sorts the steps into this order.
 Specifying Pipeline Steps
 -------------------------
 
-Pipeline steps can be specified in multiple way. For example if naming a pipeline step then specify like so::
+Pipeline steps can be specified in multiple ways. For example, if naming a pipeline step then specify like so::
 
     pipeline_steps = ['imputer', SimpleImputer()]
 
