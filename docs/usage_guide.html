@@ -721,7 +721,11 @@ parameters are specified:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">flip_y=0</span></code>: No label noise is added to the target variable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">random_state=42</span></code>: Ensures reproducibility by using a fixed random seed.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
    <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
    <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
    <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -742,7 +746,9 @@ parameters are specified:</p>
 </div>
 <p>Below, you will see that the dataset we have generated is severely imbalanced with
 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Create a bar plot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1">## Create a bar plot</span>
 <span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">value_counts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
@@ -775,7 +781,9 @@ parameters are specified:</p>
 <section id="define-hyperparameters-for-xgboost">
 <h3>Define Hyperparameters for XGBoost<a class="headerlink" href="#define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
 <p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
 <span class="p">)</span>
@@ -867,7 +875,9 @@ classification performance on imbalanced datasets.</p>
 we pass the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE()</span></code> as a necessary step of activating
 this imbalanced sampler.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
@@ -1020,7 +1030,7 @@ weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0
 <h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">ifrom</span> <span class="n">xgboost</span> <span class="kn">import</span> <span class="nn">XGBRegressor</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_california_housing</span>
 <span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -1099,7 +1109,7 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
@@ -1120,13 +1130,13 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
-<span class="o">========================</span>
+
 ┌────────────────┐
 │<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>xgb<span class="w">    </span>│
 │<span class="w"> </span>XGBRegressor<span class="w">   </span>│
 └────────────────┘
 
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:05&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">1</span>.60it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:22&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">2</span>.45s/it<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
 <span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
@@ -1142,7 +1152,11 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 </section>
 <section id="step-7-fit-the-model">
 <h3>Step 7: Fit the Model<a class="headerlink" href="#step-7-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+   <span class="n">X_train</span><span class="p">,</span>
+   <span class="n">y_train</span><span class="p">,</span>
+   <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1297,7 +1311,7 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 
 <section id="bootstrap-metrics-example">
 <h2>Bootstrap Metrics Example<a class="headerlink" href="#bootstrap-metrics-example" title="Link to this heading"></a></h2>
-<p>Continuing from the model output object (<code class="docutils literal notranslate"><span class="pre">model_xgb</span></code>) from the <a class="reference internal" href="#regression"><span class="std std-ref">regression example</span></a> above, we leverage the <code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics</span></code> method from <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> to print bootstrap performance metrics (<span class="math notranslate nohighlight">\(R^2\)</span> and <cite>explained_variance</cite>) at 95% confidence levels as shown below:</p>
+<p>Continuing from the model output object (<code class="docutils literal notranslate"><span class="pre">model_xgb</span></code>) from the <a class="reference internal" href="#regression"><span class="std std-ref">regression example</span></a> above, we leverage the <code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics</span></code> method from <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> to print bootstrap performance metrics (<span class="math notranslate nohighlight">\(R^2\)</span> and <span class="math notranslate nohighlight">\(\text{explained variance}\)</span>) at 95% confidence levels as shown below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bootstrap Metrics&quot;</span><span class="p">)</span>
 
 <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_bootstrap_metrics</span><span class="p">(</span>
