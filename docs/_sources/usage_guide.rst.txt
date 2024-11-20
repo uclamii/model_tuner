@@ -397,7 +397,7 @@ Step 7: Perform Grid Search Parameter Tuning
 .. code-block:: bash
 
    Pipeline Steps:
-   ========================
+
    ┌────────────────────────────────────────────┐
    │ Step 1: preprocess_imputer_Imputer         │
    │ SimpleImputer                              │
@@ -415,23 +415,23 @@ Step 7: Perform Grid Search Parameter Tuning
    │ XGBClassifier                              │
    └────────────────────────────────────────────┘
 
-   100%|██████████| 5/5 [00:19<00:00,  3.84s/it]
+   100%|██████████| 5/5 [00:36<00:00,  7.35s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.30it/s]Best score/param set found on validation set:
+   100%|██████████| 2/2 [00:00<00:00,  3.50it/s]Best score/param set found on validation set:
    {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
                'xgb__max_depth': 3,
                'xgb__n_estimators': 999},
-   'score': 0.9260891500474834}
-   Best roc_auc: 0.926 
+   'score': 0.9280033238366572}
+   Best roc_auc: 0.928 
 
 Step 8: Fit the Model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-   # Get the training and validation data
+   ## Get the training and validation data
    X_train, y_train = model_tuner.get_train_data(X, y)
    X_valid, y_valid = model_tuner.get_valid_data(X, y)
    X_test, y_test = model_tuner.get_test_data(X, y)
@@ -459,28 +459,28 @@ You can use this function to evaluate the model by printing the output.
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-               Pos   Neg
+                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  93 (tp)   11 (fn)
-         Neg  76 (fp)  248 (tn)
+   Actual: Pos  95 (tp)    9 (fn)
+           Neg  79 (fp)  245 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9260891500474834,
-   'Average Precision': 0.8025676192819657,
-   'Brier Score': 0.16665653153377272,
-   'Precision/PPV': 0.5502958579881657,
-   'Sensitivity': 0.8942307692307693,
-   'Specificity': 0.7654320987654321}
+   {'AUC ROC': 0.9280033238366572,
+   'Average Precision': 0.7992275185850191,
+   'Brier Score': 0.16713189436073958,
+   'Precision/PPV': 0.5459770114942529,
+   'Sensitivity': 0.9134615384615384,
+   'Specificity': 0.7561728395061729}
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.96      0.77      0.85       324
-            1       0.55      0.89      0.68       104
+            0       0.96      0.76      0.85       324
+            1       0.55      0.91      0.68       104
 
-      accuracy                           0.80       428
-      macro avg       0.75      0.83      0.77       428
-   weighted avg       0.86      0.80      0.81       428
+      accuracy                          0.79       428
+      macro avg     0.76      0.83      0.77       428
+   weighted avg     0.86      0.79      0.81       428
 
    --------------------------------------------------------------------------------
 
@@ -488,31 +488,31 @@ You can use this function to evaluate the model by printing the output.
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-               Pos   Neg
+                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  99 (tp)    6 (fn)
-         Neg  82 (fp)  241 (tn)
+   Actual: Pos  95 (tp)    9 (fn)
+           Neg  78 (fp)  246 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9343063541205956,
-   'Average Precision': 0.8169018952192892,
-   'Brier Score': 0.16737745981389285,
-   'Precision/PPV': 0.5469613259668509,
-   'Sensitivity': 0.9428571428571428,
-   'Specificity': 0.7461300309597523}
+   {'AUC ROC': 0.934576804368471,
+   'Average Precision': 0.8023014087345259,
+   'Brier Score': 0.16628708993634742,
+   'Precision/PPV': 0.5491329479768786,
+   'Sensitivity': 0.9134615384615384,
+   'Specificity': 0.7592592592592593}
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.98      0.75      0.85       323
-            1       0.55      0.94      0.69       105
+            0       0.96      0.76      0.85       324
+            1       0.55      0.91      0.69       104
 
-      accuracy                           0.79       428
-      macro avg       0.76      0.84      0.77       428
-   weighted avg       0.87      0.79      0.81       428
+      accuracy                          0.80       428
+      macro avg     0.76      0.84      0.77       428
+   weighted avg     0.86      0.80      0.81       428
 
    --------------------------------------------------------------------------------
-   
+      
 Step 10: Calibrate the Model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -546,23 +546,23 @@ Step 10: Calibrate the Model (if needed)
    Confusion matrix on validation set for roc_auc
    --------------------------------------------------------------------------------
             Predicted:
-               Pos   Neg
+                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  74 (tp)   30 (fn)
-         Neg  20 (fp)  304 (tn)
+   Actual: Pos  70 (tp)   34 (fn)
+           Neg   9 (fp)  315 (tn)
    --------------------------------------------------------------------------------
 
                precision    recall  f1-score   support
 
-            0       0.91      0.94      0.92       324
-            1       0.79      0.71      0.75       104
+            0       0.90      0.97      0.94       324
+            1       0.89      0.67      0.77       104
 
-      accuracy                           0.88       428
-      macro avg       0.85      0.82      0.84       428
-   weighted avg       0.88      0.88      0.88       428
+      accuracy                          0.90       428
+      macro avg     0.89      0.82      0.85       428
+   weighted avg     0.90      0.90      0.89       428
 
    --------------------------------------------------------------------------------
-   roc_auc after calibration: 0.9260891500474834
+   roc_auc after calibration: 0.9280033238366572
 
 
 
@@ -610,7 +610,7 @@ Step 10: Calibrate the Model (if needed)
 
    <div class="no-click">
 
-.. image:: /../assets/calibration_curve_aids.png
+.. image:: /../assets/calibration_curves.png
    :alt: Calibration Curve AIDs
    :align: center
    :width: 400px
@@ -641,9 +641,9 @@ output it as follows:
             0       0.91      0.94      0.92       324
             1       0.79      0.71      0.75       104
 
-      accuracy                           0.88       428
-      macro avg       0.85      0.82      0.84       428
-   weighted avg       0.88      0.88      0.88       428
+      accuracy                          0.88       428
+      macro avg     0.85      0.82      0.84       428
+   weighted avg     0.88      0.88      0.88       428
 
 
 Imbalanced Learning

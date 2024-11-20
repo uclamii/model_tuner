@@ -464,7 +464,7 @@ with a simple command:</p>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
-<span class="o">========================</span>
+
 ┌────────────────────────────────────────────┐
 │<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>preprocess_imputer_Imputer<span class="w">         </span>│
 │<span class="w"> </span>SimpleImputer<span class="w">                              </span>│
@@ -482,22 +482,22 @@ with a simple command:</p>
 │<span class="w"> </span>XGBClassifier<span class="w">                              </span>│
 └────────────────────────────────────────────┘
 
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:19&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.84s/it<span class="o">]</span>
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:36&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">7</span>.35s/it<span class="o">]</span>
 Fitting<span class="w"> </span>model<span class="w"> </span>with<span class="w"> </span>best<span class="w"> </span>params<span class="w"> </span>and<span class="w"> </span>tuning<span class="w"> </span><span class="k">for</span><span class="w"> </span>best<span class="w"> </span>threshold<span class="w"> </span>...
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.30it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">3</span>.50it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">100</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.0001,
 <span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">999</span><span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9260891500474834<span class="o">}</span>
-Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.926
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9280033238366572<span class="o">}</span>
+Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.928
 </pre></div>
 </div>
 </section>
 <section id="step-8-fit-the-model">
 <h3>Step 8: Fit the Model<a class="headerlink" href="#step-8-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the training and validation data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Get the training and validation data</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -522,28 +522,28 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
-<span class="w">            </span>Pos<span class="w">   </span>Neg
+<span class="w">             </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">93</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">11</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">      </span>Neg<span class="w">  </span><span class="m">76</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">248</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">95</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">9</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">  </span><span class="m">79</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">245</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9260891500474834,
-<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8025676192819657,
-<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16665653153377272,
-<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5502958579881657,
-<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.8942307692307693,
-<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7654320987654321<span class="o">}</span>
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9280033238366572,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.7992275185850191,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16713189436073958,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5459770114942529,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9134615384615384,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7561728395061729<span class="o">}</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.77<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.68<span class="w">       </span><span class="m">104</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.68<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.80<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.83<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.80<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.79<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.83<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
 
@@ -551,28 +551,28 @@ Test<span class="w"> </span>Metrics
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
-<span class="w">            </span>Pos<span class="w">   </span>Neg
+<span class="w">             </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">99</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">6</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">      </span>Neg<span class="w">  </span><span class="m">82</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">241</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">95</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">9</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">  </span><span class="m">78</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">246</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9343063541205956,
-<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8169018952192892,
-<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16737745981389285,
-<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5469613259668509,
-<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9428571428571428,
-<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7461300309597523<span class="o">}</span>
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.934576804368471,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8023014087345259,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.16628708993634742,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.5491329479768786,
+<span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9134615384615384,
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.7592592592592593<span class="o">}</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">323</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.69<span class="w">       </span><span class="m">105</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.69<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.79<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.80<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.76<span class="w">      </span><span class="m">0</span>.84<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.80<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
 </pre></div>
@@ -605,23 +605,23 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>roc_auc
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
-<span class="w">            </span>Pos<span class="w">   </span>Neg
+<span class="w">             </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
-Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">74</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">30</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">      </span>Neg<span class="w">  </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">304</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">70</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">   </span><span class="m">34</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">   </span><span class="m">9</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">315</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">324</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.71<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">104</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.94<span class="w">       </span><span class="m">324</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.67<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.90<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.89<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
-roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span class="w"> </span><span class="m">0</span>.9260891500474834
+roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span class="w"> </span><span class="m">0</span>.9280033238366572
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from calibrated model</span>
@@ -662,7 +662,7 @@ roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span cl
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="no-click"><a class="reference internal image-reference" href="_images/calibration_curve_aids.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/calibration_curve_aids.png" style="width: 400px;" />
+<div class="no-click"><a class="reference internal image-reference" href="_images/calibration_curves.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/calibration_curves.png" style="width: 400px;" />
 </a>
 </div><div style="height: 50px;"></div></section>
 <section id="classification-report-optional">
@@ -678,9 +678,9 @@ output it as follows:</p>
 <span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">324</span>
 <span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.71<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">104</span>
 
-<span class="w">   </span>accuracy<span class="w">                           </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
 </pre></div>
 </div>
 </section>
