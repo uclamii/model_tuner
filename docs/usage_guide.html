@@ -609,10 +609,18 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Validation<span class="w"> </span>Metrics
@@ -680,22 +688,22 @@ weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 
-<span class="c1"># Get the predicted probabilities for the validation data from the uncalibrated model</span>
+<span class="c1">## Get the predicted probabilities for the validation data from uncalibrated model</span>
 <span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
-<span class="c1"># Compute the calibration curve for the uncalibrated model</span>
+<span class="c1">## Compute the calibration curve for the uncalibrated model</span>
 <span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
    <span class="n">y_test</span><span class="p">,</span>
    <span class="n">y_prob_uncalibrated</span><span class="p">,</span>
-   <span class="n">n_bins</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+   <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># Calibrate the model</span>
+<span class="c1">## Calibrate the model</span>
 <span class="k">if</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrate</span><span class="p">:</span>
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
+   <span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
 
-<span class="c1"># Predict on the validation set</span>
-<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="c1">## Predict on the validation set</span>
+<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Change<span class="w"> </span>back<span class="w"> </span>to<span class="w"> </span>CPU
@@ -721,36 +729,36 @@ weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0
 roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span class="w"> </span><span class="m">0</span>.9280033238366572
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from calibrated model</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Get the predicted probabilities for the validation data from calibrated model</span>
 <span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
-<span class="c1"># Compute the calibration curve for the calibrated model</span>
+<span class="c1">## Compute the calibration curve for the calibrated model</span>
 <span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
-<span class="n">y_test</span><span class="p">,</span>
-<span class="n">y_prob_calibrated</span><span class="p">,</span>
-<span class="n">n_bins</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">y_prob_calibrated</span><span class="p">,</span>
+   <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<span class="c1"># Plot the calibration curves</span>
+<span class="c1">## Plot the calibration curves</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-<span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
-<span class="n">prob_true_uncalibrated</span><span class="p">,</span>
-<span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
+   <span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
+   <span class="n">prob_true_uncalibrated</span><span class="p">,</span>
+   <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-<span class="n">prob_pred_calibrated</span><span class="p">,</span>
-<span class="n">prob_true_calibrated</span><span class="p">,</span>
-<span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
-<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
+   <span class="n">prob_pred_calibrated</span><span class="p">,</span>
+   <span class="n">prob_true_calibrated</span><span class="p">,</span>
+   <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-<span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
-<span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">,</span>
+   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+   <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+   <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted probability&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True probability in each bin&quot;</span><span class="p">)</span>
@@ -810,7 +818,11 @@ parameters are specified:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">flip_y=0</span></code>: No label noise is added to the target variable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">random_state=42</span></code>: Ensures reproducibility by using a fixed random seed.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
    <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
    <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
    <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -831,7 +843,9 @@ parameters are specified:</p>
 </div>
 <p>Below, you will see that the dataset we have generated is severely imbalanced with
 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Create a bar plot</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="c1">## Create a bar plot</span>
 <span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">value_counts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
@@ -864,7 +878,9 @@ parameters are specified:</p>
 <section id="define-hyperparameters-for-xgboost">
 <h3>Define Hyperparameters for XGBoost<a class="headerlink" href="#define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
 <p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
 <span class="p">)</span>
@@ -956,14 +972,13 @@ classification performance on imbalanced datasets.</p>
 we pass the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE()</span></code> as a necessary step of activating
 this imbalanced sampler.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
-      <span class="p">(</span><span class="s2">&quot;Imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
-      <span class="p">(</span><span class="s2">&quot;StandardScalar&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-   <span class="p">],</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -993,44 +1008,32 @@ this imbalanced sampler.</p>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
-<span class="o">========================</span>
-┌────────────────────────────────────────────┐
-│<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>preprocess_imputer_Imputer<span class="w">         </span>│
-│<span class="w"> </span>SimpleImputer<span class="w">                              </span>│
-└────────────────────────────────────────────┘
-<span class="w">                     </span>│
-<span class="w">                     </span>▼
-┌────────────────────────────────────────────┐
-│<span class="w"> </span>Step<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>preprocess_scaler_StandardScalar<span class="w">   </span>│
-│<span class="w"> </span>StandardScaler<span class="w">                             </span>│
-└────────────────────────────────────────────┘
-<span class="w">                     </span>│
-<span class="w">                     </span>▼
-┌────────────────────────────────────────────┐
-│<span class="w"> </span>Step<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>resampler<span class="w">                          </span>│
-│<span class="w"> </span>SMOTE<span class="w">                                      </span>│
-└────────────────────────────────────────────┘
-<span class="w">                     </span>│
-<span class="w">                     </span>▼
-┌────────────────────────────────────────────┐
-│<span class="w"> </span>Step<span class="w"> </span><span class="m">4</span>:<span class="w"> </span>xgb<span class="w">                                </span>│
-│<span class="w"> </span>XGBClassifier<span class="w">                              </span>│
-└────────────────────────────────────────────┘
+
+┌─────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>resampler<span class="w">   </span>│
+│<span class="w"> </span>SMOTE<span class="w">               </span>│
+└─────────────────────┘
+<span class="w">         </span>│
+<span class="w">         </span>▼
+┌─────────────────────┐
+│<span class="w"> </span>Step<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>xgb<span class="w">         </span>│
+│<span class="w"> </span>XGBClassifier<span class="w">       </span>│
+└─────────────────────┘
 
 Distribution<span class="w"> </span>of<span class="w"> </span>y<span class="w"> </span>values<span class="w"> </span>after<span class="w"> </span>resampling:<span class="w"> </span>target
 <span class="m">0</span><span class="w">         </span><span class="m">540</span>
 <span class="m">1</span><span class="w">         </span><span class="m">540</span>
 Name:<span class="w"> </span>count,<span class="w"> </span>dtype:<span class="w"> </span>int64
 
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:47&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">9</span>.41s/it<span class="o">]</span>
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">5</span>/5<span class="w"> </span><span class="o">[</span><span class="m">00</span>:34&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">6</span>.87s/it<span class="o">]</span>
 Fitting<span class="w"> </span>model<span class="w"> </span>with<span class="w"> </span>best<span class="w"> </span>params<span class="w"> </span>and<span class="w"> </span>tuning<span class="w"> </span><span class="k">for</span><span class="w"> </span>best<span class="w"> </span>threshold<span class="w"> </span>...
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.01it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">2</span>/2<span class="w"> </span><span class="o">[</span><span class="m">00</span>:00&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">4</span>.37it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">100</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__learning_rate&#39;</span>:<span class="w"> </span><span class="m">0</span>.0001,
-<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">            </span><span class="s1">&#39;xgb__max_depth&#39;</span>:<span class="w"> </span><span class="m">10</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__n_estimators&#39;</span>:<span class="w"> </span><span class="m">999</span><span class="o">}</span>,
-<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9994444444444446<span class="o">}</span>
+<span class="s1">&#39;score&#39;</span>:<span class="w"> </span><span class="m">0</span>.9990277777777777<span class="o">}</span>
 Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</span>.999
 </pre></div>
 </div>
@@ -1052,49 +1055,32 @@ for the minority class and 540 observations for the majority class.</p>
 </section>
 <section id="return-metrics-optional">
 <h4>Return Metrics (Optional)<a class="headerlink" href="#return-metrics-optional" title="Link to this heading"></a></h4>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_valid</span><span class="p">,</span>
-   <span class="n">y_valid</span><span class="p">,</span>
-   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_test</span><span class="p">,</span>
-   <span class="n">y_test</span><span class="p">,</span>
-   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Validation<span class="w"> </span>Metrics
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
-<span class="w">            </span>Pos<span class="w">   </span>Neg
+<span class="w">             </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
 Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">        </span>Neg<span class="w">   </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">177</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">   </span><span class="m">6</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">174</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9904166666666667,
-<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.8520172219085262,
-<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.2096258193295803,
-<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.8695652173913043,
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9955555555555555,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9378696741854636,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.20835571676988004,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.7692307692307693,
 <span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">1</span>.0,
-<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9833333333333333<span class="o">}</span>
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9666666666666667<span class="o">}</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">180</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.93<span class="w">        </span><span class="m">20</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.98<span class="w">       </span><span class="m">180</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.77<span class="w">      </span><span class="m">1</span>.00<span class="w">      </span><span class="m">0</span>.87<span class="w">        </span><span class="m">20</span>
 
-<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.98<span class="w">       </span><span class="m">200</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.96<span class="w">       </span><span class="m">200</span>
-weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">200</span>
+<span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.97<span class="w">       </span><span class="m">200</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.93<span class="w">       </span><span class="m">200</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.97<span class="w">       </span><span class="m">200</span>
 
 --------------------------------------------------------------------------------
 
@@ -1102,28 +1088,28 @@ Test<span class="w"> </span>Metrics
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
 --------------------------------------------------------------------------------
 <span class="w">         </span>Predicted:
-<span class="w">            </span>Pos<span class="w">   </span>Neg
+<span class="w">             </span>Pos<span class="w">   </span>Neg
 --------------------------------------------------------------------------------
 Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">19</span><span class="w"> </span><span class="o">(</span>tp<span class="o">)</span><span class="w">    </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>fn<span class="o">)</span>
-<span class="w">        </span>Neg<span class="w">   </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">178</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
+<span class="w">        </span>Neg<span class="w">   </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>fp<span class="o">)</span><span class="w">  </span><span class="m">177</span><span class="w"> </span><span class="o">(</span>tn<span class="o">)</span>
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9951388888888888,
-<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9722222222222222,
-<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.20989021789332263,
-<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.9047619047619048,
+<span class="o">{</span><span class="s1">&#39;AUC ROC&#39;</span>:<span class="w"> </span><span class="m">0</span>.9945833333333333,
+<span class="s1">&#39;Average Precision&#39;</span>:<span class="w"> </span><span class="m">0</span>.9334649122807017,
+<span class="s1">&#39;Brier Score&#39;</span>:<span class="w"> </span><span class="m">0</span>.20820269480995568,
+<span class="s1">&#39;Precision/PPV&#39;</span>:<span class="w"> </span><span class="m">0</span>.8636363636363636,
 <span class="s1">&#39;Sensitivity&#39;</span>:<span class="w"> </span><span class="m">0</span>.95,
-<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9888888888888889<span class="o">}</span>
+<span class="s1">&#39;Specificity&#39;</span>:<span class="w"> </span><span class="m">0</span>.9833333333333333<span class="o">}</span>
 --------------------------------------------------------------------------------
 
 <span class="w">            </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">180</span>
-<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.90<span class="w">      </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.93<span class="w">        </span><span class="m">20</span>
+<span class="w">         </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">180</span>
+<span class="w">         </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.90<span class="w">        </span><span class="m">20</span>
 
 <span class="w">   </span>accuracy<span class="w">                          </span><span class="m">0</span>.98<span class="w">       </span><span class="m">200</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.95<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.96<span class="w">       </span><span class="m">200</span>
-weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.99<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.99<span class="w">       </span><span class="m">200</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.93<span class="w">      </span><span class="m">0</span>.97<span class="w">      </span><span class="m">0</span>.95<span class="w">       </span><span class="m">200</span>
+weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.98<span class="w">       </span><span class="m">200</span>
 
 --------------------------------------------------------------------------------
 </pre></div>
@@ -1141,7 +1127,7 @@ weighted<span class="w"> </span>avg<span class="w">     </span><span class="m">0
 <h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="n">ifrom</span> <span class="n">xgboost</span> <span class="kn">import</span> <span class="nn">XGBRegressor</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_california_housing</span>
 <span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
@@ -1220,7 +1206,7 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
@@ -1241,13 +1227,13 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
-<span class="o">========================</span>
+
 ┌────────────────┐
 │<span class="w"> </span>Step<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>xgb<span class="w">    </span>│
 │<span class="w"> </span>XGBRegressor<span class="w">   </span>│
 └────────────────┘
 
-<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:05&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">1</span>.60it/s<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
+<span class="m">100</span>%<span class="p">|</span>██████████<span class="p">|</span><span class="w"> </span><span class="m">9</span>/9<span class="w"> </span><span class="o">[</span><span class="m">00</span>:22&lt;<span class="m">00</span>:00,<span class="w">  </span><span class="m">2</span>.45s/it<span class="o">]</span>Best<span class="w"> </span>score/param<span class="w"> </span><span class="nb">set</span><span class="w"> </span>found<span class="w"> </span>on<span class="w"> </span>validation<span class="w"> </span>set:
 <span class="o">{</span><span class="s1">&#39;params&#39;</span>:<span class="w"> </span><span class="o">{</span><span class="s1">&#39;xgb__colsample_bytree&#39;</span>:<span class="w"> </span><span class="m">0</span>.8,
 <span class="w">            </span><span class="s1">&#39;xgb__early_stopping_rounds&#39;</span>:<span class="w"> </span><span class="m">10</span>,
 <span class="w">            </span><span class="s1">&#39;xgb__eval_metric&#39;</span>:<span class="w"> </span><span class="s1">&#39;logloss&#39;</span>,
@@ -1263,7 +1249,11 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 </section>
 <section id="step-7-fit-the-model">
 <h3>Step 7: Fit the Model<a class="headerlink" href="#step-7-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+   <span class="n">X_train</span><span class="p">,</span>
+   <span class="n">y_train</span><span class="p">,</span>
+   <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -1418,7 +1408,7 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 
 <section id="bootstrap-metrics-example">
 <h2>Bootstrap Metrics Example<a class="headerlink" href="#bootstrap-metrics-example" title="Link to this heading"></a></h2>
-<p>Continuing from the model output object (<code class="docutils literal notranslate"><span class="pre">model_xgb</span></code>) from the <a class="reference internal" href="#regression"><span class="std std-ref">regression example</span></a> above, we leverage the <code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics</span></code> method from <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> to print bootstrap performance metrics (<span class="math notranslate nohighlight">\(R^2\)</span> and <cite>explained_variance</cite>) at 95% confidence levels as shown below:</p>
+<p>Continuing from the model output object (<code class="docutils literal notranslate"><span class="pre">model_xgb</span></code>) from the <a class="reference internal" href="#regression"><span class="std std-ref">regression example</span></a> above, we leverage the <code class="docutils literal notranslate"><span class="pre">return_bootstrap_metrics</span></code> method from <code class="docutils literal notranslate"><span class="pre">model_tuner_utils.py</span></code> to print bootstrap performance metrics (<span class="math notranslate nohighlight">\(R^2\)</span> and <span class="math notranslate nohighlight">\(\text{explained variance}\)</span>) at 95% confidence levels as shown below:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bootstrap Metrics&quot;</span><span class="p">)</span>
 
 <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_bootstrap_metrics</span><span class="p">(</span>
