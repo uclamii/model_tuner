@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>Model_Tuner_Binary_Classification_Breast_Cancer_Example</title>
+<title>Model_Tuner_Binary_Classification_Imbalanced_Learning</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -12966,6 +12966,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
 .highlight .gr { color: #E40000 } /* Generic.Error */
 .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
 .highlight .gi { color: #008400 } /* Generic.Inserted */
@@ -13104,30 +13105,35 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Binary-Classification-Via-The-Breast-Cancer-Dataset">Binary Classification Via The Breast Cancer Dataset<a class="anchor-link" href="#Binary-Classification-Via-The-Breast-Cancer-Dataset">&#182;</a></h1>
+<h1 id="Imbalanced-Dataset-for-Classification">Imbalanced Dataset for Classification<a class="anchor-link" href="#Imbalanced-Dataset-for-Classification">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The Breast Cancer Wisconsin (Diagnostic) Dataset is a widely used dataset in the field of machine learning and medical research. It contains features computed from digitized images of fine needle aspirates (FNAs) of breast masses. The dataset includes information about the characteristics of cell nuclei present in the images.</p>
-<h3 id="Key-Features-of-the-Dataset">Key Features of the Dataset<a class="anchor-link" href="#Key-Features-of-the-Dataset">&#182;</a></h3><ul>
-<li><strong>Number of Instances:</strong> 569</li>
-<li><strong>Number of Attributes:</strong> 30 numeric features</li>
-<li><strong>Target Variable:</strong> Binary classification (malignant or benign)</li>
-<li><strong>Features:</strong> Measurements such as radius, texture, perimeter, area, smoothness, compactness, concavity, concave points, symmetry, and fractal dimension</li>
-</ul>
-<h3 id="Attributes-Information">Attributes Information<a class="anchor-link" href="#Attributes-Information">&#182;</a></h3><p>The features are computed for each cell nucleus, and the dataset includes both mean, standard error, and "worst" (mean of the three largest values) of these features.</p>
-<h3 id="Target-Variable">Target Variable<a class="anchor-link" href="#Target-Variable">&#182;</a></h3><p>The target variable indicates the diagnosis of the breast mass: <code>0</code> represents benign, and <code>1</code> represents malignant.</p>
-<p>This dataset is often used for classification tasks to build models that can predict whether a breast tumor is malignant or benign based on the given features.</p>
-<h3 id="Example-Usage-in-Machine-Learning">Example Usage in Machine Learning<a class="anchor-link" href="#Example-Usage-in-Machine-Learning">&#182;</a></h3><ul>
-<li><p><strong>Classification Algorithms</strong>: It can be used to train various classification algorithms including, but not limited to <code>logistic regression</code>, <code>decision trees</code>, <code>random forests</code>, and <code>support vector machines</code>.</p>
-</li>
-<li><p><strong>Feature Selection</strong>: The dataset is also useful for performing feature selection to identify which features are most important for predicting breast cancer.</p>
-</li>
-</ul>
-<p>The dataset is available in the <code>scikit-learn</code> library, making it easy to load and use in <code>Python</code> for various machine learning tasks.</p>
+<p>In machine learning, <strong>imbalanced datasets</strong> are a frequent challenge, especially in real-world scenarios. These datasets have an unequal distribution of target classes, with one class (e.g., fraudulent transactions, rare diseases, or other low-frequency events) being underrepresented compared to the majority class. Models trained on imbalanced data often struggle to generalize, as they tend to favor the majority class, leading to poor performance on the minority class.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To mitigate these issues, it is crucial to:</p>
+<ol>
+<li>Understand the nature of the imbalance in the dataset.</li>
+<li>Apply appropriate resampling techniques (oversampling, undersampling, or hybrid methods).</li>
+<li>Use metrics beyond accuracy, such as precision, recall, and F1-score, to evaluate model performance fairly.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="The-model_tuner-Library:-Simplifying-Model-Development-and-Evaluation">The model_tuner Library: Simplifying Model Development and Evaluation<a class="anchor-link" href="#The-model_tuner-Library:-Simplifying-Model-Development-and-Evaluation">&#182;</a></h2><p>Before diving into imbalance handling techniques, it's worth mentioning the <code>model_tuner</code> library, a powerful tool designed for streamlining the machine learning model development process.</p>
 
 </div>
 </div>
@@ -13198,22 +13204,39 @@ $( document ).ready(function(){
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Collecting model_tuner
-  Downloading model_tuner-0.0.15a0-py3-none-any.whl.metadata (3.9 kB)
-Requirement already satisfied: joblib&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.4.2)
-Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
-Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.4)
-Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
-Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.13.1)
-Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.5)
-Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.2)
-Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
-Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=1.0.2-&gt;model_tuner) (3.5.0)
-Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.3.5-&gt;model_tuner) (1.16.0)
-Downloading model_tuner-0.0.15a0-py3-none-any.whl (20 kB)
-Installing collected packages: model_tuner
-Successfully installed model_tuner-0.0.15a0
+<pre>Requirement already satisfied: model_tuner in /usr/local/lib/python3.10/dist-packages (0.0.20a0)
+Requirement already satisfied: joblib==1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
+Requirement already satisfied: tqdm==4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.4)
+Requirement already satisfied: catboost==1.2.7 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.2.7)
+Requirement already satisfied: pip==24.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (24.2)
+Requirement already satisfied: setuptools==75.1.0 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (75.1.0)
+Requirement already satisfied: wheel==0.44.0 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (0.44.0)
+Requirement already satisfied: numpy&lt;2.0.0,&gt;=1.19.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
+Requirement already satisfied: pandas&lt;2.2.3,&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.2.2)
+Requirement already satisfied: scikit-learn&lt;1.4.0,&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
+Requirement already satisfied: scipy&lt;1.11,&gt;=1.6.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.10.1)
+Requirement already satisfied: scikit-optimize==0.10.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (0.10.2)
+Requirement already satisfied: imbalanced-learn==0.12.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (0.12.4)
+Requirement already satisfied: xgboost==2.1.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.2)
+Requirement already satisfied: graphviz in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (0.20.3)
+Requirement already satisfied: matplotlib in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (3.8.0)
+Requirement already satisfied: plotly in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (5.24.1)
+Requirement already satisfied: six in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (1.16.0)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from imbalanced-learn==0.12.4-&gt;model_tuner) (3.5.0)
+Requirement already satisfied: pyaml&gt;=16.9 in /usr/local/lib/python3.10/dist-packages (from scikit-optimize==0.10.2-&gt;model_tuner) (24.9.0)
+Requirement already satisfied: packaging&gt;=21.3 in /usr/local/lib/python3.10/dist-packages (from scikit-optimize==0.10.2-&gt;model_tuner) (24.2)
+Requirement already satisfied: nvidia-nccl-cu12 in /usr/local/lib/python3.10/dist-packages (from xgboost==2.1.2-&gt;model_tuner) (2.23.4)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2024.2)
+Requirement already satisfied: tzdata&gt;=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2024.2)
+Requirement already satisfied: PyYAML in /usr/local/lib/python3.10/dist-packages (from pyaml&gt;=16.9-&gt;scikit-optimize==0.10.2-&gt;model_tuner) (6.0.2)
+Requirement already satisfied: contourpy&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (1.3.1)
+Requirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (0.12.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (4.54.1)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (1.4.7)
+Requirement already satisfied: pillow&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (11.0.0)
+Requirement already satisfied: pyparsing&gt;=2.3.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (3.2.0)
+Requirement already satisfied: tenacity&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from plotly-&gt;catboost==1.2.7-&gt;model_tuner) (9.0.0)
 </pre>
 </div>
 </div>
@@ -13237,8 +13260,6 @@ Successfully installed model_tuner-0.0.15a0
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">model_tuner</span> <span class="c1"># import model_tuner to show version info.</span>
 <span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span> <span class="c1"># Model class from model_tuner lib.</span>
-<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span> <span class="c1"># for model imputation</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span> <span class="c1"># for feature scaling</span>
 </pre></div>
 
     </div>
@@ -13282,6 +13303,15 @@ NAME
     model_tuner
 
 DESCRIPTION
+    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    $      __  __           _      _   _____                          $ 
+    $     |  \/  | ___   __| | ___| | |_   _|   _ _ __   ___ _ __     $
+    $     | |\/| |/ _ \ / _` |/ _ \ |   | || | | | &#39;_ \ / _ \ &#39;__|    $
+    $     | |  | | (_) | (_| |  __/ |   | || |_| | | | |  __/ |       $
+    $     |_|  |_|\___/ \__,_|\___|_|   |_| \__,_|_| |_|\___|_|       $
+    $                                                                 $
+    $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                                                                   
     The `model_tuner` library is a versatile and powerful tool designed to 
     facilitate the training, evaluation, and tuning of machine learning models. 
     It supports various functionalities such as handling imbalanced data, applying 
@@ -13289,7 +13319,7 @@ DESCRIPTION
     cross-validation. This library is particularly useful for model selection, 
     hyperparameter tuning, and ensuring optimal performance across different metrics.
     
-    Version: 0.0.15a
+    Version: 0.0.20a
 
 PACKAGE CONTENTS
     bootstrapper
@@ -13301,7 +13331,7 @@ DATA
     __email__ = &#39;lshpaner@ucla.edu; alafunnell@gmail.com; pp89@ucla.edu&#39;
 
 VERSION
-    0.0.15a
+    0.0.20a
 
 AUTHOR
     Arthur Funnell, Leonid Shpaner, Panayiotis Petousis
@@ -13322,6 +13352,21 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In machine learning, imbalanced datasets are common in real-world scenarios, where the distribution of classes in a dataset is not uniform. For instance, in fraud detection, disease diagnosis, or rare event prediction, one class (e.g., fraudulent transactions or diseased cases) often occurs significantly less frequently than the other. Training machine learning models on such datasets can lead to biases towards the majority class, making it essential to create, understand, and handle imbalanced datasets effectively during model development.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Import-Requisite-Libraries">Import Requisite Libraries<a class="anchor-link" href="#Import-Requisite-Libraries">&#182;</a></h2>
 </div>
 </div>
@@ -13333,8 +13378,14 @@ None
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_breast_cancer</span>
-<span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span><span class="p">,</span> <span class="n">ADASYN</span>
+<span class="kn">from</span> <span class="nn">imblearn.under_sampling</span> <span class="kn">import</span> <span class="n">RandomUnderSampler</span>
 </pre></div>
 
     </div>
@@ -13345,7 +13396,29 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Load-the-dataset,-define-X,-y">Load the dataset, define X, y<a class="anchor-link" href="#Load-the-dataset,-define-X,-y">&#182;</a></h2>
+<h2 id="Generating-an-Imbalanced-Dataset">Generating an Imbalanced Dataset<a class="anchor-link" href="#Generating-an-Imbalanced-Dataset">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Demonstrated below are the steps to generate an imbalanced dataset using <code>make_classification</code> from the <code>sklearn.datasets</code> module. The following parameters are specified:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>n_samples=1000</code>: The dataset contains 1,000 samples.<br>
+<code>n_features=20</code>: Each sample has 20 features.<br>
+<code>n_informative=2</code>: Two features are informative for predicting the target.<br>
+<code>n_redundant=2</code>: Two features are linear combinations of the informative features.<br>
+<code>weights=[0.9, 0.1]</code>: The target class distribution is 90% for the majority class and 10% for the minority class, creating an imbalance.<br>
+<code>flip_y=0</code>: No label noise is added to the target variable.<br>
+<code>random_state=42</code>: Ensures reproducibility by using a fixed random seed.</p>
+
 </div>
 </div>
 </div>
@@ -13354,509 +13427,24 @@ None
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Load the breast cancer dataset</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">()</span>
-<span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
-</pre></div>
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># Create an imbalanced dataset using make_classification</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
+    <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>  <span class="c1"># Total number of samples</span>
+    <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>   <span class="c1"># Total number of features</span>
+    <span class="n">n_informative</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="c1"># Number of informative features</span>
+    <span class="n">n_redundant</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>   <span class="c1"># Number of redundant features</span>
+    <span class="n">n_clusters_per_class</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">weights</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>  <span class="c1"># Proportion of classes, creating imbalance</span>
+    <span class="n">flip_y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="c1"># No label noise</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
 
-    </div>
-</div>
-</div>
+<span class="c1"># Convert to a pandas DataFrame for better visualization</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;feature_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">)])</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># inspect the first 5 rows of data</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[6]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-
-  <div id="df-6de6f597-84dc-473b-bf5c-12a7db9f988e" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>mean radius</th>
-      <th>mean texture</th>
-      <th>mean perimeter</th>
-      <th>mean area</th>
-      <th>mean smoothness</th>
-      <th>mean compactness</th>
-      <th>mean concavity</th>
-      <th>mean concave points</th>
-      <th>mean symmetry</th>
-      <th>mean fractal dimension</th>
-      <th>...</th>
-      <th>worst radius</th>
-      <th>worst texture</th>
-      <th>worst perimeter</th>
-      <th>worst area</th>
-      <th>worst smoothness</th>
-      <th>worst compactness</th>
-      <th>worst concavity</th>
-      <th>worst concave points</th>
-      <th>worst symmetry</th>
-      <th>worst fractal dimension</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>17.99</td>
-      <td>10.38</td>
-      <td>122.80</td>
-      <td>1001.0</td>
-      <td>0.11840</td>
-      <td>0.27760</td>
-      <td>0.3001</td>
-      <td>0.14710</td>
-      <td>0.2419</td>
-      <td>0.07871</td>
-      <td>...</td>
-      <td>25.38</td>
-      <td>17.33</td>
-      <td>184.60</td>
-      <td>2019.0</td>
-      <td>0.1622</td>
-      <td>0.6656</td>
-      <td>0.7119</td>
-      <td>0.2654</td>
-      <td>0.4601</td>
-      <td>0.11890</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>20.57</td>
-      <td>17.77</td>
-      <td>132.90</td>
-      <td>1326.0</td>
-      <td>0.08474</td>
-      <td>0.07864</td>
-      <td>0.0869</td>
-      <td>0.07017</td>
-      <td>0.1812</td>
-      <td>0.05667</td>
-      <td>...</td>
-      <td>24.99</td>
-      <td>23.41</td>
-      <td>158.80</td>
-      <td>1956.0</td>
-      <td>0.1238</td>
-      <td>0.1866</td>
-      <td>0.2416</td>
-      <td>0.1860</td>
-      <td>0.2750</td>
-      <td>0.08902</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>19.69</td>
-      <td>21.25</td>
-      <td>130.00</td>
-      <td>1203.0</td>
-      <td>0.10960</td>
-      <td>0.15990</td>
-      <td>0.1974</td>
-      <td>0.12790</td>
-      <td>0.2069</td>
-      <td>0.05999</td>
-      <td>...</td>
-      <td>23.57</td>
-      <td>25.53</td>
-      <td>152.50</td>
-      <td>1709.0</td>
-      <td>0.1444</td>
-      <td>0.4245</td>
-      <td>0.4504</td>
-      <td>0.2430</td>
-      <td>0.3613</td>
-      <td>0.08758</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>11.42</td>
-      <td>20.38</td>
-      <td>77.58</td>
-      <td>386.1</td>
-      <td>0.14250</td>
-      <td>0.28390</td>
-      <td>0.2414</td>
-      <td>0.10520</td>
-      <td>0.2597</td>
-      <td>0.09744</td>
-      <td>...</td>
-      <td>14.91</td>
-      <td>26.50</td>
-      <td>98.87</td>
-      <td>567.7</td>
-      <td>0.2098</td>
-      <td>0.8663</td>
-      <td>0.6869</td>
-      <td>0.2575</td>
-      <td>0.6638</td>
-      <td>0.17300</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>20.29</td>
-      <td>14.34</td>
-      <td>135.10</td>
-      <td>1297.0</td>
-      <td>0.10030</td>
-      <td>0.13280</td>
-      <td>0.1980</td>
-      <td>0.10430</td>
-      <td>0.1809</td>
-      <td>0.05883</td>
-      <td>...</td>
-      <td>22.54</td>
-      <td>16.67</td>
-      <td>152.20</td>
-      <td>1575.0</td>
-      <td>0.1374</td>
-      <td>0.2050</td>
-      <td>0.4000</td>
-      <td>0.1625</td>
-      <td>0.2364</td>
-      <td>0.07678</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 30 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-6de6f597-84dc-473b-bf5c-12a7db9f988e')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-6de6f597-84dc-473b-bf5c-12a7db9f988e button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-6de6f597-84dc-473b-bf5c-12a7db9f988e');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8">
-  <button class="colab-df-quickchart" onclick="quickchart('df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-9df0c6ae-d728-48e9-9ce5-d2625959bbb8 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-
-    </div>
-  </div>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">y</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[7]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>target</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>0</td>
-    </tr>
-  </tbody>
-</table>
-</div><br><label><b>dtype:</b> int64</label>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s2">&quot;target&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -13867,22 +13455,78 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Create-an-Instance-of-the-XGBClassifier">Create an Instance of the XGBClassifier<a class="anchor-link" href="#Create-an-Instance-of-the-XGBClassifier">&#182;</a></h2>
+<h2 id="Imbalanced-Dataset">Imbalanced Dataset<a class="anchor-link" href="#Imbalanced-Dataset">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below, you will see that the dataset we have generated is severely imbalanced with 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Creating an instance of the XGBClassifier</span>
-<span class="n">xgb_model</span> <span class="o">=</span> <span class="n">xgb</span><span class="o">.</span><span class="n">XGBClassifier</span><span class="p">(</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1">## Create a bar plot</span>
+<span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">value_counts</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+    <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">width</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="c1">## Add labels inside the bars</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">value_counts</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+        <span class="n">index</span><span class="p">,</span>
+        <span class="n">count</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">),</span>
+        <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;yellow&quot;</span><span class="p">,</span>
+        <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="c1">## Customize labels and title</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Class&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Class Distribution&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+
+<span class="c1">## Adjust tick label size</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">labelsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="c1">## Show the plot</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="Model_Tuner_Binary_Classification_Imbalanced_Learning_files/Model_Tuner_Binary_Classification_Imbalanced_Learning_24_0.png"
+>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -13894,37 +13538,42 @@ None
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Estimator name prefix for use in GridSearchCV or similar tools</span>
-<span class="n">estimator_name_xgb</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+    <span class="c1"># objective=&quot;binary:logistic&quot;,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
 
-<span class="c1"># Define the hyperparameters for XGBoost</span>
-<span class="n">xgb_learning_rates</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">]</span>  <span class="c1"># Learning rate or eta</span>
-<span class="n">xgb_n_estimators</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>  <span class="c1"># Number of trees. Equivalent to n_estimators in GB</span>
-<span class="n">xgb_max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>  <span class="c1"># Maximum depth of the trees</span>
-<span class="n">xgb_subsamples</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>  <span class="c1"># Subsample ratio of the training instances</span>
-<span class="n">xgb_colsample_bytree</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
-
-<span class="n">xgb_eval_metric</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">]</span>
-<span class="n">xgb_early_stopping_rounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">]</span>
-<span class="n">xgb_verbose</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>  <span class="c1"># Subsample ratio of columns when constructing each tree</span>
-
-<span class="c1"># Combining the hyperparameters in a dictionary</span>
-<span class="n">xgb_pipeline_hyperparms_grid</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;xgb__learning_rate&quot;</span><span class="p">:</span> <span class="n">xgb_learning_rates</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__n_estimators&quot;</span><span class="p">:</span> <span class="n">xgb_n_estimators</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__max_depth&quot;</span><span class="p">:</span> <span class="n">xgb_max_depths</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__subsample&quot;</span><span class="p">:</span> <span class="n">xgb_subsamples</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__colsample_bytree&quot;</span><span class="p">:</span> <span class="n">xgb_colsample_bytree</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__eval_metric&quot;</span><span class="p">:</span> <span class="n">xgb_eval_metric</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="n">xgb_early_stopping_rounds</span><span class="p">,</span>
-        <span class="s2">&quot;xgb__verbose&quot;</span><span class="p">:</span> <span class="n">xgb_verbose</span><span class="p">,</span>
-        <span class="s2">&quot;selectKBest__k&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span>
-    <span class="p">}</span>
+<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
+<span class="p">}</span>
 </pre></div>
 
     </div>
@@ -13935,34 +13584,119 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Initialize-and-Configure-the-Model">Initialize and Configure the Model<a class="anchor-link" href="#Initialize-and-Configure-the-Model">&#182;</a></h2>
+<h2 id="Define-The-Model-Object">Define The Model Object<a class="anchor-link" href="#Define-The-Model-Object">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize ModelTuner</span>
-<span class="n">model_tuner</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
-    <span class="p">],</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;XGBoost_Breast_Cancer&quot;</span><span class="p">,</span>
-    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name_xgb</span><span class="p">,</span>
-    <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">estimator</span><span class="o">=</span><span class="n">xgb_model</span><span class="p">,</span>
-    <span class="n">xgboost_early</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">selectKBest</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">xgb_pipeline_hyperparms_grid</span><span class="p">,</span>
-    <span class="c1"># randomized_grid=True,</span>
-    <span class="c1"># n_iter=5,</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">clc</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
+<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
+
+<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
+<span class="n">n_iter</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;n_iter&quot;</span><span class="p">]</span>
+<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
+<span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Addressing-Class-Imbalance-in-Machine-Learning">Addressing Class Imbalance in Machine Learning<a class="anchor-link" href="#Addressing-Class-Imbalance-in-Machine-Learning">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Class imbalance occurs when one class significantly outweighs another in the dataset, leading to biased models that perform well on the majority class but poorly on the minority class. Techniques like SMOTE and others aim to address this issue by improving the representation of the minority class, ensuring balanced learning and better generalization.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Techniques-to-Address-Class-Imbalance">Techniques to Address Class Imbalance<a class="anchor-link" href="#Techniques-to-Address-Class-Imbalance">&#182;</a></h3><p><strong>Resampling Techniques</strong></p>
+<ul>
+<li><p><strong>SMOTE (Synthetic Minority Oversampling Technique)</strong>: SMOTE generates synthetic samples for the minority class by interpolating between existing minority class data points and their nearest neighbors. This helps create a more balanced class distribution without merely duplicating data, thus avoiding overfitting.</p>
+</li>
+<li><p><strong>Oversampling</strong>: Randomly duplicates examples from the minority class to balance the dataset. While simple, it risks overfitting to the duplicated examples.</p>
+</li>
+<li><p><strong>Undersampling</strong>: Reduces the majority class by randomly removing samples. While effective, it can lead to loss of important information.</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Purpose-of-Using-These-Techniques">Purpose of Using These Techniques<a class="anchor-link" href="#Purpose-of-Using-These-Techniques">&#182;</a></h3><p>The goal of using these techniques is to improve model performance on imbalanced datasets, specifically by:</p>
+<ul>
+<li>Ensuring the model captures meaningful patterns in the minority class.</li>
+<li>Reducing bias toward the majority class, which often dominates predictions in imbalanced datasets.</li>
+<li>Improving metrics like recall, F1-score, and AUC-ROC for the minority class, which are critical in applications like fraud detection, healthcare, and rare event prediction.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Synthetic-Minority-Oversampling-Technique-(SMOTE)">Synthetic Minority Oversampling Technique (SMOTE)<a class="anchor-link" href="#Synthetic-Minority-Oversampling-Technique-(SMOTE)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>SMOTE (Synthetic Minority Oversampling Technique) is a method used to address class imbalance in datasets. It generates synthetic samples for the minority class by interpolating between existing minority samples and their nearest neighbors, effectively increasing the size of the minority class without duplicating data. This helps models better learn patterns from the minority class, improving classification performance on imbalanced datasets.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Initialize-and-Configure-the-Model">Initialize and Configure the Model<a class="anchor-link" href="#Initialize-and-Configure-the-Model">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
     <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
     <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(),</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -13974,17 +13708,24 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Perform-Grid-Search-Parameter-Tuning">Perform Grid Search Parameter Tuning<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning">&#182;</a></h2>
+<h3 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Perform grid search parameter tuning</span>
-<span class="n">model_tuner</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14000,8 +13741,59 @@ None
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Pipeline Steps:
+
+┌─────────────────────┐
+│ Step 1: resampler   │
+│ SMOTE               │
+└─────────────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ Step 2: xgb         │
+│ XGBClassifier       │
+└─────────────────────┘
+
+Distribution of y values after resampling: target
+0         540
+1         540
+Name: count, dtype: int64
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 324/324 [01:15&lt;00:00,  4.31it/s]</pre>
+<pre>100%|██████████| 5/5 [00:36&lt;00:00,  7.27s/it]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  4.15it/s]</pre>
 </div>
 </div>
 
@@ -14012,15 +13804,12 @@ None
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;selectKBest__k&#39;: 20,
-            &#39;xgb__colsample_bytree&#39;: 0.8,
-            &#39;xgb__early_stopping_rounds&#39;: 10,
+{&#39;params&#39;: {&#39;xgb__early_stopping_rounds&#39;: 100,
             &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
-            &#39;xgb__learning_rate&#39;: 0.1,
-            &#39;xgb__max_depth&#39;: 3,
-            &#39;xgb__n_estimators&#39;: 170,
-            &#39;xgb__subsample&#39;: 0.8},
- &#39;score&#39;: 0.9987212276214834}
+            &#39;xgb__learning_rate&#39;: 0.0001,
+            &#39;xgb__max_depth&#39;: 10,
+            &#39;xgb__n_estimators&#39;: 999},
+ &#39;score&#39;: 0.9991666666666666}
 Best roc_auc: 0.999 
 
 </pre>
@@ -14045,7 +13834,163 @@ Best roc_auc: 0.999
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h2>
+<h3 id="SMOTE:-Distribution-of-y-values-after-resampling">SMOTE: Distribution of y values after resampling<a class="anchor-link" href="#SMOTE:-Distribution-of-y-values-after-resampling">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice that the target has been redistributed after SMOTE to 540 observations for the minority class and 540 observations for the majority class.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_valid</span><span class="p">,</span>
+    <span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Validation Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  20 (tp)    0 (fn)
+        Neg   3 (fp)  177 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9951388888888889,
+ &#39;Average Precision&#39;: 0.9322949996863039,
+ &#39;Brier Score&#39;: 0.2084626977924107,
+ &#39;Precision/PPV&#39;: 0.8695652173913043,
+ &#39;Sensitivity&#39;: 1.0,
+ &#39;Specificity&#39;: 0.9833333333333333}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       1.00      0.98      0.99       180
+           1       0.87      1.00      0.93        20
+
+    accuracy                           0.98       200
+   macro avg       0.93      0.99      0.96       200
+weighted avg       0.99      0.98      0.99       200
+
+--------------------------------------------------------------------------------
+
+Test Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  19 (tp)    1 (fn)
+        Neg   1 (fp)  179 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9977777777777779,
+ &#39;Average Precision&#39;: 0.9857142857142857,
+ &#39;Brier Score&#39;: 0.20823133290255952,
+ &#39;Precision/PPV&#39;: 0.95,
+ &#39;Sensitivity&#39;: 0.95,
+ &#39;Specificity&#39;: 0.9944444444444445}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.99      0.99      0.99       180
+           1       0.95      0.95      0.95        20
+
+    accuracy                           0.99       200
+   macro avg       0.97      0.97      0.97       200
+weighted avg       0.99      0.99      0.99       200
+
+--------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Adaptive-Synthetic-Oversampling-(ADASYN)">Adaptive Synthetic Oversampling (ADASYN)<a class="anchor-link" href="#Adaptive-Synthetic-Oversampling-(ADASYN)">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>ADASYN (Adaptive Synthetic Sampling)</strong> is a variation of SMOTE that also generates synthetic samples for the minority class but focuses on harder-to-learn instances. It adaptively determines the number of synthetic samples to generate for each minority instance based on the degree of difficulty (i.e., the density of the majority class in its neighborhood).</p>
+<p>ADASYN aims to create a balanced dataset while improving the model's ability to distinguish between classes, especially in complex or overlapping regions. This technique is particularly useful when dealing with highly imbalanced data with challenging decision boundaries.</p>
+
 </div>
 </div>
 </div>
@@ -14054,14 +13999,22 @@ Best roc_auc: 0.999
 <div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the training and validation data</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="c1"># Fit the model with the validation data</span>
-<span class="n">model_tuner</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">),</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_adasyn</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">ADASYN</span><span class="p">(),</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -14073,7 +14026,7 @@ Best roc_auc: 0.999
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h2>
+<h3 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14082,12 +14035,15 @@ Best roc_auc: 0.999
 <div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Return metrics for the validation set</span>
-<span class="n">metrics</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-    <span class="n">X_valid</span><span class="p">,</span>
-    <span class="n">y_valid</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">metrics</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">),</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14104,28 +14060,24 @@ Best roc_auc: 0.999
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Confusion matrix on set provided: 
---------------------------------------------------------------------------------
-          Predicted:
-            Pos  Neg
---------------------------------------------------------------------------------
-Actual: Pos 65 (tp)   3 (fn)
-        Neg  0 (fp)  46 (tn)
---------------------------------------------------------------------------------
+<pre>
+Pipeline Steps:
 
-              precision    recall  f1-score   support
+┌─────────────────────┐
+│ Step 1: resampler   │
+│ ADASYN              │
+└─────────────────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ Step 2: xgb         │
+│ XGBClassifier       │
+└─────────────────────┘
 
-           0       0.94      1.00      0.97        46
-           1       1.00      0.96      0.98        68
-
-    accuracy                           0.97       114
-   macro avg       0.97      0.98      0.97       114
-weighted avg       0.98      0.97      0.97       114
-
---------------------------------------------------------------------------------
-
-Feature names selected:
-[&#39;mean radius&#39;, &#39;mean texture&#39;, &#39;mean perimeter&#39;, &#39;mean area&#39;, &#39;mean compactness&#39;, &#39;mean concavity&#39;, &#39;mean concave points&#39;, &#39;radius error&#39;, &#39;perimeter error&#39;, &#39;area error&#39;, &#39;concavity error&#39;, &#39;concave points error&#39;, &#39;worst radius&#39;, &#39;worst texture&#39;, &#39;worst perimeter&#39;, &#39;worst area&#39;, &#39;worst smoothness&#39;, &#39;worst compactness&#39;, &#39;worst concavity&#39;, &#39;worst concave points&#39;]
+Distribution of y values after resampling: target
+0         540
+1         536
+Name: count, dtype: int64
 
 </pre>
 </div>
@@ -14133,53 +14085,64 @@ Feature names selected:
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt"></div>
 
 
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Classification Report&#39;: {&#39;0&#39;: {&#39;precision&#39;: 0.9387755102040817,
-   &#39;recall&#39;: 1.0,
-   &#39;f1-score&#39;: 0.968421052631579,
-   &#39;support&#39;: 46.0},
-  &#39;1&#39;: {&#39;precision&#39;: 1.0,
-   &#39;recall&#39;: 0.9558823529411765,
-   &#39;f1-score&#39;: 0.9774436090225563,
-   &#39;support&#39;: 68.0},
-  &#39;accuracy&#39;: 0.9736842105263158,
-  &#39;macro avg&#39;: {&#39;precision&#39;: 0.9693877551020409,
-   &#39;recall&#39;: 0.9779411764705883,
-   &#39;f1-score&#39;: 0.9729323308270676,
-   &#39;support&#39;: 114.0},
-  &#39;weighted avg&#39;: {&#39;precision&#39;: 0.9752953813104189,
-   &#39;recall&#39;: 0.9736842105263158,
-   &#39;f1-score&#39;: 0.9738029283735655,
-   &#39;support&#39;: 114.0}},
- &#39;Confusion Matrix&#39;: array([[46,  0],
-        [ 3, 65]]),
- &#39;K Best Features&#39;: [&#39;mean radius&#39;,
-  &#39;mean texture&#39;,
-  &#39;mean perimeter&#39;,
-  &#39;mean area&#39;,
-  &#39;mean compactness&#39;,
-  &#39;mean concavity&#39;,
-  &#39;mean concave points&#39;,
-  &#39;radius error&#39;,
-  &#39;perimeter error&#39;,
-  &#39;area error&#39;,
-  &#39;concavity error&#39;,
-  &#39;concave points error&#39;,
-  &#39;worst radius&#39;,
-  &#39;worst texture&#39;,
-  &#39;worst perimeter&#39;,
-  &#39;worst area&#39;,
-  &#39;worst smoothness&#39;,
-  &#39;worst compactness&#39;,
-  &#39;worst concavity&#39;,
-  &#39;worst concave points&#39;]}</pre>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 5/5 [00:14&lt;00:00,  2.92s/it]
+</pre>
+</div>
 </div>
 
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  4.19it/s]</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Best score/param set found on validation set:
+{&#39;params&#39;: {&#39;xgb__early_stopping_rounds&#39;: 100,
+            &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
+            &#39;xgb__learning_rate&#39;: 0.0001,
+            &#39;xgb__max_depth&#39;: 3,
+            &#39;xgb__n_estimators&#39;: 999},
+ &#39;score&#39;: 0.992638888888889}
+Best roc_auc: 0.993 
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
+</pre>
+</div>
 </div>
 
 </div>
@@ -14189,7 +14152,22 @@ Feature names selected:
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Calibrate-The-Model">Calibrate The Model<a class="anchor-link" href="#Calibrate-The-Model">&#182;</a></h2>
+<h3 id="ADASYN:-Distribution-of-y-values-after-resampling">ADASYN: Distribution of y values after resampling<a class="anchor-link" href="#ADASYN:-Distribution-of-y-values-after-resampling">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notice that the target has been redistributed after ADASYN to 540 observations for the minority class and 540 observations for the majority class.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14198,14 +14176,11 @@ Feature names selected:
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
-
-<span class="c1"># Get the predicted probabilities for the validation data from the uncalibrated model</span>
-<span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
-
-<span class="c1"># Compute the calibration curve for the uncalibrated model</span>
-<span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_prob_uncalibrated</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14213,17 +14188,33 @@ Feature names selected:
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h3>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Calibrate the model</span>
-<span class="k">if</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">calibrate</span><span class="p">:</span>
-    <span class="n">model_tuner</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
 
-<span class="c1"># Predict on the validation set</span>
-<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_valid</span><span class="p">,</span>
+    <span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">xgb_adasyn</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14240,78 +14231,65 @@ Feature names selected:
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Change back to CPU
-Confusion matrix on validation set for roc_auc
+<pre>Validation Metrics
+Confusion matrix on set provided: 
 --------------------------------------------------------------------------------
           Predicted:
-            Pos  Neg
+             Pos   Neg
 --------------------------------------------------------------------------------
-Actual: Pos 65 (tp)   3 (fn)
-        Neg  0 (fp)  46 (tn)
+Actual: Pos  20 (tp)    0 (fn)
+        Neg   3 (fp)  177 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9908333333333332,
+ &#39;Average Precision&#39;: 0.8580886504799548,
+ &#39;Brier Score&#39;: 0.20969473454607993,
+ &#39;Precision/PPV&#39;: 0.8695652173913043,
+ &#39;Sensitivity&#39;: 1.0,
+ &#39;Specificity&#39;: 0.9833333333333333}
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.94      1.00      0.97        46
-           1       1.00      0.96      0.98        68
+           0       1.00      0.98      0.99       180
+           1       0.87      1.00      0.93        20
 
-    accuracy                           0.97       114
-   macro avg       0.97      0.98      0.97       114
-weighted avg       0.98      0.97      0.97       114
+    accuracy                           0.98       200
+   macro avg       0.93      0.99      0.96       200
+weighted avg       0.99      0.98      0.99       200
 
 --------------------------------------------------------------------------------
-roc_auc after calibration: 0.9987212276214834
+
+Test Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  19 (tp)    1 (fn)
+        Neg   2 (fp)  178 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9948611111111112,
+ &#39;Average Precision&#39;: 0.9287030075187969,
+ &#39;Brier Score&#39;: 0.2104905984990972,
+ &#39;Precision/PPV&#39;: 0.9047619047619048,
+ &#39;Sensitivity&#39;: 0.95,
+ &#39;Specificity&#39;: 0.9888888888888889}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.99      0.99      0.99       180
+           1       0.90      0.95      0.93        20
+
+    accuracy                           0.98       200
+   macro avg       0.95      0.97      0.96       200
+weighted avg       0.99      0.98      0.99       200
+
+--------------------------------------------------------------------------------
 </pre>
 </div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from the calibrated model</span>
-<span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
-
-<span class="c1"># Compute the calibration curve for the calibrated model</span>
-<span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_prob_calibrated</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,)</span>
-
-<span class="c1"># Plot the calibration curves</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prob_pred_uncalibrated</span><span class="p">,</span> <span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Uncalibrated XGBoost&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prob_pred_calibrated</span><span class="p">,</span> <span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Calibrated XGBoost&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Perfectly calibrated&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted probability&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True probability in each bin&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Calibration plot (reliability curve)&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="Model_Tuner_Binary_Classification_Breast_Cancer_Example_files/Model_Tuner_Binary_Classification_Breast_Cancer_Example_34_0.png"
->
-</div>
-
 </div>
 
 </div>
@@ -14321,7 +14299,52 @@ roc_auc after calibration: 0.9987212276214834
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Classification-Report">Classification Report<a class="anchor-link" href="#Classification-Report">&#182;</a></h2>
+<h2 id="Random-Undersampler">Random Undersampler<a class="anchor-link" href="#Random-Undersampler">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Random Undersampling is a technique used to address class imbalance by reducing the number of samples in the majority class. It randomly removes instances from the majority class until the class distribution is balanced or reaches a desired ratio.</p>
+<p>Random undersampling is used to balance datasets, enabling models to focus equally on both classes and reducing bias toward the majority class. It is often combined with oversampling techniques (e.g., SMOTE) to mitigate the risk of losing important data.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_undersampled</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">RandomUnderSampler</span><span class="p">(),</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -14330,7 +14353,15 @@ roc_auc after calibration: 0.9987212276214834
 <div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_tuner</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="p">,</span>
+    <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14347,15 +14378,87 @@ roc_auc after calibration: 0.9987212276214834
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>              precision    recall  f1-score   support
+<pre>
+Pipeline Steps:
 
-           0       0.94      1.00      0.97        46
-           1       1.00      0.96      0.98        68
+┌──────────────────────┐
+│ Step 1: resampler    │
+│ RandomUnderSampler   │
+└──────────────────────┘
+           │
+           ▼
+┌──────────────────────┐
+│ Step 2: xgb          │
+│ XGBClassifier        │
+└──────────────────────┘
 
-    accuracy                           0.97       114
-   macro avg       0.97      0.98      0.97       114
-weighted avg       0.98      0.97      0.97       114
+Distribution of y values after resampling: target
+0         60
+1         60
+Name: count, dtype: int64
 
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 5/5 [00:06&lt;00:00,  1.39s/it]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  4.28it/s]</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Best score/param set found on validation set:
+{&#39;params&#39;: {&#39;xgb__early_stopping_rounds&#39;: 100,
+            &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
+            &#39;xgb__learning_rate&#39;: 0.0001,
+            &#39;xgb__max_depth&#39;: 3,
+            &#39;xgb__n_estimators&#39;: 999},
+ &#39;score&#39;: 0.9952777777777777}
+Best roc_auc: 0.995 
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>
 </pre>
 </div>
 </div>
@@ -14367,18 +14470,149 @@ weighted avg       0.98      0.97      0.97       114
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Reference">Reference<a class="anchor-link" href="#Reference">&#182;</a></h2>
+<h3 id="Random-Undersampler:-Distribution-of-y-values-after-resampling">Random Undersampler: Distribution of y values after resampling<a class="anchor-link" href="#Random-Undersampler:-Distribution-of-y-values-after-resampling">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Scikit-learn Developers. (2023). <em>Breast Cancer Wisconsin (Diagnostic) Dataset.</em> Scikit-learn Documentation.<br>
-<a href="https://scikit-learn.org/stable/datasets/toy_dataset.html#breast-cancer-wisconsin-dataset">https://scikit-learn.org/stable/datasets/toy_dataset.html#breast-cancer-wisconsin-dataset</a>.</p>
+<p>Notice that the target has been redistributed after Random Undersampler to 60 observations for the minority class and 60 observations for the majority class.</p>
 
 </div>
 </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span>
+    <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_valid</span><span class="p">,</span>
+    <span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">xgb_undersampled</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Validation Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  18 (tp)    2 (fn)
+        Neg   6 (fp)  174 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.96375,
+ &#39;Average Precision&#39;: 0.7101010101010101,
+ &#39;Brier Score&#39;: 0.2176296788988653,
+ &#39;Precision/PPV&#39;: 0.75,
+ &#39;Sensitivity&#39;: 0.9,
+ &#39;Specificity&#39;: 0.9666666666666667}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.99      0.97      0.98       180
+           1       0.75      0.90      0.82        20
+
+    accuracy                           0.96       200
+   macro avg       0.87      0.93      0.90       200
+weighted avg       0.96      0.96      0.96       200
+
+--------------------------------------------------------------------------------
+
+Test Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  18 (tp)    2 (fn)
+        Neg   6 (fp)  174 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9758333333333333,
+ &#39;Average Precision&#39;: 0.7175531914893617,
+ &#39;Brier Score&#39;: 0.21912070647249807,
+ &#39;Precision/PPV&#39;: 0.75,
+ &#39;Sensitivity&#39;: 0.9,
+ &#39;Specificity&#39;: 0.9666666666666667}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.99      0.97      0.98       180
+           1       0.75      0.90      0.82        20
+
+    accuracy                           0.96       200
+   macro avg       0.87      0.93      0.90       200
+weighted avg       0.96      0.96      0.96       200
+
+--------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
     </div>
   </div>
