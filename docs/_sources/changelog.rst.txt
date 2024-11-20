@@ -25,6 +25,50 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.20a
+--------------------
+
+- Added flexibility between ``boolean`` and ``None`` for stratification inputs
+- Added custom exception for non pandas inputs in ``return_bootstrap_metrics``
+- Enforced required ``model_type`` input to be specified as ``"classification"`` or ``"regression"``
+- Removed extraneous ``"="`` print below ``pipeline_steps``
+- Handled missing ``pipeline_steps`` when using ``imbalance_sampler`` 
+- Updated requirements for ``python==3.11``
+- Fixed SMOTE for early stopping
+- Removed extra ``model_type`` input from ``xgb_early_test.py``
+
+
+Version 0.0.19a
+--------------------
+
+- Requirements updated again to make compatible with google colab out of the box.
+- Bug in ``fit()`` method where ``best_params`` wasn't defined if we didn't specify a score
+- Threshold bug now actually fixed. Specificity and other metrics should reflect this. (Defaults to 0.5 if optimal_threshold is not specified). 
+
+Version 0.0.18a
+--------------------
+
+- Updated requirements to include ``numpy`` versions ``<1.26`` for Python 3.8-3.11.
+
+This should stop a rerun occurring when using the library on a google colab.
+
+
+Version 0.0.17a
+--------------------
+
+Major fixes:
+
+- Verbosity variable is now popped from the parameters before the fit
+- Bug with Column Transformer early stopping fixed (valid set is now transformed correctly)
+- Return metrics now has a consistent naming convention  
+- ``report_model_metrics`` is now using the correct threshold in all cases
+- Default values updated for ``train_val_test_split``  
+- ``tune_threshold_Fbeta`` is now called with the correct number of parameters in all cases
+- Requirements updates: ``XGBoost`` updated to ``2.1.2`` for later Python versions.
+
+Minor changes:
+
+- ``help(model_tuner)`` should now be correctly formatted in google colab
 
 Version 0.0.16a
 --------------------
