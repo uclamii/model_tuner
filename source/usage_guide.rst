@@ -228,6 +228,89 @@ Input Parameters
    :raises KeyError: Raised when accessing dictionary keys that are not available, such as missing scores in ``self.best_params_per_score``.
    :raises RuntimeError: Raised for unexpected issues during model fitting or transformations that do not fit into the other exception categories.
 
+Pipeline Management
+============================================
+
+The pipeline in the model tuner class is designed to automatically organize steps into three categories: **preprocessing**, **feature selection**, and **imbalanced sampling**. The steps are ordered in the following sequence:
+
+1. **Preprocessing**:
+   - Imputation
+   - Scaling
+   - Other preprocessing steps
+2. **Imbalanced Sampling**
+3. **Feature Selection**
+4. **Classifier**
+
+The ``pipeline_assembly`` method automatically sorts the steps into this order.
+
+Specifying Pipeline Steps
+-------------------------
+
+Pipeline steps can be specified in multiple way. For example if naming a pipeline step then specify like so::
+
+    pipeline_steps = ['imputer', SimpleImputer()]
+
+Naming each step is optional and the steps can also be specified like so::
+
+    pipeline_steps = [SimpleImputer(), StandardScalar(), rfe()]
+
+- If no name is assigned, the step will be renamed automatically to follow the convention ``step_0``, ``step_1``, etc.
+- Column transformers can also be included in the pipeline and are automatically categorized under the **preprocessing** section.
+
+Helper Methods for Pipeline Extraction
+--------------------------------------
+
+To support advanced use cases, the model tuner provides helper methods to extract parts of the pipeline for later use. For example, when generating SHAP plots, users might only need the preprocessing section of the pipeline.
+
+Here are some of the available methods:
+
+.. py:function:: get_preprocessing_and_feature_selection_pipeline(pipeline)
+
+    Extracts both the preprocessing and feature selection parts of the pipeline.
+
+    **Example**::
+
+        def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
+            steps = [
+                (name, transformer)
+                for name, transformer in pipeline.steps
+                if name.startswith("preprocess_") or name.startswith("feature_selection_")
+            ]
+            return self.PipelineClass(steps)
+
+.. py:function:: get_feature_selection_pipeline(pipeline)
+
+    Extracts only the feature selection part of the pipeline.
+
+    **Example**::
+
+        def get_feature_selection_pipeline(self, pipeline):
+            steps = [
+                (name, transformer)
+                for name, transformer in pipeline.steps
+                if name.startswith("feature_selection_")
+            ]
+            return steps
+
+.. py:function:: get_preprocessing_pipeline(pipeline)
+
+    Extracts only the preprocessing part of the pipeline.
+
+    **Example**::
+
+        def get_preprocessing_pipeline(self, pipeline):
+            preprocessing_steps = [
+                (name, transformer)
+                for name, transformer in pipeline.steps
+                if name.startswith("preprocess_")
+            ]
+            return self.PipelineClass(preprocessing_steps)
+
+Summary
+-------
+
+By organizing pipeline steps automatically and providing helper methods for extraction, the model tuner class offers flexibility and ease of use for building and managing complex pipelines. Users can focus on specifying the steps, and the tuner handles naming, sorting, and category assignments seamlessly.
+
 Binary Classification
 ======================
 
