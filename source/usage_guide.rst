@@ -448,10 +448,18 @@ You can use this function to evaluate the model by printing the output.
    # ------------------------- VALID AND TEST METRICS -----------------------------
 
    print("Validation Metrics")
-   class_report_val, cm_val = model_xgb.return_metrics(X_valid, y_valid, optimal_threshold=True)
+   class_report_val, cm_val = model_xgb.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+   )
    print()
    print("Test Metrics")
-   class_report_test, cm_test = model_xgb.return_metrics(X_test, y_test, optimal_threshold=True)
+   class_report_test, cm_test = model_xgb.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+   )
 
 .. code-block:: bash
 
@@ -521,22 +529,22 @@ Step 10: Calibrate the Model (if needed)
    import matplotlib.pyplot as plt
    from sklearn.calibration import calibration_curve
 
-   # Get the predicted probabilities for the validation data from the uncalibrated model
+   ## Get the predicted probabilities for the validation data from uncalibrated model
    y_prob_uncalibrated = model_xgb.predict_proba(X_test)[:, 1]
 
-   # Compute the calibration curve for the uncalibrated model
+   ## Compute the calibration curve for the uncalibrated model
    prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
       y_test,
       y_prob_uncalibrated,
-      n_bins=6,
+      n_bins=10,
    )
 
-   # Calibrate the model
+   ## Calibrate the model
    if model_xgb.calibrate:
-   model_xgb.calibrateModel(X, y, score="roc_auc")
+      model_xgb.calibrateModel(X, y, score="roc_auc")
 
-   # Predict on the validation set
-   y_test_pred = model_xgb.predict_proba(X_test)[:,1]
+   ## Predict on the validation set
+   y_test_pred = model_xgb.predict_proba(X_test)[:, 1]
 
 
 .. code-block:: bash
@@ -568,43 +576,42 @@ Step 10: Calibrate the Model (if needed)
 
 .. code-block:: python
 
-   # Get the predicted probabilities for the validation data from calibrated model
+   ## Get the predicted probabilities for the validation data from calibrated model
    y_prob_calibrated = model_xgb.predict_proba(X_test)[:, 1]
 
-   # Compute the calibration curve for the calibrated model
+   ## Compute the calibration curve for the calibrated model
    prob_true_calibrated, prob_pred_calibrated = calibration_curve(
-   y_test,
-   y_prob_calibrated,
-   n_bins=6,
+      y_test,
+      y_prob_calibrated,
+      n_bins=10,
    )
 
 
-   # Plot the calibration curves
+   ## Plot the calibration curves
    plt.figure(figsize=(5, 5))
    plt.plot(
-   prob_pred_uncalibrated,
-   prob_true_uncalibrated,
-   marker="o",
-   label="Uncalibrated XGBoost",
+      prob_pred_uncalibrated,
+      prob_true_uncalibrated,
+      marker="o",
+      label="Uncalibrated XGBoost",
    )
    plt.plot(
-   prob_pred_calibrated,
-   prob_true_calibrated,
-   marker="o",
-   label="Calibrated XGBoost",
+      prob_pred_calibrated,
+      prob_true_calibrated,
+      marker="o",
+      label="Calibrated XGBoost",
    )
    plt.plot(
-   [0, 1],
-   [0, 1],
-   linestyle="--",
-   label="Perfectly calibrated",
+      [0, 1],
+      [0, 1],
+      linestyle="--",
+      label="Perfectly calibrated",
    )
    plt.xlabel("Predicted probability")
    plt.ylabel("True probability in each bin")
    plt.title("Calibration plot (reliability curve)")
    plt.legend()
    plt.show()
-
 
 .. raw:: html
 
