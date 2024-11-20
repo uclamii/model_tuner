@@ -44,7 +44,6 @@ calibrate = False
 
 model = Model(
     name="XGBoost Early",
-    model_type="classification",
     estimator_name=estimator_name,
     model_type="classification",
     calibrate=calibrate,
