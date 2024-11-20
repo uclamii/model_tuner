@@ -49,11 +49,16 @@ Binary Classification Examples
 
    - .. raw:: html
 
-      <a href="./example_htmls/Model_Tuner_Titanic_KFold.html" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
+      <a href="./example_htmls/Model_Tuner_Column_Transformer.html" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
 
    - .. raw:: html
 
       <a href="./example_htmls/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials.html" target="_blank">Binary Classification: AIDS Clinical Trials HTML File</a>
+
+   - .. raw:: html
+
+      <a href="./example_htmls/Model_Tuner_Binary_Classification_Imbalanced_Learning.html" target="_blank">Binary Classification: Imbalanced Learning</a>
+
 
 
 Regression Example
@@ -246,7 +251,7 @@ The ``pipeline_assembly`` method automatically sorts the steps into this order.
 Specifying Pipeline Steps
 -------------------------
 
-Pipeline steps can be specified in multiple way. For example if naming a pipeline step then specify like so::
+Pipeline steps can be specified in multiple ways. For example, if naming a pipeline step then specify like so::
 
     pipeline_steps = ['imputer', SimpleImputer()]
 

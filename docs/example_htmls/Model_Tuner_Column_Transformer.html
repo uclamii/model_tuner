@@ -12966,6 +12966,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .cs { color: #3D7B7B; font-style: italic } /* Comment.Special */
 .highlight .gd { color: #A00000 } /* Generic.Deleted */
 .highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
 .highlight .gr { color: #E40000 } /* Generic.Error */
 .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
 .highlight .gi { color: #008400 } /* Generic.Inserted */
@@ -13112,13 +13113,6 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Model-Tuner-Description">Model Tuner Description<a class="anchor-link" href="#Model-Tuner-Description">&#182;</a></h2>
 </div>
 </div>
@@ -13172,27 +13166,100 @@ $( document ).ready(function(){
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Collecting model_tuner
-  Downloading model_tuner-0.0.15a0-py3-none-any.whl.metadata (3.9 kB)
-Requirement already satisfied: joblib&gt;=1.3.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.4.2)
-Requirement already satisfied: numpy&gt;=1.21.6 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
-Requirement already satisfied: pandas&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.4)
-Requirement already satisfied: scikit-learn&gt;=1.0.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.3.2)
-Requirement already satisfied: scipy&gt;=1.7.3 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.13.1)
-Requirement already satisfied: tqdm&gt;=4.66.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (4.66.5)
-Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2.8.2)
-Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.2)
-Requirement already satisfied: tzdata&gt;=2022.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.3.5-&gt;model_tuner) (2024.1)
-Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from scikit-learn&gt;=1.0.2-&gt;model_tuner) (3.5.0)
-Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.3.5-&gt;model_tuner) (1.16.0)
-Downloading model_tuner-0.0.15a0-py3-none-any.whl (20 kB)
-Installing collected packages: model_tuner
-Successfully installed model_tuner-0.0.15a0
+  Downloading model_tuner-0.0.20a0-py3-none-any.whl.metadata (5.7 kB)
+Collecting joblib==1.3.2 (from model_tuner)
+  Downloading joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
+Collecting tqdm==4.66.4 (from model_tuner)
+  Downloading tqdm-4.66.4-py3-none-any.whl.metadata (57 kB)
+     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">57.6/57.6 kB</span> <span class="ansi-red-fg">1.9 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Collecting catboost==1.2.7 (from model_tuner)
+  Downloading catboost-1.2.7-cp310-cp310-manylinux2014_x86_64.whl.metadata (1.2 kB)
+Collecting pip==24.2 (from model_tuner)
+  Downloading pip-24.2-py3-none-any.whl.metadata (3.6 kB)
+Requirement already satisfied: setuptools==75.1.0 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (75.1.0)
+Collecting wheel==0.44.0 (from model_tuner)
+  Downloading wheel-0.44.0-py3-none-any.whl.metadata (2.3 kB)
+Requirement already satisfied: numpy&lt;2.0.0,&gt;=1.19.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (1.26.4)
+Requirement already satisfied: pandas&lt;2.2.3,&gt;=1.3.5 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.2.2)
+Collecting scikit-learn&lt;1.4.0,&gt;=1.0.2 (from model_tuner)
+  Downloading scikit_learn-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Collecting scipy&lt;1.11,&gt;=1.6.3 (from model_tuner)
+  Downloading scipy-1.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (58 kB)
+     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">58.9/58.9 kB</span> <span class="ansi-red-fg">846.9 kB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Collecting scikit-optimize==0.10.2 (from model_tuner)
+  Downloading scikit_optimize-0.10.2-py2.py3-none-any.whl.metadata (9.7 kB)
+Requirement already satisfied: imbalanced-learn==0.12.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (0.12.4)
+Requirement already satisfied: xgboost==2.1.2 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (2.1.2)
+Requirement already satisfied: graphviz in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (0.20.3)
+Requirement already satisfied: matplotlib in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (3.8.0)
+Requirement already satisfied: plotly in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (5.24.1)
+Requirement already satisfied: six in /usr/local/lib/python3.10/dist-packages (from catboost==1.2.7-&gt;model_tuner) (1.16.0)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /usr/local/lib/python3.10/dist-packages (from imbalanced-learn==0.12.4-&gt;model_tuner) (3.5.0)
+Collecting pyaml&gt;=16.9 (from scikit-optimize==0.10.2-&gt;model_tuner)
+  Downloading pyaml-24.9.0-py3-none-any.whl.metadata (11 kB)
+Requirement already satisfied: packaging&gt;=21.3 in /usr/local/lib/python3.10/dist-packages (from scikit-optimize==0.10.2-&gt;model_tuner) (24.2)
+Requirement already satisfied: nvidia-nccl-cu12 in /usr/local/lib/python3.10/dist-packages (from xgboost==2.1.2-&gt;model_tuner) (2.23.4)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2024.2)
+Requirement already satisfied: tzdata&gt;=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas&lt;2.2.3,&gt;=1.3.5-&gt;model_tuner) (2024.2)
+Requirement already satisfied: PyYAML in /usr/local/lib/python3.10/dist-packages (from pyaml&gt;=16.9-&gt;scikit-optimize==0.10.2-&gt;model_tuner) (6.0.2)
+Requirement already satisfied: contourpy&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (1.3.1)
+Requirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (0.12.1)
+Requirement already satisfied: fonttools&gt;=4.22.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (4.55.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (1.4.7)
+Requirement already satisfied: pillow&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (11.0.0)
+Requirement already satisfied: pyparsing&gt;=2.3.1 in /usr/local/lib/python3.10/dist-packages (from matplotlib-&gt;catboost==1.2.7-&gt;model_tuner) (3.2.0)
+Requirement already satisfied: tenacity&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from plotly-&gt;catboost==1.2.7-&gt;model_tuner) (9.0.0)
+Downloading model_tuner-0.0.20a0-py3-none-any.whl (24 kB)
+Downloading catboost-1.2.7-cp310-cp310-manylinux2014_x86_64.whl (98.7 MB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">98.7/98.7 MB</span> <span class="ansi-red-fg">6.8 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading joblib-1.3.2-py3-none-any.whl (302 kB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">302.2/302.2 kB</span> <span class="ansi-red-fg">10.1 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading pip-24.2-py3-none-any.whl (1.8 MB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">1.8/1.8 MB</span> <span class="ansi-red-fg">35.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading scikit_optimize-0.10.2-py2.py3-none-any.whl (107 kB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">107.8/107.8 kB</span> <span class="ansi-red-fg">7.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading tqdm-4.66.4-py3-none-any.whl (78 kB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">78.3/78.3 kB</span> <span class="ansi-red-fg">4.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading wheel-0.44.0-py3-none-any.whl (67 kB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">67.1/67.1 kB</span> <span class="ansi-red-fg">2.0 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading scikit_learn-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.8 MB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">10.8/10.8 MB</span> <span class="ansi-red-fg">26.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading scipy-1.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (34.4 MB)
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">34.4/34.4 MB</span> <span class="ansi-red-fg">14.6 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+Downloading pyaml-24.9.0-py3-none-any.whl (24 kB)
+Installing collected packages: wheel, tqdm, scipy, pyaml, pip, joblib, scikit-learn, scikit-optimize, catboost, model_tuner
+  Attempting uninstall: wheel
+    Found existing installation: wheel 0.45.0
+    Uninstalling wheel-0.45.0:
+      Successfully uninstalled wheel-0.45.0
+  Attempting uninstall: tqdm
+    Found existing installation: tqdm 4.66.6
+    Uninstalling tqdm-4.66.6:
+      Successfully uninstalled tqdm-4.66.6
+  Attempting uninstall: scipy
+    Found existing installation: scipy 1.13.1
+    Uninstalling scipy-1.13.1:
+      Successfully uninstalled scipy-1.13.1
+  Attempting uninstall: pip
+    Found existing installation: pip 24.1.2
+    Uninstalling pip-24.1.2:
+      Successfully uninstalled pip-24.1.2
+  Attempting uninstall: joblib
+    Found existing installation: joblib 1.4.2
+    Uninstalling joblib-1.4.2:
+      Successfully uninstalled joblib-1.4.2
+  Attempting uninstall: scikit-learn
+    Found existing installation: scikit-learn 1.5.2
+    Uninstalling scikit-learn-1.5.2:
+      Successfully uninstalled scikit-learn-1.5.2
+Successfully installed catboost-1.2.7 joblib-1.3.2 model_tuner-0.0.20a0 pip-24.2 pyaml-24.9.0 scikit-learn-1.3.2 scikit-optimize-0.10.2 scipy-1.10.1 tqdm-4.66.4 wheel-0.44.0
 Collecting sns
   Downloading sns-0.1.tar.gz (2.1 kB)
   Preparing metadata (setup.py) ... done
 Building wheels for collected packages: sns
   Building wheel for sns (setup.py) ... done
-  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=f48e49a12d41c416aeb626123e809a5ff0aab8bfbdf9caa485f07c14de2c0d6c
+  Created wheel for sns: filename=sns-0.1-py3-none-any.whl size=2639 sha256=979803962eac384c040031c77c47cb1a59b62a1446f88c49500bcf135109d02a
   Stored in directory: /root/.cache/pip/wheels/76/1a/47/c3b6a8b9d3ae47b1488f4be13c86586327c07e0ac1bb5b3337
 Successfully built sns
 Installing collected packages: sns
@@ -13268,7 +13335,7 @@ Successfully installed sns-0.1
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-33fe1e7c-cd74-4531-b962-eeea55eeede5" class="colab-df-container">
+  <div id="df-7cae2d54-508c-473a-ad82-afb570290203" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13401,7 +13468,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-33fe1e7c-cd74-4531-b962-eeea55eeede5')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-7cae2d54-508c-473a-ad82-afb570290203')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13453,12 +13520,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-33fe1e7c-cd74-4531-b962-eeea55eeede5 button.colab-df-convert');
+        document.querySelector('#df-7cae2d54-508c-473a-ad82-afb570290203 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-33fe1e7c-cd74-4531-b962-eeea55eeede5');
+        const element = document.querySelector('#df-7cae2d54-508c-473a-ad82-afb570290203');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13478,8 +13545,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-1f673aa6-21e7-41b9-a36d-1b433580e8a1">
-  <button class="colab-df-quickchart" onclick="quickchart('df-1f673aa6-21e7-41b9-a36d-1b433580e8a1')"
+<div id="df-0a3e8e4f-a9b3-4660-b32d-b28b26da08b5">
+  <button class="colab-df-quickchart" onclick="quickchart('df-0a3e8e4f-a9b3-4660-b32d-b28b26da08b5')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13598,7 +13665,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-1f673aa6-21e7-41b9-a36d-1b433580e8a1 button');
+        document.querySelector('#df-0a3e8e4f-a9b3-4660-b32d-b28b26da08b5 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -13696,7 +13763,7 @@ Successfully installed sns-0.1
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a" class="colab-df-container">
+  <div id="df-a09d9f02-c693-408d-ad34-5a45ed2468c0" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13805,7 +13872,7 @@ Successfully installed sns-0.1
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-a09d9f02-c693-408d-ad34-5a45ed2468c0')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13857,12 +13924,12 @@ Successfully installed sns-0.1
 
     <script>
       const buttonEl =
-        document.querySelector('#df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a button.colab-df-convert');
+        document.querySelector('#df-a09d9f02-c693-408d-ad34-5a45ed2468c0 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-5c7a13cc-897d-45e1-ae9e-f6d302a52c1a');
+        const element = document.querySelector('#df-a09d9f02-c693-408d-ad34-5a45ed2468c0');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13882,8 +13949,8 @@ Successfully installed sns-0.1
   </div>
 
 
-<div id="df-d25b77bd-e282-4260-93db-57da7d1a3407">
-  <button class="colab-df-quickchart" onclick="quickchart('df-d25b77bd-e282-4260-93db-57da7d1a3407')"
+<div id="df-960a71f1-d56b-4ac3-abc2-0dca41268900">
+  <button class="colab-df-quickchart" onclick="quickchart('df-960a71f1-d56b-4ac3-abc2-0dca41268900')"
             title="Suggest charts"
             style="display:none;">
 
@@ -14002,7 +14069,7 @@ Successfully installed sns-0.1
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-d25b77bd-e282-4260-93db-57da7d1a3407 button');
+        document.querySelector('#df-960a71f1-d56b-4ac3-abc2-0dca41268900 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -14023,77 +14090,6 @@ Successfully installed sns-0.1
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># ### Defining columns to be scaled and columns to be onehotencoded</span>
-<span class="c1"># from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder</span>
-<span class="c1"># from sklearn.compose import ColumnTransformer</span>
-<span class="c1"># from sklearn.preprocessing import MinMaxScaler</span>
-<span class="c1"># from sklearn.impute import SimpleImputer</span>
-<span class="c1"># from pprint import pprint</span>
-
-<span class="c1"># ohencoder = OneHotEncoder(handle_unknown=&quot;ignore&quot;)</span>
-
-<span class="c1"># ohcols = [</span>
-<span class="c1">#     &quot;embark_town&quot;,</span>
-<span class="c1">#     &quot;who&quot;,</span>
-<span class="c1">#     &quot;sex&quot;,</span>
-<span class="c1">#     &quot;adult_male&quot;</span>
-<span class="c1"># ]</span>
-
-<span class="c1"># ordencoder = OrdinalEncoder()</span>
-
-<span class="c1"># ordcols = [</span>
-<span class="c1">#     &quot;deck&quot;</span>
-<span class="c1"># ]</span>
-
-<span class="c1"># minmaxscaler = MinMaxScaler()</span>
-
-<span class="c1"># simpleimputer = SimpleImputer()</span>
-
-<span class="c1"># scalercols = [</span>
-<span class="c1">#     &quot;parch&quot;,</span>
-<span class="c1">#     &quot;fare&quot;,</span>
-<span class="c1">#     &quot;age&quot;,</span>
-<span class="c1">#     &quot;pclass&quot;</span>
-<span class="c1"># ]</span>
-
-<span class="c1"># categorical_transformer = Pipeline(</span>
-<span class="c1">#     steps=[</span>
-<span class="c1">#         (</span>
-<span class="c1">#             &quot;imputer&quot;,</span>
-<span class="c1">#             SimpleImputer(strategy=&quot;constant&quot;, fill_value=&quot;missing&quot;),</span>
-<span class="c1">#         ),</span>
-<span class="c1">#         (&quot;onehot&quot;, OneHotEncoder(handle_unknown=&quot;ignore&quot;)),</span>
-<span class="c1">#     ]</span>
-<span class="c1"># )</span>
-
-<span class="c1"># numeric_transformer = Pipeline(</span>
-<span class="c1">#     steps=[</span>
-<span class="c1">#         (&quot;imputer&quot;, SimpleImputer(strategy=&quot;mean&quot;)),</span>
-<span class="c1">#         (&quot;scaler&quot;, MinMaxScaler()),  # Scaling the data</span>
-<span class="c1">#     ]</span>
-<span class="c1"># )</span>
-
-<span class="c1"># ct = ColumnTransformer(</span>
-<span class="c1">#     [</span>
-<span class="c1">#         (&quot;OneHotEncoder&quot;, ohencoder, ohcols),</span>
-<span class="c1">#         (&quot;OrdinalEncoder&quot;, ordencoder, ordcols),</span>
-<span class="c1">#         (&quot;MinMaxScaler&quot;, minmaxscaler, scalercols),</span>
-<span class="c1">#         (&quot;SimpleImputer&quot;, simpleimputer, numeric_transformer[])</span>
-<span class="c1">#     ],</span>
-<span class="c1">#     remainder=&#39;passthrough&#39;</span>
-<span class="c1"># )</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">OneHotEncoder</span><span class="p">,</span> <span class="n">OrdinalEncoder</span>
@@ -14163,7 +14159,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
@@ -14171,6 +14167,7 @@ Successfully installed sns-0.1
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RandomForest_Titanic&quot;</span><span class="p">,</span>
     <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
     <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
     <span class="n">estimator</span><span class="o">=</span><span class="n">rf</span><span class="p">,</span>
     <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;Preproccesor&quot;</span><span class="p">,</span> <span class="n">ct</span><span class="p">)],</span>
@@ -14191,7 +14188,7 @@ Successfully installed sns-0.1
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -14210,8 +14207,32 @@ Successfully installed sns-0.1
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+Pipeline Steps:
+
+┌──────────────────────────────────────────────────────┐
+│ Step 1: preprocess_column_transformer_Preproccesor   │
+│ ColumnTransformer                                    │
+└──────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌──────────────────────────────────────────────────────┐
+│ Step 2: rf                                           │
+│ RandomForestClassifier                               │
+└──────────────────────────────────────────────────────┘
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 5/5 [00:02&lt;00:00,  2.31it/s]
+<pre>100%|██████████| 5/5 [00:01&lt;00:00,  3.10it/s]
 </pre>
 </div>
 </div>
@@ -14233,7 +14254,7 @@ Successfully installed sns-0.1
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.43it/s]</pre>
+<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.58it/s]</pre>
 </div>
 </div>
 
@@ -14248,7 +14269,7 @@ Successfully installed sns-0.1
             &#39;rf__max_features&#39;: 5,
             &#39;rf__min_samples_leaf&#39;: 1,
             &#39;rf__n_estimators&#39;: 200},
- &#39;score&#39;: 0.8776069518716578}
+ &#39;score&#39;: 0.8780080213903744}
 Best roc_auc: 0.878 
 
 </pre>
@@ -14272,7 +14293,7 @@ Best roc_auc: 0.878
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14289,7 +14310,7 @@ Best roc_auc: 0.878
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">prob_uncalibrated</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -14318,16 +14339,16 @@ Best roc_auc: 0.878
             Pos  Neg
 --------------------------------------------------------------------------------
 Actual: Pos 51 (tp)  17 (fn)
-        Neg 12 (fp)  98 (tn)
+        Neg 11 (fp)  99 (tn)
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.85      0.89      0.87       110
-           1       0.81      0.75      0.78        68
+           0       0.85      0.90      0.88       110
+           1       0.82      0.75      0.78        68
 
     accuracy                           0.84       178
-   macro avg       0.83      0.82      0.82       178
+   macro avg       0.84      0.82      0.83       178
 weighted avg       0.84      0.84      0.84       178
 
 --------------------------------------------------------------------------------
@@ -14341,7 +14362,7 @@ weighted avg       0.84      0.84      0.84       178
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">metrics</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
@@ -14364,20 +14385,28 @@ weighted avg       0.84      0.84      0.84       178
 <pre>Confusion matrix on set provided: 
 --------------------------------------------------------------------------------
           Predicted:
-            Pos  Neg
+             Pos   Neg
 --------------------------------------------------------------------------------
-Actual: Pos 50 (tp)  19 (fn)
-        Neg 11 (fp)  99 (tn)
+Actual: Pos  50 (tp)   19 (fn)
+        Neg  10 (fp)  100 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.8617918313570486,
+ &#39;Average Precision&#39;: 0.8524617332964686,
+ &#39;Brier Score&#39;: 0.12723114064261673,
+ &#39;Precision/PPV&#39;: 0.8333333333333334,
+ &#39;Sensitivity&#39;: 0.7246376811594203,
+ &#39;Specificity&#39;: 0.9090909090909091}
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
 
-           0       0.84      0.90      0.87       110
-           1       0.82      0.72      0.77        69
+           0       0.84      0.91      0.87       110
+           1       0.83      0.72      0.78        69
 
-    accuracy                           0.83       179
-   macro avg       0.83      0.81      0.82       179
-weighted avg       0.83      0.83      0.83       179
+    accuracy                           0.84       179
+   macro avg       0.84      0.82      0.82       179
+weighted avg       0.84      0.84      0.84       179
 
 --------------------------------------------------------------------------------
 </pre>
@@ -14390,7 +14419,7 @@ weighted avg       0.83      0.83      0.83       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14406,13 +14435,13 @@ weighted avg       0.83      0.83      0.83       179
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt output_prompt">Out[13]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&#39;roc_auc&#39;: 0.36}</pre>
+<pre>{&#39;roc_auc&#39;: 0.32}</pre>
 </div>
 
 </div>
@@ -14430,7 +14459,7 @@ weighted avg       0.83      0.83      0.83       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -14444,24 +14473,42 @@ weighted avg       0.83      0.83      0.83       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Get the predicted probabilities for the validation data from the calibrated model</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1">## Get the predicted probabilities for the validation data from calibrated model</span>
 <span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">titanic_model_rf</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
 
-<span class="c1"># Compute the calibration curve for the calibrated model</span>
-<span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_prob_calibrated</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">prob_uncalibrated</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="c1">## Compute the calibration curve for the calibrated model</span>
+<span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">y_prob_calibrated</span><span class="p">,</span>
+    <span class="n">n_bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">prob_uncalibrated</span><span class="p">,</span>
+    <span class="n">n_bins</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="c1"># Plot the calibration curves</span>
+<span class="c1">## Plot the calibration curves</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prob_pred_uncalibrated</span><span class="p">,</span> <span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Uncalibrated XGBoost&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">prob_pred_calibrated</span><span class="p">,</span> <span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Calibrated XGBoost&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Perfectly calibrated&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted probability&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True probability in each bin&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Calibration plot (reliability curve)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
+    <span class="n">prob_true_uncalibrated</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">prob_pred_calibrated</span><span class="p">,</span>
+    <span class="n">prob_true_calibrated</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True probability in each bin&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Calibration plot (reliability curve)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -14482,7 +14529,7 @@ weighted avg       0.83      0.83      0.83       179
 
 
 <div class="output_png output_subarea ">
-<img src="Model_Tuner_Column_Transformer_files/Model_Tuner_Column_Transformer_27_0.png"
+<img src="Model_Tuner_Column_Transformer_files/Model_Tuner_Column_Transformer_25_0.png"
 >
 </div>
 
@@ -14509,15 +14556,16 @@ weighted avg       0.83      0.83      0.83       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Initialize titanic_model</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1">## Initialize titanic_model</span>
 
 <span class="n">titanic_model_kf</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RandomForest_Titanic&quot;</span><span class="p">,</span>
     <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
     <span class="n">calibrate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
     <span class="n">estimator</span><span class="o">=</span><span class="n">rf</span><span class="p">,</span>
     <span class="n">kfold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">ct</span><span class="p">)],</span>
@@ -14539,11 +14587,11 @@ weighted avg       0.83      0.83      0.83       179
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
-<span class="c1">#### as they are split within this into the separate folds.</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold, X and y are passed as a whole to the fit method as they</span>
+<span class="c1">#### are split within this into the separate folds.</span>
 <span class="c1">#### The metrics are assessed over each fold and averaged.</span>
 
 <span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -14563,21 +14611,35 @@ weighted avg       0.83      0.83      0.83       179
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre># Tuning hyper-parameters for roc_auc
+<pre>
+Pipeline Steps:
+
+┌───────────────────────────────────────────────────────────┐
+│ Step 1: preprocess_column_transformer_ColumnTransformer   │
+│ ColumnTransformer                                         │
+└───────────────────────────────────────────────────────────┘
+                             │
+                             ▼
+┌───────────────────────────────────────────────────────────┐
+│ Step 2: rf                                                │
+│ RandomForestClassifier                                    │
+└───────────────────────────────────────────────────────────┘
+
+# Tuning hyper-parameters for roc_auc
 Fitting 10 folds for each of 5 candidates, totalling 50 fits
 
 Best score/param set found on development set:
-{0.8738231613937606: {&#39;rf__max_depth&#39;: 10,
+{0.8733055025293572: {&#39;rf__max_depth&#39;: 5,
                       &#39;rf__max_features&#39;: 5,
-                      &#39;rf__min_samples_leaf&#39;: 3,
-                      &#39;rf__n_estimators&#39;: 100}}
+                      &#39;rf__min_samples_leaf&#39;: 1,
+                      &#39;rf__n_estimators&#39;: 200}}
 
 Grid scores on development set:
-0.848 (+/-0.084) for {&#39;rf__n_estimators&#39;: 10, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: None}
-0.864 (+/-0.093) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 3}
-0.865 (+/-0.099) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: 10}
-0.874 (+/-0.095) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 3, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 10}
-0.871 (+/-0.095) for {&#39;rf__n_estimators&#39;: 200, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 5}
+0.850 (+/-0.100) for {&#39;rf__n_estimators&#39;: 10, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: None}
+0.862 (+/-0.093) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 3}
+0.868 (+/-0.086) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 3, &#39;rf__max_depth&#39;: 10}
+0.873 (+/-0.090) for {&#39;rf__n_estimators&#39;: 100, &#39;rf__min_samples_leaf&#39;: 3, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 10}
+0.873 (+/-0.092) for {&#39;rf__n_estimators&#39;: 200, &#39;rf__min_samples_leaf&#39;: 1, &#39;rf__max_features&#39;: 5, &#39;rf__max_depth&#39;: 5}
 Fitting model with best params and tuning for best threshold ...
 </pre>
 </div>
@@ -14589,7 +14651,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.32it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.05it/s]
 </pre>
 </div>
 </div>
@@ -14611,7 +14673,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.61it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.30it/s]
 </pre>
 </div>
 </div>
@@ -14633,7 +14695,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.21it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.28it/s]
 </pre>
 </div>
 </div>
@@ -14655,7 +14717,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:01&lt;00:00,  1.32it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.29it/s]
 </pre>
 </div>
 </div>
@@ -14677,7 +14739,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:02&lt;00:00,  1.18s/it]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.27it/s]
 </pre>
 </div>
 </div>
@@ -14699,7 +14761,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  2.63it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.20it/s]
 </pre>
 </div>
 </div>
@@ -14721,7 +14783,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.13it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.23it/s]
 </pre>
 </div>
 </div>
@@ -14743,7 +14805,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.41it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.28it/s]
 </pre>
 </div>
 </div>
@@ -14765,7 +14827,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.26it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.33it/s]
 </pre>
 </div>
 </div>
@@ -14787,7 +14849,7 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.36it/s]
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.30it/s]
 </pre>
 </div>
 </div>
@@ -14798,11 +14860,11 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold X and y are passed as a whole to the fit method as they</span>
-<span class="c1">#### as they are split within this into the separate folds.</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1">#### When using KFold, X and y are passed as a whole to the fit method as they</span>
+<span class="c1">#### are split within this into the separate folds.</span>
 <span class="c1">#### The metrics are assessed over each fold and averaged.</span>
 
 <span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14815,7 +14877,7 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">threshold</span>
@@ -14831,13 +14893,13 @@ Fitting model with best params and tuning for best threshold ...
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[20]:</div>
+    <div class="prompt output_prompt">Out[19]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>{&#39;roc_auc&#39;: 0.327}</pre>
+<pre>{&#39;roc_auc&#39;: 0.28400000000000003}</pre>
 </div>
 
 </div>
@@ -14848,7 +14910,7 @@ Fitting model with best params and tuning for best threshold ...
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">titanic_model_kf</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -14868,58 +14930,43 @@ Fitting model with best params and tuning for best threshold ...
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Confusion matrix on set provided: 
+<pre>
+Detailed classification report for RandomForest_Titanic:
+
+Confusion Matrix Average Across 10 Folds for roc_auc:
 --------------------------------------------------------------------------------
           Predicted:
-             Pos   Neg
+            Pos  Neg
 --------------------------------------------------------------------------------
-Actual: Pos 292 (tp)   50 (fn)
-        Neg  40 (fp)  509 (tn)
+Actual: Pos 25 (tp)   8 (fn)
+        Neg  6 (fp)  48 (tn)
 --------------------------------------------------------------------------------
 
+Classification Report Averaged Across All Folds for roc_auc:
               precision    recall  f1-score   support
 
-           0       0.91      0.93      0.92       549
-           1       0.88      0.85      0.87       342
+           0       0.85      0.88      0.86       549
+           1       0.79      0.75      0.77       342
 
-    accuracy                           0.90       891
-   macro avg       0.90      0.89      0.89       891
-weighted avg       0.90      0.90      0.90       891
+    accuracy                           0.83       891
+   macro avg       0.82      0.81      0.82       891
+weighted avg       0.83      0.83      0.83       891
 
+--------------------------------------------------------------------------------
+The model is trained on the full development set.
+The scores are computed on the full evaluation set.
+
+--------------------------------------------------------------------------------
+Average performance across 10 Folds:
+{&#39;AUC ROC&#39;: 0.8708905824481441,
+ &#39;Average Precision&#39;: 0.8571712206838351,
+ &#39;Brier Score&#39;: 0.12943665899615878,
+ &#39;Precision/PPV&#39;: 0.6572898324552856,
+ &#39;Sensitivity&#39;: 0.8731093599580442,
+ &#39;Specificity&#39;: 0.7161151820915013}
 --------------------------------------------------------------------------------
 </pre>
 </div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[21]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Classification Report&#39;: {&#39;0&#39;: {&#39;precision&#39;: 0.9105545617173524,
-   &#39;recall&#39;: 0.9271402550091075,
-   &#39;f1-score&#39;: 0.9187725631768954,
-   &#39;support&#39;: 549.0},
-  &#39;1&#39;: {&#39;precision&#39;: 0.8795180722891566,
-   &#39;recall&#39;: 0.8538011695906432,
-   &#39;f1-score&#39;: 0.8664688427299703,
-   &#39;support&#39;: 342.0},
-  &#39;accuracy&#39;: 0.898989898989899,
-  &#39;macro avg&#39;: {&#39;precision&#39;: 0.8950363170032545,
-   &#39;recall&#39;: 0.8904707122998754,
-   &#39;f1-score&#39;: 0.8926207029534328,
-   &#39;support&#39;: 891.0},
-  &#39;weighted avg&#39;: {&#39;precision&#39;: 0.8986415657752166,
-   &#39;recall&#39;: 0.898989898989899,
-   &#39;f1-score&#39;: 0.8986963876518129,
-   &#39;support&#39;: 891.0}},
- &#39;Confusion Matrix&#39;: array([[509,  40],
-        [ 50, 292]])}</pre>
-</div>
-
 </div>
 
 </div>

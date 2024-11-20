@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>Model_Tuner_Regression_Redfin_Real_Estate</title>
+<title>Model_Tuner_Binary_Classification_AIDS_Clinical_Trials</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13105,62 +13105,15 @@ $( document ).ready(function(){
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Model-Tuner-Regression---Redfin-Real-Estate">Model Tuner Regression - Redfin Real Estate<a class="anchor-link" href="#Model-Tuner-Regression---Redfin-Real-Estate">&#182;</a></h1>
+<h1 id="UCI-Machine-Learning-Repository-Dataset---AIDS-Clinical-Trials-Group-Study-175">UCI Machine Learning Repository Dataset - AIDS Clinical Trials Group Study 175<a class="anchor-link" href="#UCI-Machine-Learning-Repository-Dataset---AIDS-Clinical-Trials-Group-Study-175">&#182;</a></h1>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2><p>This Google Colab notebook utilizes a dataset on the Los Angeles Real Estate market sourced from <code>Redfin</code>, consisting of 200 rows and 27 columns. The dataset captures a snapshot in time of various property listings, providing detailed information about each property.</p>
-<h2 id="Dataset-Columns">Dataset Columns<a class="anchor-link" href="#Dataset-Columns">&#182;</a></h2><p>The dataset includes the following columns:</p>
-<ul>
-<li><code>SALE TYPE</code></li>
-<li><code>SOLD DATE</code></li>
-<li><code>PROPERTY TYPE</code></li>
-<li><code>ADDRESS</code></li>
-<li><code>CITY</code></li>
-<li><code>STATE OR PROVINCE</code></li>
-<li><code>ZIP OR POSTAL CODE</code></li>
-<li><code>PRICE</code></li>
-<li><code>BEDS</code></li>
-<li><code>BATHS</code></li>
-<li><code>LOCATION</code></li>
-<li><code>SQUARE FEET</code></li>
-<li><code>LOT SIZE</code></li>
-<li><code>YEAR BUILT</code></li>
-<li><code>DAYS ON MARKET</code></li>
-<li><code>$/SQUARE FEET</code></li>
-<li><code>HOA/MONTH</code></li>
-<li><code>STATUS</code></li>
-<li><code>NEXT OPEN HOUSE START TIME</code></li>
-<li><code>NEXT OPEN HOUSE END TIME</code></li>
-<li><code>URL (SEE https://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)</code></li>
-<li><code>SOURCE</code></li>
-<li><code>MLS#</code></li>
-<li><code>FAVORITE</code></li>
-<li><code>INTERESTED</code></li>
-<li><code>LATITUDE</code></li>
-<li><code>LONGITUDE</code></li>
-</ul>
-<h2 id="Usage">Usage<a class="anchor-link" href="#Usage">&#182;</a></h2><p>The primary purpose of this notebook is to demonstrate various regression examples using the Redfin dataset. Specifically, the following variables are used for testing in this notebook:</p>
-<ul>
-<li><p><strong>Features (X):</strong></p>
-<ul>
-<li><code>BEDS</code></li>
-<li><code>BATHS</code></li>
-<li><code>SQUARE FEET</code></li>
-<li><code>LOT SIZE</code></li>
-</ul>
-</li>
-<li><p><strong>Target (y):</strong></p>
-<ul>
-<li><code>PRICE</code></li>
-</ul>
-</li>
-</ul>
-<h2 id="Source">Source<a class="anchor-link" href="#Source">&#182;</a></h2><p>The dataset is sourced from Redfin, available at <a href="https://www.redfin.com/">Redfin's Comparative Market Analysis</a>.</p>
-<h2 id="Note">Note<a class="anchor-link" href="#Note">&#182;</a></h2><p>This dataset represents a single snapshot in time and may not reflect current market conditions.</p>
+<p>The UCI Machine Learning Repository is a well-known resource for accessing a wide range of datasets used for machine learning research and practice. One such dataset is the AIDS Clinical Trials Group Study dataset, which can be used to build and evaluate predictive models.</p>
+<p>In our library, you can easily fetch this dataset using the ucimlrepo package. If you haven't installed it yet, you can do so by running <code>pip install ucimlrepo</code>.</p>
 
 </div>
 </div>
@@ -13237,7 +13190,7 @@ Collecting joblib==1.3.2 (from model_tuner)
   Downloading joblib-1.3.2-py3-none-any.whl.metadata (5.4 kB)
 Collecting tqdm==4.66.4 (from model_tuner)
   Downloading tqdm-4.66.4-py3-none-any.whl.metadata (57 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">57.6/57.6 kB</span> <span class="ansi-red-fg">2.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">57.6/57.6 kB</span> <span class="ansi-red-fg">1.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Collecting catboost==1.2.7 (from model_tuner)
   Downloading catboost-1.2.7-cp310-cp310-manylinux2014_x86_64.whl.metadata (1.2 kB)
 Collecting pip==24.2 (from model_tuner)
@@ -13251,7 +13204,7 @@ Collecting scikit-learn&lt;1.4.0,&gt;=1.0.2 (from model_tuner)
   Downloading scikit_learn-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
 Collecting scipy&lt;1.11,&gt;=1.6.3 (from model_tuner)
   Downloading scipy-1.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (58 kB)
-     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">58.9/58.9 kB</span> <span class="ansi-red-fg">1.6 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+     <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">58.9/58.9 kB</span> <span class="ansi-red-fg">1.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Collecting scikit-optimize==0.10.2 (from model_tuner)
   Downloading scikit_optimize-0.10.2-py2.py3-none-any.whl.metadata (9.7 kB)
 Requirement already satisfied: imbalanced-learn==0.12.4 in /usr/local/lib/python3.10/dist-packages (from model_tuner) (0.12.4)
@@ -13278,21 +13231,21 @@ Requirement already satisfied: pyparsing&gt;=2.3.1 in /usr/local/lib/python3.10/
 Requirement already satisfied: tenacity&gt;=6.2.0 in /usr/local/lib/python3.10/dist-packages (from plotly-&gt;catboost==1.2.7-&gt;model_tuner) (9.0.0)
 Downloading model_tuner-0.0.20a0-py3-none-any.whl (24 kB)
 Downloading catboost-1.2.7-cp310-cp310-manylinux2014_x86_64.whl (98.7 MB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">98.7/98.7 MB</span> <span class="ansi-red-fg">5.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">98.7/98.7 MB</span> <span class="ansi-red-fg">7.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading joblib-1.3.2-py3-none-any.whl (302 kB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">302.2/302.2 kB</span> <span class="ansi-red-fg">7.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">302.2/302.2 kB</span> <span class="ansi-red-fg">9.2 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading pip-24.2-py3-none-any.whl (1.8 MB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">1.8/1.8 MB</span> <span class="ansi-red-fg">32.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">1.8/1.8 MB</span> <span class="ansi-red-fg">19.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading scikit_optimize-0.10.2-py2.py3-none-any.whl (107 kB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">107.8/107.8 kB</span> <span class="ansi-red-fg">7.0 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">107.8/107.8 kB</span> <span class="ansi-red-fg">5.3 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading tqdm-4.66.4-py3-none-any.whl (78 kB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">78.3/78.3 kB</span> <span class="ansi-red-fg">4.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">78.3/78.3 kB</span> <span class="ansi-red-fg">5.1 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading wheel-0.44.0-py3-none-any.whl (67 kB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">67.1/67.1 kB</span> <span class="ansi-red-fg">3.5 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">67.1/67.1 kB</span> <span class="ansi-red-fg">4.1 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading scikit_learn-1.3.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.8 MB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">10.8/10.8 MB</span> <span class="ansi-red-fg">42.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">10.8/10.8 MB</span> <span class="ansi-red-fg">32.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading scipy-1.10.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (34.4 MB)
-   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">34.4/34.4 MB</span> <span class="ansi-red-fg">21.1 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
+   <span class="ansi-black-intense-fg">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span> <span class="ansi-green-fg">34.4/34.4 MB</span> <span class="ansi-red-fg">11.4 MB/s</span> eta <span class="ansi-cyan-fg">0:00:00</span>
 Downloading pyaml-24.9.0-py3-none-any.whl (24 kB)
 Installing collected packages: wheel, tqdm, scipy, pyaml, pip, joblib, scikit-learn, scikit-optimize, catboost, model_tuner
   Attempting uninstall: wheel
@@ -13341,8 +13294,8 @@ Successfully installed catboost-1.2.7 joblib-1.3.2 model_tuner-0.0.20a0 pip-24.2
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">model_tuner</span>
-<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">model_tuner</span>  <span class="c1"># import model_tuner to show version info.</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>  <span class="c1"># Model class from model_tuner lib.</span>
 </pre></div>
 
     </div>
@@ -13435,7 +13388,45 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Import-Other-Relevant-Libraries">Import Other Relevant Libraries<a class="anchor-link" href="#Import-Other-Relevant-Libraries">&#182;</a></h2>
+<h2 id="Binary-Classification-Via-The-Breast-Cancer-Dataset">Binary Classification Via The Breast Cancer Dataset<a class="anchor-link" href="#Binary-Classification-Via-The-Breast-Cancer-Dataset">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="AIDS-Clinical-Trials-Group-Study-175-Dataset">AIDS Clinical Trials Group Study 175 Dataset<a class="anchor-link" href="#AIDS-Clinical-Trials-Group-Study-175-Dataset">&#182;</a></h2><p>The AIDS Clinical Trials Group Study 175 Dataset is a healthcare dataset that contains statistical and categorical information about patients who have been diagnosed with AIDS. This dataset, which was initially published in 1996, is often used to predict whether or not a patient will respond to different AIDS treatments.</p>
+<h2 id="Key-Features-of-the-Dataset">Key Features of the Dataset<a class="anchor-link" href="#Key-Features-of-the-Dataset">&#182;</a></h2><ul>
+<li>Number of Instances: 2,139</li>
+<li>Number of Features: 23</li>
+<li>Feature Type: Categorical, Integer</li>
+<li>Subject Area: Health and Medicine</li>
+<li>Associated Tasks: Classification, Regression</li>
+</ul>
+<h2 id="Dataset-Information">Dataset Information<a class="anchor-link" href="#Dataset-Information">&#182;</a></h2><ul>
+<li>Purpose of the Dataset: The dataset was created to examine the performance of two different types of AIDS treatments.</li>
+<li>Funding: The creation of this dataset was funded by the AIDS Clinical Trials Group of the National Institute of Allergy and Infectious Diseases and General Research Center units funded by the National Center for Research Resources.</li>
+<li>Instances Represent: The dataset includes health records of AIDS patients from the US only.
+Sensitive Data: The dataset includes sensitive information such as ethnicity (race) and gender.</li>
+<li>Data Preprocessing: No preprocessing was performed on the data.</li>
+<li>Missing Values: The dataset does not have missing values.</li>
+</ul>
+<h2 id="Example-Usage-in-Machine-Learning">Example Usage in Machine Learning<a class="anchor-link" href="#Example-Usage-in-Machine-Learning">&#182;</a></h2><ul>
+<li>Predictive Modeling: The dataset can be used to train models that predict patient outcomes based on demographic and clinical features.</li>
+<li>Treatment Efficacy Analysis: Researchers can use the dataset to compare the effectiveness of different AIDS treatments.</li>
+<li>Health Data Analytics: This dataset is valuable for analyzing trends in the progression and treatment of AIDS among patients in the United States.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Accessing-the-Dataset">Accessing the Dataset<a class="anchor-link" href="#Accessing-the-Dataset">&#182;</a></h2><p>To work with the AIDS Clinical Trials Group Study 175 Dataset, you can load it using the ucimlrepo package. If you haven't installed it yet, install it with:</p>
+<div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">ucimlrepo</span>
+</pre></div>
+
 </div>
 </div>
 </div>
@@ -13444,62 +13435,7 @@ None
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">Lasso</span><span class="p">,</span> <span class="n">Ridge</span><span class="p">,</span> <span class="n">SGDRegressor</span>
-<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
-<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
-<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
-
-<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
-
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">sklearn.exceptions</span> <span class="kn">import</span> <span class="n">DataConversionWarning</span>
-
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">DataConversionWarning</span><span class="p">)</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Read-In-The-Dataset">Read In The Dataset<a class="anchor-link" href="#Read-In-The-Dataset">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Direct download link to the Excel file</span>
-<span class="n">url</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="s2">&quot;https://github.com/uclamii/model_tuner/raw/main/public_data/&quot;</span>
-    <span class="s2">&quot;redfin_2024-04-16-15-59-17.xlsx&quot;</span>
-<span class="p">)</span>
-
-<span class="c1"># Read the Excel file</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># inspect first 5 rows of data</span>
+<div class=" highlight hl-python"><pre><span></span><span class="err">!</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">ucimlrepo</span>
 </pre></div>
 
     </div>
@@ -13512,13 +13448,114 @@ None
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[6]:</div>
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Collecting ucimlrepo
+  Downloading ucimlrepo-0.0.7-py3-none-any.whl.metadata (5.5 kB)
+Requirement already satisfied: pandas&gt;=1.0.0 in /usr/local/lib/python3.10/dist-packages (from ucimlrepo) (2.2.2)
+Requirement already satisfied: certifi&gt;=2020.12.5 in /usr/local/lib/python3.10/dist-packages (from ucimlrepo) (2024.8.30)
+Requirement already satisfied: numpy&gt;=1.22.4 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.0.0-&gt;ucimlrepo) (1.26.4)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.0.0-&gt;ucimlrepo) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.0.0-&gt;ucimlrepo) (2024.2)
+Requirement already satisfied: tzdata&gt;=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas&gt;=1.0.0-&gt;ucimlrepo) (2024.2)
+Requirement already satisfied: six&gt;=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil&gt;=2.8.2-&gt;pandas&gt;=1.0.0-&gt;ucimlrepo) (1.16.0)
+Downloading ucimlrepo-0.0.7-py3-none-any.whl (8.0 kB)
+Installing collected packages: ucimlrepo
+Successfully installed ucimlrepo-0.0.7
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Load-the-dataset,-define-X,-y">Load the dataset, define X, y<a class="anchor-link" href="#Load-the-dataset,-define-X,-y">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Once installed, you can quickly load the AIDS Clinical Trials Group Study dataset with a few simple commands:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">from</span> <span class="nn">ucimlrepo</span> <span class="kn">import</span> <span class="n">fetch_ucirepo</span>
+
+<span class="c1"># fetch dataset</span>
+<span class="n">aids_clinical_trials_group_study_175</span> <span class="o">=</span> <span class="n">fetch_ucirepo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">890</span><span class="p">)</span>
+
+<span class="c1"># data (as pandas dataframes)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">features</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">targets</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Import-Requisite-Libraries">Import Requisite Libraries<a class="anchor-link" href="#Import-Requisite-Libraries">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">X</span><span class="o">.</span><span class="n">head</span><span class="p">()</span> <span class="c1"># inspect the first 5 rows of data</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[7]:</div>
 
 
 
 <div class="output_html rendered_html output_subarea output_execute_result">
 
-  <div id="df-385997ac-02df-42cc-b698-f329a26da557" class="colab-df-container">
+  <div id="df-c21e96ea-c426-42bd-af1b-b822de32fda4" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -13537,158 +13574,158 @@ None
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>SALE TYPE</th>
-      <th>SOLD DATE</th>
-      <th>PROPERTY TYPE</th>
-      <th>ADDRESS</th>
-      <th>CITY</th>
-      <th>STATE OR PROVINCE</th>
-      <th>ZIP OR POSTAL CODE</th>
-      <th>PRICE</th>
-      <th>BEDS</th>
-      <th>BATHS</th>
+      <th>time</th>
+      <th>trt</th>
+      <th>age</th>
+      <th>wtkg</th>
+      <th>hemo</th>
+      <th>homo</th>
+      <th>drugs</th>
+      <th>karnof</th>
+      <th>oprior</th>
+      <th>z30</th>
       <th>...</th>
-      <th>STATUS</th>
-      <th>NEXT OPEN HOUSE START TIME</th>
-      <th>NEXT OPEN HOUSE END TIME</th>
-      <th>URL (SEE https://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)</th>
-      <th>SOURCE</th>
-      <th>MLS#</th>
-      <th>FAVORITE</th>
-      <th>INTERESTED</th>
-      <th>LATITUDE</th>
-      <th>LONGITUDE</th>
+      <th>gender</th>
+      <th>str2</th>
+      <th>strat</th>
+      <th>symptom</th>
+      <th>treat</th>
+      <th>offtrt</th>
+      <th>cd40</th>
+      <th>cd420</th>
+      <th>cd80</th>
+      <th>cd820</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>In accordance with local MLS rules, some MLS l...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>948</td>
+      <td>2</td>
+      <td>48</td>
+      <td>89.8128</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>100</td>
+      <td>0</td>
+      <td>0</td>
       <td>...</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>422</td>
+      <td>477</td>
+      <td>566</td>
+      <td>324</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>MLS Listing</td>
-      <td>NaN</td>
-      <td>Single Family Residential</td>
-      <td>1633 N Beverly Dr</td>
-      <td>Beverly Hills</td>
-      <td>CA</td>
-      <td>90210.0</td>
-      <td>2899000.0</td>
-      <td>2.0</td>
-      <td>2.5</td>
+      <td>1002</td>
+      <td>3</td>
+      <td>61</td>
+      <td>49.4424</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>90</td>
+      <td>0</td>
+      <td>1</td>
       <td>...</td>
-      <td>Active</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>https://www.redfin.com/CA/Beverly-Hills/1633-N...</td>
-      <td>CRMLS</td>
-      <td>SB23231159</td>
-      <td>N</td>
-      <td>Y</td>
-      <td>34.100409</td>
-      <td>-118.415785</td>
+      <td>0</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>162</td>
+      <td>218</td>
+      <td>392</td>
+      <td>564</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>MLS Listing</td>
-      <td>NaN</td>
-      <td>Single Family Residential</td>
-      <td>1135 Coldwater Canyon Dr</td>
-      <td>Beverly Hills</td>
-      <td>CA</td>
-      <td>90210.0</td>
-      <td>5650000.0</td>
-      <td>5.0</td>
-      <td>5.0</td>
+      <td>961</td>
+      <td>3</td>
+      <td>45</td>
+      <td>88.4520</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>90</td>
+      <td>0</td>
+      <td>1</td>
       <td>...</td>
-      <td>Active</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>https://www.redfin.com/CA/Beverly-Hills/1135-C...</td>
-      <td>TheMLS</td>
-      <td>24-380159</td>
-      <td>N</td>
-      <td>Y</td>
-      <td>34.093565</td>
-      <td>-118.407785</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>326</td>
+      <td>274</td>
+      <td>2063</td>
+      <td>1893</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>MLS Listing</td>
-      <td>NaN</td>
-      <td>Condo/Co-op</td>
-      <td>433 N Doheny Dr #302</td>
-      <td>Beverly Hills</td>
-      <td>CA</td>
-      <td>90210.0</td>
-      <td>1980000.0</td>
-      <td>3.0</td>
-      <td>3.0</td>
+      <td>1166</td>
+      <td>3</td>
+      <td>47</td>
+      <td>85.2768</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>100</td>
+      <td>0</td>
+      <td>1</td>
       <td>...</td>
-      <td>Active</td>
-      <td>April-21-2024 02:00 PM</td>
-      <td>April-21-2024 05:00 PM</td>
-      <td>https://www.redfin.com/CA/Beverly-Hills/433-N-...</td>
-      <td>TheMLS</td>
-      <td>24-380177</td>
-      <td>N</td>
-      <td>Y</td>
-      <td>34.078053</td>
-      <td>-118.389995</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>287</td>
+      <td>394</td>
+      <td>1590</td>
+      <td>966</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>MLS Listing</td>
-      <td>NaN</td>
-      <td>Single Family Residential</td>
-      <td>1531 Summitridge Dr</td>
-      <td>Beverly Hills</td>
-      <td>CA</td>
-      <td>90210.0</td>
-      <td>18900000.0</td>
-      <td>8.0</td>
-      <td>10.0</td>
+      <td>1090</td>
+      <td>0</td>
+      <td>43</td>
+      <td>66.6792</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>100</td>
+      <td>0</td>
+      <td>1</td>
       <td>...</td>
-      <td>Active</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>https://www.redfin.com/CA/Beverly-Hills/1531-S...</td>
-      <td>TheMLS</td>
-      <td>24-378855</td>
-      <td>N</td>
-      <td>Y</td>
-      <td>34.099480</td>
-      <td>-118.420121</td>
+      <td>1</td>
+      <td>1</td>
+      <td>3</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>504</td>
+      <td>353</td>
+      <td>870</td>
+      <td>782</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 27 columns</p>
+<p>5 rows × 23 columns</p>
 </div>
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-385997ac-02df-42cc-b698-f329a26da557')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-c21e96ea-c426-42bd-af1b-b822de32fda4')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -13740,12 +13777,12 @@ None
 
     <script>
       const buttonEl =
-        document.querySelector('#df-385997ac-02df-42cc-b698-f329a26da557 button.colab-df-convert');
+        document.querySelector('#df-c21e96ea-c426-42bd-af1b-b822de32fda4 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-385997ac-02df-42cc-b698-f329a26da557');
+        const element = document.querySelector('#df-c21e96ea-c426-42bd-af1b-b822de32fda4');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -13765,8 +13802,8 @@ None
   </div>
 
 
-<div id="df-b836f3db-86eb-4e46-8ecf-729386fa8bef">
-  <button class="colab-df-quickchart" onclick="quickchart('df-b836f3db-86eb-4e46-8ecf-729386fa8bef')"
+<div id="df-240e4ea1-bf4a-4388-a4a5-ccc9a1380413">
+  <button class="colab-df-quickchart" onclick="quickchart('df-240e4ea1-bf4a-4388-a4a5-ccc9a1380413')"
             title="Suggest charts"
             style="display:none;">
 
@@ -13885,7 +13922,7 @@ None
     }
     (() => {
       let quickchartButtonEl =
-        document.querySelector('#df-b836f3db-86eb-4e46-8ecf-729386fa8bef button');
+        document.querySelector('#df-240e4ea1-bf4a-4388-a4a5-ccc9a1380413 button');
       quickchartButtonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
     })();
@@ -13905,34 +13942,14 @@ None
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;PROPERTY TYPE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<div class=" highlight hl-python"><pre><span></span><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[7]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([nan, &#39;Single Family Residential&#39;, &#39;Condo/Co-op&#39;,
-       &#39;Multi-Family (5+ Unit)&#39;, &#39;Vacant Land&#39;], dtype=object)</pre>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -13940,87 +13957,19 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Simple-EDA-and-Preprocessing">Simple EDA and Preprocessing<a class="anchor-link" href="#Simple-EDA-and-Preprocessing">&#182;</a></h2>
+<h2 id="Check-for-zero-variance-columns-and-drop-accordingly">Check for zero-variance columns and drop accordingly<a class="anchor-link" href="#Check-for-zero-variance-columns-and-drop-accordingly">&#182;</a></h2>
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="c1"># inspect the list of cols in the dataset</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[8]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>Index([&#39;SALE TYPE&#39;, &#39;SOLD DATE&#39;, &#39;PROPERTY TYPE&#39;, &#39;ADDRESS&#39;, &#39;CITY&#39;,
-       &#39;STATE OR PROVINCE&#39;, &#39;ZIP OR POSTAL CODE&#39;, &#39;PRICE&#39;, &#39;BEDS&#39;, &#39;BATHS&#39;,
-       &#39;LOCATION&#39;, &#39;SQUARE FEET&#39;, &#39;LOT SIZE&#39;, &#39;YEAR BUILT&#39;, &#39;DAYS ON MARKET&#39;,
-       &#39;$/SQUARE FEET&#39;, &#39;HOA/MONTH&#39;, &#39;STATUS&#39;, &#39;NEXT OPEN HOUSE START TIME&#39;,
-       &#39;NEXT OPEN HOUSE END TIME&#39;,
-       &#39;URL (SEE https://www.redfin.com/buy-a-home/comparative-market-analysis FOR INFO ON PRICING)&#39;,
-       &#39;SOURCE&#39;, &#39;MLS#&#39;, &#39;FAVORITE&#39;, &#39;INTERESTED&#39;, &#39;LATITUDE&#39;, &#39;LONGITUDE&#39;],
-      dtype=&#39;object&#39;)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;This dataset has </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> rows and </span><span class="si">{</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> columns.&quot;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>This dataset has 200 rows and 27 columns.
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="c1"># remove first row of dataframe which is not used</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># Check for zero-variance columns and drop them</span>
+<span class="n">zero_variance_columns</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">var</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">zero_variance_columns</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">zero_variance_columns</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14031,7 +13980,49 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Categorical-and-Numerical-Data-Types">Categorical and Numerical Data Types<a class="anchor-link" href="#Categorical-and-Numerical-Data-Types">&#182;</a></h2>
+<h2 id="Define-Hyperparameters-for-XGBoost">Define Hyperparameters for XGBoost<a class="anchor-link" href="#Define-Hyperparameters-for-XGBoost">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+    <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;binary:logistic&quot;</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Define-The-Model-Object">Define The Model Object<a class="anchor-link" href="#Define-The-Model-Object">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -14040,18 +14031,16 @@ None
 <div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># &gt;2 categories</span>
-<span class="n">categorical_features</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;PROPERTY TYPE&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">clc</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
+<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
 
-<span class="c1"># continuous or binary</span>
-<span class="n">numerical_features</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;BEDS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BATHS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SQUARE FEET&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;LOT SIZE&quot;</span>
-<span class="p">]</span>
+<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
+<span class="n">n_iter</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;n_iter&quot;</span><span class="p">]</span>
+<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
+<span class="n">early_stop</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
+<span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 
     </div>
@@ -14062,7 +14051,7 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Define-The-Model-Objects-Hyperparameters">Define The Model Objects Hyperparameters<a class="anchor-link" href="#Define-The-Model-Objects-Hyperparameters">&#182;</a></h2>
+<h2 id="Initialize-and-Configure-the-Model">Initialize and Configure the Model<a class="anchor-link" href="#Initialize-and-Configure-the-Model">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -14071,148 +14060,26 @@ None
 <div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1">################################ Lasso Regression ##############################</span>
-
-<span class="n">lasso_name</span> <span class="o">=</span> <span class="s2">&quot;lasso&quot;</span>
-<span class="n">lasso</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">tuned_parameters_lasso</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__fit_intercept&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__precompute&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__copy_X&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__max_iter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__tol&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__warm_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lasso_name</span><span class="si">}</span><span class="s2">__positive&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-<span class="n">lasso_definition</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">lasso</span><span class="p">,</span>
-    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">lasso_name</span><span class="p">,</span>
-    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_lasso</span><span class="p">,</span>
-    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1">################################ Ridge Regression ##############################</span>
-
-<span class="n">ridge_name</span> <span class="o">=</span> <span class="s2">&quot;ridge&quot;</span>
-<span class="n">ridge</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">tuned_parameters_ridge</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ridge_name</span><span class="si">}</span><span class="s2">__max_iter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ridge_name</span><span class="si">}</span><span class="s2">__alpha&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-
-<span class="n">ridge_definition</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">ridge</span><span class="p">,</span>
-    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">ridge_name</span><span class="p">,</span>
-    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_ridge</span><span class="p">,</span>
-    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1">################################# SGD Regression ###############################</span>
-
-<span class="n">sgd_name</span> <span class="o">=</span> <span class="s2">&quot;sgd&quot;</span>
-<span class="n">sgd</span> <span class="o">=</span> <span class="n">SGDRegressor</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">tuned_parameters_sgd</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__loss&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;squared_error&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;huber&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;epsilon_insensitive&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;squared_epsilon_insensitive&quot;</span><span class="p">,</span>
-        <span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__penalty&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span> <span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="s2">&quot;elasticnet&quot;</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__alpha&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.0001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__l1_ratio&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.15</span><span class="p">,</span>
-            <span class="mf">0.25</span><span class="p">,</span>
-            <span class="mf">0.5</span><span class="p">,</span>
-            <span class="mf">0.75</span><span class="p">,</span>
-        <span class="p">][</span>
-            <span class="p">:</span><span class="mi">1</span>
-        <span class="p">],</span>  <span class="c1"># Only used if penalty is &#39;elasticnet&#39;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__fit_intercept&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__max_iter&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__tol&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-3</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__epsilon&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.1</span><span class="p">,</span>
-            <span class="mf">0.2</span><span class="p">,</span>
-        <span class="p">],</span>  <span class="c1"># Only used for &#39;huber&#39; and &#39;epsilon_insensitive&#39;</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;optimal&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;invscaling&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;adaptive&quot;</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__eta0&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.01</span><span class="p">,</span>
-            <span class="mf">0.1</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__power_t&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.25</span><span class="p">,</span>
-            <span class="mf">0.5</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__early_stopping&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__validation_fraction&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.1</span><span class="p">,</span>
-            <span class="mf">0.2</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__n_iter_no_change&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mi">5</span><span class="p">,</span>
-            <span class="mi">10</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__warm_start&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">sgd_name</span><span class="si">}</span><span class="s2">__average&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="kc">True</span><span class="p">,</span>
-            <span class="mi">10</span><span class="p">,</span>
-        <span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-
-<span class="n">sgd_definition</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">sgd</span><span class="p">,</span>
-    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">sgd_name</span><span class="p">,</span>
-    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_sgd</span><span class="p">,</span>
-    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="c1">################################# XGB Regression ###############################</span>
-
-<span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
-<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBRegressor</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">][</span>
-            <span class="p">:</span><span class="mi">1</span>
-        <span class="p">],</span>  <span class="c1"># Number of trees. Equivalent to n_estimators in GB</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depths&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>  <span class="c1"># Maximum depth of the trees</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__subsamples&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][</span>
-            <span class="p">:</span><span class="mi">1</span>
-        <span class="p">],</span>  <span class="c1"># Subsample ratio of the training instances</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__colsample_bytree&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__tree_method&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hist&quot;</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__stopping_mode&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__stopping_patience&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-
-<span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
-    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
-    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
-    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-<span class="p">}</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AIDS_Clinical_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;Imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
+        <span class="p">(</span><span class="s2">&quot;StandardScalar&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+    <span class="p">],</span>
+    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
+    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 
     </div>
@@ -14223,7 +14090,22 @@ None
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Set-Up-The-Feature-Space-and-Dependent-Variable">Set Up The Feature Space and Dependent Variable<a class="anchor-link" href="#Set-Up-The-Feature-Space-and-Dependent-Variable">&#182;</a></h2>
+<h3 id="Tuning-f1_beta_tune-and-optimal_threshold-Parameters-for-Improved-Performance-on-Imbalanced-Datasets">Tuning <code>f1_beta_tune</code> and <code>optimal_threshold</code> Parameters for Improved Performance on Imbalanced Datasets<a class="anchor-link" href="#Tuning-f1_beta_tune-and-optimal_threshold-Parameters-for-Improved-Performance-on-Imbalanced-Datasets">&#182;</a></h3><p>When working with imbalance datasets, standard metrics like precision and F-score can be misleading, especially for classes with few samples. To address this, we provide the <strong><code>f1_beta_tune</code></strong> and <strong><code>optimal_threshold</code></strong> parameters, which allow for more reliable metric calculation and improved model performance.</p>
+<ul>
+<li><p><strong><code>f1_beta_tune</code></strong>: Setting <code>f1_beta_tune=True</code> enables the model to adjust the F1 beta threshold during parameter tuning. This adjustment lets you control the balance between precision and recall based on the needs of your application. For instance, a higher beta value would prioritize recall, which might be crucial in applications where false negatives are costly. This parameter is particularly valuable for fine-tuning models on imbalanced datasets where a single threshold may not optimize F1 performance across classes.</p>
+</li>
+<li><p><strong><code>optimal_threshold</code></strong>: By setting <code>optimal_threshold=True</code> in <code>return_metrics()</code>, the model will automatically find the threshold that maximizes the F1 score. This dynamic threshold adjustment helps avoid situations where precision or F-score are undefined (set to 0.0) due to a lack of predicted samples for certain classes. This prevents <strong><code>UndefinedMetricWarning</code></strong> and ensures that metrics are calculated more consistently across all classes, even in cases of severe class imbalance.</p>
+</li>
+</ul>
+<p>These parameters enable better handling of imbalanced datasets, providing more reliable metrics and improving overall model interpretability.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h4>
 </div>
 </div>
 </div>
@@ -14232,869 +14114,7 @@ None
 <div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">outcome</span> <span class="o">=</span> <span class="s2">&quot;PRICE&quot;</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">numerical_features</span> <span class="o">+</span> <span class="n">categorical_features</span>
-<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">features</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">outcome</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_definitions</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">lasso_name</span><span class="p">:</span> <span class="n">lasso_definition</span><span class="p">,</span>
-    <span class="n">ridge_name</span><span class="p">:</span> <span class="n">ridge_definition</span><span class="p">,</span>
-    <span class="n">sgd_name</span><span class="p">:</span> <span class="n">sgd_definition</span><span class="p">,</span>
-    <span class="n">xgb_name</span><span class="p">:</span> <span class="n">xgb_definition</span><span class="p">,</span>
-<span class="p">}</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Set-Up-The-Column-Transformers">Set Up The Column Transformers<a class="anchor-link" href="#Set-Up-The-Column-Transformers">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Define transformers for different column types</span>
-<span class="n">numerical_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
-    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;scaler&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
-        <span class="p">(</span><span class="s2">&quot;imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-
-<span class="n">categorical_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span>
-    <span class="n">steps</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s2">&quot;missing&quot;</span><span class="p">)),</span>
-        <span class="p">(</span><span class="s2">&quot;encoder&quot;</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
-
-<span class="c1"># Create the ColumnTransformer with passthrough</span>
-<span class="n">preprocessor</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span>
-    <span class="n">transformers</span><span class="o">=</span><span class="p">[</span>
-        <span class="p">(</span><span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="n">numerical_transformer</span><span class="p">,</span> <span class="n">numerical_features</span><span class="p">),</span>
-        <span class="p">(</span><span class="s2">&quot;cat&quot;</span><span class="p">,</span> <span class="n">categorical_transformer</span><span class="p">,</span> <span class="n">categorical_features</span><span class="p">),</span>
-    <span class="p">],</span>
-    <span class="n">remainder</span><span class="o">=</span><span class="s2">&quot;passthrough&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Run-The-Model">Run The Model<a class="anchor-link" href="#Run-The-Model">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>For these examples, we will not be doing a KFold split nor will we be calibrating our models, so we will inherently set the following to <code>False</code> as follows.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">calibrate</span> <span class="o">=</span> <span class="kc">False</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Lasso-Regression">Lasso Regression<a class="anchor-link" href="#Lasso-Regression">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Step 4: define model object</span>
-<span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;lasso&quot;</span>
-<span class="n">clc</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
-<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
-
-<span class="c1"># Set the parameters by cross-validation</span>
-<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
-<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
-<span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
-
-<span class="n">model_lasso</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;lasso_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">)],</span>
-    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
-    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
-    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_lasso</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_lasso</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_lasso</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_lasso</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-Pipeline Steps:
-
-┌───────────────────────────────────────────────────────────┐
-│ Step 1: preprocess_column_transformer_ColumnTransformer   │
-│ ColumnTransformer                                         │
-└───────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────────────────┐
-│ Step 2: lasso                                             │
-│ Lasso                                                     │
-└───────────────────────────────────────────────────────────┘
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 256/256 [00:12&lt;00:00, 20.31it/s]</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;lasso__copy_X&#39;: True,
-            &#39;lasso__fit_intercept&#39;: False,
-            &#39;lasso__max_iter&#39;: 100,
-            &#39;lasso__positive&#39;: True,
-            &#39;lasso__precompute&#39;: True,
-            &#39;lasso__tol&#39;: 0.001,
-            &#39;lasso__warm_start&#39;: True},
- &#39;score&#39;: 0.6249270420945918}
-Best r2: 0.625 
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_lasso</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_lasso</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_lasso</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Validation Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.63140874491235,
- &#39;Mean Absolute Error&#39;: 8530767.117433036,
- &#39;Mean Squared Error&#39;: 201656154500832.03,
- &#39;Median Absolute Error&#39;: 6082397.606998152,
- &#39;R2&#39;: 0.6249270420945918,
- &#39;RMSE&#39;: 14200568.809059447}
-********************************************************************************
-Test Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.3208058129107655,
- &#39;Mean Absolute Error&#39;: 6079440.836396942,
- &#39;Mean Squared Error&#39;: 62456380953366.58,
- &#39;Median Absolute Error&#39;: 5494557.572099712,
- &#39;R2&#39;: 0.3148227914856916,
- &#39;RMSE&#39;: 7902934.958189051}
-********************************************************************************
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[20]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Explained Variance&#39;: 0.3208058129107655,
- &#39;R2&#39;: 0.3148227914856916,
- &#39;Mean Absolute Error&#39;: 6079440.836396942,
- &#39;Median Absolute Error&#39;: 5494557.572099712,
- &#39;Mean Squared Error&#39;: 62456380953366.58,
- &#39;RMSE&#39;: 7902934.958189051}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Ridge-Regression">Ridge Regression<a class="anchor-link" href="#Ridge-Regression">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Step 4: define model object</span>
-<span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;ridge&quot;</span>
-<span class="n">clc</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
-<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
-
-<span class="c1"># Set the parameters by cross-validation</span>
-<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
-<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
-<span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
-
-<span class="n">model_ridge</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ridge_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">)],</span>
-    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
-    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
-    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_ridge</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_ridge</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_ridge</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_ridge</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-Pipeline Steps:
-
-┌───────────────────────────────────────────────────────────┐
-│ Step 1: preprocess_column_transformer_ColumnTransformer   │
-│ ColumnTransformer                                         │
-└───────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────────────────┐
-│ Step 2: ridge                                             │
-│ Ridge                                                     │
-└───────────────────────────────────────────────────────────┘
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 9/9 [00:00&lt;00:00, 16.04it/s]</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;ridge__alpha&#39;: 0.1, &#39;ridge__max_iter&#39;: 100},
- &#39;score&#39;: 0.6220567591777855}
-Best r2: 0.622 
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_ridge</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_ridge</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_ridge</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Validation Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.6273874448547909,
- &#39;Mean Absolute Error&#39;: 8520571.076365553,
- &#39;Mean Squared Error&#39;: 203199348173244.3,
- &#39;Median Absolute Error&#39;: 5716371.538647759,
- &#39;R2&#39;: 0.6220567591777855,
- &#39;RMSE&#39;: 14254800.881571244}
-********************************************************************************
-Test Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: -0.1368384947842085,
- &#39;Mean Absolute Error&#39;: 7090129.6388441445,
- &#39;Mean Squared Error&#39;: 103644668880608.83,
- &#39;Median Absolute Error&#39;: 5561147.7122084005,
- &#39;R2&#39;: -0.13703297912873147,
- &#39;RMSE&#39;: 10180602.579445327}
-********************************************************************************
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[24]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Explained Variance&#39;: -0.1368384947842085,
- &#39;R2&#39;: -0.13703297912873147,
- &#39;Mean Absolute Error&#39;: 7090129.6388441445,
- &#39;Median Absolute Error&#39;: 5561147.7122084005,
- &#39;Mean Squared Error&#39;: 103644668880608.83,
- &#39;RMSE&#39;: 10180602.579445327}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="SGD-Regressor">SGD Regressor<a class="anchor-link" href="#SGD-Regressor">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Step 4: define model object</span>
-<span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;sgd&quot;</span>
-<span class="n">clc</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
-<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
-
-<span class="c1"># Set the parameters by cross-validation</span>
-<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
-<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
-<span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
-
-<span class="n">model_sgd</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;sgd_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">)],</span>
-    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
-    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
-    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_sgd</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_sgd</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_sgd</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_sgd</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-Pipeline Steps:
-
-┌───────────────────────────────────────────────────────────┐
-│ Step 1: preprocess_column_transformer_ColumnTransformer   │
-│ ColumnTransformer                                         │
-└───────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────────────────┐
-│ Step 2: sgd                                               │
-│ SGDRegressor                                              │
-└───────────────────────────────────────────────────────────┘
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 8/8 [00:00&lt;00:00, 13.93it/s]</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;sgd__alpha&#39;: 0.0001,
-            &#39;sgd__average&#39;: False,
-            &#39;sgd__early_stopping&#39;: True,
-            &#39;sgd__epsilon&#39;: 0.1,
-            &#39;sgd__eta0&#39;: 0.01,
-            &#39;sgd__fit_intercept&#39;: True,
-            &#39;sgd__l1_ratio&#39;: 0.15,
-            &#39;sgd__learning_rate&#39;: &#39;constant&#39;,
-            &#39;sgd__loss&#39;: &#39;squared_error&#39;,
-            &#39;sgd__max_iter&#39;: 1000,
-            &#39;sgd__n_iter_no_change&#39;: 5,
-            &#39;sgd__penalty&#39;: None,
-            &#39;sgd__power_t&#39;: 0.25,
-            &#39;sgd__tol&#39;: 0.001,
-            &#39;sgd__validation_fraction&#39;: 0.1,
-            &#39;sgd__warm_start&#39;: True},
- &#39;score&#39;: 0.6397401819911099}
-Best r2: 0.640 
-
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_sgd</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_sgd</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_sgd</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Validation Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.6556002188330988,
- &#39;Mean Absolute Error&#39;: 8550312.718350902,
- &#39;Mean Squared Error&#39;: 193691941766604.28,
- &#39;Median Absolute Error&#39;: 5629943.613204028,
- &#39;R2&#39;: 0.6397401819911099,
- &#39;RMSE&#39;: 13917325.237508977}
-********************************************************************************
-Test Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.40838481345427613,
- &#39;Mean Absolute Error&#39;: 5800097.347773206,
- &#39;Mean Squared Error&#39;: 53961579906047.836,
- &#39;Median Absolute Error&#39;: 4685614.5746103935,
- &#39;R2&#39;: 0.4080149358213063,
- &#39;RMSE&#39;: 7345854.606922726}
-********************************************************************************
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[28]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Explained Variance&#39;: 0.40838481345427613,
- &#39;R2&#39;: 0.4080149358213063,
- &#39;Mean Absolute Error&#39;: 5800097.347773206,
- &#39;Median Absolute Error&#39;: 4685614.5746103935,
- &#39;Mean Squared Error&#39;: 53961579906047.836,
- &#39;RMSE&#39;: 7345854.606922726}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="XGBoost">XGBoost<a class="anchor-link" href="#XGBoost">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Initialize-and-Configure-the-XGB-Model">Initialize and Configure the XGB <code>Model</code><a class="anchor-link" href="#Initialize-and-Configure-the-XGB-Model">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="c1"># Step 4: define model object</span>
-<span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
-<span class="n">clc</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
-<span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
-
-<span class="c1"># Set the parameters by cross-validation</span>
-<span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
-<span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
-<span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definitions</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
-
-<span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;xgb_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-    <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;regression&quot;</span><span class="p">,</span>
-    <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-    <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-    <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;ColumnTransformer&quot;</span><span class="p">,</span> <span class="n">preprocessor</span><span class="p">)],</span>
-    <span class="n">stratify_y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
-    <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
-    <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
-    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">],</span>
-    <span class="n">random_state</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">Perform Grid Search Parameter Tuning and Retrieve Split Data<a class="anchor-link" href="#Perform-Grid-Search-Parameter-Tuning-and-Retrieve-Split-Data">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -15118,16 +14138,22 @@ Test Metrics
 <pre>
 Pipeline Steps:
 
-┌───────────────────────────────────────────────────────────┐
-│ Step 1: preprocess_column_transformer_ColumnTransformer   │
-│ ColumnTransformer                                         │
-└───────────────────────────────────────────────────────────┘
-                             │
-                             ▼
-┌───────────────────────────────────────────────────────────┐
-│ Step 2: xgb                                               │
-│ XGBRegressor                                              │
-└───────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────┐
+│ Step 1: preprocess_imputer_Imputer         │
+│ SimpleImputer                              │
+└────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────┐
+│ Step 2: preprocess_scaler_StandardScalar   │
+│ StandardScaler                             │
+└────────────────────────────────────────────┘
+                      │
+                      ▼
+┌────────────────────────────────────────────┐
+│ Step 3: xgb                                │
+│ XGBClassifier                              │
+└────────────────────────────────────────────┘
 
 </pre>
 </div>
@@ -15139,7 +14165,29 @@ Pipeline Steps:
 
 
 <div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 1/1 [00:01&lt;00:00,  1.00s/it]</pre>
+<pre>100%|██████████| 5/5 [00:37&lt;00:00,  7.44s/it]
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Fitting model with best params and tuning for best threshold ...
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>100%|██████████| 2/2 [00:00&lt;00:00,  3.21it/s]</pre>
 </div>
 </div>
 
@@ -15150,18 +14198,13 @@ Pipeline Steps:
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;xgb__colsample_bytree&#39;: 0.8,
-            &#39;xgb__early_stopping_rounds&#39;: 10,
+{&#39;params&#39;: {&#39;xgb__early_stopping_rounds&#39;: 100,
             &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
-            &#39;xgb__learning_rates&#39;: 0.1,
-            &#39;xgb__max_depths&#39;: 3,
-            &#39;xgb__n_estimators&#39;: 10,
-            &#39;xgb__stopping_mode&#39;: &#39;min&#39;,
-            &#39;xgb__stopping_patience&#39;: 5,
-            &#39;xgb__subsamples&#39;: 0.8,
-            &#39;xgb__tree_method&#39;: &#39;hist&#39;},
- &#39;score&#39;: 0.5914299860292405}
-Best r2: 0.591 
+            &#39;xgb__learning_rate&#39;: 0.0001,
+            &#39;xgb__max_depth&#39;: 3,
+            &#39;xgb__n_estimators&#39;: 999},
+ &#39;score&#39;: 0.9280033238366572}
+Best roc_auc: 0.928 
 
 </pre>
 </div>
@@ -15185,13 +14228,22 @@ Best r2: 0.591
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Fit-The-Model">Fit The Model<a class="anchor-link" href="#Fit-The-Model">&#182;</a></h4>
+<h2 id="Fit-the-Model">Fit the Model<a class="anchor-link" href="#Fit-the-Model">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Model-Training-with-Evaluation-Set-and-Scoring-Options">Model Training with Evaluation Set and Scoring Options<a class="anchor-link" href="#Model-Training-with-Evaluation-Set-and-Scoring-Options">&#182;</a></h3><p>In XGBoost, specifying an <code>eval_set</code> (such as <code>validation_data=[X_valid, y_valid]</code>) within the <code>fit</code> method is recommended for monitoring model performance on unseen data during training. This helps in early stopping and in selecting optimal parameters by evaluating model performance metrics at each boosting round.</p>
+<p>By default, XGBoost uses <strong>ROC AUC</strong> as the scoring metric for binary classification, a measure that reflects the trade-off between true positive and false positive rates. However, users can adjust this by setting <code>score="average_precision"</code> if optimizing for <strong>precision-recall</strong> (particularly useful in imbalanced datasets). This flexibility allows the model to be tailored to specific performance needs based on the application.</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-python"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
@@ -15209,169 +14261,29 @@ Best r2: 0.591
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h4>
+<h2 id="Return-Metrics-(Optional)">Return Metrics (Optional)<a class="anchor-link" href="#Return-Metrics-(Optional)">&#182;</a></h2>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+<div class=" highlight hl-python"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
 
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">class_report_val</span><span class="p">,</span> <span class="n">cm_val</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_valid</span><span class="p">,</span>
+    <span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Validation Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.5799146267919161,
- &#39;Mean Absolute Error&#39;: 8574101.81875,
- &#39;Mean Squared Error&#39;: 241943111587155.1,
- &#39;Median Absolute Error&#39;: 3382780.25,
- &#39;R2&#39;: 0.5499947981629387,
- &#39;RMSE&#39;: 15554520.615793824}
-********************************************************************************
-Test Metrics
-********************************************************************************
-{&#39;Explained Variance&#39;: 0.3035148406860937,
- &#39;Mean Absolute Error&#39;: 5300267.91875,
- &#39;Mean Squared Error&#39;: 63728252885510.6,
- &#39;Median Absolute Error&#39;: 2967484.0,
- &#39;R2&#39;: 0.30086973101770154,
- &#39;RMSE&#39;: 7982997.738037422}
-********************************************************************************
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[32]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;Explained Variance&#39;: 0.3035148406860937,
- &#39;R2&#39;: 0.30086973101770154,
- &#39;Mean Absolute Error&#39;: 5300267.91875,
- &#39;Median Absolute Error&#39;: 2967484.0,
- &#39;Mean Squared Error&#39;: 63728252885510.6,
- &#39;RMSE&#39;: 7982997.738037422}</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Use-the-Model-To-Predict">Use the Model To Predict<a class="anchor-link" href="#Use-the-Model-To-Predict">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In the below example, we use the Ridge model to make predictions on the test set.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="n">model_ridge</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[33]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>array([  2475322.63121453,  15767323.36202717,  30675229.83672049,
-         6565064.095829  ,  13044571.09380202,   7483454.45057633,
-        14880830.8108245 ,  22289917.39381347,  13974820.12494977,
-        -2560086.66868213,    728891.03278439,  13872662.09696066,
-         1404673.60434406,  12075192.55096853,   2650908.78718742,
-         9586553.50809658,  18908758.35711392,  21415434.69014483,
-       -19863567.16988775,  14175583.38571148,   1954056.63664775,
-         7151349.82104422,   1640093.11124138,  17740523.87236339,
-         9765637.2639145 ,   8367412.40272542,  27502336.78564465,
-        18071704.72336394,  34288103.95283619,   2577452.36208398,
-        20160060.30913903,   2678446.83763464,   1192906.32767121,
-         9922724.33061478,   8193224.66175568,   -169114.54984852,
-        17705018.1704131 ,  35016713.99499328,  29247957.37588841,
-         1875507.78054288])</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Bootstrap-Metrics">Bootstrap Metrics<a class="anchor-link" href="#Bootstrap-Metrics">&#182;</a></h2>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>In the below example, we use the Lasso model to produce bootstrapped metrics.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bootstrap Metrics&quot;</span><span class="p">)</span>
-
-<span class="n">model_lasso</span><span class="o">.</span><span class="n">return_bootstrap_metrics</span><span class="p">(</span>
-    <span class="n">X_test</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
-    <span class="n">y_test</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
-    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;r2&quot;</span><span class="p">,</span> <span class="s2">&quot;explained_variance&quot;</span><span class="p">],</span>
-    <span class="n">n_samples</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
-    <span class="n">num_resamples</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<span class="n">class_report_test</span><span class="p">,</span> <span class="n">cm_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X_test</span><span class="p">,</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 
@@ -15389,7 +14301,177 @@ Test Metrics
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Bootstrap Metrics
+<pre>Validation Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  95 (tp)    9 (fn)
+        Neg  79 (fp)  245 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.9280033238366572,
+ &#39;Average Precision&#39;: 0.7992275185850191,
+ &#39;Brier Score&#39;: 0.16713189436073958,
+ &#39;Precision/PPV&#39;: 0.5459770114942529,
+ &#39;Sensitivity&#39;: 0.9134615384615384,
+ &#39;Specificity&#39;: 0.7561728395061729}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.96      0.76      0.85       324
+           1       0.55      0.91      0.68       104
+
+    accuracy                           0.79       428
+   macro avg       0.76      0.83      0.77       428
+weighted avg       0.86      0.79      0.81       428
+
+--------------------------------------------------------------------------------
+
+Test Metrics
+Confusion matrix on set provided: 
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  95 (tp)    9 (fn)
+        Neg  78 (fp)  246 (tn)
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+{&#39;AUC ROC&#39;: 0.934576804368471,
+ &#39;Average Precision&#39;: 0.8023014087345259,
+ &#39;Brier Score&#39;: 0.16628708993634742,
+ &#39;Precision/PPV&#39;: 0.5491329479768786,
+ &#39;Sensitivity&#39;: 0.9134615384615384,
+ &#39;Specificity&#39;: 0.7592592592592593}
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.96      0.76      0.85       324
+           1       0.55      0.91      0.69       104
+
+    accuracy                           0.80       428
+   macro avg       0.76      0.84      0.77       428
+weighted avg       0.86      0.80      0.81       428
+
+--------------------------------------------------------------------------------
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Calibrate-the-Model">Calibrate the Model<a class="anchor-link" href="#Calibrate-the-Model">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
+
+<span class="c1"># Get the predicted probabilities for the validation data from uncalibrated model</span>
+<span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Compute the calibration curve for the uncalibrated model</span>
+<span class="n">prob_true_uncalibrated</span><span class="p">,</span> <span class="n">prob_pred_uncalibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">y_prob_uncalibrated</span><span class="p">,</span>
+    <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Calibrate the model</span>
+<span class="k">if</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrate</span><span class="p">:</span>
+    <span class="n">model_xgb</span><span class="o">.</span><span class="n">calibrateModel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">)</span>
+
+<span class="c1"># Predict on the validation set</span>
+<span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+
+<span class="c1"># Get the predicted probabilities for the validation data from calibrated model</span>
+<span class="n">y_prob_calibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Compute the calibration curve for the calibrated model</span>
+<span class="n">prob_true_calibrated</span><span class="p">,</span> <span class="n">prob_pred_calibrated</span> <span class="o">=</span> <span class="n">calibration_curve</span><span class="p">(</span>
+    <span class="n">y_test</span><span class="p">,</span>
+    <span class="n">y_prob_calibrated</span><span class="p">,</span>
+    <span class="n">n_bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Plot the calibration curves</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">prob_pred_uncalibrated</span><span class="p">,</span>
+    <span class="n">prob_true_uncalibrated</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Uncalibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="n">prob_pred_calibrated</span><span class="p">,</span>
+    <span class="n">prob_true_calibrated</span><span class="p">,</span>
+    <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Calibrated XGBoost&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Perfectly calibrated&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Predicted probability&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;True probability in each bin&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Calibration plot (reliability curve)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Change back to CPU
+Confusion matrix on validation set for roc_auc
+--------------------------------------------------------------------------------
+          Predicted:
+             Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  70 (tp)   34 (fn)
+        Neg   9 (fp)  315 (tn)
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.90      0.97      0.94       324
+           1       0.89      0.67      0.77       104
+
+    accuracy                           0.90       428
+   macro avg       0.89      0.82      0.85       428
+weighted avg       0.90      0.90      0.89       428
+
+--------------------------------------------------------------------------------
+roc_auc after calibration: 0.9280033238366572
 </pre>
 </div>
 </div>
@@ -15399,275 +14481,52 @@ Test Metrics
     <div class="prompt"></div>
 
 
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>100%|██████████| 300/300 [00:02&lt;00:00, 130.22it/s]
-</pre>
+
+
+<div class="output_png output_subarea ">
+<img src="Model_Tuner_Binary_Classification_AIDS_Clinical_Trials_files/Model_Tuner_Binary_Classification_AIDS_Clinical_Trials_40_1.png"
+>
+</div>
+
+</div>
+
 </div>
 </div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[34]:</div>
+    <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>              precision    recall  f1-score   support
 
-<div class="output_html rendered_html output_subarea output_execute_result">
+           0       0.90      0.97      0.94       324
+           1       0.89      0.67      0.77       104
 
-  <div id="df-ac2ec90a-377d-4fc4-bd38-2f06224ebb7b" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+    accuracy                           0.90       428
+   macro avg       0.89      0.82      0.85       428
+weighted avg       0.90      0.90      0.89       428
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Metric</th>
-      <th>Mean</th>
-      <th>95% CI Lower</th>
-      <th>95% CI Upper</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>r2</td>
-      <td>0.217425</td>
-      <td>0.184779</td>
-      <td>0.250070</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>explained_variance</td>
-      <td>0.255068</td>
-      <td>0.224071</td>
-      <td>0.286064</td>
-    </tr>
-  </tbody>
-</table>
+</pre>
 </div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-ac2ec90a-377d-4fc4-bd38-2f06224ebb7b')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-ac2ec90a-377d-4fc4-bd38-2f06224ebb7b button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-ac2ec90a-377d-4fc4-bd38-2f06224ebb7b');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-70c446eb-b48e-447b-8a62-bbb2ab58a329">
-  <button class="colab-df-quickchart" onclick="quickchart('df-70c446eb-b48e-447b-8a62-bbb2ab58a329')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-70c446eb-b48e-447b-8a62-bbb2ab58a329 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-
-    </div>
-  </div>
-
-</div>
-
 </div>
 
 </div>
@@ -15684,7 +14543,8 @@ Test Metrics
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><em>Redfin. (n.d.). Redfin: Real Estate, Homes for Sale, MLS Listings, Agents.</em> Retrieved from <a href="https://www.redfin.com">https://www.redfin.com</a></p>
+<p>El-Sadr, W., &amp; Abrams, D. (1998). <em>AIDS Clinical Trials Group Study 175</em>. UCI Machine Learning Repository.<br>
+<a href="https://doi.org/10.24432/C5G896">https://doi.org/10.24432/C5G896</a>.</p>
 
 </div>
 </div>
