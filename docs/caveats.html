@@ -99,7 +99,10 @@
 <li class="toctree-l1"><a class="reference internal" href="#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#bias-from-class-distribution">Bias from Class Distribution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#threshold-dependent-predictions">Threshold-Dependent Predictions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#limitations-of-accuracy">Limitations of Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations-of-accuracy">Limitations of Accuracy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#integration-and-practical-considerations">Integration and Practical Considerations</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#impact-of-resampling-techniques">Impact of Resampling Techniques</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#smote-a-mathematical-illustration">SMOTE: A Mathematical Illustration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-of-synthetic-sample-creation">Example of Synthetic Sample Creation</a></li>
@@ -421,7 +424,7 @@ false negatives for the minority class. Adjusting the threshold to account for i
 help mitigate this issue, but it requires careful tuning and validation.</p>
 </section>
 <section id="limitations-of-accuracy">
-<h2>Limitations of Accuracy<a class="headerlink" href="#limitations-of-accuracy" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>Limitations of Accuracy<a class="headerlink" href="#limitations-of-accuracy" title="Link to this heading"></a></h2>
 <p>Traditional accuracy is a misleading metric in imbalanced datasets. For example, a model predicting
 only the majority class can achieve high accuracy despite failing to identify any minority class instances.
 Instead, alternative metrics should be used:</p>
@@ -449,19 +452,62 @@ minority class instances.</p>
 <div class="math notranslate nohighlight">
 \[F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}\]</div>
 </li>
+<li><p><strong>ROC AUC (Receiver Operating Characteristic - Area Under the Curve)</strong>:</p>
+<blockquote>
+<div><p>Measures the model’s ability to distinguish between classes. It is the area under the
+ROC curve, which plots the True Positive Rate (Recall) against the False Positive Rate.</p>
+</div></blockquote>
+<div class="math notranslate nohighlight">
+\[\text{True Positive Rate (TPR)} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}\]</div>
+<div class="math notranslate nohighlight">
+\[\text{False Positive Rate (FPR)} = \frac{\text{False Positives}}{\text{False Positives} + \text{True Negatives}}\]</div>
+</li>
 </ul>
-<p>These metrics provide a more balanced evaluation of model performance on imbalanced datasets.</p>
+<p></p>
+<blockquote>
+<div><p>The AUC (Area Under Curve) is computed by integrating the ROC curve:</p>
+<div class="math notranslate nohighlight">
+\[\text{AUC} = \int_{0}^{1} \text{TPR}(\text{FPR}) \, d(\text{FPR})\]</div>
+<p>This integral represents the total area under the ROC curve, where:</p>
+<ul>
+<li><p>A value of 0.5 indicates random guessing.</p></li>
+<li><p>A value of 1.0 indicates a perfect classifier.</p>
+<blockquote>
+<div><p>Practically, the AUC is estimated using numerical integration techniques such as the trapezoidal rule
+over the discrete points of the ROC curve.</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<section id="integration-and-practical-considerations">
+<h3>Integration and Practical Considerations<a class="headerlink" href="#integration-and-practical-considerations" title="Link to this heading"></a></h3>
+<p>The ROC AUC provides an aggregate measure of model performance across all classification thresholds.</p>
+<p>However:</p>
+<ul class="simple">
+<li><p><strong>Imbalanced Datasets</strong>: The ROC AUC may still appear high if the classifier performs well on the majority class, even if the minority class is poorly predicted.
+In such cases, metrics like Precision-Recall AUC are more informative.</p></li>
+<li><p><strong>Numerical Estimation</strong>: Most implementations (e.g., in scikit-learn) compute the AUC numerically, ensuring fast and accurate computation.</p></li>
+</ul>
+<p>These metrics provide a more balanced evaluation of model performance on imbalanced datasets. By using metrics like ROC AUC in conjunction with precision, recall, and F1-score, practitioners
+can better assess a model’s effectiveness in handling imbalanced data.</p>
+</section>
 </section>
 <section id="impact-of-resampling-techniques">
 <h2>Impact of Resampling Techniques<a class="headerlink" href="#impact-of-resampling-techniques" title="Link to this heading"></a></h2>
 <p>Resampling methods such as oversampling and undersampling can address class imbalance but come with trade-offs:</p>
-<ul class="simple">
-<li><p><strong>Oversampling Caveats</strong>:
-- Methods like SMOTE may introduce synthetic data that does not fully reflect the true distribution of the minority class.
-- Overfitting to the minority class is a risk if too much synthetic data is added.</p></li>
-<li><p><strong>Undersampling Caveats</strong>:
-- Removing samples from the majority class can lead to loss of important information, reducing the model’s generalizability.</p></li>
+<p><strong>Oversampling Caveats</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Methods like SMOTE may introduce synthetic data that does not fully reflect the true distribution of the minority class.</p></li>
+<li><p>Overfitting to the minority class is a risk if too much synthetic data is added.</p></li>
 </ul>
+</div></blockquote>
+<p><strong>Undersampling Caveats</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Removing samples from the majority class can lead to loss of important information, reducing the model’s generalizability.</p></li>
+</ul>
+</div></blockquote>
 <section id="smote-a-mathematical-illustration">
 <h3>SMOTE: A Mathematical Illustration<a class="headerlink" href="#smote-a-mathematical-illustration" title="Link to this heading"></a></h3>
 <p>SMOTE (Synthetic Minority Over-sampling Technique) is a widely used algorithm for addressing
@@ -483,20 +529,35 @@ neighbors. Mathematically, a synthetic sample <span class="math notranslate nohi
 minority class samples and their neighbors.</p>
 <p><strong>Caveats in Application</strong></p>
 <ol class="arabic simple">
-<li><p><strong>Overlapping Classes</strong>:
-- SMOTE assumes that the minority class samples are well-clustered and separable from the majority class.
-- If the minority class overlaps significantly with the majority class, synthetic samples may fall into regions dominated by the majority class, leading to misclassification.</p></li>
-<li><p><strong>Noise Sensitivity</strong>:
-- SMOTE generates synthetic samples based on existing minority class samples, including noisy or mislabeled ones.
-- Synthetic samples created from noisy data can amplify the noise, degrading model performance.</p></li>
-<li><p><strong>Feature Space Assumptions</strong>:
-- SMOTE relies on linear interpolation in the feature space, which assumes that the feature space is homogeneous.
-- In highly non-linear spaces, this assumption may not hold, leading to unrealistic synthetic samples.</p></li>
-<li><p><strong>Dimensionality Challenges</strong>:
-- In high-dimensional spaces, nearest neighbor calculations may become less meaningful due to the curse of dimensionality.
-- Synthetic samples may not adequately represent the true distribution of the minority class.</p></li>
-<li><p><strong>Risk of Overfitting</strong>:
-- If SMOTE is applied excessively, the model may overfit to the synthetic minority class samples, reducing generalizability to unseen data.</p></li>
+<li><p><strong>Overlapping Classes</strong>:</p>
+<ul class="simple">
+<li><p>SMOTE assumes that the minority class samples are well-clustered and separable from the majority class.</p></li>
+<li><p>If the minority class overlaps significantly with the majority class, synthetic samples may fall into regions dominated by the majority class, leading to misclassification.</p></li>
+</ul>
+</li>
+<li><p><strong>Noise Sensitivity</strong>:</p>
+<ul class="simple">
+<li><p>SMOTE generates synthetic samples based on existing minority class samples, including noisy or mislabeled ones.</p></li>
+<li><p>Synthetic samples created from noisy data can amplify the noise, degrading model performance.</p></li>
+</ul>
+</li>
+<li><p><strong>Feature Space Assumptions</strong>:</p>
+<ul class="simple">
+<li><p>SMOTE relies on linear interpolation in the feature space, which assumes that the feature space is homogeneous.</p></li>
+<li><p>In highly non-linear spaces, this assumption may not hold, leading to unrealistic synthetic samples.</p></li>
+</ul>
+</li>
+<li><p><strong>Dimensionality Challenges</strong>:</p>
+<ul class="simple">
+<li><p>In high-dimensional spaces, nearest neighbor calculations may become less meaningful due to the curse of dimensionality.</p></li>
+<li><p>Synthetic samples may not adequately represent the true distribution of the minority class.</p></li>
+</ul>
+</li>
+<li><p><strong>Risk of Overfitting</strong>:</p>
+<ul class="simple">
+<li><p>If SMOTE is applied excessively, the model may overfit to the synthetic minority class samples, reducing generalizability to unseen data.</p></li>
+</ul>
+</li>
 </ol>
 </section>
 <section id="example-of-synthetic-sample-creation">

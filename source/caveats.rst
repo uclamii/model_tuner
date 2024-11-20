@@ -420,6 +420,8 @@ With imbalanced data, the default threshold may favor the majority class, causin
 false negatives for the minority class. Adjusting the threshold to account for imbalance can 
 help mitigate this issue, but it requires careful tuning and validation.
 
+.. _Limitations_of_Accuracy:
+
 Limitations of Accuracy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -453,19 +455,61 @@ Instead, alternative metrics should be used:
 
       F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
 
-These metrics provide a more balanced evaluation of model performance on imbalanced datasets.
+- **ROC AUC (Receiver Operating Characteristic - Area Under the Curve)**:
 
+   Measures the model's ability to distinguish between classes. It is the area under the 
+   ROC curve, which plots the True Positive Rate (Recall) against the False Positive Rate.
+
+  .. math::
+
+      \text{True Positive Rate (TPR)} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
+
+  .. math::
+
+      \text{False Positive Rate (FPR)} = \frac{\text{False Positives}}{\text{False Positives} + \text{True Negatives}}
+
+\
+
+      The AUC (Area Under Curve) is computed by integrating the ROC curve:
+
+      .. math::
+
+            \text{AUC} = \int_{0}^{1} \text{TPR}(\text{FPR}) \, d(\text{FPR})
+
+      This integral represents the total area under the ROC curve, where:
+
+      - A value of 0.5 indicates random guessing.
+      - A value of 1.0 indicates a perfect classifier.
+
+         Practically, the AUC is estimated using numerical integration techniques such as the trapezoidal rule 
+         over the discrete points of the ROC curve.
+
+Integration and Practical Considerations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ROC AUC provides an aggregate measure of model performance across all classification thresholds. 
+
+However:
+
+- **Imbalanced Datasets**: The ROC AUC may still appear high if the classifier performs well on the majority class, even if the minority class is poorly predicted. 
+  In such cases, metrics like Precision-Recall AUC are more informative.
+- **Numerical Estimation**: Most implementations (e.g., in scikit-learn) compute the AUC numerically, ensuring fast and accurate computation.
+
+These metrics provide a more balanced evaluation of model performance on imbalanced datasets. By using metrics like ROC AUC in conjunction with precision, recall, and F1-score, practitioners 
+can better assess a model's effectiveness in handling imbalanced data.
 
 Impact of Resampling Techniques
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Resampling methods such as oversampling and undersampling can address class imbalance but come with trade-offs:
 
-- **Oversampling Caveats**:
+**Oversampling Caveats**
+
   - Methods like SMOTE may introduce synthetic data that does not fully reflect the true distribution of the minority class.
   - Overfitting to the minority class is a risk if too much synthetic data is added.
 
-- **Undersampling Caveats**:
+**Undersampling Caveats**
+
   - Removing samples from the majority class can lead to loss of important information, reducing the model's generalizability.
 
 
@@ -498,22 +542,27 @@ minority class samples and their neighbors.
 **Caveats in Application**
 
 1. **Overlapping Classes**:
+
    - SMOTE assumes that the minority class samples are well-clustered and separable from the majority class.
    - If the minority class overlaps significantly with the majority class, synthetic samples may fall into regions dominated by the majority class, leading to misclassification.
 
 2. **Noise Sensitivity**:
+
    - SMOTE generates synthetic samples based on existing minority class samples, including noisy or mislabeled ones.
    - Synthetic samples created from noisy data can amplify the noise, degrading model performance.
 
 3. **Feature Space Assumptions**:
+
    - SMOTE relies on linear interpolation in the feature space, which assumes that the feature space is homogeneous.
    - In highly non-linear spaces, this assumption may not hold, leading to unrealistic synthetic samples.
 
 4. **Dimensionality Challenges**:
+
    - In high-dimensional spaces, nearest neighbor calculations may become less meaningful due to the curse of dimensionality.
    - Synthetic samples may not adequately represent the true distribution of the minority class.
 
 5. **Risk of Overfitting**:
+
    - If SMOTE is applied excessively, the model may overfit to the synthetic minority class samples, reducing generalizability to unseen data.
 
 Example of Synthetic Sample Creation

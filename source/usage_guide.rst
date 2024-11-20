@@ -239,6 +239,7 @@ Pipeline Management
 The pipeline in the model tuner class is designed to automatically organize steps into three categories: **preprocessing**, **feature selection**, and **imbalanced sampling**. The steps are ordered in the following sequence:
 
 1. **Preprocessing**:
+
    - Imputation
    - Scaling
    - Other preprocessing steps
@@ -329,8 +330,8 @@ In our library, binary classification is handled seamlessly through the ``Model`
 class. Users can specify a binary classifier as the estimator, and the library 
 takes care of essential tasks like data preprocessing, model calibration, and 
 cross-validation. The library also provides robust support for evaluating the 
-model's performance using a variety of metrics, such as accuracy, precision, 
-recall, and ROC-AUC, ensuring that the model's ability to distinguish between the 
+model's performance using a variety of metrics, such as :ref:`accuracy, precision, 
+recall, and ROC-AUC <Limitations_of_Accuracy>`, ensuring that the model's ability to distinguish between the 
 two classes is thoroughly assessed. Additionally, the library supports advanced 
 techniques like imbalanced data handling and model calibration to fine-tune 
 decision thresholds, making it easier to deploy effective binary classifiers in 

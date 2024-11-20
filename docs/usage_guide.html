@@ -336,10 +336,13 @@
 <h1>Pipeline Management<a class="headerlink" href="#pipeline-management" title="Link to this heading"></a></h1>
 <p>The pipeline in the model tuner class is designed to automatically organize steps into three categories: <strong>preprocessing</strong>, <strong>feature selection</strong>, and <strong>imbalanced sampling</strong>. The steps are ordered in the following sequence:</p>
 <ol class="arabic simple">
-<li><p><strong>Preprocessing</strong>:
-- Imputation
-- Scaling
-- Other preprocessing steps</p></li>
+<li><p><strong>Preprocessing</strong>:</p>
+<ul class="simple">
+<li><p>Imputation</p></li>
+<li><p>Scaling</p></li>
+<li><p>Other preprocessing steps</p></li>
+</ul>
+</li>
 <li><p><strong>Imbalanced Sampling</strong></p></li>
 <li><p><strong>Feature Selection</strong></p></li>
 <li><p><strong>Classifier</strong></p></li>
@@ -429,8 +432,8 @@ scenarios such as spam detection, disease diagnosis, or fraud detection.</p>
 class. Users can specify a binary classifier as the estimator, and the library
 takes care of essential tasks like data preprocessing, model calibration, and
 cross-validation. The library also provides robust support for evaluating the
-model’s performance using a variety of metrics, such as accuracy, precision,
-recall, and ROC-AUC, ensuring that the model’s ability to distinguish between the
+model’s performance using a variety of metrics, such as <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">accuracy, precision,
+recall, and ROC-AUC</span></a>, ensuring that the model’s ability to distinguish between the
 two classes is thoroughly assessed. Additionally, the library supports advanced
 techniques like imbalanced data handling and model calibration to fine-tune
 decision thresholds, making it easier to deploy effective binary classifiers in
