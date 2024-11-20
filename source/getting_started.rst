@@ -69,26 +69,40 @@ which will be automatically installed when you install ``model_tuner`` using pip
    - ``scipy``: version ``1.4.1``
    - ``joblib``: version ``1.3.2``
    - ``tqdm``: version ``4.66.4``
-   - ``imbalanced-learn``: ``version 0.7.0``
-   - ``scikit-optimize``: ``version 0.8.1``
+   - ``imbalanced-learn``: version ``0.7.0``
+   - ``scikit-optimize``: version ``0.8.1``
+   - ``xgboost``: version ``1.6.2``
+   - ``pip``: version ``24.0``
 
 - For Python ``3.8`` to ``<3.11``:
 
-   - ``numpy``: versions between ``1.19.5`` and ``<1.24``
-   - ``pandas``: versions between ``1.3.5`` and ``<2.2.2``
-   - ``scikit-learn``: versions between ``1.0.2`` and ``<1.3``
+   - ``numpy``: versions between ``1.19.5`` and ``<2.0.0``
+   - ``pandas``: versions between ``1.3.5`` and ``<2.2.3``
+   - ``scikit-learn``: versions between ``1.0.2`` and ``<1.4.0``
    - ``scipy``: versions between ``1.6.3`` and ``<1.11``
+   - ``joblib``: version ``1.3.2``
+   - ``tqdm``: version ``4.66.4``
    - ``imbalanced-learn``: version ``0.12.4``
    - ``scikit-optimize``: version ``0.10.2``
-      
+   - ``xgboost``: version ``2.1.2``
+   - ``pip``: version ``24.2``
+   - ``setuptools``: version ``75.1.0``
+   - ``wheel``: version ``0.44.0``
+
 - For Python ``3.11`` or higher:
 
-   - ``numpy``: version ``1.26``
-   - ``pandas``: version ``2.2.2``
+   - ``numpy``: versions between ``1.19.5`` and ``<2.0.0``
+   - ``pandas``: versions between ``1.3.5`` and ``<2.2.2``
    - ``scikit-learn``: version ``1.5.1``
    - ``scipy``: version ``1.14.0``
+   - ``joblib``: version ``1.3.2``
+   - ``tqdm``: version ``4.66.4``
    - ``imbalanced-learn``: version ``0.12.4``
    - ``scikit-optimize``: version ``0.10.2``
+   - ``xgboost``: version ``2.1.2``
+   - ``pip``: version ``24.2``
+   - ``setuptools``: version ``75.1.0``
+   - ``wheel``: version ``0.44.0``
 
 .. _installation:
 
