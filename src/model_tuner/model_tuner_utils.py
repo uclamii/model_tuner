@@ -892,7 +892,7 @@ class Model:
                     best_features = self.print_selected_best_features(X)
                     return {
                         "Regression Report": reg_report,
-                        "K Best Features": best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return reg_report
