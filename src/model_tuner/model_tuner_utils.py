@@ -870,12 +870,12 @@ class Model:
                 print("-" * 80)
 
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X)
+                    best_features = self.print_selected_best_features(X)
 
                     return {
                         "Classification Report": self.classification_report,
                         "Confusion Matrix": conf_mat,
-                        "K Best Features": k_best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return {
@@ -885,10 +885,10 @@ class Model:
             else:
                 reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X)
+                    best_features = self.print_selected_best_features(X)
                     return {
                         "Regression Report": reg_report,
-                        "K Best Features": k_best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return reg_report
