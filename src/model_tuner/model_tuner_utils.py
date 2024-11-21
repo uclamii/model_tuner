@@ -215,7 +215,7 @@ class Model:
             for name, transformer in pipeline.steps
             if name.startswith("feature_selection_")
         ]
-        return steps
+        return self.PipelineClass(steps)
 
     def get_preprocessing_pipeline(self, pipeline):
         # Extract steps names that start with 'preprocess_'
@@ -663,9 +663,9 @@ class Model:
                         ### Otherwise do not apply them
                         if preproc_feat_select_pipe:
                             # Set parameters and fit the pipeline
-                            preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                                X, y
-                            )
+                            preproc_feat_select_pipe.set_params(
+                                **params_no_estimator
+                            ).fit(X, y)
 
                             # Transform the validation data
                             X_valid_transformed = preproc_feat_select_pipe.transform(
@@ -1051,17 +1051,17 @@ class Model:
                                 )
                             )
 
-                            ### IF we have preprocessing steps then they need applying 
-                            ### Otherwise do not apply them 
+                            ### IF we have preprocessing steps then they need applying
+                            ### Otherwise do not apply them
                             if preproc_feat_select_pipe:
                                 # Set parameters and fit the pipeline
-                                preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                                    X, y
-                                )
+                                preproc_feat_select_pipe.set_params(
+                                    **params_no_estimator
+                                ).fit(X, y)
 
                                 # Transform the validation data
-                                X_valid_transformed = preproc_feat_select_pipe.transform(
-                                    X_valid
+                                X_valid_transformed = (
+                                    preproc_feat_select_pipe.transform(X_valid)
                                 )
                             else:
                                 X_valid_transformed = X_valid

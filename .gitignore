@@ -5,7 +5,7 @@ __pycache__/
 
 # C extensions
 *.so
-
+_build/
 # CSV files (because most (if not all) contain identifying patient information
 *.csv
 .DS_Store
