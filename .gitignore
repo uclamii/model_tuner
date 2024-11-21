@@ -6,8 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
-.doctrees/
+*/.doctrees/
 
+docs/.doctrees/
 # CSV files (because most (if not all) contain identifying patient information
 *.csv
 .DS_Store
