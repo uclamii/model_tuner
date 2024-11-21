@@ -879,7 +879,7 @@ class Model:
                     return {
                         "Classification Report": self.classification_report,
                         "Confusion Matrix": conf_mat,
-                        "K Best Features": best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return {
