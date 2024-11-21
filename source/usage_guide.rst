@@ -270,44 +270,44 @@ To support advanced use cases, the model tuner provides helper methods to extrac
 
 Here are some of the available methods:
 
-.. py:function:: get_preprocessing_and_feature_selection_pipeline(pipeline)
+.. py:function:: get_preprocessing_and_feature_selection_pipeline()
 
     Extracts both the preprocessing and feature selection parts of the pipeline.
 
     **Example**::
 
-        def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
+        def get_preprocessing_and_feature_selection_pipeline(self):
             steps = [
                 (name, transformer)
-                for name, transformer in pipeline.steps
+                for name, transformer in self.estimator.steps
                 if name.startswith("preprocess_") or name.startswith("feature_selection_")
             ]
             return self.PipelineClass(steps)
 
-.. py:function:: get_feature_selection_pipeline(pipeline)
+.. py:function:: get_feature_selection_pipeline()
 
     Extracts only the feature selection part of the pipeline.
 
     **Example**::
 
-        def get_feature_selection_pipeline(self, pipeline):
+        def get_feature_selection_pipeline(self):
             steps = [
                 (name, transformer)
-                for name, transformer in pipeline.steps
+                for name, transformer in self.estimator.steps
                 if name.startswith("feature_selection_")
             ]
-            return steps
+            return self.PipelineClass(steps)
 
-.. py:function:: get_preprocessing_pipeline(pipeline)
+.. py:function:: get_preprocessing_pipeline()
 
     Extracts only the preprocessing part of the pipeline.
 
     **Example**::
 
-        def get_preprocessing_pipeline(self, pipeline):
+        def get_preprocessing_pipeline(self):
             preprocessing_steps = [
                 (name, transformer)
-                for name, transformer in pipeline.steps
+                for name, transformer in self.estimator.steps
                 if name.startswith("preprocess_")
             ]
             return self.PipelineClass(preprocessing_steps)

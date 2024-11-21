@@ -369,13 +369,13 @@
 <p>Here are some of the available methods:</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="get_preprocessing_and_feature_selection_pipeline">
-<span class="sig-name descname"><span class="pre">get_preprocessing_and_feature_selection_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_and_feature_selection_pipeline" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_preprocessing_and_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_and_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts both the preprocessing and feature selection parts of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_and_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_and_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;preprocess_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;feature_selection_&quot;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PipelineClass</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
@@ -385,29 +385,29 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="get_feature_selection_pipeline">
-<span class="sig-name descname"><span class="pre">get_feature_selection_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#get_feature_selection_pipeline" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the feature selection part of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;feature_selection_&quot;</span><span class="p">)</span>
     <span class="p">]</span>
-    <span class="k">return</span> <span class="n">steps</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PipelineClass</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="get_preprocessing_pipeline">
-<span class="sig-name descname"><span class="pre">get_preprocessing_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_pipeline" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_preprocessing_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the preprocessing part of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pipeline</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">preprocessing_steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">steps</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;preprocess_&quot;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PipelineClass</span><span class="p">(</span><span class="n">preprocessing_steps</span><span class="p">)</span>
