@@ -117,6 +117,7 @@ ENV/
 env.bak/
 venv.bak/
 eda/
+venvpy_311
 
 # Spyder project settings
 .spyderproject
