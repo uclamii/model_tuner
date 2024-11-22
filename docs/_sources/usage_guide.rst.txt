@@ -313,7 +313,7 @@ Here are some of the available methods:
             return self.PipelineClass(preprocessing_steps)
 
 Summary
--------
+--------
 
 By organizing pipeline steps automatically and providing helper methods for extraction, the model tuner class offers flexibility and ease of use for building and managing complex pipelines. Users can focus on specifying the steps, and the tuner handles naming, sorting, and category assignments seamlessly.
 
@@ -408,6 +408,8 @@ Step 4: Create an Instance of the XGBClassifier
       random_state=222,
    )
 
+.. _xgb_hyperparams:
+
 Step 5: Define Hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -461,10 +463,6 @@ Step 6: Initialize and Configure the ``Model``
       calibrate=calibrate,
       estimator=clc,
       kfold=kfold,
-      pipeline_steps=[
-         ("Imputer", SimpleImputer()),
-         ("StandardScalar", StandardScaler()),
-      ],
       stratify_y=True,
       stratify_cols=["gender", "race"],
       grid=tuned_parameters,
@@ -487,26 +485,14 @@ Step 7: Perform Grid Search Parameter Tuning
 
    Pipeline Steps:
 
-   ┌────────────────────────────────────────────┐
-   │ Step 1: preprocess_imputer_Imputer         │
-   │ SimpleImputer                              │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 2: preprocess_scaler_StandardScalar   │
-   │ StandardScaler                             │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 3: xgb                                │
-   │ XGBClassifier                              │
-   └────────────────────────────────────────────┘
+   ┌─────────────────┐
+   │ Step 1: xgb     │
+   │ XGBClassifier   │
+   └─────────────────┘
 
-   100%|██████████| 5/5 [00:36<00:00,  7.35s/it]
+   100%|██████████| 5/5 [00:19<00:00,  3.98s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.50it/s]Best score/param set found on validation set:
+   100%|██████████| 2/2 [00:00<00:00,  3.42it/s]Best score/param set found on validation set:
    {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
@@ -532,24 +518,6 @@ Step 9: Return Metrics (Optional)
 
 You can use this function to evaluate the model by printing the output.
 
-.. code-block:: python
-
-   # ------------------------- VALID AND TEST METRICS -----------------------------
-
-   print("Validation Metrics")
-   class_report_val, cm_val = model_xgb.return_metrics(
-      X_valid,
-      y_valid,
-      optimal_threshold=True,
-   )
-   print()
-   print("Test Metrics")
-   class_report_test, cm_test = model_xgb.return_metrics(
-      X_test,
-      y_test,
-      optimal_threshold=True,
-   )
-
 .. code-block:: bash
 
    Validation Metrics
@@ -570,14 +538,14 @@ You can use this function to evaluate the model by printing the output.
    'Specificity': 0.7561728395061729}
    --------------------------------------------------------------------------------
 
-               precision    recall  f1-score   support
+                 precision    recall  f1-score   support
+ 
+              0       0.96      0.76      0.85       324
+              1       0.55      0.91      0.68       104
 
-            0       0.96      0.76      0.85       324
-            1       0.55      0.91      0.68       104
-
-      accuracy                          0.79       428
-      macro avg     0.76      0.83      0.77       428
-   weighted avg     0.86      0.79      0.81       428
+       accuracy                           0.79       428
+      macro avg       0.76      0.83      0.77       428
+   weighted avg       0.86      0.79      0.81       428
 
    --------------------------------------------------------------------------------
 
@@ -599,17 +567,17 @@ You can use this function to evaluate the model by printing the output.
    'Specificity': 0.7592592592592593}
    --------------------------------------------------------------------------------
 
-               precision    recall  f1-score   support
+                 precision    recall  f1-score   support
+ 
+              0       0.96      0.76      0.85       324
+              1       0.55      0.91      0.69       104
 
-            0       0.96      0.76      0.85       324
-            1       0.55      0.91      0.69       104
-
-      accuracy                          0.80       428
-      macro avg     0.76      0.84      0.77       428
-   weighted avg     0.86      0.80      0.81       428
+       accuracy                           0.80       428
+      macro avg       0.76      0.84      0.77       428
+   weighted avg       0.86      0.80      0.81       428
 
    --------------------------------------------------------------------------------
-      
+
 Step 10: Calibrate the Model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -649,14 +617,14 @@ Step 10: Calibrate the Model (if needed)
            Neg   9 (fp)  315 (tn)
    --------------------------------------------------------------------------------
 
-               precision    recall  f1-score   support
+                 precision     recall  f1-score    support
 
-            0       0.90      0.97      0.94       324
-            1       0.89      0.67      0.77       104
+              0       0.90       0.97      0.94        324
+              1       0.89       0.67      0.77        104
 
-      accuracy                          0.90       428
-      macro avg     0.89      0.82      0.85       428
-   weighted avg     0.90      0.90      0.89       428
+       accuracy                            0.90        428
+      macro avg       0.89       0.82      0.85        428
+   weighted avg       0.90       0.90      0.89        428
 
    --------------------------------------------------------------------------------
    roc_auc after calibration: 0.9280033238366572
@@ -732,14 +700,255 @@ output it as follows:
 
 .. code-block:: bash
 
-               precision    recall  f1-score   support
+              precision    recall  f1-score   support
 
-            0       0.91      0.94      0.92       324
-            1       0.79      0.71      0.75       104
+            0      0.90      0.97      0.94       324
+            1      0.89      0.67      0.77       104
 
-      accuracy                          0.88       428
-      macro avg     0.85      0.82      0.84       428
-   weighted avg     0.88      0.88      0.88       428
+     accuracy                          0.90       428
+    macro avg      0.89      0.82      0.85       428
+ weighted avg      0.90      0.90      0.89       428
+
+
+Recursive Feature Elimination (RFE)
+-------------------------------------
+
+Now that we've trained the models, we can also refine them by identifying which 
+features contribute most to their performance. One effective method for this is 
+Recursive Feature Elimination (RFE). This technique allows us to systematically 
+remove the least important features, retraining the model at each step to evaluate 
+how performance is affected. By focusing only on the most impactful variables, 
+RFE helps streamline the dataset, reduce noise, and improve both the accuracy and 
+interpretability of the final model.
+
+It works by recursively training a model, ranking the importance of features 
+based on the model’s outputas (such as coefficients in linear models or 
+importance scores in tree-based models), and then removing the least important 
+features one by one. This process continues until a specified number of features 
+remains or the desired performance criteria are met.
+
+The primary advantage of RFE is its ability to streamline datasets, improving 
+model performance and interpretability by focusing on features that contribute 
+the most to the predictive power. However, it can be computationally expensive 
+since it involves repeated model training, and its effectiveness depends on the 
+underlying model’s ability to evaluate feature importance. RFE is commonly used 
+with cross-validation to ensure that the selected features generalize well across 
+datasets, making it a robust choice for model optimization and dimensionality 
+reduction.
+
+As an illustrative example, we will retrain the above model using RFE.
+
+We will begin by appending the feature selection technique to our :ref:`tuned parameters dictionary <xgb_hyperparams>`.
+
+.. code-block:: python
+
+   xgb_definition["tuned_parameters"][f"feature_selection_rfe__n_features_to_select"] = [
+      5,
+      10,
+   ]
+
+Elastic Net for Feature Selection with RFE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   You may wish to explore :ref:`this section <elastic_net>` for rationale in applying this technique.
+
+We will use elastic net because it strikes a balance between two widely used 
+regularization techniques: Lasso (:math:`L1`) and Ridge (:math:`L2`). Elastic net 
+is particularly effective in scenarios where we expect the dataset to have a mix 
+of strongly and weakly correlated features. Lasso alone tends to select only one 
+feature from a group of highly correlated ones, ignoring the others, while Ridge 
+includes all features but may not perform well when some are entirely irrelevant. 
+Elastic net addresses this limitation by combining both penalties, allowing it to handle 
+multicollinearity more effectively while still performing feature selection.
+
+Additionally, elastic net provides flexibility by controlling the ratio between 
+:math:`L1` and :math:`L2` penalties, enabling fine-tuning to suit the specific needs of 
+our dataset. This makes it a robust choice for datasets with many features, some 
+of which may be irrelevant or redundant, as it can reduce overfitting while 
+retaining a manageable subset of predictors.
+
+
+.. code-block:: python
+
+   rfe_estimator = ElasticNet()
+
+   rfe = RFE(rfe_estimator)
+
+
+.. code-block:: python
+
+   model_xgb = Model(
+      name=f"AIDS_Clinical_{model_type}",
+      estimator_name=estimator_name,
+      calibrate=calibrate,
+      estimator=clc,
+      model_type="classification",
+      kfold=kfold,
+      pipeline_steps=[
+         ("Imputer", SimpleImputer()),
+         ("StandardScalar", StandardScaler()),
+         ("rfe", rfe),
+      ],
+      stratify_y=True,
+      stratify_cols=False,
+      grid=tuned_parameters,
+      randomized_grid=rand_grid,
+      feature_selection=True,
+      boost_early=early_stop,
+      scoring=["roc_auc"],
+      random_state=222,
+      n_jobs=2,
+   )
+
+   model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+   X_train, y_train = model_xgb.get_train_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+   X_valid, y_valid = model_xgb.get_valid_data(X, y)
+
+   model_xgb.fit(
+      X_train,
+      y_train,
+      validation_data=[X_valid, y_valid],
+   )
+
+
+   # ------------------------- VALID AND TEST METRICS -----------------------------
+
+   print("Validation Metrics")
+   model_xgb.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+   )
+   print()
+   print("Test Metrics")
+   model_xgb.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+   )
+
+   print()
+
+.. code-block:: bash
+
+   Pipeline Steps:
+
+   ┌────────────────────────────────────────────┐
+   │ Step 1: preprocess_imputer_Imputer         │
+   │ SimpleImputer                              │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 2: preprocess_scaler_StandardScalar   │
+   │ StandardScaler                             │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 3: feature_selection_rfe              │
+   │ RFE                                        │
+   └────────────────────────────────────────────┘
+                        │
+                        ▼
+   ┌────────────────────────────────────────────┐
+   │ Step 4: xgb                                │
+   │ XGBClassifier                              │
+   └────────────────────────────────────────────┘
+
+   100%|██████████| 10/10 [00:29<00:00,  2.99s/it]
+   Fitting model with best params and tuning for best threshold ...
+   100%|██████████| 2/2 [00:00<00:00,  3.57it/s]
+   Best score/param set found on validation set:
+   {'params': {'feature_selection_rfe__n_features_to_select': 5,
+               'xgb__early_stopping_rounds': 100,
+               'xgb__eval_metric': 'logloss',
+               'xgb__learning_rate': 0.0001,
+               'xgb__max_depth': 3,
+               'xgb__n_estimators': 999},
+   'score': 0.7360220797720798}
+   Best roc_auc: 0.736 
+
+   Validation Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+                Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  77 (tp)   27 (fn)
+           Neg 125 (fp)  199 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.7360220797720798,
+   'Average Precision': 0.5399209924105289,
+   'Brier Score': 0.17797682092982414,
+   'Precision/PPV': 0.3811881188118812,
+   'Sensitivity': 0.7403846153846154,
+   'Specificity': 0.6141975308641975}
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.88      0.61      0.72       324
+              1       0.38      0.74      0.50       104
+
+       accuracy                           0.64       428
+      macro avg       0.63      0.68      0.61       428
+   weighted avg       0.76      0.64      0.67       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+
+
+   Test Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  74 (tp)   30 (fn)
+         Neg 126 (fp)  198 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.706582383665717,
+   'Average Precision': 0.44119645955771625,
+   'Brier Score': 0.17935075703865283,
+   'Precision/PPV': 0.37,
+   'Sensitivity': 0.7115384615384616,
+   'Specificity': 0.6111111111111112}
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.87      0.61      0.72       324
+              1       0.37      0.71      0.49       104
+
+       accuracy                           0.64       428
+      macro avg       0.62      0.66      0.60       428
+   weighted avg       0.75      0.64      0.66       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+
+
+.. important::
+
+   Passing ``feature_selection=True`` in conjunction with accounting for ``rfe`` for 
+   the ``pipeline_steps`` inside the ``Model``` class above is necessary to print the
+   output of the feature names selected, thus yielding:
+
+   .. code-block:: bash
+
+      Feature names selected:
+      ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
 
 
 Imbalanced Learning
@@ -756,7 +965,7 @@ To mitigate these issues, it is crucial to:
 
 1. Understand the nature of the imbalance in the dataset.
 2. Apply appropriate resampling techniques (oversampling, undersampling, or hybrid methods).
-3. Use metrics beyond accuracy, such as precision, recall, and F1-score, to evaluate model performance fairly.
+3. Use metrics beyond accuracy, such as :ref:`precision, recall, and F1-score <Limitations_of_Accuracy>`, to evaluate model performance fairly.
 
 Generating an Imbalanced Dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -926,7 +1135,7 @@ The goal of using these techniques is to improve model performance on imbalanced
 
 - Ensuring the model captures meaningful patterns in the minority class.
 - Reducing bias toward the majority class, which often dominates predictions in imbalanced datasets.
-- Improving metrics like recall, F1-score, and AUC-ROC for the minority class, which are critical in applications like fraud detection, healthcare, and rare event prediction.
+- Improving metrics like :ref:`recall, F1-score, and AUC-ROC <Limitations_of_Accuracy>` for the minority class, which are critical in applications like fraud detection, healthcare, and rare event prediction.
 
 .. note::
 
@@ -1065,14 +1274,14 @@ Return Metrics (Optional)
    'Specificity': 0.9666666666666667}
    --------------------------------------------------------------------------------
 
-               precision    recall  f1-score   support
+               precision   recall  f1-score   support
 
-            0       1.00      0.97      0.98       180
-            1       0.77      1.00      0.87        20
+              0     1.00     0.97      0.98       180
+              1     0.77     1.00      0.87        20
 
-      accuracy                          0.97       200
-      macro avg     0.88      0.98      0.93       200
-   weighted avg     0.98      0.97      0.97       200
+       accuracy                        0.97       200
+      macro avg     0.88     0.98      0.93       200
+   weighted avg     0.98     0.97      0.97       200
 
    --------------------------------------------------------------------------------
 
@@ -1096,10 +1305,10 @@ Return Metrics (Optional)
 
                precision    recall  f1-score   support
 
-            0       0.99      0.98      0.99       180
-            1       0.86      0.95      0.90        20
+              0     0.99      0.98      0.99       180
+              1     0.86      0.95      0.90        20
 
-      accuracy                          0.98       200
+       accuracy                         0.98       200
       macro avg     0.93      0.97      0.95       200
    weighted avg     0.98      0.98      0.98       200
 
