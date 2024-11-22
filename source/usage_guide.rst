@@ -1313,6 +1313,79 @@ Return Metrics (Optional)
    weighted avg     0.98      0.98      0.98       200
 
    --------------------------------------------------------------------------------
+
+
+SHAP (SHapley Additive exPlanations)
+---------------------------------------
+
+This example demonstrates how to compute and visualize SHAP (SHapley Additive exPlanations) 
+values for a machine learning model with a pipeline that includes feature selection. 
+SHAP values provide insights into how individual features contribute to the predictions of a model.
+
+**Steps**
+
+1. The dataset is transformed through the model's feature selection pipeline to ensure only the selected features are used for SHAP analysis.
+
+2. The final model (e.g., ``XGBoost`` classifier) is retrieved from the custom Model object. This is required because SHAP operates on the underlying model, not the pipeline.
+
+3. SHAP's ``TreeExplainer`` is used to explain the predictions of the XGBoost classifier.
+
+4. SHAP values are calculated for the transformed dataset to quantify the contribution of each feature to the predictions.
+
+5. A summary plot is generated to visualize the impact of each feature across all data points.
+
+
+Step 1: Transform the test data using the feature selection pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python 
+
+   ## The pipeline applies preprocessing (e.g., imputation, scaling) and feature
+   ## selection (RFE) to X_test
+   X_test_transformed = model_xgb.get_feature_selection_pipeline().transform(X_test)
+
+Step 2: Retrieve the trained XGBoost classifier from the pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python 
+
+   ## The last estimator in the pipeline is the XGBoost model
+   xgb_classifier = model_xgb.estimator[-1]
+
+
+Step 3: Extract feature names from the training data, and initialize the SHAP explainer for the XGBoost classifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. code-block:: python
+
+   ## Import SHAP for model explainability
+   import shap
+
+   ## Feature names are required for interpretability in SHAP plots
+   feature_names = X_train.columns.to_list()
+
+   ## Initialize the SHAP explainer with the model
+   explainer = shap.TreeExplainer(xgb_classifier)
+
+
+Step 4: Compute SHAP values for the transformed test dataset and generate a summary plot of SHAP values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   ## Compute SHAP values for the transformed dataset
+   shap_values = explainer.shap_values(X_test_transformed)
+
+Step 5: Generate a summary plot of SHAP values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   ## Plot SHAP values
+   ## Summary plot of SHAP values for all features across all data points
+   shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names,)
+
 .. _Regression:
 
 Regression
