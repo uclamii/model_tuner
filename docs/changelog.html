@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Model Tuner 0.0.15a0 documentation</title>
+  <title>Changelog &mdash; Model Tuner 0.0.21a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/changelog.html" />
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=e34472b7"></script>
+      <script src="_static/documentation_options.js?v=c82a19bc"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -81,6 +81,7 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-21a">Version 0.0.21a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-20a">Version 0.0.20a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-19a">Version 0.0.19a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-18a">Version 0.0.18a</a></li>
@@ -135,6 +136,15 @@
 <p class="admonition-title">Important</p>
 <p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
+<section id="version-0-0-21a">
+<h2>Version 0.0.21a<a class="headerlink" href="#version-0-0-21a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Specified the pipeline class otherwise the method just returned a list</p></li>
+<li><p>Removed need to specify <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> when its called</p></li>
+<li><p>Generalized (renamed) <code class="docutils literal notranslate"><span class="pre">&quot;K</span> <span class="pre">Best</span> <span class="pre">Features&quot;</span></code> to just <code class="docutils literal notranslate"><span class="pre">&quot;Best</span> <span class="pre">Features&quot;</span></code> inside returns of  <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code></p></li>
+<li><p>Generalized (renamed) <code class="docutils literal notranslate"><span class="pre">k_best_features</span></code> to <code class="docutils literal notranslate"><span class="pre">best_features</span></code></p></li>
+</ul>
+</section>
 <section id="version-0-0-20a">
 <h2>Version 0.0.20a<a class="headerlink" href="#version-0-0-20a" title="Link to this heading"></a></h2>
 <ul class="simple">
