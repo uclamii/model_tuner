@@ -1150,7 +1150,7 @@ class Model:
     def print_selected_best_features(self, X):
 
         feat_select_pipeline = self.get_feature_selection_pipeline()
-        feat_select_pipeline = feat_select_pipeline[0][1]
+        feat_select_pipeline = feat_select_pipeline[0]
         print()
         support = feat_select_pipeline.get_support()
         if isinstance(X, pd.DataFrame):
