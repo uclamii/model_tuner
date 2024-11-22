@@ -640,7 +640,7 @@ where:
 - :math:`\alpha \in [0, 1]` determines the balance between the :math:`L1` and :math:`L2` penalties.
 
 Important Considerations
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 1. **Balance of Sparsity and Shrinkage**:
 

@@ -25,6 +25,15 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.21a
+--------------------
+
+- Specified the pipeline class otherwise the method just returned a list
+- Removed need to specify ``self.estimator`` when its called
+- Generalized (renamed) ``"K Best Features"`` to just ``"Best Features"`` inside returns of  ``return_metrics()``
+- Generalized (renamed) ``k_best_features`` to ``best_features`` 
+
+
 Version 0.0.20a
 --------------------
 
