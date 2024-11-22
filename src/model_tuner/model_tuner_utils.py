@@ -115,7 +115,7 @@ class Model:
         feature_selection=False,
         class_labels=None,
         multi_label=False,
-        calibration_method="sigmoid",  # 04_27_24 --> added calibration method
+        calibration_method="sigmoid",  
         custom_scorer=[],
         bayesian=False,
     ):
@@ -134,7 +134,7 @@ class Model:
         self.model_type = model_type
         self.multi_label = multi_label
         self.calibration_method = (
-            calibration_method  # 04_27_24 --> added calibration method
+            calibration_method 
         )
         self.imbalance_sampler = imbalance_sampler
 
