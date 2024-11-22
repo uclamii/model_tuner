@@ -388,6 +388,39 @@ Summary
 Calibration is essential when the probabilities output by a model need to be trusted, such as in risk assessment, medical diagnosis, and other critical applications.
 
 
+Using Imputation and Scaling in Pipeline Steps for Model Preprocessing
+-------------------------------------------------------------------------
+
+The ``pipeline_steps`` parameter accepts a list of tuples, where each tuple specifies 
+a transformation step to be applied to the data. For example, the code block below 
+performs imputation followed by standardization on the dataset before training the model.
+
+.. code-block:: python
+
+   pipeline_steps=[
+      ("Imputer", SimpleImputer()), 
+      ("StandardScaler", StandardScaler()),
+   ] 
+
+When Is Imputation and Feature Scaling in ``pipeline_steps`` Beneficial?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- **Logistic Regression:** Highly sensitive to feature scaling and missing data. Preprocessing steps like imputation and standardization improve model performance significantly.
+- **Linear Models (e.g., Ridge, Lasso):** Similar to Logistic Regression, these models require feature scaling for optimal performance.
+- **SVMs:** Sensitive to the scale of the features, requiring preprocessing like standardization.
+
+Models Not Benefiting From Imputation and Scaling in ``pipeline_steps``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- **Tree-Based Models (e.g., XGBoost, Random Forests, Decision Trees):** These models are invariant to feature scaling and can handle missing values natively. Passing preprocessing steps like StandardScaler or Imputer may be redundant or even unnecessary.
+
+Why Doesn't XGBoost Require Imputation and Scaling in ``pipeline_steps``?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+XGBoost and similar tree-based models work on feature splits rather than feature values directly. This makes them robust to unscaled data and capable of handling missing values using default mechanisms like missing parameter handling in XGBoost. Thus, adding steps like scaling or imputation often does not improve and might complicate the training process.
+
+To this end, it is best to use ``pipeline_steps`` strategically for algorithms that rely on numerical properties (e.g., Logistic Regression). For XGBoost, focus on other optimization techniques like hyperparameter tuning and feature engineering instead.
+
 Caveats in Imbalanced Learning
 ----------------------------------
 
@@ -582,9 +615,56 @@ This synthetic sample lies midway between the two points in the feature space.
 Mitigating the Caveats
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **Combine SMOTE with Undersampling**: Techniques like SMOTEENN or SMOTETomek remove noisy or overlapping samples after synthetic generation.  
+- **Combine SMOTE with Undersampling**: Techniques like ``SMOTEENN`` or ``SMOTETomek`` remove noisy or overlapping samples after synthetic generation.  
 
 - **Apply with Feature Engineering**: Ensure the feature space is meaningful and represents the underlying data structure.  
 
 - **Tune Oversampling Ratio**: Avoid generating excessive synthetic samples to reduce overfitting.
 
+.. _elastic_net:
+
+ElasticNet Regularization
+----------------------------
+
+Elastic net minimizes the following cost function:
+
+.. math::
+
+   \mathcal{L}(\beta) = \frac{1}{2n} \sum_{i=1}^{n} \left( y_i - \mathbf{x}_i^\top \beta \right)^2 + \lambda \left( \alpha \|\beta\|_1 + \frac{1 - \alpha}{2} \|\beta\|_2^2 \right)
+
+where:
+
+- :math:`\|\beta\|_1 = \sum_{j=1}^p |\beta_j|` represents the :math:`L1` norm, promoting sparsity.
+- :math:`\|\beta\|_2^2 = \sum_{j=1}^p \beta_j^2` represents the :math:`L2` norm, promoting shrinkage.
+- :math:`\lambda` controls the regularization strength.
+- :math:`\alpha \in [0, 1]` determines the balance between the :math:`L1` and :math:`L2` penalties.
+
+Important Considerations
+^^^^^^^^^^^^^^^^^^^^^^
+
+1. **Balance of Sparsity and Shrinkage**:
+
+   - :math:`\alpha = 1`: Reduces to Lasso (:math:`L1` only).
+   - :math:`\alpha = 0`: Reduces to Ridge (:math:`L2` only).
+   - Intermediate values allow elastic net to select features while managing multicollinearity.
+
+2. **Regularization Strength**:
+
+   - Larger :math:`\lambda` increases bias but reduces variance, favoring simpler models.
+   - Smaller :math:`\lambda` reduces bias but may increase variance, allowing more complex models.
+
+3. **Feature Correlation**:
+
+   - Elastic net handles correlated features better than Lasso, spreading coefficients across groups of related predictors.
+
+4. **Hyperparameter Tuning**:
+
+   - Both :math:`\alpha` and :math:`\lambda` should be optimized via cross-validation to achieve the best performance.
+
+Elastic net is well-suited for datasets with mixed feature relevance, reducing overfitting while retaining important predictors.
+
+.. important::
+
+   - When combining elastic net with RFE, it is important to note that the recursive process may interact with the regularization in elastic net.
+   - Elastic net's built-in feature selection can prioritize sparsity, but RFE explicitly removes features step-by-step. This may lead to redundancy in feature selection efforts or alter the balance between :math:`L1` and :math:`L2` penalties as features are eliminated.
+   - Careful calibration of :math:`\alpha` and :math:`\lambda` is essential when using RFE alongside elastic net to prevent over-penalization or premature exclusion of relevant features.

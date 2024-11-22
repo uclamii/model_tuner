@@ -71,7 +71,9 @@
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#imputation-before-scaling">Imputation Before Scaling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#model-calibration">Model Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -161,6 +163,10 @@
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#classification-report-optional">Classification Report (Optional)</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#recursive-feature-elimination-rfe">Recursive Feature Elimination (RFE)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#elastic-net-for-feature-selection-with-rfe">Elastic Net for Feature Selection with RFE</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#imbalanced-learning">Imbalanced Learning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#generating-an-imbalanced-dataset">Generating an Imbalanced Dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#define-hyperparameters-for-xgboost">Define Hyperparameters for XGBoost</a></li>
@@ -238,6 +244,12 @@
 <li class="toctree-l2"><a class="reference internal" href="caveats.html#summary">Summary</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#when-is-imputation-and-feature-scaling-in-pipeline-steps-beneficial">When Is Imputation and Feature Scaling in <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code> Beneficial?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#models-not-benefiting-from-imputation-and-scaling-in-pipeline-steps">Models Not Benefiting From Imputation and Scaling in <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#why-doesn-t-xgboost-require-imputation-and-scaling-in-pipeline-steps">Why Doesn’t XGBoost Require Imputation and Scaling in <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code>?</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="caveats.html#bias-from-class-distribution">Bias from Class Distribution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="caveats.html#threshold-dependent-predictions">Threshold-Dependent Predictions</a></li>
@@ -251,6 +263,10 @@
 <li class="toctree-l3"><a class="reference internal" href="caveats.html#mitigating-the-caveats">Mitigating the Caveats</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#important-considerations">Important Considerations</a></li>
 </ul>
 </li>
 </ul>
