@@ -201,27 +201,27 @@ class Model:
     These use the naming convention that we enforce in the assemble_pipeline method.
     """
 
-    def get_preprocessing_and_feature_selection_pipeline(self, pipeline):
+    def get_preprocessing_and_feature_selection_pipeline(self):
         steps = [
             (name, transformer)
-            for name, transformer in pipeline.steps
+            for name, transformer in self.estimator.steps
             if name.startswith("preprocess_") or name.startswith("feature_selection_")
         ]
         return self.PipelineClass(steps)
 
-    def get_feature_selection_pipeline(self, pipeline):
+    def get_feature_selection_pipeline(self):
         steps = [
             (name, transformer)
-            for name, transformer in pipeline.steps
+            for name, transformer in self.estimator.steps
             if name.startswith("feature_selection_")
         ]
-        return steps
+        return self.PipelineClass(steps)
 
-    def get_preprocessing_pipeline(self, pipeline):
+    def get_preprocessing_pipeline(self):
         # Extract steps names that start with 'preprocess_'
         preprocessing_steps = [
             (name, transformer)
-            for name, transformer in pipeline.steps
+            for name, transformer in self.estimator.steps
             if name.startswith("preprocess_")
         ]
         return self.PipelineClass(preprocessing_steps)
@@ -396,7 +396,7 @@ class Model:
         ####  Preprocessor, Resampler, rfe, Estimator
 
         if self.pipeline_steps:
-            preproc_test = self.get_preprocessing_pipeline(self.estimator)
+            preproc_test = self.get_preprocessing_pipeline()
         else:
             pass
 
@@ -654,18 +654,16 @@ class Model:
 
                         # Get the combined preprocessing and feature selection pipeline
                         preproc_feat_select_pipe = (
-                            self.get_preprocessing_and_feature_selection_pipeline(
-                                self.estimator
-                            )
+                            self.get_preprocessing_and_feature_selection_pipeline()
                         )
 
                         ### IF we have preprocessing steps then they need applying
                         ### Otherwise do not apply them
                         if preproc_feat_select_pipe:
                             # Set parameters and fit the pipeline
-                            preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                                X, y
-                            )
+                            preproc_feat_select_pipe.set_params(
+                                **params_no_estimator
+                            ).fit(X, y)
 
                             # Transform the validation data
                             X_valid_transformed = preproc_feat_select_pipe.transform(
@@ -724,9 +722,7 @@ class Model:
 
                         # Get the combined preprocessing and feature selection pipeline
                         preproc_feat_select_pipe = (
-                            self.get_preprocessing_and_feature_selection_pipeline(
-                                self.estimator
-                            )
+                            self.get_preprocessing_and_feature_selection_pipeline()
                         )
 
                         ### IF we have preprocessing steps then they need applying
@@ -874,12 +870,12 @@ class Model:
                 print("-" * 80)
 
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X)
+                    best_features = self.print_selected_best_features(X)
 
                     return {
                         "Classification Report": self.classification_report,
                         "Confusion Matrix": conf_mat,
-                        "K Best Features": k_best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return {
@@ -889,10 +885,10 @@ class Model:
             else:
                 reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
-                    k_best_features = self.print_selected_best_features(X)
+                    best_features = self.print_selected_best_features(X)
                     return {
                         "Regression Report": reg_report,
-                        "K Best Features": k_best_features,
+                        "Best Features": best_features,
                     }
                 else:
                     return reg_report
@@ -1046,22 +1042,20 @@ class Model:
                                 }
 
                             preproc_feat_select_pipe = (
-                                self.get_preprocessing_and_feature_selection_pipeline(
-                                    self.estimator
-                                )
+                                self.get_preprocessing_and_feature_selection_pipeline()
                             )
 
-                            ### IF we have preprocessing steps then they need applying 
-                            ### Otherwise do not apply them 
+                            ### IF we have preprocessing steps then they need applying
+                            ### Otherwise do not apply them
                             if preproc_feat_select_pipe:
                                 # Set parameters and fit the pipeline
-                                preproc_feat_select_pipe.set_params(**params_no_estimator).fit(
-                                    X, y
-                                )
+                                preproc_feat_select_pipe.set_params(
+                                    **params_no_estimator
+                                ).fit(X, y)
 
                                 # Transform the validation data
-                                X_valid_transformed = preproc_feat_select_pipe.transform(
-                                    X_valid
+                                X_valid_transformed = (
+                                    preproc_feat_select_pipe.transform(X_valid)
                                 )
                             else:
                                 X_valid_transformed = X_valid
@@ -1155,7 +1149,7 @@ class Model:
 
     def print_selected_best_features(self, X):
 
-        feat_select_pipeline = self.get_feature_selection_pipeline(self.estimator)
+        feat_select_pipeline = self.get_feature_selection_pipeline()
         feat_select_pipeline = feat_select_pipeline[0][1]
         print()
         support = feat_select_pipeline.get_support()
