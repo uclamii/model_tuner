@@ -1386,6 +1386,50 @@ Step 5: Generate a summary plot of SHAP values
    ## Summary plot of SHAP values for all features across all data points
    shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names,)
 
+
+.. raw:: html
+
+   <div class="no-click">
+
+.. image:: /../assets/shap_summary_plot.png
+   :alt: Calibration Curve AIDs
+   :align: center
+   :width: 600px
+
+.. raw:: html
+
+   </div>
+
+.. raw:: html
+
+   <div style="height: 50px;"></div>
+
+Feature Importance and Impact
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This SHAP summary plot provides a detailed visualization of how each feature 
+contributes to the model's predictions, offering insight into feature importance 
+and their directional effects. The X-axis represents SHAP values, which quantify 
+the magnitude and direction of a feature’s influence. Positive SHAP values 
+indicate that the feature increases the predicted output, while negative values 
+suggest a decrease. Along the Y-axis, features are ranked by their overall importance, 
+with the most influential features, such as ``time``, positioned at the top.
+
+Each point on the plot corresponds to an individual observation, where the color 
+gradient reflects the feature value. Blue points represent lower feature values, 
+while pink points indicate higher values, allowing us to observe how varying 
+feature values affect the prediction. For example, the time feature shows a wide 
+range of SHAP values, with higher values (pink) strongly increasing the prediction 
+and lower values (blue) reducing it, demonstrating its critical role in driving 
+the model's output.
+
+In contrast, features like ``hemo`` and ``age`` exhibit SHAP values closer to zero, 
+signifying a lower overall impact on predictions. Features such as ``homo``, ``karnof``, 
+and ``trt`` show more variability in their influence, indicating that their effect is 
+context-dependent and can significantly shift predictions in certain cases. This 
+plot provides a holistic view of feature behavior, enabling a deeper understanding 
+of the model’s decision-making process.
+
 .. _Regression:
 
 Regression
