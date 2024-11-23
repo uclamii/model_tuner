@@ -25,6 +25,13 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.22a
+--------------------
+
+- Fixed an issue where the feature selection name was not referenced correctly, causing a bug when printing selected feature names with the updated pipeline.
+- Removed resolved print statements from April, 2024.
+
+
 Version 0.0.21a
 --------------------
 
