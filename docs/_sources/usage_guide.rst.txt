@@ -32,7 +32,7 @@ Binary Classification Examples
 
    - .. raw:: html
 
-      <a href="https://colab.research.google.com/drive/1ujLL2mRtIWwGamnpWKIo2f271_Q103t-?usp=sharing#scrollTo=uMxyy0yvd2xQ" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
+      <a href="https://colab.research.google.com/drive/1bP0DzSYgV0ncHlkJq9uV3pUXn8PaR31z#scrollTo=OTWiK2ZwdeMK" target="_blank">Binary Classification + KFold Example: Titanic Dataset - Categorical Data</a>
 
    - .. raw:: html
 
