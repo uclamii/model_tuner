@@ -1,11 +1,13 @@
 ### Defining columns to be scaled and columns to be onehotencoded
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 import seaborn as sns
 from sklearn.impute import SimpleImputer
 from model_tuner import Model
+from sklearn.pipeline import Pipeline
+
 
 titanic = sns.load_dataset("titanic")
 titanic.head()
@@ -15,27 +17,44 @@ X = X.drop(columns=["alive", "class", "embarked"])
 y = titanic["survived"]
 
 
-ohencoder = OneHotEncoder(handle_unknown="ignore")
-
 ohcols = ["embark_town", "who", "sex", "adult_male"]
-
-ordencoder = OrdinalEncoder()
 
 ordcols = ["deck"]
 
-minmaxscaler = MinMaxScaler()
-
 scalercols = ["parch", "fare", "age", "pclass"]
 
+numerical_transformer = Pipeline(
+    steps=[
+        ("scaler", StandardScaler()),
+        ("imputer", SimpleImputer(strategy="mean")),
+    ]
+)
 
-ct = ColumnTransformer(
-    [
-        ("OneHotEncoder", ohencoder, ohcols),
-        ("OrdinalEncoder", ordencoder, ordcols),
-        ("MinMaxScaler", minmaxscaler, scalercols),
+categorical_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+        ("encoder", OneHotEncoder(handle_unknown="ignore")),
+    ]
+)
+
+ordinal_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+        ("ord_encoder", OrdinalEncoder()),
+    ]
+)
+
+
+# Create the ColumnTransformer with passthrough
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", numerical_transformer, scalercols),
+        ("cat", categorical_transformer, ohcols),
+        ("ord", ordinal_transformer, ordcols),
     ],
     remainder="passthrough",
 )
+
 
 # random forest definition
 xgb_name = "xgb"
@@ -65,7 +84,7 @@ titanic_model_xgb = Model(
     calibrate=True,
     estimator=xgb_definition["clc"],
     kfold=kfold,
-    pipeline_steps=[("Preprocessor", ct), ("Imputer", SimpleImputer())],
+    pipeline_steps=[("Preprocessor", preprocessor)],
     stratify_y=True,
     grid=xgb_definition["tuned_parameters"],
     randomized_grid=xgb_definition["randomized_grid"],
