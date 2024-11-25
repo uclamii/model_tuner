@@ -369,9 +369,7 @@ Step 1: Import Necessary Libraries
     import pandas as pd
     import numpy as np
     import xgboost as xgb
-    from model_tuner import model_tuner  
-    from sklearn.impute import SimpleImputer
-
+    from model_tuner import Model  
 
 Step 2: Load the dataset, define X, y
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -404,7 +402,9 @@ Step 4: Create an Instance of the XGBClassifier
 .. code-block:: python
 
    # Creating an instance of the XGBClassifier
-   xgb_model = xgb.XGBClassifier(
+   xgb_name = "xgb"
+   xgb = XGBClassifier(
+      objective="binary:logistic",
       random_state=222,
    )
 
@@ -415,11 +415,7 @@ Step 5: Define Hyperparameters for XGBoost
 
 .. code-block:: python
 
-   xgb_name = "xgb"
-   xgb = XGBClassifier(
-      objective="binary:logistic",
-      random_state=222,
-   )
+
    xgbearly = True
    tuned_parameters_xgb = {
       f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
@@ -462,6 +458,7 @@ Step 6: Initialize and Configure the ``Model``
       estimator_name=estimator_name,
       calibrate=calibrate,
       estimator=clc,
+      model_type="classification",
       kfold=kfold,
       stratify_y=True,
       stratify_cols=["gender", "race"],
@@ -511,7 +508,11 @@ Step 8: Fit the Model
    X_valid, y_valid = model_tuner.get_valid_data(X, y)
    X_test, y_test = model_tuner.get_test_data(X, y)
 
-   model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+   model_xgb.fit(
+       X_train,
+       y_train,
+       validation_data=[X_valid, y_valid],
+   )
 
 Step 9: Return Metrics (Optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -752,7 +753,7 @@ Elastic Net for Feature Selection with RFE
 
 .. note::
 
-   You may wish to explore :ref:`this section <elastic_net>` for rationale in applying this technique.
+   You may wish to explore :ref:`this section <elastic_net>` for the rationale in applying this technique.
 
 We will use elastic net because it strikes a balance between two widely used 
 regularization techniques: Lasso (:math:`L1`) and Ridge (:math:`L2`). Elastic net 
@@ -779,6 +780,8 @@ retaining a manageable subset of predictors.
 
 .. code-block:: python
 
+   from model_tuner import Model
+
    model_xgb = Model(
       name=f"AIDS_Clinical_{model_type}",
       estimator_name=estimator_name,
@@ -787,8 +790,6 @@ retaining a manageable subset of predictors.
       model_type="classification",
       kfold=kfold,
       pipeline_steps=[
-         ("Imputer", SimpleImputer()),
-         ("StandardScalar", StandardScaler()),
          ("rfe", rfe),
       ],
       stratify_y=True,
@@ -835,108 +836,94 @@ retaining a manageable subset of predictors.
 
 .. code-block:: bash
 
-   Pipeline Steps:
+   ┌─────────────────────────────────┐
+   │ Step 1: feature_selection_rfe   │
+   │ RFE                             │
+   └─────────────────────────────────┘
+                  │
+                  ▼
+   ┌─────────────────────────────────┐
+   │ Step 2: xgb                     │
+   │ XGBClassifier                   │
+   └─────────────────────────────────┘
 
-   ┌────────────────────────────────────────────┐
-   │ Step 1: preprocess_imputer_Imputer         │
-   │ SimpleImputer                              │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 2: preprocess_scaler_StandardScalar   │
-   │ StandardScaler                             │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 3: feature_selection_rfe              │
-   │ RFE                                        │
-   └────────────────────────────────────────────┘
-                        │
-                        ▼
-   ┌────────────────────────────────────────────┐
-   │ Step 4: xgb                                │
-   │ XGBClassifier                              │
-   └────────────────────────────────────────────┘
-
-   100%|██████████| 10/10 [00:29<00:00,  2.99s/it]
+   100%|██████████| 10/10 [00:25<00:00,  2.52s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.57it/s]
+   100%|██████████| 2/2 [00:00<00:00,  3.53it/s]
    Best score/param set found on validation set:
-   {'params': {'feature_selection_rfe__n_features_to_select': 5,
+   {'params': {'feature_selection_rfe__n_features_to_select': 10,
                'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
-               'xgb__max_depth': 3,
+               'xgb__max_depth': 10,
                'xgb__n_estimators': 999},
-   'score': 0.7360220797720798}
-   Best roc_auc: 0.736 
+   'score': 0.9316684472934472}
+   Best roc_auc: 0.932 
 
    Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
-            Predicted:
+             Predicted:
                 Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  77 (tp)   27 (fn)
-           Neg 125 (fp)  199 (tn)
+   Actual: Pos  95 (tp)    9 (fn)
+           Neg  70 (fp)  254 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.7360220797720798,
-   'Average Precision': 0.5399209924105289,
-   'Brier Score': 0.17797682092982414,
-   'Precision/PPV': 0.3811881188118812,
-   'Sensitivity': 0.7403846153846154,
-   'Specificity': 0.6141975308641975}
+   {'AUC ROC': 0.9316981244064577,
+   'Average Precision': 0.8206553111036822,
+   'Brier Score': 0.16608154668556174,
+   'Precision/PPV': 0.5757575757575758,
+   'Sensitivity': 0.9134615384615384,
+   'Specificity': 0.7839506172839507}
    --------------------------------------------------------------------------------
 
-                 precision    recall  f1-score   support
+                precision    recall  f1-score   support
 
-              0       0.88      0.61      0.72       324
-              1       0.38      0.74      0.50       104
+              0      0.97      0.78      0.87       324
+              1      0.58      0.91      0.71       104
 
-       accuracy                           0.64       428
-      macro avg       0.63      0.68      0.61       428
-   weighted avg       0.76      0.64      0.67       428
+       accuracy                          0.82       428
+      macro avg      0.77      0.85      0.79       428
+   weighted avg      0.87      0.82      0.83       428
 
    --------------------------------------------------------------------------------
 
    Feature names selected:
-   ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+   ['time', 'preanti', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
 
 
    Test Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
-            Predicted:
-               Pos   Neg
+             Predicted:
+                Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  74 (tp)   30 (fn)
-         Neg 126 (fp)  198 (tn)
+   Actual: Pos  91 (tp)   13 (fn)
+           Neg  70 (fp)  254 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.706582383665717,
-   'Average Precision': 0.44119645955771625,
-   'Brier Score': 0.17935075703865283,
-   'Precision/PPV': 0.37,
-   'Sensitivity': 0.7115384615384616,
-   'Specificity': 0.6111111111111112}
+   {'AUC ROC': 0.9278104226020893,
+   'Average Precision': 0.8133787683637559,
+   'Brier Score': 0.1658272032260468,
+   'Precision/PPV': 0.5652173913043478,
+   'Sensitivity': 0.875,
+   'Specificity': 0.7839506172839507}
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
 
-              0       0.87      0.61      0.72       324
-              1       0.37      0.71      0.49       104
+              0       0.95      0.78      0.86       324
+              1       0.57      0.88      0.69       104
 
-       accuracy                           0.64       428
-      macro avg       0.62      0.66      0.60       428
-   weighted avg       0.75      0.64      0.66       428
+       accuracy                           0.81       428
+      macro avg       0.76      0.83      0.77       428
+   weighted avg       0.86      0.81      0.82       428
 
    --------------------------------------------------------------------------------
 
    Feature names selected:
-   ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+   ['time', 'preanti', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
 
 
 .. important::
@@ -1073,6 +1060,7 @@ Below, we will use an XGBoost classifier with the following hyperparameters:
       random_state=222,
    )
    xgbearly = True
+
    tuned_parameters_xgb = {
       f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
       f"{xgb_name}__learning_rate": [1e-4],
