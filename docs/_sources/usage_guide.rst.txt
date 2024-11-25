@@ -1301,6 +1301,123 @@ Return Metrics (Optional)
    weighted avg     0.98      0.98      0.98       200
 
    --------------------------------------------------------------------------------
+
+
+SHAP (SHapley Additive exPlanations)
+---------------------------------------
+
+This example demonstrates how to compute and visualize SHAP (SHapley Additive exPlanations) 
+values for a machine learning model with a pipeline that includes feature selection. 
+SHAP values provide insights into how individual features contribute to the predictions of a model.
+
+**Steps**
+
+1. The dataset is transformed through the model's feature selection pipeline to ensure only the selected features are used for SHAP analysis.
+
+2. The final model (e.g., ``XGBoost`` classifier) is retrieved from the custom Model object. This is required because SHAP operates on the underlying model, not the pipeline.
+
+3. SHAP's ``TreeExplainer`` is used to explain the predictions of the XGBoost classifier.
+
+4. SHAP values are calculated for the transformed dataset to quantify the contribution of each feature to the predictions.
+
+5. A summary plot is generated to visualize the impact of each feature across all data points.
+
+
+Step 1: Transform the test data using the feature selection pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python 
+
+   ## The pipeline applies preprocessing (e.g., imputation, scaling) and feature
+   ## selection (RFE) to X_test
+   X_test_transformed = model_xgb.get_feature_selection_pipeline().transform(X_test)
+
+Step 2: Retrieve the trained XGBoost classifier from the pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python 
+
+   ## The last estimator in the pipeline is the XGBoost model
+   xgb_classifier = model_xgb.estimator[-1]
+
+
+Step 3: Extract feature names from the training data, and initialize the SHAP explainer for the XGBoost classifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. code-block:: python
+
+   ## Import SHAP for model explainability
+   import shap
+
+   ## Feature names are required for interpretability in SHAP plots
+   feature_names = X_train.columns.to_list()
+
+   ## Initialize the SHAP explainer with the model
+   explainer = shap.TreeExplainer(xgb_classifier)
+
+
+Step 4: Compute SHAP values for the transformed test dataset and generate a summary plot of SHAP values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   ## Compute SHAP values for the transformed dataset
+   shap_values = explainer.shap_values(X_test_transformed)
+
+Step 5: Generate a summary plot of SHAP values
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   ## Plot SHAP values
+   ## Summary plot of SHAP values for all features across all data points
+   shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names,)
+
+
+.. raw:: html
+
+   <div class="no-click">
+
+.. image:: /../assets/shap_summary_plot.png
+   :alt: Calibration Curve AIDs
+   :align: center
+   :width: 600px
+
+.. raw:: html
+
+   </div>
+
+.. raw:: html
+
+   <div style="height: 50px;"></div>
+
+Feature Importance and Impact
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This SHAP summary plot provides a detailed visualization of how each feature 
+contributes to the model's predictions, offering insight into feature importance 
+and their directional effects. The X-axis represents SHAP values, which quantify 
+the magnitude and direction of a feature’s influence. Positive SHAP values 
+indicate that the feature increases the predicted output, while negative values 
+suggest a decrease. Along the Y-axis, features are ranked by their overall importance, 
+with the most influential features, such as ``time``, positioned at the top.
+
+Each point on the plot corresponds to an individual observation, where the color 
+gradient reflects the feature value. Blue points represent lower feature values, 
+while pink points indicate higher values, allowing us to observe how varying 
+feature values affect the prediction. For example, the time feature shows a wide 
+range of SHAP values, with higher values (pink) strongly increasing the prediction 
+and lower values (blue) reducing it, demonstrating its critical role in driving 
+the model's output.
+
+In contrast, features like ``hemo`` and ``age`` exhibit SHAP values closer to zero, 
+signifying a lower overall impact on predictions. Features such as ``homo``, ``karnof``, 
+and ``trt`` show more variability in their influence, indicating that their effect is 
+context-dependent and can significantly shift predictions in certain cases. This 
+plot provides a holistic view of feature behavior, enabling a deeper understanding 
+of the model’s decision-making process.
+
 .. _Regression:
 
 Regression
