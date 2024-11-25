@@ -115,7 +115,7 @@ class Model:
         feature_selection=False,
         class_labels=None,
         multi_label=False,
-        calibration_method="sigmoid",  
+        calibration_method="sigmoid",
         custom_scorer=[],
         bayesian=False,
     ):
@@ -133,9 +133,7 @@ class Model:
         self.feature_selection = feature_selection
         self.model_type = model_type
         self.multi_label = multi_label
-        self.calibration_method = (
-            calibration_method 
-        )
+        self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
 
         if imbalance_sampler:
@@ -488,7 +486,10 @@ class Model:
                     if self.imbalance_sampler:
                         self.process_imbalance_sampler(X_train, y_train)
 
-                    self.fit(X_train, y_train)
+                    if self.boost_early:
+                        self.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+                    else:
+                        self.fit(X_train, y_train)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
