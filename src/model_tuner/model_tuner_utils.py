@@ -732,7 +732,7 @@ class Model:
                             # Set parameters and fit the pipeline
                             preproc_feat_select_pipe.set_params(
                                 **params_no_estimator
-                            ).fit(X_train, y_train)
+                            ).fit(X, y)
 
                             # Transform the validation data
                             X_valid_transformed = preproc_feat_select_pipe.transform(
