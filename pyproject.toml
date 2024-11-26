@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "model_tuner"
-version = "0.0.22a"
+version = "0.0.23a"
 description = "A Python library for tuning machine learning models."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
