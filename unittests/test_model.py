@@ -25,7 +25,6 @@ def regression_data():
     y = pd.Series(y)
     return X, y
 
-
 def test_model_initialization():
     name = "test_model"
     estimator_name = "lr"
@@ -37,6 +36,7 @@ def test_model_initialization():
     model = Model(
         name=name,
         estimator_name=estimator_name,
+        model_type="classification",
         estimator=estimator,
         scoring=["roc_auc"],
         grid=tuned_parameters,
@@ -59,6 +59,7 @@ def test_reset_estimator():
     model = Model(
         name=name,
         estimator_name=estimator_name,
+        model_type="classification",
         estimator=estimator,
         scoring=["roc_auc"],
         grid=tuned_parameters,
@@ -79,6 +80,7 @@ def test_fit_method(classification_data):
     model = Model(
         name="test_model",
         estimator_name=estimator_name,
+        model_type="classification",
         estimator=estimator,
         scoring=["roc_auc"],
         grid=tuned_parameters,
@@ -100,6 +102,7 @@ def test_predict_method(classification_data):
         name="test_model",
         estimator_name=estimator_name,
         estimator=RandomForestClassifier(n_estimators=10),
+        model_type="classification",
         scoring=["accuracy"],
         grid=tuned_parameters,
     )
@@ -122,6 +125,7 @@ def test_predict_proba_method(classification_data):
         name="test_model",
         estimator_name=estimator_name,
         estimator=RandomForestClassifier(n_estimators=10),
+        model_type="classification",
         scoring=["accuracy"],
         grid=tuned_parameters,
     )
@@ -148,6 +152,7 @@ def test_grid_search_param_tuning_early(classification_data):
         name="test_model",
         estimator_name=estimator_name,
         estimator=XGBClassifier(),
+        model_type="classification",
         grid=tuned_parameters,
         scoring=["accuracy"],
         boost_early=True,
