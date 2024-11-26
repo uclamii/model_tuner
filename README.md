@@ -11,23 +11,56 @@ The `model_tuner` library is a versatile and powerful tool designed to facilitat
 
 ## Prerequisites
 
-Before you install `model_tuner`, ensure your system meets the following requirements:
+Before installing `model_tuner`, ensure your system meets the following requirements:
 
-- `Python`: Version `3.7` or higher is required to run `model_tuner`.
+## Python Version
+`model_tuner` requires **Python 3.7 or higher**. Specific dependency versions vary depending on your Python version.
 
-Additionally, `model_tuner` depends on the following packages, which will be automatically installed when you install `model_tuner` using pip:
+## Dependencies
+The following dependencies will be automatically installed when you install `model_tuner` via pip:
 
-- `numpy`: version `1.21.6` or higher
+### For Python 3.7:
+- `joblib==1.3.2`
+- `tqdm==4.66.4`
+- `catboost==1.2.7`
+- `pip==24.0`
+- `numpy==1.21.4`
+- `pandas==1.1.5`
+- `scikit-learn==0.23.2`
+- `scipy==1.4.1`
+- `imbalanced-learn==0.7.0`
+- `scikit-optimize==0.8.1`
+- `xgboost==1.6.2`
 
-- `pandas`: version `1.3.5` or higher
+### For Python 3.8 to 3.10:
+- `joblib==1.3.2`
+- `tqdm==4.66.4`
+- `catboost==1.2.7`
+- `pip==24.2`
+- `setuptools==75.1.0`
+- `wheel==0.44.0`
+- `numpy>=1.19.5, <2.0.0`
+- `pandas>=1.3.5, <2.2.3`
+- `scikit-learn>=1.0.2, <1.4.0`
+- `scipy>=1.6.3, <1.11`
+- `imbalanced-learn==0.12.4`
+- `scikit-optimize==0.10.2`
+- `xgboost==2.1.2`
 
-- `joblib`: version `1.3.2` or higher
-
-- `scikit-learn`: version `1.0.2` or higher
-
-- `scipy`: version `1.7.3` or higher
-
-- `tqdm`: version `4.66.4` or higher
+### For Python 3.11 and higher:
+- `joblib==1.3.2`
+- `tqdm==4.66.4`
+- `catboost==1.2.7`
+- `pip==24.2`
+- `setuptools==75.1.0`
+- `wheel==0.44.0`
+- `numpy>=1.19.5, <2.0.0`
+- `pandas>=1.3.5, <2.2.2`
+- `scikit-learn==1.5.1`
+- `scipy==1.14.0`
+- `imbalanced-learn==0.12.4`
+- `scikit-optimize==0.10.2`
+- `xgboost==2.1.2`
 
 
 ## 💾 Installation
@@ -63,7 +96,7 @@ If you use `model_tuner` in your research or projects, please consider citing it
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.22a},
+  version      = {0.0.23a},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
