@@ -188,8 +188,10 @@ Input Parameters
    :type test_size: float, optional
    :param stratify_y: Whether to stratify by the target variable during data splitting. Default is ``False``.
    :type stratify_y: bool, optional
-   :param stratify_cols: List of columns to use for stratification during data splitting. Default is ``None``.
-   :type stratify_cols: list, optional
+   :param stratify_cols: Columns to use for stratification during data splitting. 
+      Can be a single column name (as a string), a list of column names (as strings), 
+      or a DataFrame containing the columns for stratification. Default is ``None``.
+   :type stratify_cols: str, list, or pandas.DataFrame, optional
    :param grid: Hyperparameter grid for model tuning, supporting both regular and Bayesian search.
    :type grid: list of dict
    :param scoring: List of scoring metrics for evaluation, e.g., ``["roc_auc", "accuracy"]``.
