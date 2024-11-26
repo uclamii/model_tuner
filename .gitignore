@@ -148,3 +148,7 @@ mlruns/
 Images/
 --stdin*/
 .DS_store
+
+*/.doctrees/
+
+docs/.doctrees/
