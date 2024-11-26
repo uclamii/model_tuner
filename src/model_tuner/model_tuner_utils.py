@@ -1049,12 +1049,10 @@ class Model:
                             ### IF we have preprocessing steps then they need applying
                             ### Otherwise do not apply them
                             if preproc_feat_select_pipe:
-                                # Set parameters and fit the pipeline
                                 preproc_feat_select_pipe.set_params(
                                     **params_no_estimator
-                                ).fit(X, y)
+                                ).fit(X_train, y_train)
 
-                                # Transform the validation data
                                 X_valid_transformed = (
                                     preproc_feat_select_pipe.transform(X_valid)
                                 )
