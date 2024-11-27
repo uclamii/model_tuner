@@ -206,7 +206,7 @@ def test_bootstrapped_metrics_consistency(classification_data):
     """
     X, y = classification_data
 
-    # Reuse model initialization from test_imbalance_sampler_integration
+    ## Reuse model initialization from test_imbalance_sampler_integration
     name = "test_model"
     estimator_name = "lr"
     estimator = LogisticRegression()
@@ -223,18 +223,18 @@ def test_bootstrapped_metrics_consistency(classification_data):
         grid=tuned_parameters,
     )
 
-    # Assert model is initialized correctly
+    ## Assert model is initialized correctly
     assert model.name == name
     assert model.estimator_name == estimator_name
     assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression)
 
-    # Perform grid search to populate `best_params_per_score`
+    ## Perform grid search to populate `best_params_per_score`
     model.grid_search_param_tuning(X, y)
 
-    # Fit the model to avoid NotFittedError
+    ## Fit the model to avoid NotFittedError
     model.fit(X, y)
 
-    # Test bootstrapped metrics
+    ## Test bootstrapped metrics
     metrics = ["precision", "roc_auc"]
     bootstrap_results = model.return_bootstrap_metrics(
         X_test=X,
@@ -243,20 +243,20 @@ def test_bootstrapped_metrics_consistency(classification_data):
         num_resamples=100,
     )
 
-    # Validate the structure and content of bootstrap results
-    # Check if the result is a DataFrame
+    ## Validate the structure and content of bootstrap results
+    ## Check if the result is a DataFrame
     assert isinstance(bootstrap_results, pd.DataFrame), "Expected a DataFrame"
 
-    # Validate that the metrics are correctly represented in the DataFrame
+    ## Validate that the metrics are correctly represented in the DataFrame
     for metric in metrics:
         assert metric in bootstrap_results["Metric"].values, f"{metric} not in results"
 
-    # Check columns for mean and confidence intervals
+    ## Check columns for mean and confidence intervals
     required_columns = ["Metric", "Mean", "95% CI Lower", "95% CI Upper"]
     for col in required_columns:
         assert col in bootstrap_results.columns, f"Missing column: {col}"
 
-    # Validate that the number of rows corresponds to the metrics tested
+    ## Validate that the number of rows corresponds to the metrics tested
     assert len(bootstrap_results) == len(metrics), "Mismatch in number of metrics returned"
 
     print(bootstrap_results)
