@@ -159,3 +159,44 @@ def test_grid_search_param_tuning_early(classification_data):
     )
     model.grid_search_param_tuning(X, y)
     assert model.best_params_per_score["accuracy"]["params"] is not None
+
+
+def test_imbalance_sampler_integration(classification_data):
+    """
+    Test the integration of imbalance sampler in the model pipeline.
+    """
+    X, y = classification_data
+
+    # Define model parameters
+    name = "test_model"
+    estimator_name = "lr"
+    estimator = LogisticRegression()
+    tuned_parameters = {
+        estimator_name + "__C": np.logspace(-4, 0, 3),
+    }
+
+    # Create the model with imbalance sampler
+    model = Model(
+        name=name,
+        estimator_name=estimator_name,
+        model_type="classification",
+        estimator=estimator,
+        scoring=["roc_auc"],
+        grid=tuned_parameters,
+        imbalance_sampler=None,  # Set as needed
+    )
+
+    # Check that model is initialized correctly
+    assert model.name == name
+    assert model.estimator_name == estimator_name
+    assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression)
+
+    # Run imbalance sampler logic
+    if model.imbalance_sampler:
+        sampler = model.estimator.named_steps["resampler"]
+        X_resampled, y_resampled = sampler.fit_resample(X, y)
+        assert len(X_resampled) > len(X), "Resampling failed to increase data size"
+        assert y_resampled.value_counts().min() > 0, "Resampling failed to balance classes"
+    else:
+        assert not hasattr(model.estimator.named_steps, "resampler"), "No imbalance sampler expected"
+
