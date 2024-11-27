@@ -167,7 +167,7 @@ def test_imbalance_sampler_integration(classification_data):
     """
     X, y = classification_data
 
-    # Define model parameters
+    ## Define model parameters
     name = "test_model"
     estimator_name = "lr"
     estimator = LogisticRegression()
@@ -175,7 +175,7 @@ def test_imbalance_sampler_integration(classification_data):
         estimator_name + "__C": np.logspace(-4, 0, 3),
     }
 
-    # Create the model with imbalance sampler
+    ## Create the model with imbalance sampler
     model = Model(
         name=name,
         estimator_name=estimator_name,
@@ -186,12 +186,12 @@ def test_imbalance_sampler_integration(classification_data):
         imbalance_sampler=None,  # Set as needed
     )
 
-    # Check that model is initialized correctly
+    ## Check that model is initialized correctly
     assert model.name == name
     assert model.estimator_name == estimator_name
-    assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression)
+    assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression,)
 
-    # Run imbalance sampler logic
+    ## Run imbalance sampler logic
     if model.imbalance_sampler:
         sampler = model.estimator.named_steps["resampler"]
         X_resampled, y_resampled = sampler.fit_resample(X, y)
@@ -200,3 +200,63 @@ def test_imbalance_sampler_integration(classification_data):
     else:
         assert not hasattr(model.estimator.named_steps, "resampler"), "No imbalance sampler expected"
 
+def test_bootstrapped_metrics_consistency(classification_data):
+    """
+    Test the consistency of bootstrapped metrics.
+    """
+    X, y = classification_data
+
+    # Reuse model initialization from test_imbalance_sampler_integration
+    name = "test_model"
+    estimator_name = "lr"
+    estimator = LogisticRegression()
+    tuned_parameters = {
+        estimator_name + "__C": np.logspace(-4, 0, 3),
+    }
+
+    model = Model(
+        name=name,
+        estimator_name=estimator_name,
+        model_type="classification",
+        estimator=estimator,
+        scoring=["roc_auc"],
+        grid=tuned_parameters,
+    )
+
+    # Assert model is initialized correctly
+    assert model.name == name
+    assert model.estimator_name == estimator_name
+    assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression)
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model to avoid NotFittedError
+    model.fit(X, y)
+
+    # Test bootstrapped metrics
+    metrics = ["precision", "roc_auc"]
+    bootstrap_results = model.return_bootstrap_metrics(
+        X_test=X,
+        y_test=y,
+        metrics=metrics,
+        num_resamples=100,
+    )
+
+    # Validate the structure and content of bootstrap results
+    # Check if the result is a DataFrame
+    assert isinstance(bootstrap_results, pd.DataFrame), "Expected a DataFrame"
+
+    # Validate that the metrics are correctly represented in the DataFrame
+    for metric in metrics:
+        assert metric in bootstrap_results["Metric"].values, f"{metric} not in results"
+
+    # Check columns for mean and confidence intervals
+    required_columns = ["Metric", "Mean", "95% CI Lower", "95% CI Upper"]
+    for col in required_columns:
+        assert col in bootstrap_results.columns, f"Missing column: {col}"
+
+    # Validate that the number of rows corresponds to the metrics tested
+    assert len(bootstrap_results) == len(metrics), "Mismatch in number of metrics returned"
+
+    print(bootstrap_results)
