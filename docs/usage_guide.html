@@ -534,6 +534,15 @@ with a simple command:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">verbose</span></code> parameter in XGBoost allows you to control the level of output during training:</p>
+<ul class="simple">
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code>: Suppresses all training output (silent mode).</p></li>
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">1</span></code> or <code class="docutils literal notranslate"><span class="pre">True</span></code>: Displays progress and evaluation metrics during training.</p></li>
+</ul>
+<p>This can be particularly useful for monitoring model performance when early stopping is enabled.</p>
+</div>
 </section>
 <section id="step-6-initialize-and-configure-the-model">
 <h3>Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
