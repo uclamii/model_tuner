@@ -417,7 +417,6 @@ Step 5: Define Hyperparameters for XGBoost
 
 .. code-block:: python
 
-
    xgbearly = True
    tuned_parameters_xgb = {
       f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
@@ -437,6 +436,14 @@ Step 5: Define Hyperparameters for XGBoost
       "early": xgbearly,
    }
 
+.. note::
+
+    The ``verbose`` parameter in XGBoost allows you to control the level of output during training:
+    
+    - Set to ``0`` or ``False``: Suppresses all training output (silent mode).
+    - Set to ``1`` or ``True``: Displays progress and evaluation metrics during training.
+
+    This can be particularly useful for monitoring model performance when early stopping is enabled.
 
 Step 6: Initialize and Configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
