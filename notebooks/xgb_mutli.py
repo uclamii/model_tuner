@@ -3,7 +3,10 @@ import numpy as np
 
 from model_tuner.model_tuner_utils import Model
 from sklearn.impute import SimpleImputer
-from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
 
 from sklearn.datasets import load_iris
 
@@ -11,18 +14,38 @@ data = load_iris()
 X = data.data
 y = data.target
 
+
 X = pd.DataFrame(X)
 y = pd.DataFrame(y)
 
+scalercols = X.columns
 
-estimator = RandomForestClassifier()
+numerical_transformer = Pipeline(
+    steps=[
+        ("scaler", StandardScaler()),
+        ("imputer", SimpleImputer(strategy="mean")),
+    ]
+)
 
-estimator_name = "rf_mc"
-xgbearly = False
+
+# Create the ColumnTransformer with passthrough
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("num", numerical_transformer, scalercols),
+    ],
+    remainder="passthrough",
+)
+
+
+estimator = XGBClassifier(objective="multi:softprob")
+
+estimator_name = "xgb_mc"
+xgbearly = True
 
 tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 15],
     f"{estimator_name}__n_estimators": [5, 10, 15, 20],
+    f"{estimator_name}__eval_metric": ["mlogloss"],
 }
 
 kfold = False
@@ -30,7 +53,7 @@ calibrate = False
 
 
 model = Model(
-    name="Random Forest Multi Class",
+    name="XGB Multi Class",
     model_type="classification",
     estimator_name=estimator_name,
     pipeline_steps=[("impute", SimpleImputer())],
@@ -63,6 +86,7 @@ model.return_metrics(X_valid, y_valid)
 y_prob = model.predict_proba(X_test)
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
+
 
 # y_prob = model.predict_proba(X_test)[:, 1]
 
