@@ -46,6 +46,8 @@ tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 15],
     f"{estimator_name}__n_estimators": [5, 10, 15, 20],
     f"{estimator_name}__eval_metric": ["mlogloss"],
+    f"{estimator_name}__verbose": [1],
+    f"{estimator_name}__early_stopping_rounds": [20],
 }
 
 kfold = False
@@ -61,6 +63,7 @@ model = Model(
     estimator=estimator,
     kfold=kfold,
     stratify_y=True,
+    boost_early=xgbearly,
     grid=tuned_parameters,
     multi_label=True,
     randomized_grid=False,
