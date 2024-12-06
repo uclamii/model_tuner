@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
-from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
+from sklearn.metrics import get_scorer
 from sklearn.metrics import (
     fbeta_score,
     mean_absolute_error,
@@ -17,7 +17,12 @@ from sklearn.metrics import (
     roc_auc_score,
     average_precision_score,
     brier_score_loss,
+    mean_squared_error,
+    mean_absolute_error,
+    r2_score,
+    explained_variance_score,
 )
+
 
 from skopt import BayesSearchCV
 import copy
@@ -1700,50 +1705,101 @@ def report_model_metrics(
     threshold=0.5,
 ):
     """
-    Generate a DataFrame of model performance metrics for given models,
-    predictions, or probability estimates.
+    Generate a DataFrame of model performance metrics for binary, multiclass, or regression problems.
 
     Parameters:
     -----------
+    model : fitted model
+        The trained model with a `predict_proba` or `predict` method.
 
     X_valid : DataFrame, optional
         The feature set used for validating the model(s).
 
-    y_valid : Series, optional
+    y_valid : Series or array-like, optional
         The true labels for the validation set.
 
+    threshold : float, default=0.5
+        The threshold for binary classification.
 
     Returns:
     --------
     metrics_df : DataFrame
-        A DataFrame containing calculated metrics for each model or prediction
-        column, with metrics including:
-        - Precision/PPV
-        - Average Precision
-        - Sensitivity (Recall)
-        - Specificity
-        - AUC ROC
-        - Brier Score
+        A DataFrame containing calculated metrics for each class (multiclass), overall metrics (binary),
+        or regression metrics, including:
+        - For classification: Precision/PPV, Average Precision, Sensitivity, Specificity, AUC ROC, Brier Score
+        - For regression: RMSE, MAE, R^2, Explained Variance
     """
 
+    if not hasattr(model, "model_type"):
+        raise ValueError(
+            "The model must have a `model_type` attribute to determine the type."
+        )
+
     metrics = {}
-    y_pred_proba = model.predict_proba(X_valid)[:, 1]
-    y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
-    tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
-    precision = precision_score(y_valid, y_pred)
-    recall = recall_score(y_valid, y_pred)
-    roc_auc = roc_auc_score(y_valid, y_pred_proba)
-    brier_score = brier_score_loss(y_valid, y_pred_proba)
-    avg_precision = average_precision_score(y_valid, y_pred_proba)
-    specificity = tn / (tn + fp)
-    metrics = {
-        "Precision/PPV": precision,
-        "Average Precision": avg_precision,
-        "Sensitivity": recall,
-        "Specificity": specificity,
-        "AUC ROC": roc_auc,
-        "Brier Score": brier_score,
-    }
+
+    if model.model_type == "regression":
+        # Regression metrics
+        if not hasattr(model, "predict"):
+            raise ValueError("The model must have a `predict` method for regression.")
+        y_pred = model.predict(X_valid)
+        metrics = {
+            "Mean Absolute Error (MAE)": mean_absolute_error(y_valid, y_pred),
+            "Mean Squared Error (MSE)": mean_squared_error(y_valid, y_pred),
+            "Root Mean Squared Error (RMSE)": np.sqrt(
+                mean_squared_error(y_valid, y_pred)
+            ),
+            "R^2 Score": r2_score(y_valid, y_pred),
+            "Explained Variance": explained_variance_score(y_valid, y_pred),
+        }
+
+    elif hasattr(model, "multi_label") and model.multi_label:
+        # Multiclass metrics
+        y_pred_proba = model.predict_proba(X_valid)
+        y_pred = np.argmax(y_pred_proba, axis=1)
+        report = classification_report(
+            y_valid,
+            y_pred,
+            output_dict=True,
+            zero_division=0,
+        )
+        for key, values in report.items():
+            if isinstance(values, dict):  # Skip overall averages (accuracy)
+                metrics[f"{key} Precision/PPV"] = values["precision"]
+                metrics[f"{key} Sensitivity/Recall"] = values["recall"]
+                metrics[f"{key} F1-Score"] = values["f1-score"]
+        metrics["Weighted Average Precision"] = precision_score(
+            y_valid, y_pred, average="weighted"
+        )
+        metrics["Weighted Average Recall"] = recall_score(
+            y_valid, y_pred, average="weighted"
+        )
+        metrics["Multiclass AUC ROC"] = roc_auc_score(
+            y_valid, y_pred_proba, multi_class="ovr"
+        )
+    else:
+        # Binary metrics
+        if not hasattr(model, "predict_proba"):
+            raise ValueError(
+                "The model must have a `predict_proba` method for binary classification."
+            )
+        y_pred_proba = model.predict_proba(X_valid)[:, 1]
+        y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
+        tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
+        precision = precision_score(y_valid, y_pred)
+        recall = recall_score(y_valid, y_pred)
+        roc_auc = roc_auc_score(y_valid, y_pred_proba)
+        brier_score = brier_score_loss(y_valid, y_pred_proba)
+        avg_precision = average_precision_score(y_valid, y_pred_proba)
+        specificity = tn / (tn + fp)
+
+        metrics = {
+            "Precision/PPV": precision,
+            "Average Precision": avg_precision,
+            "Sensitivity": recall,
+            "Specificity": specificity,
+            "AUC ROC": roc_auc,
+            "Brier Score": brier_score,
+        }
 
     metrics_df = pd.DataFrame(metrics, index=[0])
     return metrics_df

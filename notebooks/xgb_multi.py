@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 from sklearn.impute import SimpleImputer
 from xgboost import XGBClassifier
 from sklearn.pipeline import Pipeline
@@ -90,6 +90,9 @@ y_prob = model.predict_proba(X_test)
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
 
+
+metrics_df = report_model_metrics(model, X_test, y_test)
+print(metrics_df)
 
 # y_prob = model.predict_proba(X_test)[:, 1]
 
