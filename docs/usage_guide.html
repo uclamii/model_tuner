@@ -85,6 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-3-check-for-zero-variance-columns-and-drop-accordingly">Step 3: Check for zero-variance columns and drop accordingly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-create-an-instance-of-the-xgbclassifier">Step 4: Create an Instance of the XGBClassifier</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5-define-hyperparameters-for-xgboost">Step 5: Define Hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-tuning-hyperparameters-for-catboost">Example: Tuning Hyperparameters for CatBoost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-initialize-and-configure-the-model">Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-perform-grid-search-parameter-tuning">Step 7: Perform Grid Search Parameter Tuning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-8-fit-the-model">Step 8: Fit the Model</a></li>
@@ -543,6 +544,32 @@ with a simple command:</p>
 </ul>
 <p>This can be particularly useful for monitoring model performance when early stopping is enabled.</p>
 </div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When defining hyperparameters for boosting algorithms, frameworks like
+XGBoost allow straightforward configuration, such as specifying <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>
+for the number of boosting rounds. However, CatBoost introduces potential
+pitfalls when defining this parameter.</p>
+<p>According to the <a class="reference external" href="https://catboost.ai/docs/en/references/training-parameters/">CatBoost documentation</a>:</p>
+<blockquote>
+<div><p>“For the Python package several parameters have aliases. For example, the –iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error.”</p>
+</div></blockquote>
+<p>To avoid this issue in CatBoost, ensure you define only one of these parameters (e.g., <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>) and avoid including others such as <code class="docutils literal notranslate"><span class="pre">iterations</span></code> or <code class="docutils literal notranslate"><span class="pre">num_boost_round</span></code>.</p>
+</div>
+</section>
+<section id="example-tuning-hyperparameters-for-catboost">
+<h3>Example: Tuning Hyperparameters for CatBoost<a class="headerlink" href="#example-tuning-hyperparameters-for-catboost" title="Link to this heading"></a></h3>
+<p>When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cat_name</span> <span class="o">=</span> <span class="s2">&quot;cat&quot;</span>
+<span class="n">tuned_hyperparameters_cat</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1500</span><span class="p">],</span>  <span class="c1"># Use only &quot;n_estimators&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__loss_function&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.</p>
 </section>
 <section id="step-6-initialize-and-configure-the-model">
 <h3>Step 6: Initialize and Configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>

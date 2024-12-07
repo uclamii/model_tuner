@@ -236,8 +236,6 @@ where :math:`x_{\min}` and :math:`x_{\max}` represent the minimum and maximum va
 By imputing missing values before scaling, we avoid these distortions, ensuring that the scaling operation reflects the true range of the data.
 
 
-
-
 Column Stratification with Cross-Validation
 ---------------------------------------------
 .. important::
