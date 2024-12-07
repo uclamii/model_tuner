@@ -445,6 +445,37 @@ Step 5: Define Hyperparameters for XGBoost
 
     This can be particularly useful for monitoring model performance when early stopping is enabled.
 
+.. important::
+
+   When defining hyperparameters for boosting algorithms, frameworks like 
+   XGBoost allow straightforward configuration, such as specifying ``n_estimators`` 
+   for the number of boosting rounds. However, CatBoost introduces potential 
+   pitfalls when defining this parameter.
+
+   According to the `CatBoost documentation <https://catboost.ai/docs/en/references/training-parameters/>`_:
+
+      "For the Python package several parameters have aliases. For example, the --iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error."
+
+   To avoid this issue in CatBoost, ensure you define only one of these parameters (e.g., ``n_estimators``) and avoid including others such as ``iterations`` or ``num_boost_round``. 
+
+Example: Tuning Hyperparameters for CatBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:
+
+.. code-block:: python
+
+   cat_name = "cat"
+   tuned_hyperparameters_cat = {
+       f"{cat_name}__n_estimators": [1500],  # Use only "n_estimators"
+       f"{cat_name}__learning_rate": [0.01, 0.1],
+       f"{cat_name}__depth": [4, 6, 8],
+       f"{cat_name}__loss_function": ["Logloss"],
+   }
+
+This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.
+
+
 Step 6: Initialize and Configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
