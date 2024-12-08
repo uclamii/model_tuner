@@ -465,13 +465,23 @@ When defining hyperparameters for grid search, specify only one alias in your co
 
 .. code-block:: python
 
-   cat_name = "cat"
+   cat = CatBoostClassifier(
+       n_estimators=100,  ## num estimator/iteration/boostrounds
+       learning_rate=0.1,
+       depth=6,
+       loss_function="Logloss",
+   )
+
    tuned_hyperparameters_cat = {
-       f"{cat_name}__n_estimators": [1500],  # Use only "n_estimators"
+       f"{cat_name}__n_estimators": [1500],
+
+       ## Additional hyperparameters
        f"{cat_name}__learning_rate": [0.01, 0.1],
        f"{cat_name}__depth": [4, 6, 8],
        f"{cat_name}__loss_function": ["Logloss"],
    }
+
+
 
 This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.
 
