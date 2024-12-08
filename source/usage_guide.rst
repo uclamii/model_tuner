@@ -1468,6 +1468,46 @@ context-dependent and can significantly shift predictions in certain cases. This
 plot provides a holistic view of feature behavior, enabling a deeper understanding 
 of the model’s decision-making process.
 
+
+Multi-Class Classification
+=============================
+
+Multi-class classification involves training a model to predict one of three or 
+more distinct classes for each instance in a dataset. Unlike binary classification, 
+where the model predicts between two classes (e.g., positive/negative), 
+multi-class classification applies to problems where multiple outcomes exist, 
+such as predicting the species of flowers in the Iris dataset.
+
+This section demonstrates how to perform multi-class classification using the 
+``model_tuner`` library, with ``XGBoostClassifier`` as the base estimator 
+and the Iris dataset as the example. 
+
+Iris Dataset with XGBoost
+--------------------------------
+
+The Iris dataset is a benchmark dataset 
+commonly used for multi-class classification. It contains 150 samples from three 
+species of Iris flowers (Setosa, Versicolour, and Virginica), with four features: 
+sepal length, sepal width, petal length, and petal width.
+
+
+Step 1: Import Necessary Libraries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+   import pandas as pd
+   import numpy as np
+
+   from model_tuner.model_tuner_utils import Model
+   from sklearn.impute import SimpleImputer
+   from sklearn.ensemble import RandomForestClassifier
+   from sklearn.datasets import load_iris
+
+
+
+
+
 .. _Regression:
 
 Regression

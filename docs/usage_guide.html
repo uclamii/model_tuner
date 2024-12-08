@@ -128,9 +128,16 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#multi-class-classification">Multi-Class Classification</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#iris-dataset-with-xgboost">Iris Dataset with XGBoost</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Step 1: Import Necessary Libraries</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="#regression">Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Step 1: Import Necessary Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Step 1: Import Necessary Libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the Dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an Instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define Hyperparameters for XGBoost</a></li>
@@ -1445,13 +1452,43 @@ of the model’s decision-making process.</p>
 </section>
 </section>
 </section>
+<section id="multi-class-classification">
+<h1>Multi-Class Classification<a class="headerlink" href="#multi-class-classification" title="Link to this heading"></a></h1>
+<p>Multi-class classification involves training a model to predict one of three or
+more distinct classes for each instance in a dataset. Unlike binary classification,
+where the model predicts between two classes (e.g., positive/negative),
+multi-class classification applies to problems where multiple outcomes exist,
+such as predicting the species of flowers in the Iris dataset.</p>
+<p>This section demonstrates how to perform multi-class classification using the
+<code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> library, with <code class="docutils literal notranslate"><span class="pre">XGBoostClassifier</span></code> as the base estimator
+and the Iris dataset as the example.</p>
+<section id="iris-dataset-with-xgboost">
+<h2>Iris Dataset with XGBoost<a class="headerlink" href="#iris-dataset-with-xgboost" title="Link to this heading"></a></h2>
+<p>The Iris dataset is a benchmark dataset
+commonly used for multi-class classification. It contains 150 samples from three
+species of Iris flowers (Setosa, Versicolour, and Virginica), with four features:
+sepal length, sepal width, petal length, and petal width.</p>
+<section id="id1">
+<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">model_tuner.model_tuner_utils</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 <section id="regression">
-<span id="id1"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
+<span id="id2"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for regression using <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the California Housing dataset.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
-<section id="id2">
-<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
