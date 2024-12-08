@@ -12,7 +12,7 @@ X = data.data
 y = data.target
 
 X = pd.DataFrame(X)
-y = pd.DataFrame(y)
+y = pd.DataFrame(y).squeeze()
 
 
 estimator = RandomForestClassifier()
