@@ -363,7 +363,7 @@ with a simple command:
 
     from ucimlrepo import fetch_ucirepo 
 
-Step 1: Import Necessary Libraries
+Step 1: Import Nncessary libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -398,7 +398,7 @@ Step 3: Check for zero-variance columns and drop accordingly
       X = X.drop(columns=zero_variance_columns)
 
 
-Step 4: Create an Instance of the XGBClassifier
+Step 4: Create an instance of the XGBClassifier
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -412,7 +412,7 @@ Step 4: Create an Instance of the XGBClassifier
 
 .. _xgb_hyperparams:
 
-Step 5: Define Hyperparameters for XGBoost
+Step 5: Define hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -458,7 +458,7 @@ Step 5: Define Hyperparameters for XGBoost
 
    To avoid this issue in CatBoost, ensure you define only one of these parameters (e.g., ``n_estimators``) and avoid including others such as ``iterations`` or ``num_boost_round``. 
 
-Example: Tuning Hyperparameters for CatBoost
+Example: Tuning hyperparameters for CatBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:
@@ -486,7 +486,7 @@ When defining hyperparameters for grid search, specify only one alias in your co
 This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.
 
 
-Step 6: Initialize and Configure the ``Model``
+Step 6: Initialize and configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -502,7 +502,7 @@ Step 6: Initialize and Configure the ``Model``
    kfold = False
    calibrate = True
 
-   # Initialize model_tuner
+   ## Initialize model_tuner
    model_xgb = Model(
       name=f"AIDS_Clinical_{model_type}",
       estimator_name=estimator_name,
@@ -520,12 +520,12 @@ Step 6: Initialize and Configure the ``Model``
       n_jobs=2,
    )
 
-Step 7: Perform Grid Search Parameter Tuning
+Step 7: Perform grid search parameter tuning
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-   # Perform grid search parameter tuning
+   ## Perform grid search parameter tuning
    model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
 .. code-block:: bash
@@ -548,7 +548,7 @@ Step 7: Perform Grid Search Parameter Tuning
    'score': 0.9280033238366572}
    Best roc_auc: 0.928 
 
-Step 8: Fit the Model
+Step 8: Fit the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -564,7 +564,7 @@ Step 8: Fit the Model
        validation_data=[X_valid, y_valid],
    )
 
-Step 9: Return Metrics (Optional)
+Step 9: Return metrics (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can use this function to evaluate the model by printing the output.
@@ -629,7 +629,7 @@ You can use this function to evaluate the model by printing the output.
 
    --------------------------------------------------------------------------------
 
-Step 10: Calibrate the Model (if needed)
+Step 10: Calibrate the model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -738,7 +738,7 @@ Step 10: Calibrate the Model (if needed)
 
    <div style="height: 50px;"></div>
 
-Classification Report (Optional)
+Classification report (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A classification report is readily available at this stage, should you wish to 
@@ -798,7 +798,7 @@ We will begin by appending the feature selection technique to our :ref:`tuned pa
       10,
    ]
 
-Elastic Net for Feature Selection with RFE
+Elastic Net for feature selection with RFE
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. note::
@@ -1004,7 +1004,7 @@ To mitigate these issues, it is crucial to:
 2. Apply appropriate resampling techniques (oversampling, undersampling, or hybrid methods).
 3. Use metrics beyond accuracy, such as :ref:`precision, recall, and F1-score <Limitations_of_Accuracy>`, to evaluate model performance fairly.
 
-Generating an Imbalanced Dataset
+Generating an imbalanced dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Demonstrated below are the steps to generate an imbalanced dataset using 
@@ -1096,7 +1096,7 @@ Below, you will see that the dataset we have generated is severely imbalanced wi
    <div style="height: 50px;"></div>
 
 
-Define Hyperparameters for XGBoost
+Define hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Below, we will use an XGBoost classifier with the following hyperparameters:
@@ -1129,7 +1129,7 @@ Below, we will use an XGBoost classifier with the following hyperparameters:
       "early": xgbearly,
    }
 
-Define The Model object
+Define the model object
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1193,8 +1193,8 @@ effectively increasing the size of the minority class without duplicating data.
 This helps models better learn patterns from the minority class, improving 
 classification performance on imbalanced datasets.
 
-Initalize and Configure The Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 1: Initalize and configure the model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. important::
 
@@ -1225,8 +1225,8 @@ Initalize and Configure The Model
       imbalance_sampler=SMOTE(),
    )
 
-Perform Grid Search Parameter Tuning and Retrieve Split Data
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 2: Perform grid search parameter tuning and retrieve split data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -1278,8 +1278,8 @@ SMOTE: Distribution of y values after resampling
 Notice that the target has been redistributed after SMOTE to 540 observations 
 for the minority class and 540 observations for the majority class.
 
-Fit The Model
-~~~~~~~~~~~~~~~
+Step 3: Fit the model
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -1289,8 +1289,8 @@ Fit The Model
       validation_data=[X_valid, y_valid],
    )
 
-Return Metrics (Optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Step 4: Return metrics (optional)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -1501,10 +1501,434 @@ Step 1: Import Necessary Libraries
 
    from model_tuner.model_tuner_utils import Model
    from sklearn.impute import SimpleImputer
-   from sklearn.ensemble import RandomForestClassifier
+   from xgboost import XGBClassifier
+   from sklearn.pipeline import Pipeline
+   from sklearn.preprocessing import StandardScaler
+   from sklearn.compose import ColumnTransformer
+
    from sklearn.datasets import load_iris
 
 
+Step 2: Load the dataset. Define X, y
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: python
+
+   data = load_iris()
+   X = data.data
+   y = data.target
+
+
+   X = pd.DataFrame(X)
+   y = pd.DataFrame(y)
+
+
+Step 3: Define the preprocessing steps
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Preprocessing is a crucial step in machine learning workflows to ensure the 
+input data is properly formatted and cleaned for the model. In this case, we 
+define a preprocessing pipeline to handle scaling and missing values in 
+numerical features. This ensures that the data is standardized and ready for 
+training without introducing bias from inconsistent feature ranges or missing values.
+
+The preprocessing pipeline consists of the following components:
+
+1. **Numerical Transformer**: A pipeline that applies:
+
+   - ``StandardScaler`` for standardizing numerical features.
+   - ``SimpleImputer`` for imputing missing values with the mean strategy.
+
+2. **Column Transformer**: Applies the numerical transformer to all columns and passes any remaining features through without transformation.
+
+.. code-block:: python
+
+   scalercols = X.columns
+
+   numerical_transformer = Pipeline(
+       steps=[
+           ("scaler", StandardScaler()),
+           ("imputer", SimpleImputer(strategy="mean")),
+       ]
+   )
+
+   # Create the ColumnTransformer with passthrough
+   preprocessor = ColumnTransformer(
+       transformers=[
+           ("num", numerical_transformer, scalercols),
+       ],
+       remainder="passthrough",
+   )
+
+Step 4: Define the estimator and hyperparameters
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this step, we configure the ``XGBoostClassifier`` as the model estimator and define its hyperparameters for multi-class classification.
+
+1. We use ``XGBClassifier`` with the ``objective="multi:softprob"`` parameter, which specifies multi-class classification using the softmax probability output.
+
+2. Assign a name to the estimator for identification in the pipeline (e.g., ``xgb_mc`` for "XGBoost Multi-Class").
+
+3. Enable early stopping (``early_stopping_rounds=20``) to prevent overfitting by halting training if validation performance does not improve after 20 rounds.
+
+4. Define a hyperparameter grid for tuning:
+   
+     - ``max_depth``: The maximum depth of a tree (e.g., 3, 10, 15).
+     - ``n_estimators``: The number of boosting rounds (e.g., 5, 10, 15, 20).
+     - ``eval_metric``: Evaluation metric (``mlogloss`` for multi-class log-loss).
+     - ``verbose``: Controls verbosity of output during training (1 = show progress).
+     - ``early_stopping_rounds``: Number of rounds for early stopping.
+
+5. **Additional Configuration**:
+
+   - Disable cross-validation (``kfold=False``) and calibration (``calibrate=False``).
+
+.. code-block:: python
+
+   estimator = XGBClassifier(objective="multi:softprob")
+
+   estimator_name = "xgb_mc"
+   xgbearly = True
+
+   tuned_parameters = {
+       f"{estimator_name}__max_depth": [3, 10, 15],
+       f"{estimator_name}__n_estimators": [5, 10, 15, 20],
+       f"{estimator_name}__eval_metric": ["mlogloss"],
+       f"{estimator_name}__verbose": [0],
+       f"{estimator_name}__early_stopping_rounds": [20],
+   }
+
+   kfold = False
+   calibrate = False
+
+Step 5: Initialize and configure the model
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After defining the preprocessing steps and estimator, the next step is to initialize the `Model` class from the `model_tuner` library. This class brings together all essential components, including the preprocessing pipeline, estimator, hyperparameters, and scoring metrics, to streamline the model training and evaluation process.
+
+The updated configuration includes:
+
+1. **Name and Type**:
+
+   - Specify a descriptive ``name`` for the model (e.g., "XGB Multi Class").
+   - Set the ``model_type`` to ``"classification"`` for multi-class classification.
+
+2. Incorporate the ``preprocessor`` defined earlier using the ``ColumnTransformer``, which handles scaling and imputation for numerical features.
+
+3. **Estimator and Hyperparameters**:
+
+   - Link the ``estimator_name`` to the hyperparameter grid defined earlier (``tuned_parameters``).
+   - Pass the ``XGBClassifier`` as the ``estimator``.
+
+4. **Early Stopping and Cross-Validation**:
+
+   - Enable early stopping with ``boost_early=True``.
+   - Disable cross-validation with ``kfold=False``.
+
+5. **Additional Configurations**:
+
+   - Use ``stratify_y=True`` for stratified splits.
+   - Set ``multi_label=True`` to enable multi-class classification.
+   - Use ``roc_auc_ovr`` (One-vs-Rest ROC AUC) as the scoring metric.
+   - Specify the class labels for the Iris dataset (``["1", "2", "3"]``).
+
+.. code-block:: python
+
+   model_xgb = Model(
+       name="XGB Multi Class",
+       model_type="classification",
+       estimator_name=estimator_name,
+       pipeline_steps=[("ColumnTransformer", preprocessor)],
+       calibrate=calibrate,
+       estimator=estimator,
+       kfold=kfold,
+       stratify_y=True,
+       boost_early=xgbearly,
+       grid=tuned_parameters,
+       multi_label=True,
+       randomized_grid=False,
+       n_iter=4,
+       scoring=["roc_auc_ovr"],
+       n_jobs=-2,
+       random_state=42,
+       class_labels=["1", "2", "3"],
+   )
+
+Step 6: Perform grid search parameter tuning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With the model configured, the next step is to perform grid search parameter tuning 
+to find the optimal hyperparameters for the ``XGBClassifier``. The 
+``grid_search_param_tuning`` method will iterate over all combinations of 
+hyperparameters specified in ``tuned_parameters``, evaluate each one using the 
+specified scoring metric, and select the best performing set.
+
+This method will:
+
+- **Split the Data**: The data will be split into training and validation sets. Since ``stratify_y=True``, the class distribution will be maintained across splits.
+- **Iterate Over Hyperparameters**: All combinations of hyperparameters defined in ``tuned_parameters`` will be tried since ``randomized_grid=False``.
+- **Early Stopping**: With ``boost_early=True`` and ``early_stopping_rounds`` set in the hyperparameters, the model will stop training early if the validation score does not improve.
+- **Scoring**: The model uses ``roc_auc_ovr`` (One-vs-Rest ROC AUC) as the scoring metric suitable for multi-class classification.
+- **Select Best Model**: The hyperparameter set that yields the best validation score will be selected.
+
+To execute the grid search, simply call:
+
+.. code-block:: python
+
+   model.grid_search_param_tuning(X, y)
+
+
+.. code-block:: bash
+
+   Pipeline Steps:
+
+   ┌───────────────────────────────────────────────────────────┐
+   │ Step 1: preprocess_column_transformer_ColumnTransformer   │
+   │ ColumnTransformer                                         │
+   └───────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+   ┌───────────────────────────────────────────────────────────┐
+   │ Step 2: xgb_mc                                            │
+   │ XGBClassifier                                             │
+   └───────────────────────────────────────────────────────────┘
+
+   100%|██████████| 12/12 [00:00<00:00, 22.10it/s]Best score/param set found on validation set:
+   {'params': {'xgb_mc__early_stopping_rounds': 20,
+               'xgb_mc__eval_metric': 'mlogloss',
+               'xgb_mc__max_depth': 10,
+               'xgb_mc__n_estimators': 10},
+   'score': 0.9666666666666668}
+   Best roc_auc_ovr: 0.967 
+
+Step 7: Generate data splits
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the best hyperparameters are identified through grid search, the next step 
+is to generate the training, validation, and test splits. The ``Model`` class 
+provides built-in methods for creating these splits while maintaining the class 
+distribution (as specified by ``stratify_y=True``).
+
+Use the following code to generate the splits:
+
+.. code-block:: python
+
+   X_train, y_train = model_xgb.get_train_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+   X_valid, y_valid = model_xgb.get_valid_data(X, y)
+
+**Description of Splits**:
+
+- **Training Data** (``X_train``, ``y_train``): Used to train the model.
+- **Validation Data** (``X_valid``, ``y_valid``): Used during training for monitoring and fine-tuning, including techniques like early stopping.
+- **Test Data** (``X_test``, ``y_test``): Reserved for evaluating the final performance of the trained model.
+
+These splits ensure that each phase of model development (training, validation, and testing) is performed on separate portions of the dataset, providing a robust evaluation pipeline.
+
+Step 8: Fit the model
+^^^^^^^^^^^^^^^^^^^^^^
+
+After generating the data splits, the next step is to train the model using the 
+training data and validate its performance on the validation data during training. 
+The ``fit`` method in the ``Model`` class handles this process seamlessly, 
+leveraging the best hyperparameters found during grid search.
+
+Use the following code to fit the model:
+
+.. code-block:: python
+
+   model_xgb.fit(
+       X_train,
+       y_train,
+       validation_data=[X_valid, y_valid],
+   )
+
+.. note:: 
+
+   - **Training Data** (``X_train``, ``y_train``): The model is trained on this data to learn patterns.
+   - **Validation Data** (``X_valid``, ``y_valid``): During training, the model monitors its performance on this data to avoid overfitting and apply techniques like early stopping.
+   - **Early Stopping**: If ``boost_early=True`` and ``early_stopping_rounds`` is defined, training will halt early when validation performance stops improving.
+
+   This step ensures that the model is fitted using the best configuration from the grid search and optimized for generalization. With the model trained, proceed to Step 9 to evaluate its performance on validation and test datasets.
+
+Step 9: Return metrics (optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the model is trained, you can evaluate its performance on the validation 
+and test datasets by returning key metrics. The ``return_metrics`` method from 
+the ``Model`` class calculates and displays metrics like :ref:`ROC AUC, precision, recall, and F1-score <Limitations_of_Accuracy>`.
+
+Use the following code to return metrics:
+
+.. code-block:: python
+
+   # Evaluate on validation data
+   print("Validation Metrics")
+   model.return_metrics(X_valid, y_valid)
+
+   # Predict probabilities for the test data
+   y_prob = model.predict_proba(X_test)
+
+   # Evaluate on test data
+   print("Test Metrics")
+   model.return_metrics(X_test, y_test)
+
+
+.. code-block:: bash
+
+   Validation Metrics
+   --------------------------------------------------------------------------------
+   1
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 19 (tn)   1 (fp)
+           Neg  0 (fn)  10 (tp)
+   --------------------------------------------------------------------------------
+   2
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 19 (tn)   1 (fp)
+           Neg  2 (fn)   8 (tp)
+   --------------------------------------------------------------------------------
+   3
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 19 (tn)   1 (fp)
+           Neg  1 (fn)   9 (tp)
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.91      1.00      0.95        10
+              1       0.89      0.80      0.84        10
+              2       0.90      0.90      0.90        10
+
+       accuracy                           0.90        30
+      macro avg       0.90      0.90      0.90        30
+   weighted avg       0.90      0.90      0.90        30
+
+   --------------------------------------------------------------------------------
+   Test Metrics
+   --------------------------------------------------------------------------------
+   1
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 18 (tn)   2 (fp)
+           Neg  0 (fn)  10 (tp)
+   --------------------------------------------------------------------------------
+   2
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 19 (tn)   1 (fp)
+           Neg  2 (fn)   8 (tp)
+   --------------------------------------------------------------------------------
+   3
+            Predicted:
+               Pos  Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos 20 (tn)   0 (fp)
+           Neg  1 (fn)   9 (tp)
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.83      1.00      0.91        10
+              1       0.89      0.80      0.84        10
+              2       1.00      0.90      0.95        10
+
+       accuracy                           0.90        30
+      macro avg       0.91      0.90      0.90        30
+   weighted avg       0.91      0.90      0.90        30
+
+   --------------------------------------------------------------------------------
+   {'Classification Report': {'0': {'precision': 0.8333333333333334,
+      'recall': 1.0,
+      'f1-score': 0.9090909090909091,
+      'support': 10.0},
+   '1': {'precision': 0.8888888888888888,
+      'recall': 0.8,
+      'f1-score': 0.8421052631578948,
+      'support': 10.0},
+   '2': {'precision': 1.0,
+      'recall': 0.9,
+      'f1-score': 0.9473684210526316,
+      'support': 10.0},
+   'accuracy': 0.9,
+   'macro avg': {'precision': 0.9074074074074074,
+      'recall': 0.9,
+      'f1-score': 0.8995215311004786,
+      'support': 30.0},
+   'weighted avg': {'precision': 0.9074074074074073,
+      'recall': 0.9,
+      'f1-score': 0.8995215311004785,
+      'support': 30.0}},
+   'Confusion Matrix': array([[[18,  2],
+           [ 0, 10]],
+   
+          [[19,  1],
+           [ 2,  8]],
+   
+          [[20,  0],
+           [ 1,  9]]])}
+
+.. note:: 
+
+   - Validation Metrics: Provide insights into how well the model performed during training and tuning on unseen validation data.
+   
+   - Test Metrics: Assess the final model's generalization performance on completely unseen test data.
+   
+   - ``predict_proba``: Outputs the predicted probabilities for each class, useful for calculating metrics like ROC AUC or understanding the model’s confidence in its predictions.
+
+By examining these metrics, you can evaluate the model's strengths and weaknesses and determine if further fine-tuning or adjustments are necessary.
+
+
+Step 10: Predict probabilities and generate predictions
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As an additional step, you can use the trained model to predict probabilities and 
+generate predictions for the test data. This is particularly useful for analyzing 
+model outputs or evaluating predictions with custom thresholds.
+
+Use the following code:
+
+.. code-block:: python
+
+   ## Predict probabilities for the test data
+   y_prob = model.predict_proba(X_test)[:, 1]
+
+   ## Predict class labels using the optimal threshold
+   y_pred = model.predict(X_test, optimal_threshold=True)
+
+   # Print results
+   print(f"Predicted Probabilities: \n {y_prob}")
+   print()
+   print(f"Predictions: \n {y_pred}")
+
+
+.. code-block:: bash
+
+   Predicted Probabilities: 
+   [0.961671   0.02298635 0.749543   0.02298635 0.0244073  0.02298635
+   0.94500786 0.02298635 0.0227305  0.02298635 0.14078036 0.32687086
+   0.94500786 0.961671   0.95576227 0.02298635 0.02298635 0.02298635
+   0.961671   0.0244073  0.0227305  0.02298635 0.02298635 0.38560066
+   0.02298635 0.02298635 0.961671   0.0227305  0.0227305  0.4547262 ]
+
+   Predictions: 
+   [1 0 1 0 0 0 1 0 0 0 0 0 1 1 1 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0]
+
+.. note::
+
+   - **Predicted Probabilities** (``predict_proba``): Returns the probabilities for each class. The ``[:, 1]`` selects the probabilities for the second class (or one of interest).
+   - **Predicted Labels** (``predict``): Generates class predictions using the optimal threshold, which is tuned during grid search or based on the scoring metric.
+   - **Optimal Threshold**: When ``optimal_threshold=True``, the model uses the threshold that maximizes a selected performance metric (e.g., F1-score or ROC AUC) instead of the default threshold of 0.5.
+   - **Analysis**: Inspecting probabilities and predictions helps to interpret the model's confidence and accuracy in making decisions.
+
+   This step allows for a deeper understanding of the model’s predictions and can be used to fine-tune decision thresholds or evaluate specific cases.
 
 
 
@@ -1518,7 +1942,7 @@ Here is an example of using the ``Model`` class for regression using ``XGBoost``
 California Housing with XGBoost
 --------------------------------
 
-Step 1: Import Necessary Libraries
+Step 1: Import necessary libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1531,7 +1955,7 @@ Step 1: Import Necessary Libraries
    from model_tuner import Model  
   
 
-Step 2: Load the Dataset
+Step 2: Load the dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1542,7 +1966,7 @@ Step 2: Load the Dataset
    y = pd.Series(data.target, name="target")
 
 
-Step 3: Create an Instance of the XGBRegressor
+Step 3: Create an instance of the XGBRegressor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1551,7 +1975,7 @@ Step 3: Create an Instance of the XGBRegressor
    xgb = XGBRegressor(random_state=222)
 
 
-Step 4: Define Hyperparameters for XGBoost
+Step 4: Define hyperparameters for XGBoost
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1581,7 +2005,7 @@ Step 4: Define Hyperparameters for XGBoost
 
    model_definition = {xgb_name: xgb_definition}
 
-Step 5: Initialize and Configure the ``Model``
+Step 5: Initialize and configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 ``XGBRegressor`` inherently handles missing values (``NaN``) without requiring explicit 
@@ -1621,7 +2045,7 @@ when using ``XGBRegressor``.
       n_jobs=2,
    )
 
-Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data
+Step 6: Perform grid search parameter tuning and retrieve split data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1655,7 +2079,7 @@ Step 6: Perform Grid Search Parameter Tuning and Retrieve Split Data
    Best r2: 0.765 
 
 
-Step 7: Fit the Model
+Step 7: Fit the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1666,7 +2090,7 @@ Step 7: Fit the Model
       validation_data=[X_valid, y_valid],
    )
 
-Step 8: Return Metrics (Optional)
+Step 8: Return metrics (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -1696,7 +2120,7 @@ Step 8: Return Metrics (Optional)
    'Mean Squared Error': 0.28411432705731066,
    'RMSE': 0.533023758436067}
 
-Bootstrap Metrics
+Bootstrap metrics
 ===========================
 
 The ``bootstrapper.py`` module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.
@@ -1792,7 +2216,7 @@ The ``bootstrapper.py`` module provides utility functions for input type checkin
    :raises ValueError: If ``X_test`` or ``y_test`` are not provided as Pandas DataFrames or if unsupported input types are specified.
 
 
-Bootstrap Metrics Example
+Bootstrap metrics example
 -----------------------------
 
 Continuing from the model output object (``model_xgb``) from the :ref:`regression example <Regression>` above, we leverage the ``return_bootstrap_metrics`` method from ``model_tuner_utils.py`` to print bootstrap performance metrics (:math:`R^2` and :math:`\text{explained variance}`) at 95% confidence levels as shown below: 
