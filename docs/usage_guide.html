@@ -560,9 +560,17 @@ pitfalls when defining this parameter.</p>
 <section id="example-tuning-hyperparameters-for-catboost">
 <h3>Example: Tuning Hyperparameters for CatBoost<a class="headerlink" href="#example-tuning-hyperparameters-for-catboost" title="Link to this heading"></a></h3>
 <p>When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cat_name</span> <span class="o">=</span> <span class="s2">&quot;cat&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1">## num estimator/iteration/boostrounds</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">loss_function</span><span class="o">=</span><span class="s2">&quot;Logloss&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="n">tuned_hyperparameters_cat</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1500</span><span class="p">],</span>  <span class="c1"># Use only &quot;n_estimators&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1500</span><span class="p">],</span>
+
+    <span class="c1">## Additional hyperparameters</span>
     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__loss_function&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Logloss&quot;</span><span class="p">],</span>
