@@ -1801,5 +1801,5 @@ def report_model_metrics(
             "Brier Score": brier_score,
         }
 
-    metrics_df = pd.DataFrame(metrics, index=[0])
+    metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
     return metrics_df
