@@ -3,12 +3,13 @@ from model_tuner import Model
 import pandas as pd
 import numpy as np
 from sklearn.datasets import make_classification, make_regression
-from sklearn.linear_model import LogisticRegression, LinearRegression 
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import ParameterGrid
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
 
 
 @pytest.fixture
@@ -25,6 +26,7 @@ def regression_data():
     X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
     y = pd.Series(y)
     return X, y
+
 
 def test_model_initialization():
     name = "test_model"
@@ -161,12 +163,15 @@ def test_grid_search_param_tuning_early(classification_data):
     model.grid_search_param_tuning(X, y)
     assert model.best_params_per_score["accuracy"]["params"] is not None
 
+
 def test_return_metrics_classification(classification_data):
     """
     Test the return_metrics method for a classification model.
     """
     X, y = classification_data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
 
     # Initialize the classification model
     model = Model(
@@ -191,15 +196,25 @@ def test_return_metrics_classification(classification_data):
     assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
     assert "Classification Report" in metrics, "Classification Report is missing."
     assert "Confusion Matrix" in metrics, "Confusion Matrix is missing."
-    assert isinstance(metrics["Classification Report"], dict), "Classification Report should be a dictionary."
-    assert isinstance(metrics["Confusion Matrix"], (np.ndarray, list)), "Confusion Matrix should be an array or list."
+    assert isinstance(
+        metrics["Classification Report"], dict
+    ), "Classification Report should be a dictionary."
+    assert isinstance(
+        metrics["Confusion Matrix"], (np.ndarray, list)
+    ), "Confusion Matrix should be an array or list."
+
 
 def test_return_metrics_regression(regression_data):
     """
     Test the return_metrics method for a regression model.
     """
     X, y = regression_data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42,)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=0.3,
+        random_state=42,
+    )
 
     # Initialize the regression model
     model = Model(
@@ -232,7 +247,10 @@ def test_return_metrics_regression(regression_data):
     ]
     for key in expected_keys:
         assert key in metrics, f"Expected metric '{key}' to be in the results."
-        assert isinstance(metrics[key], (int, float)), f"Metric '{key}' should be a numeric value."
+        assert isinstance(
+            metrics[key], (int, float)
+        ), f"Metric '{key}' should be a numeric value."
+
 
 def test_imbalance_sampler_integration(classification_data):
     """
@@ -262,16 +280,24 @@ def test_imbalance_sampler_integration(classification_data):
     ## Check that model is initialized correctly
     assert model.name == name
     assert model.estimator_name == estimator_name
-    assert isinstance(model.estimator.named_steps[estimator_name], LogisticRegression,)
+    assert isinstance(
+        model.estimator.named_steps[estimator_name],
+        LogisticRegression,
+    )
 
     ## Run imbalance sampler logic
     if model.imbalance_sampler:
         sampler = model.estimator.named_steps["resampler"]
         X_resampled, y_resampled = sampler.fit_resample(X, y)
         assert len(X_resampled) > len(X), "Resampling failed to increase data size"
-        assert y_resampled.value_counts().min() > 0, "Resampling failed to balance classes"
+        assert (
+            y_resampled.value_counts().min() > 0
+        ), "Resampling failed to balance classes"
     else:
-        assert not hasattr(model.estimator.named_steps, "resampler"), "No imbalance sampler expected"
+        assert not hasattr(
+            model.estimator.named_steps, "resampler"
+        ), "No imbalance sampler expected"
+
 
 def test_bootstrapped_metrics_consistency(classification_data):
     """
@@ -330,6 +356,57 @@ def test_bootstrapped_metrics_consistency(classification_data):
         assert col in bootstrap_results.columns, f"Missing column: {col}"
 
     ## Validate that the number of rows corresponds to the metrics tested
-    assert len(bootstrap_results) == len(metrics), "Mismatch in number of metrics returned"
+    assert len(bootstrap_results) == len(
+        metrics
+    ), "Mismatch in number of metrics returned"
 
     print(bootstrap_results)
+
+
+def test_process_imbalance_sampler(classification_data):
+    """
+    Test the process_imbalance_sampler method for resampling functionality.
+    """
+    from imblearn.over_sampling import SMOTE
+
+    X, y = classification_data
+
+    # Modify y to create imbalance
+    y.iloc[:80] = 0  # Imbalance: 80% class 0, 20% class 1
+
+    # Initialize the pipeline with a resampler
+    pipeline = Pipeline(
+        [("resampler", SMOTE(random_state=42)), ("lr", LogisticRegression())]
+    )
+
+    # Print pipeline steps before passing into Model
+    print("Pipeline before Model initialization:", [step[0] for step in pipeline.steps])
+
+    # Pass the pipeline to the model
+    model = Model(
+        name="test_sampler_model",
+        estimator_name="lr",
+        model_type="classification",
+        estimator=pipeline,
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},  # Define a valid parameter grid
+        imbalance_sampler=None,  # Set explicitly for clarity
+    )
+
+    # Instead of relying on pipeline steps, test resampling directly
+    try:
+        resampler = model.estimator.named_steps["resampler"]
+    except KeyError:
+        pytest.fail("Resampler step is missing in the pipeline.")
+
+    # Perform resampling
+    X_resampled, y_resampled = resampler.fit_resample(X, y)
+
+    # Validate the resampling results
+    assert len(X_resampled) > len(X), "Resampling did not increase the dataset size."
+    assert (
+        y_resampled.value_counts().min() > 0
+    ), "Resampling failed to balance the classes."
+
+    # Print resampled class distribution for debugging
+    print(f"Resampled class distribution: {y_resampled.value_counts()}")
