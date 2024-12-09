@@ -232,3 +232,75 @@ def test_train_val_test_split_stratify(sample_dataframe):
             X["stratify_col"].value_counts(normalize=True).values,
             rtol=1e-2,
         )
+
+
+@pytest.fixture
+def initialized_model():
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        # scoring=["roc_auc"],
+    )
+
+
+def test_fit_basic(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Check if estimator is fitted by checking if steps exist
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should be fitted with steps attribute set."
+
+
+def test_fit_with_validation(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    # Create a small validation set
+    X_validation, y_validation = X.iloc[:10], y.iloc[:10]
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model with validation data
+    model.fit(X, y, validation_data=(X_validation, y_validation))
+
+    # Check if model remained consistent
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should be fitted even when validation data is used."
+
+
+def test_fit_without_labels(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    with pytest.raises(ValueError):
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+        # Fit should raise an error when no labels are provided
+        model.fit(X, None)
+
+
+def test_fit_with_empty_dataset(initialized_model):
+    model = initialized_model
+    X_empty, y_empty = pd.DataFrame(), pd.Series()
+
+    with pytest.raises(ValueError):
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X_empty, y_empty)
+        # Fit should raise an error when the dataset is empty
+        model.fit(X_empty, y_empty)
