@@ -363,7 +363,7 @@ with a simple command:
 
     from ucimlrepo import fetch_ucirepo 
 
-Step 1: Import Nncessary libraries
+Step 1: Import Necessary libraries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
@@ -823,7 +823,7 @@ retaining a manageable subset of predictors.
 
 .. code-block:: python
 
-   rfe_estimator = ElasticNet()
+   rfe_estimator = ElasticNet(alpha=10.0, l1_ratio=0.9)
 
    rfe = RFE(rfe_estimator)
 
@@ -886,6 +886,8 @@ retaining a manageable subset of predictors.
 
 .. code-block:: bash
 
+   Pipeline Steps:
+
    ┌─────────────────────────────────┐
    │ Step 1: feature_selection_rfe   │
    │ RFE                             │
@@ -897,9 +899,9 @@ retaining a manageable subset of predictors.
    │ XGBClassifier                   │
    └─────────────────────────────────┘
 
-   100%|██████████| 10/10 [00:25<00:00,  2.52s/it]
+   100%|██████████| 10/10 [00:35<00:00,  3.54s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.53it/s]
+   100%|██████████| 2/2 [00:00<00:00,  3.18it/s]
    Best score/param set found on validation set:
    {'params': {'feature_selection_rfe__n_features_to_select': 10,
                'xgb__early_stopping_rounds': 100,
@@ -907,73 +909,73 @@ retaining a manageable subset of predictors.
                'xgb__learning_rate': 0.0001,
                'xgb__max_depth': 10,
                'xgb__n_estimators': 999},
-   'score': 0.9316684472934472}
+   'score': 0.9324994064577399}
    Best roc_auc: 0.932 
 
    Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
-             Predicted:
+            Predicted:
                 Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  95 (tp)    9 (fn)
+   Actual: Pos  94 (tp)   10 (fn)
            Neg  70 (fp)  254 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9316981244064577,
-   'Average Precision': 0.8206553111036822,
-   'Brier Score': 0.16608154668556174,
-   'Precision/PPV': 0.5757575757575758,
-   'Sensitivity': 0.9134615384615384,
-   'Specificity': 0.7839506172839507}
-   --------------------------------------------------------------------------------
-
-                precision    recall  f1-score   support
-
-              0      0.97      0.78      0.87       324
-              1      0.58      0.91      0.71       104
-
-       accuracy                          0.82       428
-      macro avg      0.77      0.85      0.79       428
-   weighted avg      0.87      0.82      0.83       428
-
-   --------------------------------------------------------------------------------
-
-   Feature names selected:
-   ['time', 'preanti', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
-
-
-   Test Metrics
-   Confusion matrix on set provided: 
-   --------------------------------------------------------------------------------
-             Predicted:
-                Pos   Neg
-   --------------------------------------------------------------------------------
-   Actual: Pos  91 (tp)   13 (fn)
-           Neg  70 (fp)  254 (tn)
-   --------------------------------------------------------------------------------
-   --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9278104226020893,
-   'Average Precision': 0.8133787683637559,
-   'Brier Score': 0.1658272032260468,
-   'Precision/PPV': 0.5652173913043478,
-   'Sensitivity': 0.875,
+   {'AUC ROC': 0.9324994064577399,
+   'Average Precision': 0.824824558125099,
+   'Brier Score': 0.1659495641324557,
+   'Precision/PPV': 0.573170731707317,
+   'Sensitivity': 0.9038461538461539,
    'Specificity': 0.7839506172839507}
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
 
-              0       0.95      0.78      0.86       324
-              1       0.57      0.88      0.69       104
+              0       0.96      0.78      0.86       324
+              1       0.57      0.90      0.70       104
 
        accuracy                           0.81       428
-      macro avg       0.76      0.83      0.77       428
+      macro avg       0.77      0.84      0.78       428
+   weighted avg       0.87      0.81      0.82       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
+
+
+   Test Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  93 (tp)   11 (fn)
+           Neg  71 (fp)  253 (tn)
+   --------------------------------------------------------------------------------
+   --------------------------------------------------------------------------------
+   {'AUC ROC': 0.930051044634378,
+   'Average Precision': 0.8179574148939439,
+   'Brier Score': 0.16577081685033443,
+   'Precision/PPV': 0.5670731707317073,
+   'Sensitivity': 0.8942307692307693,
+   'Specificity': 0.7808641975308642}
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.96      0.78      0.86       324
+              1       0.57      0.89      0.69       104
+
+       accuracy                           0.81       428
+      macro avg       0.76      0.84      0.78       428
    weighted avg       0.86      0.81      0.82       428
 
    --------------------------------------------------------------------------------
 
    Feature names selected:
-   ['time', 'preanti', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
 
 .. important::
@@ -1991,7 +1993,7 @@ Step 4: Define hyperparameters for XGBoost
          f"{xgb_name}__eval_metric": ["logloss"],
          f"{xgb_name}__early_stopping_rounds": [10],
          f"{xgb_name}__tree_method": ["hist"],
-         f"{xgb_name}__verbose": [False],
+         f"{xgb_name}__verbose": [0],
       }
    ]
 
