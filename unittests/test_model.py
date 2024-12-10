@@ -232,3 +232,245 @@ def test_train_val_test_split_stratify(sample_dataframe):
             X["stratify_col"].value_counts(normalize=True).values,
             rtol=1e-2,
         )
+
+
+@pytest.fixture
+def initialized_model():
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        # scoring=["roc_auc"],
+    )
+
+
+@pytest.fixture
+def initialized_kfold_lr_model():
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=True,
+        # scoring=["roc_auc"],
+    )
+
+
+def test_fit_basic(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Check if estimator is fitted by checking if steps exist
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should be fitted with steps attribute set."
+
+
+def test_fit_with_validation(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    # Create a small validation set
+    X_validation, y_validation = X.iloc[:10], y.iloc[:10]
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model with validation data
+    model.fit(X, y, validation_data=(X_validation, y_validation))
+
+    # Check if model remained consistent
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should be fitted even when validation data is used."
+
+
+def test_fit_without_labels(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    with pytest.raises(ValueError):
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+        # Fit should raise an error when no labels are provided
+        model.fit(X, None)
+
+
+def test_fit_with_empty_dataset(initialized_model):
+    model = initialized_model
+    X_empty, y_empty = pd.DataFrame(), pd.Series()
+
+    with pytest.raises(ValueError):
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X_empty, y_empty)
+        # Fit should raise an error when the dataset is empty
+        model.fit(X_empty, y_empty)
+
+
+@pytest.fixture
+def initialized_xgb_model():
+    xgb = XGBClassifier(eval_metric="logloss")
+    estimator_name = "xgbclassifier"
+    param_grid = {
+        f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
+        f"{estimator_name}__learning_rate": [1e-4],
+        f"{estimator_name}__n_estimators": [50],
+        f"{estimator_name}__early_stopping_rounds": [10],
+        f"{estimator_name}__verbose": [0],
+        f"{estimator_name}__eval_metric": ["logloss"],
+    }  # Example param grid for XGBoost
+
+    return Model(
+        name="xgboost_model",
+        estimator_name=estimator_name,
+        estimator=xgb,
+        model_type="classification",
+        grid=param_grid,
+        boost_early=True,  # Enable early stopping
+        # Include other necessary parameters
+    )
+
+
+def test_fit_with_early_stopping_and_validation(
+    initialized_xgb_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_xgb_model
+
+    # Split the data into training and validation sets
+    X_train, X_valid, y_train, y_valid = (
+        X.iloc[:50],
+        X.iloc[50:],
+        y.iloc[:50],
+        y.iloc[50:],
+    )
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model with early stopping
+    model.fit(
+        X=X_train,
+        y=y_train,
+        validation_data=(X_valid, y_valid),
+    )
+
+    # Check if estimator is fitted
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should have a fitted attribute set."
+
+    # Check that the early stopping logic was applied
+    assert hasattr(model.estimator.steps[0][1], "best_iteration") or hasattr(
+        model.estimator.steps[0][1], "best_ntree_limit"
+    ), "Model should have early stopping logic applied."
+
+    # Ensure the regularization logic finalized correctly
+    assert (
+        model.estimator.steps[0][1].best_iteration <= 50
+    ), "Model should stop before max estimators if early stopping is effective."
+
+
+def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
+    X, y = classification_data
+    # note this method is only used with kfold so needs to be turned on
+    model = initialized_kfold_lr_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Run the method to find the best parameters
+    model.get_best_score_params(X, y)
+
+    # Verify that best_params_per_score is set and contains expected keys
+    assert (
+        "roc_auc" in model.best_params_per_score
+    ), "Best score for roc_auc should be in results."
+
+    best_params = model.best_params_per_score["roc_auc"]["params"]
+
+    # Check that the best parameters are from the predefined grid
+    assert best_params["logistic_regression__C"] in [0.1, 1, 10]
+    # We could also assert that the best score is assigned (though its value may vary)
+    assert (
+        "score" in model.best_params_per_score["roc_auc"]
+    ), "Best score value should be present."
+
+
+def test_return_bootstrap_metrics_classification(
+    initialized_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Define a simple metric set
+    metrics = ["roc_auc", "f1"]
+
+    # Obtain bootstrap metrics
+    bootstrap_metrics = model.return_bootstrap_metrics(X, y, metrics=metrics)
+
+    print(bootstrap_metrics)
+
+    # Check the type and content
+    assert isinstance(
+        bootstrap_metrics, pd.DataFrame
+    ), "Bootstrap metrics should be returned as a pandas dataframe."
+    assert all(
+        metric in bootstrap_metrics["Metric"].tolist() for metric in metrics
+    ), "All specified metrics should be in the result."
+    assert all(
+        col in bootstrap_metrics.columns
+        for col in [
+            "Mean",
+            "95% CI Lower",
+            "95% CI Upper",
+        ]
+    ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
+
+
+def test_return_bootstrap_metrics_with_empty_data(initialized_model):
+    model = initialized_model
+    X_empty = pd.DataFrame()
+    y_empty = pd.Series()
+
+    # Expect an error with empty datasets
+    with pytest.raises(ValueError):
+        model.return_bootstrap_metrics(X_empty, y_empty, metrics=["roc_auc"])
+
+
+def test_return_bootstrap_metrics_unrecognized_metric(
+    initialized_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Call method with an unrecognized metric
+    with pytest.raises(ValueError):
+        model.return_bootstrap_metrics(X, y, metrics=["unknown_metric"])
