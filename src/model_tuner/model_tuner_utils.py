@@ -28,7 +28,7 @@ from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, label_binarize
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -1476,8 +1476,8 @@ class Model:
         r2 = r2_score(y_true, y_pred)
 
         reg_dict = {
+            "R²": r2,
             "Explained Variance": explained_variance,
-            "R2": r2,
             "Mean Absolute Error": mae,
             "Median Absolute Error": median_abs_error,
             "Mean Squared Error": mse,
@@ -1485,9 +1485,14 @@ class Model:
         }
 
         if print_results:
-            print("*" * 80)
-            pprint(reg_dict)
-            print("*" * 80)
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+            for key, value in reg_dict.items():
+                # Use LaTeX keys directly in output
+                print(
+                    f"\033[92m{key}\033[0m: {value:.4f}"
+                )  # Green LaTeX key with value
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+
         return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
@@ -1703,9 +1708,11 @@ def report_model_metrics(
     X_valid=None,
     y_valid=None,
     threshold=0.5,
+    print_results=True,
 ):
     """
-    Generate a DataFrame of model performance metrics for binary, multiclass, or regression problems.
+    Generate a DataFrame of model performance metrics for binary, multiclass,
+    or regression problems.
 
     Parameters:
     -----------
@@ -1724,9 +1731,10 @@ def report_model_metrics(
     Returns:
     --------
     metrics_df : DataFrame
-        A DataFrame containing calculated metrics for each class (multiclass), overall metrics (binary),
-        or regression metrics, including:
-        - For classification: Precision/PPV, Average Precision, Sensitivity, Specificity, AUC ROC, Brier Score
+        A DataFrame containing calculated metrics for each class (multiclass),
+        overall metrics (binary), or regression metrics, including:
+        - For classification: Precision/PPV, Average Precision, Sensitivity,
+          Specificity, AUC ROC, Brier Score
         - For regression: RMSE, MAE, R^2, Explained Variance
     """
 
@@ -1748,7 +1756,7 @@ def report_model_metrics(
             "Root Mean Squared Error (RMSE)": np.sqrt(
                 mean_squared_error(y_valid, y_pred)
             ),
-            "R^2 Score": r2_score(y_valid, y_pred),
+            "R² Score": r2_score(y_valid, y_pred),
             "Explained Variance": explained_variance_score(y_valid, y_pred),
         }
 
@@ -1760,6 +1768,7 @@ def report_model_metrics(
             y_valid,
             y_pred,
             output_dict=True,
+            target_names=model.class_labels,
             zero_division=0,
         )
         for key, values in report.items():
@@ -1802,4 +1811,32 @@ def report_model_metrics(
         }
 
     metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
+
+    # # Print metrics in green
+    # if print_results:
+    #     print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
+    #     for key, value in metrics.items():
+    #         print(
+    #             f"\033[92m{key}:\033[0m {value:.4f}"
+    #             if isinstance(value, float)
+    #             else f"{value}"
+    #         )
+    #     print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
+
+    # Print metrics in green with a separator between classes
+    if print_results:
+        # print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
+        for key, value in metrics.items():
+            print(
+                f"\033[92m{key}:\033[0m {value:.4f}"
+                if isinstance(value, float)
+                else f"{value}"
+            )
+            # Add a separator after each class or section
+            if (
+                "F1-Score" in key or "ROC" in key
+            ):  # Check for class end or specific sections
+                print("\033[92m" + "-" * 80 + "\033[0m")  # Green dashed line separator
+        print("*" * 80)
+
     return metrics_df
