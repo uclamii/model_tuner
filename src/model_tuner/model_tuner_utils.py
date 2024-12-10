@@ -875,8 +875,7 @@ class Model:
                         y,
                         threshold,
                     )
-                    print("-" * 80)
-                    pprint(model_metrics_df.iloc[0].to_dict())
+                    # pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
                 print()
                 # Generate the classification report
@@ -893,7 +892,11 @@ class Model:
                     classification_report(
                         y,
                         y_pred_valid,
-                        target_names=getattr(self, "class_labels", None),
+                        target_names=getattr(
+                            self,
+                            "class_labels",
+                            None,
+                        ),
                     )
                 )
                 print("-" * 80)
@@ -1834,15 +1837,13 @@ def report_model_metrics(
 
     metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
 
-    # Print metrics in green with a separator between classes
+    ## Print metrics in green with a separator between classes
     if print_results:
         for key, value in metrics.items():
             print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
-            # Add a separator after each class or section
-            if (
-                "F1-Score" in key or "ROC" in key
-            ):  # Check for class end or specific sections
-                print("-" * 80)  # Regular dashed line separator
+            ## Add a separator after each class or section
+            if "F1-Score" in key:  ## Check for class end or specific sections
+                print("-" * 80)  ## Regular dashed line separator
         print("*" * 80)
 
     return metrics_df
