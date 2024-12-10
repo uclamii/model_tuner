@@ -71,7 +71,7 @@ model = Model(
     scoring=["roc_auc_ovr"],
     n_jobs=-2,
     random_state=42,
-    class_labels=["1", "2", "3"],
+    class_labels=["Setosa", "Versicolor", "Virginica"],
 )
 
 
@@ -90,9 +90,7 @@ y_prob = model.predict_proba(X_test)
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
 
-
 metrics_df = report_model_metrics(model, X_test, y_test)
-print(metrics_df)
 
 # y_prob = model.predict_proba(X_test)[:, 1]
 
