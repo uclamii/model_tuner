@@ -410,3 +410,67 @@ def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
     assert (
         "score" in model.best_params_per_score["roc_auc"]
     ), "Best score value should be present."
+
+
+def test_return_bootstrap_metrics_classification(
+    initialized_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Define a simple metric set
+    metrics = ["roc_auc", "f1"]
+
+    # Obtain bootstrap metrics
+    bootstrap_metrics = model.return_bootstrap_metrics(X, y, metrics=metrics)
+
+    print(bootstrap_metrics)
+
+    # Check the type and content
+    assert isinstance(
+        bootstrap_metrics, pd.DataFrame
+    ), "Bootstrap metrics should be returned as a pandas dataframe."
+    assert all(
+        metric in bootstrap_metrics["Metric"].tolist() for metric in metrics
+    ), "All specified metrics should be in the result."
+    assert all(
+        col in bootstrap_metrics.columns
+        for col in [
+            "Mean",
+            "95% CI Lower",
+            "95% CI Upper",
+        ]
+    ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
+
+
+def test_return_bootstrap_metrics_with_empty_data(initialized_model):
+    model = initialized_model
+    X_empty = pd.DataFrame()
+    y_empty = pd.Series()
+
+    # Expect an error with empty datasets
+    with pytest.raises(ValueError):
+        model.return_bootstrap_metrics(X_empty, y_empty, metrics=["roc_auc"])
+
+
+def test_return_bootstrap_metrics_unrecognized_metric(
+    initialized_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # Call method with an unrecognized metric
+    with pytest.raises(ValueError):
+        model.return_bootstrap_metrics(X, y, metrics=["unknown_metric"])
