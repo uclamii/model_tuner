@@ -1501,7 +1501,7 @@ Step 1: Import Necessary Libraries
    import pandas as pd
    import numpy as np
 
-   from model_tuner.model_tuner_utils import Model
+   from model_tuner.model_tuner_utils import Model, report_model_metrics
    from sklearn.impute import SimpleImputer
    from xgboost import XGBClassifier
    from sklearn.pipeline import Pipeline
@@ -1765,15 +1765,22 @@ Use the following code to return metrics:
 
    # Evaluate on validation data
    print("Validation Metrics")
-   model.return_metrics(X_valid, y_valid)
+   model_xgb.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+   )
 
    # Predict probabilities for the test data
    y_prob = model.predict_proba(X_test)
 
    # Evaluate on test data
    print("Test Metrics")
-   model.return_metrics(X_test, y_test)
-
+   model_xgb.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+   )
 
 .. code-block:: bash
 
@@ -1876,6 +1883,49 @@ Use the following code to return metrics:
    
           [[20,  0],
            [ 1,  9]]])}
+
+
+Report Model Metrics
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can summarize and display the model's performance metrics using the 
+``report_model_metrics`` function. This function computes key metrics like 
+:ref:`precision, recall, F1-score, and ROC AUC <Limitations_of_Accuracy>` for each class, as well as macro and weighted averages.
+
+Use the following code:
+
+.. code-block:: python
+
+   metrics_df = report_model_metrics(
+      model=model_xgb,
+      X_valid=X_test,
+      y_valid=y_test,
+      threshold=next(iter(model_xgb.threshold.values())),
+   )
+   print(metrics_df)
+
+
+.. code-block:: bash
+
+   0 Precision/PPV                  0.833333
+   0 Sensitivity/Recall             1.000000
+   0 F1-Score                       0.909091
+   1 Precision/PPV                  0.888889
+   1 Sensitivity/Recall             0.800000
+   1 F1-Score                       0.842105
+   2 Precision/PPV                  1.000000
+   2 Sensitivity/Recall             0.900000
+   2 F1-Score                       0.947368
+   macro avg Precision/PPV          0.907407
+   macro avg Sensitivity/Recall     0.900000
+   macro avg F1-Score               0.899522
+   weighted avg Precision/PPV       0.907407
+   weighted avg Sensitivity/Recall  0.900000
+   weighted avg F1-Score            0.899522
+   Weighted Average Precision       0.907407
+   Weighted Average Recall          0.900000
+   Multiclass AUC ROC               0.933333
+
 
 .. note:: 
 

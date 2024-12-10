@@ -138,7 +138,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning">Step 6: Perform grid search parameter tuning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-generate-data-splits">Step 7: Generate data splits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Step 8: Fit the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Step 9: Return metrics (optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Step 9: Return metrics (optional)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#report-model-metrics">Report Model Metrics</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-predict-probabilities-and-generate-predictions">Step 10: Predict probabilities and generate predictions</a></li>
 </ul>
 </li>
@@ -1484,7 +1487,7 @@ sepal length, sepal width, petal length, and petal width.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">model_tuner.model_tuner_utils</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">model_tuner.model_tuner_utils</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">report_model_metrics</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
 <span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
@@ -1734,14 +1737,22 @@ the <code class="docutils literal notranslate"><span class="pre">Model</span></c
 <p>Use the following code to return metrics:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate on validation data</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># Predict probabilities for the test data</span>
 <span class="n">y_prob</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
 
 <span class="c1"># Evaluate on test data</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Validation<span class="w"> </span>Metrics
@@ -1845,6 +1856,41 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <span class="w">        </span><span class="o">[</span><span class="w"> </span><span class="m">1</span>,<span class="w">  </span><span class="m">9</span><span class="o">]]])}</span>
 </pre></div>
 </div>
+<section id="report-model-metrics">
+<h4>Report Model Metrics<a class="headerlink" href="#report-model-metrics" title="Link to this heading"></a></h4>
+<p>You can summarize and display the model’s performance metrics using the
+<code class="docutils literal notranslate"><span class="pre">report_model_metrics</span></code> function. This function computes key metrics like
+<a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">precision, recall, F1-score, and ROC AUC</span></a> for each class, as well as macro and weighted averages.</p>
+<p>Use the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">metrics_df</span> <span class="o">=</span> <span class="n">report_model_metrics</span><span class="p">(</span>
+   <span class="n">model</span><span class="o">=</span><span class="n">model_xgb</span><span class="p">,</span>
+   <span class="n">X_valid</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+   <span class="n">threshold</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">threshold</span><span class="o">.</span><span class="n">values</span><span class="p">())),</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="m">0</span><span class="w"> </span>Precision/PPV<span class="w">                  </span><span class="m">0</span>.833333
+<span class="m">0</span><span class="w"> </span>Sensitivity/Recall<span class="w">             </span><span class="m">1</span>.000000
+<span class="m">0</span><span class="w"> </span>F1-Score<span class="w">                       </span><span class="m">0</span>.909091
+<span class="m">1</span><span class="w"> </span>Precision/PPV<span class="w">                  </span><span class="m">0</span>.888889
+<span class="m">1</span><span class="w"> </span>Sensitivity/Recall<span class="w">             </span><span class="m">0</span>.800000
+<span class="m">1</span><span class="w"> </span>F1-Score<span class="w">                       </span><span class="m">0</span>.842105
+<span class="m">2</span><span class="w"> </span>Precision/PPV<span class="w">                  </span><span class="m">1</span>.000000
+<span class="m">2</span><span class="w"> </span>Sensitivity/Recall<span class="w">             </span><span class="m">0</span>.900000
+<span class="m">2</span><span class="w"> </span>F1-Score<span class="w">                       </span><span class="m">0</span>.947368
+macro<span class="w"> </span>avg<span class="w"> </span>Precision/PPV<span class="w">          </span><span class="m">0</span>.907407
+macro<span class="w"> </span>avg<span class="w"> </span>Sensitivity/Recall<span class="w">     </span><span class="m">0</span>.900000
+macro<span class="w"> </span>avg<span class="w"> </span>F1-Score<span class="w">               </span><span class="m">0</span>.899522
+weighted<span class="w"> </span>avg<span class="w"> </span>Precision/PPV<span class="w">       </span><span class="m">0</span>.907407
+weighted<span class="w"> </span>avg<span class="w"> </span>Sensitivity/Recall<span class="w">  </span><span class="m">0</span>.900000
+weighted<span class="w"> </span>avg<span class="w"> </span>F1-Score<span class="w">            </span><span class="m">0</span>.899522
+Weighted<span class="w"> </span>Average<span class="w"> </span>Precision<span class="w">       </span><span class="m">0</span>.907407
+Weighted<span class="w"> </span>Average<span class="w"> </span>Recall<span class="w">          </span><span class="m">0</span>.900000
+Multiclass<span class="w"> </span>AUC<span class="w"> </span>ROC<span class="w">               </span><span class="m">0</span>.933333
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
@@ -1854,6 +1900,7 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </ul>
 </div>
 <p>By examining these metrics, you can evaluate the model’s strengths and weaknesses and determine if further fine-tuning or adjustments are necessary.</p>
+</section>
 </section>
 <section id="step-10-predict-probabilities-and-generate-predictions">
 <h3>Step 10: Predict probabilities and generate predictions<a class="headerlink" href="#step-10-predict-probabilities-and-generate-predictions" title="Link to this heading"></a></h3>
