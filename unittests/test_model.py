@@ -249,6 +249,22 @@ def initialized_model():
     )
 
 
+@pytest.fixture
+def initialized_kfold_lr_model():
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=True,
+        # scoring=["roc_auc"],
+    )
+
+
 def test_fit_basic(initialized_model, classification_data):
     X, y = classification_data
     model = initialized_model
@@ -368,3 +384,29 @@ def test_fit_with_early_stopping_and_validation(
     assert (
         model.estimator.steps[0][1].best_iteration <= 50
     ), "Model should stop before max estimators if early stopping is effective."
+
+
+def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
+    X, y = classification_data
+    # note this method is only used with kfold so needs to be turned on
+    model = initialized_kfold_lr_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Run the method to find the best parameters
+    model.get_best_score_params(X, y)
+
+    # Verify that best_params_per_score is set and contains expected keys
+    assert (
+        "roc_auc" in model.best_params_per_score
+    ), "Best score for roc_auc should be in results."
+
+    best_params = model.best_params_per_score["roc_auc"]["params"]
+
+    # Check that the best parameters are from the predefined grid
+    assert best_params["logistic_regression__C"] in [0.1, 1, 10]
+    # We could also assert that the best score is assigned (though its value may vary)
+    assert (
+        "score" in model.best_params_per_score["roc_auc"]
+    ), "Best score value should be present."
