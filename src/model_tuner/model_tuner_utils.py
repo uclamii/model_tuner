@@ -828,7 +828,9 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X, y, optimal_threshold=False):
+    def return_metrics(self, X, y, optimal_threshold=False, return_dict=False):
+
+        results = {}  # Initialize results dictionary
 
         if self.kfold:
             for score in self.scoring:
@@ -854,7 +856,10 @@ class Model:
             if self.model_type != "regression":
 
                 if self.multi_label:
-                    conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
+                    conf_mat = multilabel_confusion_matrix(
+                        y,
+                        y_pred_valid,
+                    )
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
@@ -864,40 +869,59 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
-                    model_metrics_df = report_model_metrics(self, X, y, threshold)
+                    model_metrics_df = report_model_metrics(
+                        self,
+                        X,
+                        y,
+                        threshold,
+                    )
                     print("-" * 80)
                     pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
                 print()
+                # Generate the classification report
                 self.classification_report = classification_report(
-                    y, y_pred_valid, output_dict=True
+                    y,
+                    y_pred_valid,
+                    output_dict=True,
+                    target_names=getattr(
+                        self, "class_labels", None
+                    ),  # Safeguard for labels
                 )
-                print(classification_report(y, y_pred_valid))
+                print("Classification Report:")
+                print(
+                    classification_report(
+                        y,
+                        y_pred_valid,
+                        target_names=getattr(self, "class_labels", None),
+                    )
+                )
                 print("-" * 80)
 
-                if self.feature_selection:
-                    best_features = self.print_selected_best_features(X)
+                # Add to results if `return_dict` is True
+                if return_dict:
+                    results["Classification Report"] = self.classification_report
+                    results["Confusion Matrix"] = conf_mat
 
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                        "Best Features": best_features,
-                    }
-                else:
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                    }
-            else:
-                reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
-                    return {
-                        "Regression Report": reg_report,
-                        "Best Features": best_features,
-                    }
-                else:
-                    return reg_report
+                    if return_dict:
+                        results["Best Features"] = best_features
+
+            else:
+                # Handle regression
+                reg_report = self.regression_report(y, y_pred_valid)
+                if return_dict:
+                    results["Regression Report"] = reg_report
+
+                if self.feature_selection:
+                    best_features = self.print_selected_best_features(X)
+                    if return_dict:
+                        results["Best Features"] = best_features
+
+        # Return results only if `return_dict` is True
+        if return_dict:
+            return results
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -1488,9 +1512,7 @@ class Model:
             print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
             for key, value in reg_dict.items():
                 # Use LaTeX keys directly in output
-                print(
-                    f"\033[92m{key}\033[0m: {value:.4f}"
-                )  # Green LaTeX key with value
+                print(f"{key}: {value:.4f}")  # Regular key with value, no green color
             print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
 
         return reg_dict
@@ -1812,31 +1834,15 @@ def report_model_metrics(
 
     metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
 
-    # # Print metrics in green
-    # if print_results:
-    #     print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
-    #     for key, value in metrics.items():
-    #         print(
-    #             f"\033[92m{key}:\033[0m {value:.4f}"
-    #             if isinstance(value, float)
-    #             else f"{value}"
-    #         )
-    #     print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
-
     # Print metrics in green with a separator between classes
     if print_results:
-        # print("\033[92m" + "*" * 80 + "\033[0m")  # Green line separator
         for key, value in metrics.items():
-            print(
-                f"\033[92m{key}:\033[0m {value:.4f}"
-                if isinstance(value, float)
-                else f"{value}"
-            )
+            print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
             # Add a separator after each class or section
             if (
                 "F1-Score" in key or "ROC" in key
             ):  # Check for class end or specific sections
-                print("\033[92m" + "-" * 80 + "\033[0m")  # Green dashed line separator
+                print("-" * 80)  # Regular dashed line separator
         print("*" * 80)
 
     return metrics_df
