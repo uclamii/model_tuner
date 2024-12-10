@@ -304,3 +304,67 @@ def test_fit_with_empty_dataset(initialized_model):
         model.grid_search_param_tuning(X_empty, y_empty)
         # Fit should raise an error when the dataset is empty
         model.fit(X_empty, y_empty)
+
+
+@pytest.fixture
+def initialized_xgb_model():
+    xgb = XGBClassifier(eval_metric="logloss")
+    estimator_name = "xgbclassifier"
+    param_grid = {
+        f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
+        f"{estimator_name}__learning_rate": [1e-4],
+        f"{estimator_name}__n_estimators": [50],
+        f"{estimator_name}__early_stopping_rounds": [10],
+        f"{estimator_name}__verbose": [0],
+        f"{estimator_name}__eval_metric": ["logloss"],
+    }  # Example param grid for XGBoost
+
+    return Model(
+        name="xgboost_model",
+        estimator_name=estimator_name,
+        estimator=xgb,
+        model_type="classification",
+        grid=param_grid,
+        boost_early=True,  # Enable early stopping
+        # Include other necessary parameters
+    )
+
+
+def test_fit_with_early_stopping_and_validation(
+    initialized_xgb_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_xgb_model
+
+    # Split the data into training and validation sets
+    X_train, X_valid, y_train, y_valid = (
+        X.iloc[:50],
+        X.iloc[50:],
+        y.iloc[:50],
+        y.iloc[50:],
+    )
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model with early stopping
+    model.fit(
+        X=X_train,
+        y=y_train,
+        validation_data=(X_valid, y_valid),
+    )
+
+    # Check if estimator is fitted
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should have a fitted attribute set."
+
+    # Check that the early stopping logic was applied
+    assert hasattr(model.estimator.steps[0][1], "best_iteration") or hasattr(
+        model.estimator.steps[0][1], "best_ntree_limit"
+    ), "Model should have early stopping logic applied."
+
+    # Ensure the regularization logic finalized correctly
+    assert (
+        model.estimator.steps[0][1].best_iteration <= 50
+    ), "Model should stop before max estimators if early stopping is effective."
