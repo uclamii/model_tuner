@@ -46,7 +46,7 @@ tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 15],
     f"{estimator_name}__n_estimators": [5, 10, 15, 20],
     f"{estimator_name}__eval_metric": ["mlogloss"],
-    f"{estimator_name}__verbose": [1],
+    f"{estimator_name}__verbose": [0],
     f"{estimator_name}__early_stopping_rounds": [20],
 }
 
@@ -71,7 +71,7 @@ model = Model(
     scoring=["roc_auc_ovr"],
     n_jobs=-2,
     random_state=42,
-    class_labels=["1", "2", "3"],
+    class_labels=["Setosa", "Versicolor", "Virginica"],
 )
 
 
@@ -90,9 +90,7 @@ y_prob = model.predict_proba(X_test)
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
 
-
 metrics_df = report_model_metrics(model, X_test, y_test)
-print(metrics_df)
 
 # y_prob = model.predict_proba(X_test)[:, 1]
 
