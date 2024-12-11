@@ -8,7 +8,7 @@ from sklearn.datasets import make_classification
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects
 
@@ -58,7 +58,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
-    imbalance_sampler=SMOTE(),
+    imbalance_sampler=SMOTE(random_state=42),
 )
 
 
@@ -72,8 +72,18 @@ model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
+
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
+
+print("Report Model Metrics")
+print()
+report_model_metrics(
+    model=model,
+    X_valid=X_test,
+    y_valid=y_test,
+)
+
 
 y_prob = model.predict_proba(X_test)
 

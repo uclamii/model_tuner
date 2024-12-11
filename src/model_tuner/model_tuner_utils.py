@@ -28,7 +28,7 @@ from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, label_binarize
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -828,7 +828,9 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X, y, optimal_threshold=False):
+    def return_metrics(self, X, y, optimal_threshold=False, return_dict=False):
+
+        results = {}  # Initialize results dictionary
 
         if self.kfold:
             for score in self.scoring:
@@ -854,7 +856,10 @@ class Model:
             if self.model_type != "regression":
 
                 if self.multi_label:
-                    conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
+                    conf_mat = multilabel_confusion_matrix(
+                        y,
+                        y_pred_valid,
+                    )
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
@@ -864,40 +869,62 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
-                    model_metrics_df = report_model_metrics(self, X, y, threshold)
-                    print("-" * 80)
-                    pprint(model_metrics_df.iloc[0].to_dict())
+                    model_metrics_df = report_model_metrics(
+                        self,
+                        X,
+                        y,
+                        threshold,
+                    )
+                    # pprint(model_metrics_df.iloc[0].to_dict())
                     print("-" * 80)
                 print()
+                # Generate the classification report
                 self.classification_report = classification_report(
-                    y, y_pred_valid, output_dict=True
+                    y,
+                    y_pred_valid,
+                    output_dict=True,
+                    target_names=getattr(
+                        self, "class_labels", None
+                    ),  # Safeguard for labels
                 )
-                print(classification_report(y, y_pred_valid))
+                print("Classification Report:")
+                print(
+                    classification_report(
+                        y,
+                        y_pred_valid,
+                        target_names=getattr(
+                            self,
+                            "class_labels",
+                            None,
+                        ),
+                    )
+                )
                 print("-" * 80)
 
-                if self.feature_selection:
-                    best_features = self.print_selected_best_features(X)
+                # Add to results if `return_dict` is True
+                if return_dict:
+                    results["Classification Report"] = self.classification_report
+                    results["Confusion Matrix"] = conf_mat
 
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                        "Best Features": best_features,
-                    }
-                else:
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                    }
-            else:
-                reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
-                    return {
-                        "Regression Report": reg_report,
-                        "Best Features": best_features,
-                    }
-                else:
-                    return reg_report
+                    if return_dict:
+                        results["Best Features"] = best_features
+
+            else:
+                # Handle regression
+                reg_report = self.regression_report(y, y_pred_valid)
+                if return_dict:
+                    results["Regression Report"] = reg_report
+
+                if self.feature_selection:
+                    best_features = self.print_selected_best_features(X)
+                    if return_dict:
+                        results["Best Features"] = best_features
+
+        # Return results only if `return_dict` is True
+        if return_dict:
+            return results
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -1476,8 +1503,8 @@ class Model:
         r2 = r2_score(y_true, y_pred)
 
         reg_dict = {
+            "R²": r2,
             "Explained Variance": explained_variance,
-            "R2": r2,
             "Mean Absolute Error": mae,
             "Median Absolute Error": median_abs_error,
             "Mean Squared Error": mse,
@@ -1485,9 +1512,12 @@ class Model:
         }
 
         if print_results:
-            print("*" * 80)
-            pprint(reg_dict)
-            print("*" * 80)
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+            for key, value in reg_dict.items():
+                # Use LaTeX keys directly in output
+                print(f"{key}: {value:.4f}")  # Regular key with value, no green color
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+
         return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
@@ -1703,9 +1733,11 @@ def report_model_metrics(
     X_valid=None,
     y_valid=None,
     threshold=0.5,
+    print_results=True,
 ):
     """
-    Generate a DataFrame of model performance metrics for binary, multiclass, or regression problems.
+    Generate a DataFrame of model performance metrics for binary, multiclass,
+    or regression problems.
 
     Parameters:
     -----------
@@ -1724,9 +1756,10 @@ def report_model_metrics(
     Returns:
     --------
     metrics_df : DataFrame
-        A DataFrame containing calculated metrics for each class (multiclass), overall metrics (binary),
-        or regression metrics, including:
-        - For classification: Precision/PPV, Average Precision, Sensitivity, Specificity, AUC ROC, Brier Score
+        A DataFrame containing calculated metrics for each class (multiclass),
+        overall metrics (binary), or regression metrics, including:
+        - For classification: Precision/PPV, Average Precision, Sensitivity,
+          Specificity, AUC ROC, Brier Score
         - For regression: RMSE, MAE, R^2, Explained Variance
     """
 
@@ -1748,7 +1781,7 @@ def report_model_metrics(
             "Root Mean Squared Error (RMSE)": np.sqrt(
                 mean_squared_error(y_valid, y_pred)
             ),
-            "R^2 Score": r2_score(y_valid, y_pred),
+            "R² Score": r2_score(y_valid, y_pred),
             "Explained Variance": explained_variance_score(y_valid, y_pred),
         }
 
@@ -1760,6 +1793,7 @@ def report_model_metrics(
             y_valid,
             y_pred,
             output_dict=True,
+            target_names=model.class_labels,
             zero_division=0,
         )
         for key, values in report.items():
@@ -1801,5 +1835,15 @@ def report_model_metrics(
             "Brier Score": brier_score,
         }
 
-    metrics_df = pd.DataFrame(metrics, index=[0])
+    metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
+
+    ## Print metrics in green with a separator between classes
+    if print_results:
+        for key, value in metrics.items():
+            print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
+            ## Add a separator after each class or section
+            if "F1-Score" in key:  ## Check for class end or specific sections
+                print("-" * 80)  ## Regular dashed line separator
+        print("*" * 80)
+
     return metrics_df

@@ -194,7 +194,7 @@ print("Report model metrics dataframe for Lasso")
 
 lasso_metrics_df = report_model_metrics(model_lasso, X_test, y_test)
 
-print(lasso_metrics_df)
+# print(lasso_metrics_df)
 
 """## XGBoost
 
@@ -255,7 +255,8 @@ model_xgb.return_metrics(X_valid, y_valid)
 print("Test Metrics")
 model_xgb.return_metrics(X_test, y_test)
 
+print("Report model metrics for XGB")
 xgb_metrics = report_model_metrics(model_xgb, X_test, y_test)
 
-print("Report model metrics for XGB")
-print(xgb_metrics)
+
+# print(xgb_metrics)
