@@ -829,8 +829,27 @@ class Model:
         return bootstrap_metrics
 
     def return_metrics(self, X, y, optimal_threshold=False, return_dict=False):
+        """
+        Evaluate the model on the given dataset and optionally return metrics
+        as a dictionary.
 
-        results = {}  # Initialize results dictionary
+        Parameters:
+        -----------
+        X : array-like or DataFrame
+            The feature matrix.
+        y : array-like
+            The target vector.
+        optimal_threshold : bool, optional (default=False)
+            Whether to use the optimal threshold for predictions
+            (for classification models).
+        return_dict : bool, optional (default=False)
+            Whether to return the metrics as a dictionary.
+
+        Returns:
+        --------
+        dict, optional
+            Returns a dictionary containing metrics if return_dict=True.
+        """
 
         if self.kfold:
             for score in self.scoring:
@@ -856,10 +875,7 @@ class Model:
             if self.model_type != "regression":
 
                 if self.multi_label:
-                    conf_mat = multilabel_confusion_matrix(
-                        y,
-                        y_pred_valid,
-                    )
+                    conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self._confusion_matrix_print_ML(conf_mat)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
@@ -869,62 +885,42 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
-                    model_metrics_df = report_model_metrics(
-                        self,
-                        X,
-                        y,
-                        threshold,
-                    )
-                    # pprint(model_metrics_df.iloc[0].to_dict())
+                    model_metrics_df = report_model_metrics(self, X, y, threshold)
                     print("-" * 80)
                 print()
-                # Generate the classification report
                 self.classification_report = classification_report(
-                    y,
-                    y_pred_valid,
-                    output_dict=True,
-                    target_names=getattr(
-                        self, "class_labels", None
-                    ),  # Safeguard for labels
+                    y, y_pred_valid, output_dict=True
                 )
-                print("Classification Report:")
-                print(
-                    classification_report(
-                        y,
-                        y_pred_valid,
-                        target_names=getattr(
-                            self,
-                            "class_labels",
-                            None,
-                        ),
-                    )
-                )
+                print(classification_report(y, y_pred_valid))
                 print("-" * 80)
 
-                # Add to results if `return_dict` is True
-                if return_dict:
-                    results["Classification Report"] = self.classification_report
-                    results["Confusion Matrix"] = conf_mat
-
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
-                    if return_dict:
-                        results["Best Features"] = best_features
 
+                    if return_dict:
+                        return {
+                            "Classification Report": self.classification_report,
+                            "Confusion Matrix": conf_mat,
+                            "Best Features": best_features,
+                        }
+                else:
+                    if return_dict:
+                        return {
+                            "Classification Report": self.classification_report,
+                            "Confusion Matrix": conf_mat,
+                        }
             else:
-                # Handle regression
                 reg_report = self.regression_report(y, y_pred_valid)
-                if return_dict:
-                    results["Regression Report"] = reg_report
-
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
                     if return_dict:
-                        results["Best Features"] = best_features
-
-        # Return results only if `return_dict` is True
-        if return_dict:
-            return results
+                        return {
+                            "Regression Report": reg_report,
+                            "Best Features": best_features,
+                        }
+                else:
+                    if return_dict:
+                        return reg_report
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -1839,6 +1835,9 @@ def report_model_metrics(
 
     ## Print metrics in green with a separator between classes
     if print_results:
+        print("*" * 80)
+        print(f"Report Model Metrics: {model.estimator_name}")
+        print()
         for key, value in metrics.items():
             print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
             ## Add a separator after each class or section
