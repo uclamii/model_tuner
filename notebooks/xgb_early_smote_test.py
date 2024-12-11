@@ -58,7 +58,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
-    imbalance_sampler=SMOTE(),
+    imbalance_sampler=SMOTE(random_state=42),
 )
 
 
