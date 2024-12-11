@@ -1,0 +1,5 @@
+Collecting xlrd
+  Using cached xlrd-2.0.1-py2.py3-none-any.whl.metadata (3.4 kB)
+Using cached xlrd-2.0.1-py2.py3-none-any.whl (96 kB)
+Installing collected packages: xlrd
+Successfully installed xlrd-2.0.1
