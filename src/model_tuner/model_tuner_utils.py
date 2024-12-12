@@ -1366,6 +1366,13 @@ class Model:
 
     def return_metrics_kfold(self, X, y, test_model, score=None):
 
+        # new code
+        # Ensure test_model has necessary attributes
+        if not hasattr(test_model, "model_type"):
+            test_model.model_type = self.model_type
+        if not hasattr(test_model, "estimator_name"):
+            test_model.estimator_name = self.estimator_name  # Pass from the main model
+
         aggregated_pred_list = []
         if score is not None:
             threshold = self.threshold[score]
@@ -1760,9 +1767,11 @@ def report_model_metrics(
     """
 
     if not hasattr(model, "model_type"):
-        raise ValueError(
-            "The model must have a `model_type` attribute to determine the type."
-        )
+        model_type = getattr(model, "model_type", None)
+        if not model_type:
+            raise ValueError(
+                "The `model_type` attribute is missing. Ensure it is set for the model or pipeline."
+            )
 
     metrics = {}
 
@@ -1836,7 +1845,7 @@ def report_model_metrics(
     ## Print metrics in green with a separator between classes
     if print_results:
         print("*" * 80)
-        print(f"Report Model Metrics: {model.estimator_name}")
+        print(f"Report Model Metrics: {model.estimator_name}")  # new code
         print()
         for key, value in metrics.items():
             print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
