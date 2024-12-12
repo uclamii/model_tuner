@@ -1,4 +1,7 @@
 import pytest
+from sklearn.discriminant_analysis import StandardScaler
+from sklearn.feature_selection import SelectKBest
+from sklearn.impute import SimpleImputer
 from model_tuner import Model
 import pandas as pd
 import numpy as np
@@ -574,3 +577,61 @@ def test_empty_param_grid(lr_model_parameters):
     # even though its an empty list still in init
     # set to paramGrid object
     assert isinstance(model.grid, ParameterGrid)  # Should initialize without error
+
+
+# @pytest.fixture
+# def model():
+#     mock_steps = [
+#         ("preprocess_scaler", StandardScaler()),
+#         ("feature_selection_kbest", SelectKBest(k=2)),
+#     ]
+#     return Model(
+#         name="TestModel",
+#         estimator_name="mock_estimator",
+#         estimator=MagicMock(),
+#         pipeline_steps=mock_steps,
+#         model_type="classification",
+#         grid=[],
+#     )
+
+
+from unittest.mock import MagicMock, patch
+
+
+@pytest.fixture
+def model():
+    mock_steps = [
+        (StandardScaler()),
+        # (SimpleImputer()),
+        ("kbest", SelectKBest(k=2)),
+        ("classifier", MagicMock()),
+    ]
+    return Model(
+        name="TestModel",
+        estimator_name="mock_estimator",
+        estimator=MagicMock(),
+        pipeline_steps=mock_steps,
+        model_type="classification",
+        grid=[],
+    )
+
+
+def test_get_preprocessing_and_feature_selection_pipeline(model):
+    pipeline = model.get_preprocessing_and_feature_selection_pipeline()
+    expected_steps = [
+        ("preprocess_scaler_step_0", model.estimator.steps[0][1]),
+        # ("preprocess_imputer_step_0", model.estimator.steps[1][1]),
+        ("feature_selection_kbest", model.estimator.steps[1][1]),
+    ]
+    print(pipeline.steps)
+    print(expected_steps)
+    assert pipeline.steps == expected_steps
+    # MockPipeline.assert_called_once_with(expected_steps)
+
+
+def test_get_feature_selection_pipeline(model):
+    pipeline = model.get_feature_selection_pipeline()
+    expected_steps = [("feature_selection_kbest", model.estimator.steps[1][1])]
+    print(pipeline.steps)
+    print(expected_steps)
+    assert pipeline.steps == expected_steps
