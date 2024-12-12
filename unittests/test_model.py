@@ -474,3 +474,103 @@ def test_return_bootstrap_metrics_unrecognized_metric(
     # Call method with an unrecognized metric
     with pytest.raises(ValueError):
         model.return_bootstrap_metrics(X, y, metrics=["unknown_metric"])
+
+
+from collections.abc import Mapping, Iterable
+
+
+# Define parameter sets for initialization
+@pytest.fixture
+def lr_model_parameters():
+    return {
+        "name": "default_model",
+        "estimator_name": "logistic_regression",
+        "estimator": LogisticRegression(),
+        "model_type": "classification",
+        "grid": {"logistic_regression__C": [0.1, 1, 10]},
+    }
+
+
+@pytest.fixture
+def xgboost_model_parameters():
+    return {
+        "name": "xgboost_model",
+        "estimator_name": "xgbclassifier",
+        "estimator": XGBClassifier(eval_metric="logloss"),
+        "model_type": "classification",
+        "grid": {
+            "xgbclassifier__n_estimators": [10, 50],
+            "xgbclassifier__learning_rate": [0.1, 0.01],
+            "xgbclassifier__max_depth": [3, 5],
+        },
+        "scoring": ["roc_auc"],
+        "kfold": True,
+        "calibrate": False,
+        "train_size": 0.7,
+        "validation_size": 0.15,
+        "test_size": 0.15,
+        "random_state": 42,
+    }
+
+
+def test_lr_initialization(lr_model_parameters):
+    model = Model(**lr_model_parameters)
+
+    assert model.name == lr_model_parameters["name"]
+    assert model.estimator_name == lr_model_parameters["estimator_name"]
+    assert isinstance(model.estimator, Pipeline)
+    assert model.model_type == lr_model_parameters["model_type"]
+    assert model.scoring == ["roc_auc"]  # Assuming default scoring if not provided
+    assert isinstance(model.grid, (Mapping, Iterable))  # Checks for grid type
+    assert model.kfold is False  # Default value
+    assert model.calibrate is False  # Default value
+
+
+def test_xgboost_initialization(xgboost_model_parameters):
+    model = Model(**xgboost_model_parameters)
+
+    assert model.name == xgboost_model_parameters["name"]
+    assert model.estimator_name == xgboost_model_parameters["estimator_name"]
+    assert isinstance(model.estimator, Pipeline)
+    assert model.model_type == xgboost_model_parameters["model_type"]
+    assert model.grid == xgboost_model_parameters["grid"]
+    assert model.scoring == xgboost_model_parameters["scoring"]
+    assert model.kfold == xgboost_model_parameters["kfold"]
+    assert model.calibrate == xgboost_model_parameters["calibrate"]
+    assert model.train_size == xgboost_model_parameters["train_size"]
+    assert model.validation_size == xgboost_model_parameters["validation_size"]
+    assert model.test_size == xgboost_model_parameters["test_size"]
+    assert model.random_state == xgboost_model_parameters["random_state"]
+
+
+def test_invalid_model_type(lr_model_parameters):
+    lr_model_parameters["model_type"] = "unsupported_type"
+
+    with pytest.raises(ValueError):
+        Model(**lr_model_parameters)
+
+
+def test_missing_estimator():
+    with pytest.raises(TypeError):
+        Model(
+            name="model_without_estimator",
+            estimator_name="missing",
+            model_type="classification",
+        )
+
+
+# Additional edge cases:
+def test_invalid_grid_type(lr_model_parameters):
+    lr_model_parameters["grid"] = 12345  # Invalid grid type
+
+    with pytest.raises(TypeError):
+        Model(**lr_model_parameters)
+
+
+def test_empty_param_grid(lr_model_parameters):
+    lr_model_parameters["grid"] = []
+
+    model = Model(**lr_model_parameters)
+    # even though its an empty list still in init
+    # set to paramGrid object
+    assert isinstance(model.grid, ParameterGrid)  # Should initialize without error
