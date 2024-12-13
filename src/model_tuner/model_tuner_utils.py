@@ -891,7 +891,13 @@ class Model:
                 self.classification_report = classification_report(
                     y, y_pred_valid, output_dict=True
                 )
-                print(classification_report(y, y_pred_valid))
+                print(
+                    classification_report(
+                        y,
+                        y_pred_valid,
+                        target_names=self.class_labels,
+                    )
+                )
                 print("-" * 80)
 
                 if self.feature_selection:
@@ -1366,48 +1372,70 @@ class Model:
 
     def return_metrics_kfold(self, X, y, test_model, score=None):
 
-        # new code
         # Ensure test_model has necessary attributes
         if not hasattr(test_model, "model_type"):
             test_model.model_type = self.model_type
         if not hasattr(test_model, "estimator_name"):
-            test_model.estimator_name = self.estimator_name  # Pass from the main model
+            test_model.estimator_name = self.estimator_name
 
-        aggregated_pred_list = []
-        if score is not None:
-            threshold = self.threshold[score]
-        else:
-            threshold = self.threshold[self.scoring[0]]
-
-        if threshold == 0:
-            threshold = 0.5
+        aggregated_true_labels = []
+        aggregated_predictions = []
 
         if isinstance(X, pd.DataFrame):
-            for train, test in self.kf.split(X, y):
+            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
-                aggregated_pred_list.append(
-                    report_model_metrics(test_model, X_test, y_test, threshold),
-                )
+                y_pred = test_model.predict(X_test)
+
+                # Print confusion matrix for this fold
+                print(f"Confusion Matrix for Fold {fold_idx}:")
+                conf_matrix = confusion_matrix(y_test, y_pred)
+                _confusion_matrix_print(conf_matrix, self.labels)
+
+                # Print classification report for this fold
+                print(f"Classification Report for Fold {fold_idx}:")
+                print(classification_report(y_test, y_pred, zero_division=0))
+                print("*" * 80)
+
+                # Aggregate true labels and predictions
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(y_pred)
         else:
-            for train, test in self.kf.split(X, y):
+            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                aggregated_pred_list.append(
-                    report_model_metrics(test_model, X_test, y_test, threshold),
-                )
+                y_pred = test_model.predict(X_test)
 
-        concat_df = pd.concat(aggregated_pred_list)
-        # Calculate the mean for each column
-        mean_df = concat_df.groupby(concat_df.index).mean()
-        mean_dict = mean_df.iloc[0].to_dict()
-        print("-" * 80)
-        print(f"Average performance across {len(aggregated_pred_list)} Folds:")
-        pprint(mean_dict)
-        print("-" * 80)
-        return mean_dict
+                # Print confusion matrix for this fold
+                print(f"Confusion Matrix for Fold {fold_idx}:")
+                conf_matrix = confusion_matrix(y_test, y_pred)
+                _confusion_matrix_print(conf_matrix, self.labels)
+
+                # Print classification report for this fold
+                print(f"Classification Report for Fold {fold_idx}:")
+                print(classification_report(y_test, y_pred, zero_division=0))
+                print("*" * 80)
+
+                # Aggregate true labels and predictions
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(y_pred)
+
+        # Print overall classification report across all folds
+        # print("Classification Report Averaged Across All Folds:")
+        # self.classification_report = classification_report(
+        #     aggregated_true_labels,
+        #     aggregated_predictions,
+        #     zero_division=0,
+        #     output_dict=True,
+        # )
+        # print(
+        #     classification_report(
+        #         aggregated_true_labels, aggregated_predictions, zero_division=0
+        #     )
+        # )
+        # print("-" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
@@ -1731,6 +1759,155 @@ def print_pipeline(pipeline):
     print()
 
 
+# def report_model_metrics(
+#     model,
+#     X_valid=None,
+#     y_valid=None,
+#     threshold=0.5,
+#     print_results=True,
+# ):
+#     """
+#     Generate a DataFrame of model performance metrics for binary, multiclass,
+#     or regression problems.
+
+#     Parameters:
+#     -----------
+#     model : fitted model
+#         The trained model with a `predict_proba` or `predict` method.
+
+#     X_valid : DataFrame, optional
+#         The feature set used for validating the model(s).
+
+#     y_valid : Series or array-like, optional
+#         The true labels for the validation set.
+
+#     threshold : float, default=0.5
+#         The threshold for binary classification.
+
+#     Returns:
+#     --------
+#     metrics_df : DataFrame
+#         A DataFrame containing calculated metrics for each class (multiclass),
+#         overall metrics (binary), or regression metrics, including:
+#         - For classification: Precision/PPV, Average Precision, Sensitivity,
+#           Specificity, AUC ROC, Brier Score
+#         - For regression: RMSE, MAE, R^2, Explained Variance
+#     """
+
+#     def calculate_metrics(model, X, y, threshold):
+#         """
+#         Calculate metrics for binary, multiclass classification, or regression.
+#         """
+#         if model.model_type == "regression":
+#             # Regression metrics
+#             y_pred = model.predict(X)
+#             return {
+#                 "Mean Absolute Error (MAE)": mean_absolute_error(y, y_pred),
+#                 "Mean Squared Error (MSE)": mean_squared_error(y, y_pred),
+#                 "Root Mean Squared Error (RMSE)": np.sqrt(
+#                     mean_squared_error(y, y_pred)
+#                 ),
+#                 "R² Score": r2_score(y, y_pred),
+#                 "Explained Variance": explained_variance_score(y, y_pred),
+#             }
+#         elif hasattr(model, "multi_label") and model.multi_label:
+#             # Multiclass metrics
+#             y_pred = np.argmax(model.predict_proba(X), axis=1)
+#             report = classification_report(
+#                 y,
+#                 y_pred,
+#                 output_dict=True,
+#                 target_names=model.class_labels,
+#                 zero_division=0,
+#             )
+#             metrics = []
+#             for label, scores in report.items():
+#                 if label in model.class_labels:
+#                     metrics.append(
+#                         {
+#                             "Class": label,
+#                             "Precision": scores.get("precision", 0),
+#                             "Recall": scores.get("recall", 0),
+#                             "F1-Score": scores.get("f1-score", 0),
+#                         }
+#                     )
+#             weighted_metrics = {
+#                 "Class": "Weighted Avg",
+#                 "Precision": report["weighted avg"]["precision"],
+#                 "Recall": report["weighted avg"]["recall"],
+#                 "F1-Score": report["weighted avg"]["f1-score"],
+#                 "Accuracy": report["accuracy"],
+#             }
+#             metrics.append(weighted_metrics)
+#             return pd.DataFrame(metrics)
+#         else:
+#             # Binary classification metrics
+#             y_pred_proba = model.predict_proba(X)[:, 1]
+#             y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
+#             tn, fp, fn, tp = confusion_matrix(y, y_pred).ravel()
+#             return {
+#                 "Precision/PPV": precision_score(y, y_pred),
+#                 "Average Precision": average_precision_score(y, y_pred_proba),
+#                 "Sensitivity": recall_score(y, y_pred),
+#                 "Specificity": tn / (tn + fp),
+#                 "AUC ROC": roc_auc_score(y, y_pred_proba),
+#                 "Brier Score": brier_score_loss(y, y_pred_proba),
+#             }
+
+#     if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
+#         print("\nRunning k-fold model metrics...\n")
+#         aggregated_metrics = []
+#         for fold_idx, (train, test) in enumerate(
+#             model.kf.split(X_valid, y_valid), start=1
+#         ):
+#             X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
+#             y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
+
+#             # Fit and predict for this fold
+#             model.fit(X_train, y_train)
+
+#             # Calculate metrics using existing logic
+#             fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
+
+#             fold_metrics_df = pd.DataFrame(fold_metrics, index=[f"Fold {fold_idx}"])
+#             aggregated_metrics.append(fold_metrics_df)
+
+#             # Print fold-specific metrics
+#             if print_results:
+#                 print(f"Metrics for Fold {fold_idx}:")
+#                 print(fold_metrics_df.T)
+#                 print("*" * 80)
+
+#         # Combine metrics from all folds
+#         all_folds_df = pd.concat(aggregated_metrics)
+#         avg_metrics_df = all_folds_df.mean(axis=0).to_frame(name="Average").T
+
+#         if print_results:
+#             print("\nAverage Metrics Across All Folds:")
+#             print(avg_metrics_df.T)
+#             print("-" * 80)
+
+#         return avg_metrics_df
+#     else:
+#         # Standard single validation logic
+#         metrics = calculate_metrics(model, X_valid, y_valid, threshold)
+
+#         metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
+
+#         if print_results:
+#             print("*" * 80)
+#             print(f"Report Model Metrics: {model.estimator_name}")
+#             print()
+#             for key, value in metrics.items():
+#                 print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
+#                 ## Add a separator after each class or section
+#                 if "F1-Score" in key:  ## Check for class end or specific sections
+#                     print("-" * 80)  ## Regular dashed line separator
+#             print("*" * 80)
+
+#         return metrics_df
+
+
 def report_model_metrics(
     model,
     X_valid=None,
@@ -1766,92 +1943,187 @@ def report_model_metrics(
         - For regression: RMSE, MAE, R^2, Explained Variance
     """
 
-    if not hasattr(model, "model_type"):
-        model_type = getattr(model, "model_type", None)
-        if not model_type:
-            raise ValueError(
-                "The `model_type` attribute is missing. Ensure it is set for the model or pipeline."
+    def calculate_metrics(model, X, y, threshold):
+        """
+        Calculate metrics for binary, multiclass classification, or regression.
+        """
+        if model.model_type == "regression":
+            # Regression metrics
+            y_pred = model.predict(X)
+            return {
+                "Metric": [
+                    "Mean Absolute Error (MAE)",
+                    "Mean Squared Error (MSE)",
+                    "Root Mean Squared Error (RMSE)",
+                    "R² Score",
+                    "Explained Variance",
+                ],
+                "Value": [
+                    mean_absolute_error(y, y_pred),
+                    mean_squared_error(y, y_pred),
+                    np.sqrt(mean_squared_error(y, y_pred)),
+                    r2_score(y, y_pred),
+                    explained_variance_score(y, y_pred),
+                ],
+            }
+        elif hasattr(model, "multi_label") and model.multi_label:
+            # Multiclass metrics
+            y_pred = np.argmax(model.predict_proba(X), axis=1)
+            report = classification_report(
+                y,
+                y_pred,
+                output_dict=True,
+                target_names=model.class_labels,
+                zero_division=0,
             )
+            metrics = []
+            for label, scores in report.items():
+                if label in model.class_labels:
+                    metrics.extend(
+                        [
+                            {
+                                "Class": label,
+                                "Metric": "Precision",
+                                "Value": scores.get("precision", 0),
+                            },
+                            {
+                                "Class": label,
+                                "Metric": "Recall",
+                                "Value": scores.get("recall", 0),
+                            },
+                            {
+                                "Class": label,
+                                "Metric": "F1-Score",
+                                "Value": scores.get("f1-score", 0),
+                            },
+                        ]
+                    )
+            metrics.extend(
+                [
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Precision",
+                        "Value": report["weighted avg"]["precision"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Recall",
+                        "Value": report["weighted avg"]["recall"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "F1-Score",
+                        "Value": report["weighted avg"]["f1-score"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Accuracy",
+                        "Value": report["accuracy"],
+                    },
+                ]
+            )
+            return pd.DataFrame(metrics)
+        else:
+            # Binary classification metrics
+            y_pred_proba = model.predict_proba(X)[:, 1]
+            y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
+            tn, fp, fn, tp = confusion_matrix(y, y_pred).ravel()
+            return {
+                "Metric": [
+                    "Precision/PPV",
+                    "Average Precision",
+                    "Sensitivity",
+                    "Specificity",
+                    "AUC ROC",
+                    "Brier Score",
+                ],
+                "Value": [
+                    precision_score(y, y_pred),
+                    average_precision_score(y, y_pred_proba),
+                    recall_score(y, y_pred),
+                    tn / (tn + fp),
+                    roc_auc_score(y, y_pred_proba),
+                    brier_score_loss(y, y_pred_proba),
+                ],
+            }
 
-    metrics = {}
+    if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
+        print("\nRunning k-fold model metrics...\n")
+        aggregated_metrics = []
+        for fold_idx, (train, test) in enumerate(
+            model.kf.split(X_valid, y_valid), start=1
+        ):
+            X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
+            y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
 
-    if model.model_type == "regression":
-        # Regression metrics
-        if not hasattr(model, "predict"):
-            raise ValueError("The model must have a `predict` method for regression.")
-        y_pred = model.predict(X_valid)
-        metrics = {
-            "Mean Absolute Error (MAE)": mean_absolute_error(y_valid, y_pred),
-            "Mean Squared Error (MSE)": mean_squared_error(y_valid, y_pred),
-            "Root Mean Squared Error (RMSE)": np.sqrt(
-                mean_squared_error(y_valid, y_pred)
-            ),
-            "R² Score": r2_score(y_valid, y_pred),
-            "Explained Variance": explained_variance_score(y_valid, y_pred),
-        }
+            # Fit and predict for this fold
+            model.fit(X_train, y_train)
 
-    elif hasattr(model, "multi_label") and model.multi_label:
-        # Multiclass metrics
-        y_pred_proba = model.predict_proba(X_valid)
-        y_pred = np.argmax(y_pred_proba, axis=1)
-        report = classification_report(
-            y_valid,
-            y_pred,
-            output_dict=True,
-            target_names=model.class_labels,
-            zero_division=0,
-        )
-        for key, values in report.items():
-            if isinstance(values, dict):  # Skip overall averages (accuracy)
-                metrics[f"{key} Precision/PPV"] = values["precision"]
-                metrics[f"{key} Sensitivity/Recall"] = values["recall"]
-                metrics[f"{key} F1-Score"] = values["f1-score"]
-        metrics["Weighted Average Precision"] = precision_score(
-            y_valid, y_pred, average="weighted"
-        )
-        metrics["Weighted Average Recall"] = recall_score(
-            y_valid, y_pred, average="weighted"
-        )
-        metrics["Multiclass AUC ROC"] = roc_auc_score(
-            y_valid, y_pred_proba, multi_class="ovr"
-        )
+            # Calculate metrics using existing logic
+            fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
+
+            if isinstance(fold_metrics, pd.DataFrame):
+                fold_metrics["Fold"] = fold_idx
+                aggregated_metrics.append(fold_metrics)
+            else:
+                fold_metrics_df = pd.DataFrame(fold_metrics, index=[f"Fold {fold_idx}"])
+                aggregated_metrics.append(fold_metrics_df)
+
+            # Print fold-specific metrics
+            if print_results:
+                print(f"Metrics for Fold {fold_idx}:")
+                if isinstance(fold_metrics, pd.DataFrame):
+                    print(fold_metrics)
+                else:
+                    print(pd.DataFrame(fold_metrics, index=[0]).T)
+                print("*" * 80)
+
+        # Combine metrics from all folds
+        if isinstance(aggregated_metrics[0], pd.DataFrame):
+            all_folds_df = pd.concat(aggregated_metrics)
+            avg_metrics_df = (
+                all_folds_df.drop(columns=["Fold"])
+                .mean(axis=0)
+                .to_frame(name="Average")
+                .T
+            )
+        else:
+            all_folds_df = pd.concat(aggregated_metrics)
+            avg_metrics_df = all_folds_df.mean(axis=0).to_frame(name="Average").T
+
+        if print_results:
+            print("\nAverage Metrics Across All Folds:")
+            print(avg_metrics_df.T)
+            print("-" * 80)
+
+        return avg_metrics_df
     else:
-        # Binary metrics
-        if not hasattr(model, "predict_proba"):
-            raise ValueError(
-                "The model must have a `predict_proba` method for binary classification."
-            )
-        y_pred_proba = model.predict_proba(X_valid)[:, 1]
-        y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
-        tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
-        precision = precision_score(y_valid, y_pred)
-        recall = recall_score(y_valid, y_pred)
-        roc_auc = roc_auc_score(y_valid, y_pred_proba)
-        brier_score = brier_score_loss(y_valid, y_pred_proba)
-        avg_precision = average_precision_score(y_valid, y_pred_proba)
-        specificity = tn / (tn + fp)
+        # Standard single validation logic
+        metrics = calculate_metrics(model, X_valid, y_valid, threshold)
 
-        metrics = {
-            "Precision/PPV": precision,
-            "Average Precision": avg_precision,
-            "Sensitivity": recall,
-            "Specificity": specificity,
-            "AUC ROC": roc_auc,
-            "Brier Score": brier_score,
-        }
+        if isinstance(metrics, pd.DataFrame):
+            if print_results:
+                print("*" * 80)
+                print(f"Report Model Metrics: {model.estimator_name}")
+                print()
+                print(metrics)
+                print("*" * 80)
+            return metrics
+        else:
+            metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
 
-    metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
+            if print_results:
+                print("*" * 80)
+                print(f"Report Model Metrics: {model.estimator_name}")
+                print()
+                for key, value in metrics.items():
+                    print(
+                        f"{key}: {value:.4f}"
+                        if isinstance(value, float)
+                        else f"{value}"
+                    )
+                    # Add a separator after each class or section
+                    if "F1-Score" in key:  ## Check for class end or specific sections
+                        print("-" * 80)  ## Regular dashed line separator
 
-    ## Print metrics in green with a separator between classes
-    if print_results:
-        print("*" * 80)
-        print(f"Report Model Metrics: {model.estimator_name}")  # new code
-        print()
-        for key, value in metrics.items():
-            print(f"{key}: {value:.4f}" if isinstance(value, float) else f"{value}")
-            ## Add a separator after each class or section
-            if "F1-Score" in key:  ## Check for class end or specific sections
-                print("-" * 80)  ## Regular dashed line separator
-        print("*" * 80)
-
-    return metrics_df
+            return metrics_df
