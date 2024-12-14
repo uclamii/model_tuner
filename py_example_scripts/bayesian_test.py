@@ -4,6 +4,12 @@ from sklearn.datasets import load_breast_cancer
 from model_tuner.model_tuner_utils import Model
 from imblearn.over_sampling import SMOTE
 from skopt.space import Real, Categorical, Integer
+import model_tuner
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]

@@ -7,6 +7,11 @@ from sklearn.ensemble import RandomForestClassifier
 
 from sklearn.datasets import load_iris
 
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
+
 data = load_iris()
 X = data.data
 y = data.target
