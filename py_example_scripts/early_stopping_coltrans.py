@@ -14,6 +14,7 @@ print(f"Model Tuner version: {model_tuner.__version__}")
 print(f"Model Tuner authors: {model_tuner.__author__}")
 print()
 
+
 titanic = sns.load_dataset("titanic")
 titanic.head()
 X = titanic[[col for col in titanic.columns if col != "survived"]]

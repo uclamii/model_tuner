@@ -1,55 +1,40 @@
-import pandas as pd
-import numpy as np
-import os
-import sys
-from imblearn.over_sampling import SMOTE
-
-from sklearn.datasets import make_classification
+from catboost import CatBoostClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from model_tuner.model_tuner_utils import Model, report_model_metrics
-from model_tuner.bootstrapper import evaluate_bootstrap_metrics
-from model_tuner.pickleObjects import dumpObjects, loadObjects
+from model_tuner.model_tuner_utils import Model
+import model_tuner
 
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
+
+estimator = CatBoostClassifier(verbose=0)
 bc = load_breast_cancer(as_frame=True)["frame"]
 bc_cols = [cols for cols in bc.columns if "target" not in cols]
+
+
 X = bc[bc_cols]
 y = bc["target"]
 
-from xgboost import XGBClassifier
-
-
-estimator = XGBClassifier(
-    objective="binary:logistic",
-)
-
-estimator_name = "xgb"
-xgbearly = True
+estimator_name = "cat"
 
 tuned_parameters = {
-    f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
+    f"{estimator_name}__depth": [10],
     f"{estimator_name}__learning_rate": [1e-4],
     f"{estimator_name}__n_estimators": [30],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
-    f"{estimator_name}__eval_metric": ["logloss"],
+    f"{estimator_name}__eval_metric": ["Logloss"],
 }
 
-kfold = False
-calibrate = False
-
-
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
 model = Model(
-    name="XGBoost Early",
-    estimator_name=estimator_name,
+    name="Catboost Early",
     model_type="classification",
-    calibrate=calibrate,
+    estimator_name=estimator_name,
     estimator=estimator,
     pipeline_steps=[],
-    kfold=kfold,
     stratify_y=True,
     grid=tuned_parameters,
     randomized_grid=False,
@@ -58,7 +43,6 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
-    imbalance_sampler=SMOTE(random_state=42),
 )
 
 
@@ -72,18 +56,8 @@ model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
-
 print("Test Metrics")
 model.return_metrics(X_test, y_test)
-
-print("Report Model Metrics")
-print()
-report_model_metrics(
-    model=model,
-    X_valid=X_test,
-    y_valid=y_test,
-)
-
 
 y_prob = model.predict_proba(X_test)
 

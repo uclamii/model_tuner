@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 
-import model_tuner
 from model_tuner.model_tuner_utils import Model, report_model_metrics
 from sklearn.impute import SimpleImputer
 from xgboost import XGBClassifier
@@ -12,17 +11,14 @@ from sklearn.compose import ColumnTransformer
 from sklearn.datasets import load_iris
 
 print()
-print(f"Model Tuner information: {model_tuner.__version__, model_tuner.__author__}")
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
 print()
 
 data = load_iris()
-
-## Assign class names to the target
-class_names = data.target_names
-print(f"Iris Class Names: {class_names}")
-
 X = data.data
 y = data.target
+
 
 X = pd.DataFrame(X)
 y = pd.DataFrame(y)
@@ -80,7 +76,7 @@ model = Model(
     scoring=["roc_auc_ovr"],
     n_jobs=-2,
     random_state=42,
-    class_labels=class_names,
+    class_labels=["Setosa", "Versicolor", "Virginica"],
 )
 
 
