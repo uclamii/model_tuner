@@ -3,6 +3,12 @@ from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
 from model_tuner.model_tuner_utils import Model
+import model_tuner
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 
 estimator = CatBoostClassifier(verbose=0)
