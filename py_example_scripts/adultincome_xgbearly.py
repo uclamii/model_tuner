@@ -13,6 +13,12 @@ if __name__ == "__main__":
     from sklearn.pipeline import Pipeline
     from sklearn.compose import ColumnTransformer
     from model_tuner import Model
+    import model_tuner
+
+    print()
+    print(f"Model Tuner version: {model_tuner.__version__}")
+    print(f"Model Tuner authors: {model_tuner.__author__}")
+    print()
 
     # fetch dataset
     adult = fetch_ucirepo(id=2)
