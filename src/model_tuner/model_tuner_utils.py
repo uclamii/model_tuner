@@ -1975,8 +1975,5 @@ def report_model_metrics(
                         if isinstance(value, float)
                         else f"{value}"
                     )
-                    # Add a separator after each class or section
-                    if "F1-Score" in key:  ## Check for class end or specific sections
-                        print("-" * 80)  ## Regular dashed line separator
 
             return metrics_df
