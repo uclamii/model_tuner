@@ -2,6 +2,7 @@ from model_tuner import Model, report_model_metrics
 
 import pandas as pd
 import numpy as np
+import model_tuner
 
 from sklearn.linear_model import Lasso, Ridge, SGDRegressor
 from xgboost import XGBRegressor
@@ -16,6 +17,11 @@ from sklearn.exceptions import DataConversionWarning
 
 warnings.filterwarnings(action="ignore", category=DataConversionWarning)
 warnings.simplefilter(action="ignore", category=UserWarning)
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 # Direct download link to the Excel file
 url = (
