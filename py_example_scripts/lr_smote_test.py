@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import model_tuner
 
 from sklearn.datasets import make_classification
 
@@ -17,6 +18,11 @@ from sklearn.linear_model import LogisticRegression
 
 
 from ucimlrepo import fetch_ucirepo
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 # fetch dataset
 aids_clinical_trials_group_study_175 = fetch_ucirepo(id=890)
