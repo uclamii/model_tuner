@@ -578,23 +578,6 @@ def test_empty_param_grid(lr_model_parameters):
     # set to paramGrid object
     assert isinstance(model.grid, ParameterGrid)  # Should initialize without error
 
-
-# @pytest.fixture
-# def model():
-#     mock_steps = [
-#         ("preprocess_scaler", StandardScaler()),
-#         ("feature_selection_kbest", SelectKBest(k=2)),
-#     ]
-#     return Model(
-#         name="TestModel",
-#         estimator_name="mock_estimator",
-#         estimator=MagicMock(),
-#         pipeline_steps=mock_steps,
-#         model_type="classification",
-#         grid=[],
-#     )
-
-
 from unittest.mock import MagicMock, patch
 
 
@@ -635,3 +618,34 @@ def test_get_feature_selection_pipeline(model):
     print(pipeline.steps)
     print(expected_steps)
     assert pipeline.steps == expected_steps
+
+
+def test_pipeline_structure(model):
+    """Test the structure of the pipeline."""
+    pipeline = model.get_preprocessing_pipeline()
+    assert isinstance(pipeline, Pipeline), "The output should be a Pipeline instance."
+    
+    # Check if the pipeline contains a scaler
+    print(pipeline)
+    scaler = pipeline.named_steps.get('preprocess_scaler_step_0', None)
+    assert isinstance(scaler, StandardScaler), "Pipeline should include a scaler."
+
+def test_pipeline_transform(classification_data, model):
+    """Test the pipeline transformation."""
+    X, y = classification_data
+    pipeline = model.get_preprocessing_pipeline()
+    
+    transformed_data = pipeline.fit_transform(X)
+    assert transformed_data is not None, "Transformed data should not be None."
+    assert isinstance(transformed_data, np.ndarray), "Transformed data should be a numpy array."
+
+def test_pipeline_handles_empty_data(model):
+    """Test the pipeline with empty data."""
+    pipeline = model.get_preprocessing_pipeline()
+    
+    empty_data = pd.DataFrame({
+        'numerical': [],
+        'categorical': []
+    })
+    with pytest.raises(ValueError):
+        pipeline.fit_transform(empty_data) # standard scaler should raise an error
