@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
 
 from sklearn.datasets import load_iris
+import model_tuner
 
 print()
 print(f"Model Tuner version: {model_tuner.__version__}")

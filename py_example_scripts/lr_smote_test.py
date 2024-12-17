@@ -8,9 +8,6 @@ from sklearn.datasets import make_classification
 
 from sklearn.datasets import load_breast_cancer
 from imblearn.over_sampling import SMOTE
-
-from functions import *
-
 from model_tuner.model_tuner_utils import Model
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects

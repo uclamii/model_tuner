@@ -123,6 +123,7 @@ class Model:
         calibration_method="sigmoid",
         custom_scorer=[],
         bayesian=False,
+        sort_preprocess=True,
     ):
 
         # Check if model_type is provided and valid
@@ -140,6 +141,8 @@ class Model:
         self.multi_label = multi_label
         self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
+
+        self.preproc_sort = sort_preprocess
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
@@ -308,14 +311,14 @@ class Model:
                     name = f"preprocess_column_transformer_{name}"
                 column_transformer_steps.append((name, transformer))
             elif is_preprocessing_step(transformer):
-                if is_imputer(transformer):
+                if is_imputer(transformer) and self.preproc_sort:
                     # Imputation steps
                     if not name:
                         name = f"preprocess_imputer_step_{len(imputation_steps)}"
                     else:
                         name = f"preprocess_imputer_{name}"
                     imputation_steps.append((name, transformer))
-                elif is_scaler(transformer):
+                elif is_scaler(transformer) and self.preproc_sort:
                     # Scaling steps
                     if not name:
                         name = f"preprocess_scaler_step_{len(scaling_steps)}"
@@ -348,13 +351,16 @@ class Model:
                     name = f"other_{name}"
                 other_steps.append((name, transformer))
 
-        # Assemble the preprocessing steps in the correct order
-        preprocessing_steps = (
-            column_transformer_steps
-            + imputation_steps
-            + scaling_steps
-            + other_preprocessing_steps
-        )
+        # Scale first then impute
+        if self.preproc_sort:
+            preprocessing_steps = (
+                column_transformer_steps
+                + scaling_steps
+                + imputation_steps
+                + other_preprocessing_steps
+            )
+        else:
+            preprocessing_steps = column_transformer_steps + other_preprocessing_steps
 
         # Initialize the main pipeline steps list
         main_pipeline_steps = []

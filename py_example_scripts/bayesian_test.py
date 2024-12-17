@@ -5,6 +5,7 @@ from model_tuner.model_tuner_utils import Model
 from imblearn.over_sampling import SMOTE
 from skopt.space import Real, Categorical, Integer
 import model_tuner
+from sklearn.preprocessing import StandardScaler
 
 print()
 print(f"Model Tuner version: {model_tuner.__version__}")
@@ -45,7 +46,7 @@ model = Model(
     model_type="classification",
     calibrate=calibrate,
     estimator=estimator,
-    pipeline_steps=[SimpleImputer()],
+    pipeline_steps=[SimpleImputer(), StandardScaler()],
     kfold=True,
     bayesian=True,
     stratify_y=True,
@@ -56,6 +57,7 @@ model = Model(
     n_jobs=-2,
     random_state=42,
     imbalance_sampler=SMOTE(),
+    sort_preprocess=False,
 )
 
 
