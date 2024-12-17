@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+import model_tuner
 from model_tuner.model_tuner_utils import Model
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
