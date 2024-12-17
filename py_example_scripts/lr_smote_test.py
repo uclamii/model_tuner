@@ -9,9 +9,7 @@ from sklearn.datasets import make_classification
 from sklearn.datasets import load_breast_cancer
 from imblearn.over_sampling import SMOTE
 
-from functions import *
-
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects
 from sklearn.linear_model import LogisticRegression
@@ -134,3 +132,7 @@ y_prob = model.predict_proba(X_test)
 
 ### F1 Weighted
 y_pred = model.predict(X_test, optimal_threshold=True)
+
+### Report Model Metrics
+
+report_model_metrics(model, X_test, y_test)
