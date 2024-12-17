@@ -598,6 +598,26 @@ def model():
         grid=[],
     )
 
+from imblearn.over_sampling import SMOTE
+
+@pytest.fixture
+def model_with_sampler():
+    mock_steps = [
+        (StandardScaler()),
+        # (SimpleImputer()),
+        ("kbest", SelectKBest(k=2)),
+        ("classifier", MagicMock()),
+    ]
+    return Model(
+        name="TestModel",
+        estimator_name="mock_estimator",
+        estimator=MagicMock(),
+        pipeline_steps=mock_steps,
+        model_type="classification",
+        grid=[],
+        imbalance_sampler=SMOTE(),
+    )
+
 
 def test_get_preprocessing_and_feature_selection_pipeline(model):
     pipeline = model.get_preprocessing_and_feature_selection_pipeline()
@@ -649,3 +669,69 @@ def test_pipeline_handles_empty_data(model):
     })
     with pytest.raises(ValueError):
         pipeline.fit_transform(empty_data) # standard scaler should raise an error
+
+
+@pytest.fixture
+def imbalanced_data():
+    """Fixture for imbalanced data."""
+    X_train = pd.DataFrame({
+        'feature1': [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6,1, 2, 3, 4, 5, 6],
+        'feature2': [10, 20, 30, 40, 50, 60, 10, 20, 30, 40, 50, 60, 10, 20, 30, 40, 50, 60]
+    })
+    y_train = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1])
+    return X_train, y_train
+
+@pytest.fixture
+def balanced_data():
+    """Fixture for balanced data."""
+    X_train = pd.DataFrame({
+        'feature1': [1, 2, 3, 4],
+        'feature2': [10, 20, 30, 40]
+    })
+    y_train = np.array([0, 1, 0, 1])
+    return X_train, y_train
+
+@pytest.fixture
+def single_class_data():
+    """Fixture for single-class data."""
+    X_train = pd.DataFrame({
+        'feature1': [1, 2, 3, 4],
+        'feature2': [10, 20, 30, 40]
+    })
+    y_train = np.array([0, 0, 0, 0])
+    return X_train, y_train
+
+def test_process_imbalance_sampler_imbalanced_data(capfd, imbalanced_data, model_with_sampler):
+    """Test process_imbalance_sampler with imbalanced data."""
+    X_train, y_train = imbalanced_data
+    
+    model_with_sampler.process_imbalance_sampler(X_train, y_train)
+    
+    # Capture printed output
+    captured = capfd.readouterr()
+
+    assert "Distribution of y values after resampling: 0" in captured.out
+    assert "0    12" in captured.out, "Should correctly identify the majority class."
+    assert "1    12" in captured.out, "Should print correct count for minority class."
+
+def test_process_imbalance_sampler_balanced_data(capfd, balanced_data, model_with_sampler):
+    """Test process_imbalance_sampler with already balanced data."""
+    X_train, y_train = balanced_data
+    
+    model_with_sampler.process_imbalance_sampler(X_train, y_train)
+    
+    # Capture printed output
+    captured = capfd.readouterr()
+    
+    # Validate that the data remains unchanged
+    assert "Distribution of y values after resampling: 0" in captured.out
+    assert "0    2" in captured.out, "Should correctly identify the majority class."
+    assert "1    2" in captured.out, "Should print correct count for minority class."
+
+
+def test_process_imbalance_sampler_single_class_data(single_class_data, model_with_sampler):
+    """Test process_imbalance_sampler with single-class data."""
+    X_train, y_train = single_class_data
+    
+    with pytest.raises(ValueError):
+        model_with_sampler.process_imbalance_sampler(X_train, y_train)
