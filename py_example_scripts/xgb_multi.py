@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+import model_tuner
 from model_tuner.model_tuner_utils import Model, report_model_metrics
 from sklearn.impute import SimpleImputer
 from xgboost import XGBClassifier
