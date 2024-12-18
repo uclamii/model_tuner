@@ -735,3 +735,145 @@ def test_process_imbalance_sampler_single_class_data(single_class_data, model_wi
     
     with pytest.raises(ValueError):
         model_with_sampler.process_imbalance_sampler(X_train, y_train)
+
+
+@pytest.fixture
+def calibrated_lr_model():
+    """Fixture to create a simple Calibrated Logistic Regression model."""
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=False,
+        calibrate=True,
+        calibration_method="sigmoid",
+    )
+
+@pytest.fixture
+def calibrated_kfold_lr_model():
+    """Fixture to create a simple Calibrated Logistic Regression model."""
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=True,
+        calibrate=True,
+        calibration_method="sigmoid",
+    )
+    
+
+from sklearn.calibration import CalibratedClassifierCV
+
+def test_calibrate_model_default_method(calibrated_lr_model, classification_data):
+    """Test that calibrateModel works with the default method."""
+    X, y = classification_data
+
+    calibration_methods = ["sigmoid", "isotonic",]
+
+    for cab_method in calibration_methods:
+        model = calibrated_lr_model
+
+        # define cab method
+        model.calibration_method = cab_method
+
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # calibrate model
+        model.calibrateModel(X,y)
+
+        # Ensure the calibrated model is an instance of CalibratedClassifierCV
+        assert isinstance(model.estimator, CalibratedClassifierCV), "Expected a CalibratedClassifierCV instance."
+        
+        # Ensure predictions are probabilistic
+        probabilities = model.predict_proba(X)
+        assert np.allclose(probabilities.sum(axis=1), 1), "Probabilities should sum to 1 for each instance."
+
+def test_calibrate_kfold_model_default_method(calibrated_kfold_lr_model, classification_data):
+    """Test that calibrateModel works with the default method."""
+    X, y = classification_data
+
+    calibration_methods = ["sigmoid","isotonic",]
+
+    for cab_method in calibration_methods:
+        model = type(calibrated_kfold_lr_model)(
+            name="test_model",
+            estimator_name="logistic_regression",
+            grid={"logistic_regression__C": [0.1, 1, 10]},
+            estimator=LogisticRegression(),  # Or provide a pre-initialized estimator if needed
+            model_type="classification",
+            kfold=True,
+            calibrate=True,
+            calibration_method="sigmoid",
+        )
+
+        # define cab method
+        model.calibration_method = cab_method
+
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # calibrate model
+        model.calibrateModel(X,y)
+
+        # Ensure the calibrated model is an instance of CalibratedClassifierCV
+        assert isinstance(model.estimator, CalibratedClassifierCV), "Expected a CalibratedClassifierCV instance."
+        
+        # Ensure predictions are probabilistic
+        probabilities = model.predict_proba(X)
+        assert np.allclose(probabilities.sum(axis=1), 1), "Probabilities should sum to 1 for each instance."
+
+def test_calibrate_model_invalid_method(calibrated_lr_model, classification_data):
+    """Test calibrateModel with an unsupported method."""
+    
+    X, y = classification_data
+
+    model = calibrated_lr_model
+
+    # define cab method
+    model.calibration_method = "unsupported method"
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+    
+    with pytest.raises(Exception):
+        # calibrate model
+        model.calibrateModel(X,y)
+
+def test_calibrate_model_edge_probabilities(calibrated_lr_model, classification_data):
+    """Test calibrateModel with edge probabilities."""
+    X, y = classification_data
+
+    model = calibrated_lr_model
+
+    # first need to do gridsearch
+    model.grid_search_param_tuning(X, y)
+
+    # Fit the model
+    model.fit(X, y)
+
+    # calibrate model
+    model.calibrateModel(X,y)
+    
+    # Simulate predictions near 0 and 1
+    probabilities = model.predict_proba(X)
+    assert np.all((probabilities >= 0) & (probabilities <= 1)), "Probabilities should be within [0, 1]."
