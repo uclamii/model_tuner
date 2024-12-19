@@ -90,7 +90,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-8-fit-the-model">Step 8: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-9-return-metrics-optional">Step 9: Return metrics (optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the model (if needed)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#classification-report-optional">Classification report (optional)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#recursive-feature-elimination-rfe">Recursive Feature Elimination (RFE)</a><ul>
@@ -158,6 +157,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return metrics (optional)</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id8">Report Model Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#classification-report-optional">Classification report (optional)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#bootstrap-metrics">Bootstrap metrics</a><ul>
@@ -886,25 +889,6 @@ roc_auc<span class="w"> </span>after<span class="w"> </span>calibration:<span cl
 <div class="no-click"><a class="reference internal image-reference" href="_images/calibration_plot.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/calibration_plot.png" style="width: 400px;" />
 </a>
 </div><div style="height: 50px;"></div></section>
-<section id="classification-report-optional">
-<h3>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h3>
-<p>A classification report is readily available at this stage, should you wish to
-print and examine it. A call to <code class="docutils literal notranslate"><span class="pre">print(model_tuner.classification_report)</span></code> will
-output it as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">              </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
-
-<span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">324</span>
-<span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.71<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">104</span>
-
-<span class="w">    </span>accuracy<span class="w">                           </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
-<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
-weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
-</pre></div>
-</div>
-</section>
 </section>
 <section id="recursive-feature-elimination-rfe">
 <h2>Recursive Feature Elimination (RFE)<a class="headerlink" href="#recursive-feature-elimination-rfe" title="Link to this heading"></a></h2>
@@ -2204,6 +2188,28 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 </pre></div>
 </div>
 </section>
+</section>
+</section>
+<section id="id8">
+<h1>Report Model Metrics<a class="headerlink" href="#id8" title="Link to this heading"></a></h1>
+<section id="classification-report-optional">
+<h2>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h2>
+<p>A classification report is readily available at this stage, should you wish to
+print and examine it. A call to <code class="docutils literal notranslate"><span class="pre">print(model_xgb.classification_report)</span></code> will
+output it as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="w">              </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
+
+<span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.91<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.92<span class="w">       </span><span class="m">324</span>
+<span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.71<span class="w">      </span><span class="m">0</span>.75<span class="w">       </span><span class="m">104</span>
+
+<span class="w">    </span>accuracy<span class="w">                           </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+<span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.85<span class="w">      </span><span class="m">0</span>.82<span class="w">      </span><span class="m">0</span>.84<span class="w">       </span><span class="m">428</span>
+weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">      </span><span class="m">0</span>.88<span class="w">       </span><span class="m">428</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="bootstrap-metrics">
