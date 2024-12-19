@@ -888,7 +888,9 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(self, X, y, threshold, True, print_per_fold)
+                        report_model_metrics(
+                            self, X, y, threshold, True, print_per_fold
+                        )
                     print("-" * 80)
                     print()
 
@@ -1936,8 +1938,10 @@ def report_model_metrics(
     if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
         print("\nRunning k-fold model metrics...\n")
         aggregated_metrics = []
-        for fold_idx, (train, test) in enumerate(
-            model.kf.split(X_valid, y_valid), start=1
+        for fold_idx, (train, test) in tqdm(
+            enumerate(model.kf.split(X_valid, y_valid), start=1),
+            total=model.kf.get_n_splits(),
+            desc="Processing Folds",
         ):
             X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
             y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
@@ -2013,6 +2017,7 @@ def report_model_metrics(
             print("-" * 80)
 
         return avg_metrics_df
+
     else:
         # Standard single validation logic
         metrics = calculate_metrics(model, X_valid, y_valid, threshold)
