@@ -22,10 +22,10 @@
 \
 
 Welcome to Model Tuner's Documentation!
-=======================================
+========================================
 
 .. important::
-   This documentation is for ``model_tuner`` version ``0.0.017a``.
+   This documentation is for ``model_tuner`` version ``0.0.023a``.
 
 
 What Does Model Tuner Offer?
@@ -47,7 +47,6 @@ Model Tuner is a versatile and powerful tool designed to facilitate the training
 - **Feature Selection**: Offers feature selection techniques such as ``SelectKBest`` and ``Recursive Feature Elimination (RFE)``.
 - **Imbalanced Learning**: Provides oversampling methods like ``ADASYN`` and ``SMOTE`` to handle imbalanced datasets.
 - **Multi-Class Label Support**: Currently under development to support multi-class classification tasks.
-
 
 
 .. _prerequisites:   

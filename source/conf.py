@@ -1,5 +1,6 @@
 import sphinx_rtd_theme
 import os
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -8,10 +9,12 @@ import os
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Model Tuner'
-copyright = '2024, UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis'
-author = 'UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis'
-release = '0.0.21a0'
+project = "Model Tuner"
+copyright = (
+    "2024, UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis"
+)
+author = "UCLA CTSI ML Team: Leonid Shpaner, Arthur Funnell, Panayiotis Petousis"
+release = "0.0.23a0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -39,21 +42,21 @@ intersphinx_mapping = {
 # copybutton_prompt_is_regexp = True
 
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
 
 # If your documentation is served from a subdirectory, set this to the subdirectory path
-html_baseurl = 'https://uclamii.github.io/model_tuner/'
+html_baseurl = "https://uclamii.github.io/model_tuner/"
 html_show_sourcelink = False
 
+
 def setup(app):
-    app.add_css_file('custom.css')
-    app.add_js_file('custom.js')
+    app.add_css_file("custom.css")
+    app.add_js_file("custom.js")

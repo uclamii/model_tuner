@@ -448,31 +448,21 @@ The following code defines the hyperparameter grid and configuration:
 
 **Key Configurations**
 
-1. **Early Stopping**: Set ``early_stopping_rounds`` to halt training when performance on the validation set stops improving.
+1. **Hyperparameter Grid**:
 
-2. **Hyperparameter Grid**:
+   - ``max_depth``: Limits the depth of each decision tree to prevent overfitting.
+   - ``learning_rate``: Controls the impact of each boosting iteration; smaller values require more boosting rounds.
+   - ``n_estimators``: Specifies the total number of boosting rounds.
+   - ``verbose``: Controls output during training; set to ``0`` for silent mode or ``1`` to display progress.
+   - ``eval_metric``: Measures model performance (e.g., ``logloss`` for binary classification), evaluating the negative log-likelihood.
+   - ``early_stopping_rounds``: Halts training early if validation performance does not improve after the specified number of rounds.
 
-   - ``max_depth``: Controls the maximum depth of each decision tree.
-   - ``learning_rate``: Determines the contribution of each tree (smaller values require more boosting rounds).
-   - ``n_estimators``: Specifies the number of boosting rounds.
-   - ``verbose``: Controls verbosity during training.
-   - ``eval_metric``: Evaluation metric for binary classification (e.g., ``logloss``).
-
-3. **General Settings**:
+2. **General Settings**:
 
    - Use ``randomized_grid=False`` to perform exhaustive grid search.
    - Set the number of iterations for randomized search with ``n_iter`` if needed.
 
-**Explanation of Hyperparameters**:
-
-- ``max_depth``: Prevents overfitting by limiting the depth of the trees.
-- ``learning_rate``: Controls the impact of each boosting iteration.
-- ``n_estimators``: Determines the total number of boosting rounds.
-- ``eval_metric``: For binary classification, ``logloss`` evaluates the model’s performance based on negative log-likelihood.
-- ``early_stopping_rounds``: Stops training early if no improvement is seen after a specified number of rounds.
-- ``verbose``: Use ``0`` to suppress output or ``1`` to display progress during training.
-
-By defining these hyperparameters, the grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.
+The grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.
 
 .. note::
 
@@ -552,12 +542,34 @@ to find the optimal hyperparameters for the ``XGBClassifier``. The
 hyperparameters specified in ``tuned_parameters``, evaluate each one using the 
 specified scoring metric, and select the best performing set.
 
+In this example, we pass an additional argument, ``f1_beta_tune=True``, which 
+adjusts the F1 score to weigh precision and recall differently during hyperparameter optimization.
+
+
+.. note::
+
+   Why Use ``f1_beta_tune=True``?
+
+   - Standard F1-Score: Balances precision and recall equally (``beta=1``).
+   - Custom Beta Values:
+
+      - With ``f1_beta_tune=True``, the model tunes the decision threshold to optimize a custom F1 score using the beta value specified internally.
+      - This is useful in scenarios where one metric (precision or recall) is more critical than the other.
+
+
 This method will:
 
 - **Split the Data**: The data will be split into training and validation sets. Since ``stratify_y=True``, the class distribution will be maintained across splits.
+
+   - After tuning, retrieve the training, validation, and test splits using:
+
+     - ``get_train_data`` for training data.
+     - ``get_valid_data`` for validation data.
+     - ``get_test_data`` for test data.
+
 - **Iterate Over Hyperparameters**: All combinations of hyperparameters defined in ``tuned_parameters`` will be tried since ``randomized_grid=False``.
 - **Early Stopping**: With ``boost_early=True`` and ``early_stopping_rounds`` set in the hyperparameters, the model will stop training early if the validation score does not improve.
-- **Scoring**: The model uses ``roc_auc`` (ROC AUC) as the scoring metric suitable for binary classification.
+- **Optimize for Scoring Metric**: The model uses ``roc_auc`` (ROC AUC) as the scoring metric suitable for binary classification.
 - **Select Best Model**: The hyperparameter set that yields the best validation score will be selected.
 
 
