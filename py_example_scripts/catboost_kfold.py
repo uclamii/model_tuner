@@ -63,4 +63,5 @@ model.return_metrics(
     print_per_fold=True,
 )
 
-# report_model_metrics(model, X, y)
+print(model.classification_report)
+
