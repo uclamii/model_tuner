@@ -142,6 +142,7 @@ Data/
 data_splits/
 structured_data_regressor/
 mlruns/
+src/
 Images/
 --stdin*/
 .DS_store
