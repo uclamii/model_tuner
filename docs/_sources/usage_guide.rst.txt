@@ -372,7 +372,7 @@ Step 1: Import Necessary libraries
     import pandas as pd
     import numpy as np
     from ucimlrepo import fetch_ucirepo
-    import xgboost as xgb
+    from xgboost import XGBClassifier
     from model_tuner import Model  
 
 Step 2: Load the dataset, define X, y
@@ -542,9 +542,9 @@ Step 7: Perform grid search parameter tuning and retrieve split data
    model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
    ## Get the training, validation, and test data
-   X_train, y_train = model_tuner.get_train_data(X, y)
-   X_valid, y_valid = model_tuner.get_valid_data(X, y)
-   X_test, y_test = model_tuner.get_test_data(X, y)
+   X_train, y_train = model_xgb.get_train_data(X, y)
+   X_valid, y_valid = model_xgb.get_valid_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
 
 With the model configured, the next step is to perform grid search parameter tuning 
 to find the optimal hyperparameters for the ``XGBClassifier``. The 
@@ -570,16 +570,16 @@ This method will:
    │ XGBClassifier   │
    └─────────────────┘
 
-   100%|██████████| 5/5 [00:19<00:00,  3.98s/it]
+   100%|██████████| 5/5 [00:47<00:00,  9.43s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.42it/s]Best score/param set found on validation set:
+   100%|██████████| 2/2 [00:00<00:00,  2.87it/s]Best score/param set found on validation set:
    {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
                'xgb__max_depth': 3,
                'xgb__n_estimators': 999},
-   'score': 0.9280033238366572}
-   Best roc_auc: 0.928 
+   'score': 0.9260891500474834}
+   Best roc_auc: 0.926 
 
 Step 8: Fit the model
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -608,34 +608,46 @@ Step 9: Return metrics (optional)
 
 You can use this function to evaluate the model by printing the output.
 
+.. code-block:: python
+
+   print("Validation Metrics")
+   model_xgb.return_metrics(
+      X=X_valid,
+      y=y_valid,
+      optimal_threshold=True,
+   )
+   print()
+
+
+   print("Test Metrics")
+   model_xgb.return_metrics(
+      X=X_test,
+      y=y_test,
+      optimal_threshold=True,
+   )
+   print()
+
 .. code-block:: bash
 
    Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  95 (tp)    9 (fn)
-           Neg  79 (fp)  245 (tn)
+   Actual: Pos  93 (tp)   11 (fn)
+           Neg  76 (fp)  248 (tn)
    --------------------------------------------------------------------------------
-   --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9280033238366572,
-   'Average Precision': 0.7992275185850191,
-   'Brier Score': 0.16713189436073958,
-   'Precision/PPV': 0.5459770114942529,
-   'Sensitivity': 0.9134615384615384,
-   'Specificity': 0.7561728395061729}
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
- 
-              0       0.96      0.76      0.85       324
-              1       0.55      0.91      0.68       104
 
-       accuracy                           0.79       428
-      macro avg       0.76      0.83      0.77       428
-   weighted avg       0.86      0.79      0.81       428
+             0        0.96      0.77      0.85       324
+             1        0.55      0.89      0.68       104
+
+       accuracy                           0.80       428
+      macro avg       0.75      0.83      0.77       428
+   weighted avg       0.86      0.80      0.81       428
 
    --------------------------------------------------------------------------------
 
@@ -643,28 +655,21 @@ You can use this function to evaluate the model by printing the output.
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  95 (tp)    9 (fn)
-           Neg  78 (fp)  246 (tn)
+   Actual: Pos  99 (tp)    6 (fn)
+           Neg  82 (fp)  241 (tn)
    --------------------------------------------------------------------------------
-   --------------------------------------------------------------------------------
-   {'AUC ROC': 0.934576804368471,
-   'Average Precision': 0.8023014087345259,
-   'Brier Score': 0.16628708993634742,
-   'Precision/PPV': 0.5491329479768786,
-   'Sensitivity': 0.9134615384615384,
-   'Specificity': 0.7592592592592593}
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
- 
-              0       0.96      0.76      0.85       324
-              1       0.55      0.91      0.69       104
 
-       accuracy                           0.80       428
+              0       0.98      0.75      0.85       323
+              1       0.55      0.94      0.69       105
+
+       accuracy                           0.79       428
       macro avg       0.76      0.84      0.77       428
-   weighted avg       0.86      0.80      0.81       428
+   weighted avg       0.87      0.79      0.81       428
 
    --------------------------------------------------------------------------------
 
@@ -703,23 +708,23 @@ See :ref:`this section <model_calibration>` for more information on model calibr
    Confusion matrix on validation set for roc_auc
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  70 (tp)   34 (fn)
-           Neg   9 (fp)  315 (tn)
+   Actual: Pos  74 (tp)   30 (fn)
+           Neg  20 (fp)  304 (tn)
    --------------------------------------------------------------------------------
 
-                 precision     recall  f1-score    support
+                 precision    recall  f1-score   support
 
-              0       0.90       0.97      0.94        324
-              1       0.89       0.67      0.77        104
+              0       0.91      0.94      0.92       324
+              1       0.79      0.71      0.75       104
 
-       accuracy                            0.90        428
-      macro avg       0.89       0.82      0.85        428
-   weighted avg       0.90       0.90      0.89        428
+       accuracy                           0.88       428
+      macro avg       0.85      0.82      0.84       428
+   weighted avg       0.88      0.88      0.88       428
 
    --------------------------------------------------------------------------------
-   roc_auc after calibration: 0.9280033238366572
+   roc_auc after calibration: 0.9260891500474834
 
 
 
@@ -766,12 +771,12 @@ See :ref:`this section <model_calibration>` for more information on model calibr
 
    <div class="no-click">
 
-.. image:: /../assets/calibration_curves.png
+.. image:: /../assets/calibration_plot.png
    :alt: Calibration Curve AIDs
    :align: center
    :width: 400px
 
-.. raw:: html
+.. raw:: html  
 
    </div>
 
@@ -788,19 +793,18 @@ output it as follows:
 
 .. code-block:: python 
 
-   print(model_tuner.classification_report)
+   print(model_xgb.classification_report)
 
 .. code-block:: bash
 
-              precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-            0      0.90      0.97      0.94       324
-            1      0.89      0.67      0.77       104
+              0       0.91      0.94      0.92       324
+              1       0.79      0.71      0.75       104
 
-     accuracy                          0.90       428
-    macro avg      0.89      0.82      0.85       428
- weighted avg      0.90      0.90      0.89       428
-
+       accuracy                           0.88       428
+      macro avg       0.85      0.82      0.84       428
+   weighted avg       0.88      0.88      0.88       428
 
 Recursive Feature Elimination (RFE)
 -------------------------------------
@@ -829,6 +833,11 @@ datasets, making it a robust choice for model optimization and dimensionality
 reduction.
 
 As an illustrative example, we will retrain the above model using RFE.
+
+.. code-block:: python
+
+   from sklearn.feature_selection import RFE
+   from sklearn.linear_model import ElasticNet
 
 We will begin by appending the feature selection technique to our :ref:`tuned parameters dictionary <xgb_hyperparams>`.
 
@@ -897,8 +906,8 @@ retaining a manageable subset of predictors.
    model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
    X_train, y_train = model_xgb.get_train_data(X, y)
-   X_test, y_test = model_xgb.get_test_data(X, y)
    X_valid, y_valid = model_xgb.get_valid_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
 
    model_xgb.fit(
       X_train,
@@ -940,9 +949,9 @@ retaining a manageable subset of predictors.
    │ XGBClassifier                   │
    └─────────────────────────────────┘
 
-   100%|██████████| 10/10 [00:35<00:00,  3.54s/it]
+   100%|██████████| 10/10 [00:27<00:00,  2.70s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.18it/s]
+   100%|██████████| 2/2 [00:00<00:00,  3.12it/s]
    Best score/param set found on validation set:
    {'params': {'feature_selection_rfe__n_features_to_select': 10,
                'xgb__early_stopping_rounds': 100,
@@ -957,25 +966,18 @@ retaining a manageable subset of predictors.
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
    Actual: Pos  94 (tp)   10 (fn)
            Neg  70 (fp)  254 (tn)
    --------------------------------------------------------------------------------
-   --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9324994064577399,
-   'Average Precision': 0.824824558125099,
-   'Brier Score': 0.1659495641324557,
-   'Precision/PPV': 0.573170731707317,
-   'Sensitivity': 0.9038461538461539,
-   'Specificity': 0.7839506172839507}
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
 
               0       0.96      0.78      0.86       324
               1       0.57      0.90      0.70       104
-
+ 
        accuracy                           0.81       428
       macro avg       0.77      0.84      0.78       428
    weighted avg       0.87      0.81      0.82       428
@@ -996,13 +998,6 @@ retaining a manageable subset of predictors.
            Neg  71 (fp)  253 (tn)
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.930051044634378,
-   'Average Precision': 0.8179574148939439,
-   'Brier Score': 0.16577081685033443,
-   'Precision/PPV': 0.5670731707317073,
-   'Sensitivity': 0.8942307692307693,
-   'Specificity': 0.7808641975308642}
-   --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
 
@@ -1019,6 +1014,9 @@ retaining a manageable subset of predictors.
    ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
 
+.. code-block:: python
+
+
 .. important::
 
    Passing ``feature_selection=True`` in conjunction with accounting for ``rfe`` for 
@@ -1028,7 +1026,7 @@ retaining a manageable subset of predictors.
    .. code-block:: bash
 
       Feature names selected:
-      ['offtrt', 'cd40', 'cd420', 'cd80', 'cd820']
+      ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
 
 Imbalanced Learning
