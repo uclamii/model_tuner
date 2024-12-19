@@ -54,4 +54,13 @@ y_prob = model.predict_proba(X)
 ### F1 Weighted
 y_pred = model.predict(X)
 
-metrics = model.return_metrics(X, y)
+model.return_metrics(
+    X,
+    y,
+    optimal_threshold=True,
+    print_threshold=True,
+    model_metrics=True,
+    print_per_fold=True,
+)
+
+print(model.classification_report)
