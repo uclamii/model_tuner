@@ -54,7 +54,6 @@ model = Model(
     class_labels=["1", "2", "3"],
 )
 
-
 model.grid_search_param_tuning(X, y)
 
 X_train, y_train = model.get_train_data(X, y)

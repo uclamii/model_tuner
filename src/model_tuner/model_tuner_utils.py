@@ -880,6 +880,15 @@ class Model:
                     print("The scores are computed on the full evaluation set." + "\n")
                     self.return_metrics_kfold(X, y, self.test_model, score)
 
+                    if optimal_threshold:
+                        threshold = self.threshold[self.scoring[0]]
+                    else:
+                        threshold = 0.5
+                    if model_metrics:
+                        report_model_metrics(self, X, y, threshold)
+                    print("-" * 80)
+                    print()
+
                 else:
                     self.regression_report_kfold(X, y, self.test_model, score)
 
@@ -1404,6 +1413,14 @@ class Model:
         if not hasattr(test_model, "estimator_name"):
             test_model.estimator_name = self.estimator_name
 
+        if score is not None:
+            threshold = self.threshold[score]
+        else:
+            threshold = self.threshold[self.scoring[0]]
+
+        if threshold == 0:
+            threshold = 0.5
+
         aggregated_true_labels = []
         aggregated_predictions = []
 
@@ -1447,21 +1464,6 @@ class Model:
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(y_pred)
-
-        # Print overall classification report across all folds
-        # print("Classification Report Averaged Across All Folds:")
-        # self.classification_report = classification_report(
-        #     aggregated_true_labels,
-        #     aggregated_predictions,
-        #     zero_division=0,
-        #     output_dict=True,
-        # )
-        # print(
-        #     classification_report(
-        #         aggregated_true_labels, aggregated_predictions, zero_division=0
-        #     )
-        # )
-        # print("-" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
@@ -1945,18 +1947,48 @@ def report_model_metrics(
             if isinstance(fold_metrics, pd.DataFrame):
                 fold_metrics["Fold"] = fold_idx
                 aggregated_metrics.append(fold_metrics)
-            else:
-                fold_metrics_df = pd.DataFrame(fold_metrics, index=[f"Fold {fold_idx}"])
-                aggregated_metrics.append(fold_metrics_df)
 
             # Print fold-specific metrics
             if print_results:
                 print(f"Metrics for Fold {fold_idx}:")
-                if isinstance(fold_metrics, pd.DataFrame):
-                    print(fold_metrics)
-                else:
-                    print(pd.DataFrame(fold_metrics, index=[0]).T)
+                print(fold_metrics)
                 print("*" * 80)
+
+        # Define the desired metric order
+        metric_order = [
+            "Precision/PPV",
+            "Average Precision",
+            "Sensitivity",
+            "Specificity",
+            "AUC ROC",
+            "Brier Score",
+        ]
+
+        # Combine metrics from all folds
+        if isinstance(aggregated_metrics[0], pd.DataFrame):
+            all_folds_df = pd.concat(aggregated_metrics)
+
+            # Group by Metric and calculate the mean for the Value column
+            avg_metrics_df = (
+                all_folds_df.groupby("Metric")["Value"].mean().reset_index()
+            )
+
+            # Reorder the DataFrame based on the metric order
+            avg_metrics_df["Metric"] = pd.Categorical(
+                avg_metrics_df["Metric"],
+                categories=metric_order,
+                ordered=True,
+            )
+            avg_metrics_df = avg_metrics_df.sort_values("Metric").reset_index(
+                drop=True,
+            )
+
+            if print_results:
+                print("\nAverage Metrics Across All Folds:")
+                print(avg_metrics_df)
+                print("-" * 80)
+
+            return avg_metrics_df
 
         # Combine metrics from all folds
         if isinstance(aggregated_metrics[0], pd.DataFrame):
