@@ -124,21 +124,9 @@ X_valid, y_valid = model.get_valid_data(X, y)
 model.fit(X_train, y_train)
 
 print("Validation Metrics")
-model.return_metrics(
-    X_valid,
-    y_valid,
-    optimal_threshold=True,
-    print_threshold=True,
-    model_metrics=True,
-)
+model.return_metrics(X_valid, y_valid)
 print("Test Metrics")
-model.return_metrics(
-    X_test,
-    y_test,
-    optimal_threshold=True,
-    print_threshold=True,
-    model_metrics=True,
-)
+model.return_metrics(X_test, y_test)
 
 y_prob = model.predict_proba(X_test)
 

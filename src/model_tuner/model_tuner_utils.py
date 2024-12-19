@@ -833,16 +833,7 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(
-        self,
-        X,
-        y,
-        optimal_threshold=False,
-        model_metrics=False,
-        print_threshold=False,
-        return_dict=False,
-        print_per_fold=False,
-    ):
+    def return_metrics(self, X, y, optimal_threshold=False, return_dict=False):
         """
         Evaluate the model on the given dataset and optionally return metrics
         as a dictionary.
@@ -856,8 +847,6 @@ class Model:
         optimal_threshold : bool, optional (default=False)
             Whether to use the optimal threshold for predictions
             (for classification models).
-        model_metrics : bool, optional (default=False)
-            Whether to calculate and print additional model metrics.
         return_dict : bool, optional (default=False)
             Whether to return the metrics as a dictionary.
 
@@ -879,20 +868,7 @@ class Model:
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
-                    self.return_metrics_kfold(
-                        X, y, self.test_model, score, print_per_fold
-                    )
-
-                    if optimal_threshold:
-                        threshold = self.threshold[self.scoring[0]]
-                    else:
-                        threshold = 0.5
-                    if model_metrics:
-                        report_model_metrics(
-                            self, X, y, threshold, True, print_per_fold
-                        )
-                    print("-" * 80)
-                    print()
+                    self.return_metrics_kfold(X, y, self.test_model, score)
 
                 else:
                     self.regression_report_kfold(X, y, self.test_model, score)
@@ -906,13 +882,6 @@ class Model:
                 if self.multi_label:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self._confusion_matrix_print_ML(conf_mat)
-                    if optimal_threshold:
-                        threshold = self.threshold[self.scoring[0]]
-                    else:
-                        threshold = 0.5
-                    if model_metrics:
-                        report_model_metrics(self, X, y, threshold, print_per_fold)
-                    print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
@@ -921,11 +890,11 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
-                    if model_metrics:
-                        report_model_metrics(self, X, y, threshold, print_per_fold)
                     print("-" * 80)
                 print()
-                self.classification_report = classification_report(y, y_pred_valid)
+                self.classification_report = classification_report(
+                    y, y_pred_valid, output_dict=True
+                )
                 print(
                     classification_report(
                         y,
@@ -962,9 +931,6 @@ class Model:
                 else:
                     if return_dict:
                         return reg_report
-
-        if print_threshold:
-            print(f"Optimal threshold used: {threshold}")
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
@@ -1408,21 +1374,13 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
-    def return_metrics_kfold(self, X, y, test_model, score=None, print_per_fold=False):
+    def return_metrics_kfold(self, X, y, test_model, score=None):
 
         # Ensure test_model has necessary attributes
         if not hasattr(test_model, "model_type"):
             test_model.model_type = self.model_type
         if not hasattr(test_model, "estimator_name"):
             test_model.estimator_name = self.estimator_name
-
-        if score is not None:
-            threshold = self.threshold[score]
-        else:
-            threshold = self.threshold[self.scoring[0]]
-
-        if threshold == 0:
-            threshold = 0.5
 
         aggregated_true_labels = []
         aggregated_predictions = []
@@ -1433,40 +1391,55 @@ class Model:
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
                 y_pred = test_model.predict(X_test)
+
+                # Print confusion matrix for this fold
+                print(f"Confusion Matrix for Fold {fold_idx}:")
                 conf_matrix = confusion_matrix(y_test, y_pred)
+                _confusion_matrix_print(conf_matrix, self.labels)
+
+                # Print classification report for this fold
+                print(f"Classification Report for Fold {fold_idx}:")
+                print(classification_report(y_test, y_pred, zero_division=0))
+                print("*" * 80)
+
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(y_pred)
-                # Print confusion matrix for this fold
-                if print_per_fold:
-                    print(f"Confusion Matrix for Fold {fold_idx}:")
-                    _confusion_matrix_print(conf_matrix, self.labels)
-
-                    # Print classification report for this fold
-                    print(f"Classification Report for Fold {fold_idx}:")
-                    print(classification_report(y_test, y_pred, zero_division=0))
-                    print("*" * 80)
-
         else:
             for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
                 y_pred = test_model.predict(X_test)
+
+                # Print confusion matrix for this fold
+                print(f"Confusion Matrix for Fold {fold_idx}:")
                 conf_matrix = confusion_matrix(y_test, y_pred)
+                _confusion_matrix_print(conf_matrix, self.labels)
+
+                # Print classification report for this fold
+                print(f"Classification Report for Fold {fold_idx}:")
+                print(classification_report(y_test, y_pred, zero_division=0))
+                print("*" * 80)
 
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(y_pred)
 
-                # Print confusion matrix for this fold
-                if print_per_fold:
-                    print(f"Confusion Matrix for Fold {fold_idx}:")
-                    _confusion_matrix_print(conf_matrix, self.labels)
-                    # Print classification report for this fold
-                    print(f"Classification Report for Fold {fold_idx}:")
-                    print(classification_report(y_test, y_pred, zero_division=0))
-                    print("*" * 80)
+        # Print overall classification report across all folds
+        # print("Classification Report Averaged Across All Folds:")
+        # self.classification_report = classification_report(
+        #     aggregated_true_labels,
+        #     aggregated_predictions,
+        #     zero_division=0,
+        #     output_dict=True,
+        # )
+        # print(
+        #     classification_report(
+        #         aggregated_true_labels, aggregated_predictions, zero_division=0
+        #     )
+        # )
+        # print("-" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
@@ -1796,7 +1769,6 @@ def report_model_metrics(
     y_valid=None,
     threshold=0.5,
     print_results=True,
-    print_per_fold=False,
 ):
     """
     Generate a DataFrame of model performance metrics for binary, multiclass,
@@ -1936,10 +1908,8 @@ def report_model_metrics(
     if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
         print("\nRunning k-fold model metrics...\n")
         aggregated_metrics = []
-        for fold_idx, (train, test) in tqdm(
-            enumerate(model.kf.split(X_valid, y_valid), start=1),
-            total=model.kf.get_n_splits(),
-            desc="Processing Folds",
+        for fold_idx, (train, test) in enumerate(
+            model.kf.split(X_valid, y_valid), start=1
         ):
             X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
             y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
@@ -1953,48 +1923,18 @@ def report_model_metrics(
             if isinstance(fold_metrics, pd.DataFrame):
                 fold_metrics["Fold"] = fold_idx
                 aggregated_metrics.append(fold_metrics)
+            else:
+                fold_metrics_df = pd.DataFrame(fold_metrics, index=[f"Fold {fold_idx}"])
+                aggregated_metrics.append(fold_metrics_df)
 
             # Print fold-specific metrics
-            if print_results and print_per_fold:
-                print(f"Metrics for Fold {fold_idx}:")
-                print(fold_metrics)
-                print("*" * 80)
-
-        # Define the desired metric order
-        metric_order = [
-            "Precision/PPV",
-            "Average Precision",
-            "Sensitivity",
-            "Specificity",
-            "AUC ROC",
-            "Brier Score",
-        ]
-
-        # Combine metrics from all folds
-        if isinstance(aggregated_metrics[0], pd.DataFrame):
-            all_folds_df = pd.concat(aggregated_metrics)
-
-            # Group by Metric and calculate the mean for the Value column
-            avg_metrics_df = (
-                all_folds_df.groupby("Metric")["Value"].mean().reset_index()
-            )
-
-            # Reorder the DataFrame based on the metric order
-            avg_metrics_df["Metric"] = pd.Categorical(
-                avg_metrics_df["Metric"],
-                categories=metric_order,
-                ordered=True,
-            )
-            avg_metrics_df = avg_metrics_df.sort_values("Metric").reset_index(
-                drop=True,
-            )
-
             if print_results:
-                print("\nAverage Metrics Across All Folds:")
-                print(avg_metrics_df)
-                print("-" * 80)
-
-            return avg_metrics_df
+                print(f"Metrics for Fold {fold_idx}:")
+                if isinstance(fold_metrics, pd.DataFrame):
+                    print(fold_metrics)
+                else:
+                    print(pd.DataFrame(fold_metrics, index=[0]).T)
+                print("*" * 80)
 
         # Combine metrics from all folds
         if isinstance(aggregated_metrics[0], pd.DataFrame):
@@ -2015,7 +1955,6 @@ def report_model_metrics(
             print("-" * 80)
 
         return avg_metrics_df
-
     else:
         # Standard single validation logic
         metrics = calculate_metrics(model, X_valid, y_valid, threshold)

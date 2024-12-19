@@ -2,7 +2,7 @@ from catboost import CatBoostClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from model_tuner.model_tuner_utils import Model, report_model_metrics
+from model_tuner.model_tuner_utils import Model
 import model_tuner
 
 print()
@@ -54,13 +54,4 @@ y_prob = model.predict_proba(X)
 ### F1 Weighted
 y_pred = model.predict(X)
 
-model.return_metrics(
-    X,
-    y,
-    optimal_threshold=True,
-    print_threshold=True,
-    model_metrics=True,
-    print_per_fold=True,
-)
-
-# report_model_metrics(model, X, y)
+metrics = model.return_metrics(X, y)
