@@ -130,7 +130,6 @@ model.return_metrics(
     optimal_threshold=True,
     print_threshold=True,
     model_metrics=True,
-    # return_dict=True,
 )
 print("Test Metrics")
 model.return_metrics(
@@ -139,7 +138,6 @@ model.return_metrics(
     optimal_threshold=True,
     print_threshold=True,
     model_metrics=True,
-    # return_dict=True,
 )
 
 y_prob = model.predict_proba(X_test)

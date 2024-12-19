@@ -892,6 +892,13 @@ class Model:
                 if self.multi_label:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self._confusion_matrix_print_ML(conf_mat)
+                    if optimal_threshold:
+                        threshold = self.threshold[self.scoring[0]]
+                    else:
+                        threshold = 0.5
+                    if model_metrics:
+                        report_model_metrics(self, X, y, threshold)
+                    print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
@@ -944,10 +951,8 @@ class Model:
                     if return_dict:
                         return reg_report
 
-            ## Print the threshold if requested
-            if print_threshold:
-                print(f"Optimal threshold used: {threshold}")
-                print()
+        if print_threshold:
+            print(f"Optimal threshold used: {threshold}")
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
