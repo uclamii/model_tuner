@@ -833,7 +833,14 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X, y, optimal_threshold=False, return_dict=False):
+    def return_metrics(
+        self,
+        X,
+        y,
+        optimal_threshold=False,
+        model_metrics=False,
+        return_dict=False,
+    ):
         """
         Evaluate the model on the given dataset and optionally return metrics
         as a dictionary.
@@ -847,6 +854,8 @@ class Model:
         optimal_threshold : bool, optional (default=False)
             Whether to use the optimal threshold for predictions
             (for classification models).
+        model_metrics : bool, optional (default=False)
+            Whether to calculate and print additional model metrics.
         return_dict : bool, optional (default=False)
             Whether to return the metrics as a dictionary.
 
@@ -890,6 +899,8 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
+                    if model_metrics:
+                        report_model_metrics(self, X, y, threshold)
                     print("-" * 80)
                 print()
                 self.classification_report = classification_report(
