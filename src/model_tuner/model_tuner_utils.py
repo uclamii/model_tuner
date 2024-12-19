@@ -839,6 +839,7 @@ class Model:
         y,
         optimal_threshold=False,
         model_metrics=False,
+        print_threshold=False,
         return_dict=False,
     ):
         """
@@ -942,6 +943,11 @@ class Model:
                 else:
                     if return_dict:
                         return reg_report
+
+            ## Print the threshold if requested
+            if print_threshold:
+                print(f"Optimal threshold used: {threshold}")
+                print()
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
