@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iPython Notebooks &mdash; Model Tuner 0.0.21a0 documentation</title>
+  <title>iPython Notebooks &mdash; Model Tuner 0.0.23a0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/usage_guide.html" />
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=c82a19bc"></script>
+      <script src="_static/documentation_options.js?v=2b808d0e"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -564,14 +564,14 @@ define a grid of hyperparameters to fine-tune the XGBoost model.</p>
 </div>
 <p><strong>Key Configurations</strong></p>
 <ol class="arabic simple">
-<li><p><strong>Early Stopping</strong>: Set <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> to halt training when performance on the validation set stops improving.</p></li>
 <li><p><strong>Hyperparameter Grid</strong>:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Controls the maximum depth of each decision tree.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Determines the contribution of each tree (smaller values require more boosting rounds).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Specifies the number of boosting rounds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls verbosity during training.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: Evaluation metric for binary classification (e.g., <code class="docutils literal notranslate"><span class="pre">logloss</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Limits the depth of each decision tree to prevent overfitting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Controls the impact of each boosting iteration; smaller values require more boosting rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Specifies the total number of boosting rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls output during training; set to <code class="docutils literal notranslate"><span class="pre">0</span></code> for silent mode or <code class="docutils literal notranslate"><span class="pre">1</span></code> to display progress.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: Measures model performance (e.g., <code class="docutils literal notranslate"><span class="pre">logloss</span></code> for binary classification), evaluating the negative log-likelihood.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code>: Halts training early if validation performance does not improve after the specified number of rounds.</p></li>
 </ul>
 </li>
 <li><p><strong>General Settings</strong>:</p>
@@ -581,16 +581,7 @@ define a grid of hyperparameters to fine-tune the XGBoost model.</p>
 </ul>
 </li>
 </ol>
-<p><strong>Explanation of Hyperparameters</strong>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Prevents overfitting by limiting the depth of the trees.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Controls the impact of each boosting iteration.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Determines the total number of boosting rounds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: For binary classification, <code class="docutils literal notranslate"><span class="pre">logloss</span></code> evaluates the model’s performance based on negative log-likelihood.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code>: Stops training early if no improvement is seen after a specified number of rounds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Use <code class="docutils literal notranslate"><span class="pre">0</span></code> to suppress output or <code class="docutils literal notranslate"><span class="pre">1</span></code> to display progress during training.</p></li>
-</ul>
-<p>By defining these hyperparameters, the grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.</p>
+<p>The grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">verbose</span></code> parameter in XGBoost allows you to control the level of output during training:</p>
@@ -663,12 +654,41 @@ to find the optimal hyperparameters for the <code class="docutils literal notran
 <code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning</span></code> method will iterate over all combinations of
 hyperparameters specified in <code class="docutils literal notranslate"><span class="pre">tuned_parameters</span></code>, evaluate each one using the
 specified scoring metric, and select the best performing set.</p>
+<p>In this example, we pass an additional argument, <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>, which
+adjusts the F1 score to weigh precision and recall differently during hyperparameter optimization.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Why Use <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>?</p>
+<ul>
+<li><p>Standard F1-Score: Balances precision and recall equally (<code class="docutils literal notranslate"><span class="pre">beta=1</span></code>).</p></li>
+<li><p>Custom Beta Values:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>With <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>, the model tunes the decision threshold to optimize a custom F1 score using the beta value specified internally.</p></li>
+<li><p>This is useful in scenarios where one metric (precision or recall) is more critical than the other.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
 <p>This method will:</p>
-<ul class="simple">
-<li><p><strong>Split the Data</strong>: The data will be split into training and validation sets. Since <code class="docutils literal notranslate"><span class="pre">stratify_y=True</span></code>, the class distribution will be maintained across splits.</p></li>
+<ul>
+<li><p><strong>Split the Data</strong>: The data will be split into training and validation sets. Since <code class="docutils literal notranslate"><span class="pre">stratify_y=True</span></code>, the class distribution will be maintained across splits.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>After tuning, retrieve the training, validation, and test splits using:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_train_data</span></code> for training data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_valid_data</span></code> for validation data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_test_data</span></code> for test data.</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
 <li><p><strong>Iterate Over Hyperparameters</strong>: All combinations of hyperparameters defined in <code class="docutils literal notranslate"><span class="pre">tuned_parameters</span></code> will be tried since <code class="docutils literal notranslate"><span class="pre">randomized_grid=False</span></code>.</p></li>
 <li><p><strong>Early Stopping</strong>: With <code class="docutils literal notranslate"><span class="pre">boost_early=True</span></code> and <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> set in the hyperparameters, the model will stop training early if the validation score does not improve.</p></li>
-<li><p><strong>Scoring</strong>: The model uses <code class="docutils literal notranslate"><span class="pre">roc_auc</span></code> (ROC AUC) as the scoring metric suitable for binary classification.</p></li>
+<li><p><strong>Optimize for Scoring Metric</strong>: The model uses <code class="docutils literal notranslate"><span class="pre">roc_auc</span></code> (ROC AUC) as the scoring metric suitable for binary classification.</p></li>
 <li><p><strong>Select Best Model</strong>: The hyperparameter set that yields the best validation score will be selected.</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:

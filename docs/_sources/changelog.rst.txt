@@ -25,6 +25,13 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.23a
+--------------------
+
+- Fixed a bug found when calibrating early stopping models
+- Fixed early stopping in Column Transformer application
+
+
 Version 0.0.22a
 --------------------
 
