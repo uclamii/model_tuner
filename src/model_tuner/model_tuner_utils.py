@@ -1604,7 +1604,6 @@ class Model:
             aggregated_true_labels,
             aggregated_predictions,
             zero_division=0,
-            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
