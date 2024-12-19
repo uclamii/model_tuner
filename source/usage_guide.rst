@@ -328,7 +328,7 @@ learns to classify input data into one of two possible outcomes, typically
 labeled as ``0`` and ``1``, or negative and positive. This is commonly used in 
 scenarios such as spam detection, disease diagnosis, or fraud detection.
 
-In our library, binary classification is handled seamlessly through the ``Model`` 
+The ``model_tuner`` library handles binary classification seamlessly through the ``Model`` 
 class. Users can specify a binary classifier as the estimator, and the library 
 takes care of essential tasks like data preprocessing, model calibration, and 
 cross-validation. The library also provides robust support for evaluating the 
@@ -343,9 +343,10 @@ real-world applications.
 AIDS Clinical Trials Group Study
 ---------------------------------
 
-The UCI Machine Learning Repository is a well-known resource for accessing a wide 
+The `UCI Machine Learning Repository <https://archive.ics.uci.edu/ml/index.php>`_ 
+is a well-known resource for accessing a wide 
 range of datasets used for machine learning research and practice. One such dataset 
-is the AIDS Clinical Trials Group Study dataset, which can be used to build and 
+is the `AIDS Clinical Trials Group Study dataset <https://archive.ics.uci.edu/dataset/890/aids+clinical+trials+group+study+175>`_, which can be used to build and 
 evaluate predictive models.
 
 You can easily fetch this dataset using the ucimlrepo package. If you haven't 
@@ -370,6 +371,7 @@ Step 1: Import Necessary libraries
 
     import pandas as pd
     import numpy as np
+    from ucimlrepo import fetch_ucirepo
     import xgboost as xgb
     from model_tuner import Model  
 
@@ -378,13 +380,13 @@ Step 2: Load the dataset, define X, y
 
 .. code-block:: python
 
-   # fetch dataset 
+   ## Fetch dataset 
    aids_clinical_trials_group_study_175 = fetch_ucirepo(id=890) 
    
-   # data (as pandas dataframes) 
+   ## Data (as pandas dataframes) 
    X = aids_clinical_trials_group_study_175.data.features 
    y = aids_clinical_trials_group_study_175.data.targets 
-   y = y.squeeze() # convert a DataFrame to Series when single column
+   y = y.squeeze() ## convert a DataFrame to Series when single column
 
 
 Step 3: Check for zero-variance columns and drop accordingly
@@ -392,7 +394,7 @@ Step 3: Check for zero-variance columns and drop accordingly
 
 .. code-block:: python
 
-   # Check for zero-variance columns and drop them
+   ## Check for zero-variance columns and drop them
    zero_variance_columns = X.columns[X.var() == 0]
    if not zero_variance_columns.empty:
       X = X.drop(columns=zero_variance_columns)
@@ -403,7 +405,7 @@ Step 4: Create an instance of the XGBClassifier
 
 .. code-block:: python
 
-   # Creating an instance of the XGBClassifier
+   ## Creating an instance of the XGBClassifier
    xgb_name = "xgb"
    xgb = XGBClassifier(
       objective="binary:logistic",
@@ -412,29 +414,65 @@ Step 4: Create an instance of the XGBClassifier
 
 .. _xgb_hyperparams:
 
-Step 5: Define hyperparameters for XGBoost
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 5: Define Hyperparameters for XGBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In binary classification, we configure the ``XGBClassifier`` for tasks where the
+model predicts between two classes (e.g., positive/negative or 0/1). Here, we 
+define a grid of hyperparameters to fine-tune the XGBoost model.
+
+The following code defines the hyperparameter grid and configuration:
 
 .. code-block:: python
 
    xgbearly = True
+
    tuned_parameters_xgb = {
-      f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
-      f"{xgb_name}__learning_rate": [1e-4],
-      f"{xgb_name}__n_estimators": [1000],
-      f"{xgb_name}__early_stopping_rounds": [100],
-      f"{xgb_name}__verbose": [0],
-      f"{xgb_name}__eval_metric": ["logloss"],
+       f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],  
+       f"{xgb_name}__learning_rate": [1e-4],            
+       f"{xgb_name}__n_estimators": [1000],             
+       f"{xgb_name}__early_stopping_rounds": [100],     
+       f"{xgb_name}__verbose": [0],                     
+       f"{xgb_name}__eval_metric": ["logloss"],         
    }
 
+   ## Define model configuration
    xgb_definition = {
-      "clc": xgb,
-      "estimator_name": xgb_name,
-      "tuned_parameters": tuned_parameters_xgb,
-      "randomized_grid": False,
-      "n_iter": 5,
-      "early": xgbearly,
+       "clc": xgb,
+       "estimator_name": xgb_name,
+       "tuned_parameters": tuned_parameters_xgb,
+       "randomized_grid": False, 
+       "n_iter": 5,              ## Number of iterations if randomized_grid=True
+       "early": xgbearly,        
    }
+
+**Key Configurations**
+
+1. **Early Stopping**: Set ``early_stopping_rounds`` to halt training when performance on the validation set stops improving.
+
+2. **Hyperparameter Grid**:
+
+   - ``max_depth``: Controls the maximum depth of each decision tree.
+   - ``learning_rate``: Determines the contribution of each tree (smaller values require more boosting rounds).
+   - ``n_estimators``: Specifies the number of boosting rounds.
+   - ``verbose``: Controls verbosity during training.
+   - ``eval_metric``: Evaluation metric for binary classification (e.g., ``logloss``).
+
+3. **General Settings**:
+
+   - Use ``randomized_grid=False`` to perform exhaustive grid search.
+   - Set the number of iterations for randomized search with ``n_iter`` if needed.
+
+**Explanation of Hyperparameters**:
+
+- ``max_depth``: Prevents overfitting by limiting the depth of the trees.
+- ``learning_rate``: Controls the impact of each boosting iteration.
+- ``n_estimators``: Determines the total number of boosting rounds.
+- ``eval_metric``: For binary classification, ``logloss`` evaluates the model’s performance based on negative log-likelihood.
+- ``early_stopping_rounds``: Stops training early if no improvement is seen after a specified number of rounds.
+- ``verbose``: Use ``0`` to suppress output or ``1`` to display progress during training.
+
+By defining these hyperparameters, the grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.
 
 .. note::
 
@@ -448,46 +486,21 @@ Step 5: Define hyperparameters for XGBoost
 .. important::
 
    When defining hyperparameters for boosting algorithms, frameworks like 
-   XGBoost allow straightforward configuration, such as specifying ``n_estimators`` 
-   for the number of boosting rounds. However, CatBoost introduces potential 
-   pitfalls when defining this parameter.
+   ``XGBoost`` allow straightforward configuration, such as specifying ``n_estimators`` 
+   to control the number of boosting rounds. However, ``CatBoost`` introduces certain 
+   pitfalls when this parameter is defined.
 
-   According to the `CatBoost documentation <https://catboost.ai/docs/en/references/training-parameters/>`_:
-
-      "For the Python package several parameters have aliases. For example, the --iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error."
-
-   To avoid this issue in CatBoost, ensure you define only one of these parameters (e.g., ``n_estimators``) and avoid including others such as ``iterations`` or ``num_boost_round``. 
-
-Example: Tuning hyperparameters for CatBoost
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:
-
-.. code-block:: python
-
-   cat = CatBoostClassifier(
-       n_estimators=100,  ## num estimator/iteration/boostrounds
-       learning_rate=0.1,
-       depth=6,
-       loss_function="Logloss",
-   )
-
-   tuned_hyperparameters_cat = {
-       f"{cat_name}__n_estimators": [1500],
-
-       ## Additional hyperparameters
-       f"{cat_name}__learning_rate": [0.01, 0.1],
-       f"{cat_name}__depth": [4, 6, 8],
-       f"{cat_name}__loss_function": ["Logloss"],
-   }
-
-
-
-This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.
-
+   Refer to the :ref:`important caveat regarding this scenario <CatBoost_Training_Parameters>` for further details.
+   
 
 Step 6: Initialize and configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``XGBClassifier`` inherently handles missing values (``NaN``) without requiring explicit 
+imputation strategies. During training, ``XGBoost`` treats missing values as a 
+separate category and learns how to route them within its decision trees. 
+Therefore, passing a ``SimpleImputer`` or using an imputation strategy is unnecessary 
+when using ``XGBClassifier``.
 
 .. code-block:: python
 
@@ -520,13 +533,33 @@ Step 6: Initialize and configure the ``Model``
       n_jobs=2,
    )
 
-Step 7: Perform grid search parameter tuning
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 7: Perform grid search parameter tuning and retrieve split data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
    ## Perform grid search parameter tuning
    model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+   ## Get the training, validation, and test data
+   X_train, y_train = model_tuner.get_train_data(X, y)
+   X_valid, y_valid = model_tuner.get_valid_data(X, y)
+   X_test, y_test = model_tuner.get_test_data(X, y)
+
+With the model configured, the next step is to perform grid search parameter tuning 
+to find the optimal hyperparameters for the ``XGBClassifier``. The 
+``grid_search_param_tuning`` method will iterate over all combinations of 
+hyperparameters specified in ``tuned_parameters``, evaluate each one using the 
+specified scoring metric, and select the best performing set.
+
+This method will:
+
+- **Split the Data**: The data will be split into training and validation sets. Since ``stratify_y=True``, the class distribution will be maintained across splits.
+- **Iterate Over Hyperparameters**: All combinations of hyperparameters defined in ``tuned_parameters`` will be tried since ``randomized_grid=False``.
+- **Early Stopping**: With ``boost_early=True`` and ``early_stopping_rounds`` set in the hyperparameters, the model will stop training early if the validation score does not improve.
+- **Scoring**: The model uses ``roc_auc`` (ROC AUC) as the scoring metric suitable for binary classification.
+- **Select Best Model**: The hyperparameter set that yields the best validation score will be selected.
+
 
 .. code-block:: bash
 
@@ -553,16 +586,22 @@ Step 8: Fit the model
 
 .. code-block:: python
 
-   ## Get the training and validation data
-   X_train, y_train = model_tuner.get_train_data(X, y)
-   X_valid, y_valid = model_tuner.get_valid_data(X, y)
-   X_test, y_test = model_tuner.get_test_data(X, y)
-
    model_xgb.fit(
        X_train,
        y_train,
        validation_data=[X_valid, y_valid],
    )
+
+In this step, we train the ``XGBClassifier`` using the training data and monitor 
+performance on the validation data during training.
+
+.. note:: 
+   
+   The inclusion of ``validation_data`` allows XGBoost to:
+
+   - **Monitor Validation Performance**: XGBoost evaluates the model’s performance on the validation set after each boosting round using the specified evaluation metric (e.g., ``logloss``).
+   - **Enable Early Stopping**: If ``early_stopping_rounds`` is defined, training will stop automatically if the validation performance does not improve after a set number of rounds, preventing overfitting and saving computation time.
+
 
 Step 9: Return metrics (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -631,6 +670,8 @@ You can use this function to evaluate the model by printing the output.
 
 Step 10: Calibrate the model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See :ref:`this section <model_calibration>` for more information on model calibration.
 
 .. code-block:: python
 
@@ -1224,7 +1265,7 @@ Step 1: Initalize and configure the model
       scoring=["roc_auc"],
       random_state=222,
       n_jobs=2,
-      imbalance_sampler=SMOTE(),
+      imbalance_sampler=SMOTE(random_state=222),
    )
 
 Step 2: Perform grid search parameter tuning and retrieve split data
@@ -1232,15 +1273,12 @@ Step 2: Perform grid search parameter tuning and retrieve split data
 
 .. code-block:: python
 
-   xgb_smote.grid_search_param_tuning(
-      X,
-      y,
-      f1_beta_tune=True,
-   )
+   xgb_smote.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
+   ## Get the training, validation, and test data
    X_train, y_train = xgb_smote.get_train_data(X, y)
-   X_test, y_test = xgb_smote.get_test_data(X, y)
    X_valid, y_valid = xgb_smote.get_valid_data(X, y)
+   X_test, y_test = xgb_smote.get_test_data(X, y)
 
 
 .. code-block:: bash
@@ -1714,9 +1752,11 @@ Use the following code to generate the splits:
 
 .. code-block:: python
 
+   ## Get the training, validation, and test data
    X_train, y_train = model_xgb.get_train_data(X, y)
-   X_test, y_test = model_xgb.get_test_data(X, y)
    X_valid, y_valid = model_xgb.get_valid_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+
 
 **Description of Splits**:
 
@@ -1989,7 +2029,19 @@ Use the following code:
 Regression
 ===========
 
-Here is an example of using the ``Model`` class for regression using ``XGBoost`` on the California Housing dataset.
+Here is an example of using the ``Model`` class for a **regression task** with ``XGBoost`` on the **California Housing dataset**.
+
+The California Housing dataset, available in the ``sklearn`` library, is a commonly used benchmark dataset for regression problems. It contains features such as median income, housing age, and population, which are used to predict the median house value for California districts.
+
+In this example, we leverage the ``Model`` class to: 
+
+- Set up an **XGBoost regressor** as the estimator.
+- Define a hyperparameter grid for tuning the model.
+- Preprocess the dataset, train the model, and evaluate its performance using the :math:`R^2` metric.
+
+The workflow highlights how the ``Model`` class simplifies regression tasks, including hyperparameter tuning, and performance evaluation.
+
+
 
 California Housing with XGBoost
 --------------------------------
@@ -2012,7 +2064,7 @@ Step 2: Load the dataset
 
 .. code-block:: python
 
-   # Load the California Housing dataset
+   ## Load the California Housing dataset
    data = fetch_california_housing()
    X = pd.DataFrame(data.data, columns=data.feature_names)
    y = pd.Series(data.target, name="target")
@@ -2027,35 +2079,51 @@ Step 3: Create an instance of the XGBRegressor
    xgb = XGBRegressor(random_state=222)
 
 
-Step 4: Define hyperparameters for XGBoost
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Step 4: Define Hyperparameters for XGBRegressor
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this step, we configure the ``XGBRegressor`` for a regression task. 
+The hyperparameter grid includes key settings to control the learning process, 
+tree construction, and generalization performance of the model. 
+
+The hyperparameter grid and model configuration are defined as follows:
 
 .. code-block:: python
 
    tuned_parameters_xgb = [
-      {
-         f"{xgb_name}__learning_rate": [0.1, 0.01, 0.05],
-         f"{xgb_name}__n_estimators": [100, 200, 300],  # Number of trees.  
-         f"{xgb_name}__max_depth": [3, 5, 7][:1],    # Maximum depth of the trees
-         f"{xgb_name}__subsample": [0.8, 1.0][:1],   # Subsample ratio of the 
-                                                      # training instances
-         f"{xgb_name}__colsample_bytree": [0.8, 1.0][:1],
-         f"{xgb_name}__eval_metric": ["logloss"],
-         f"{xgb_name}__early_stopping_rounds": [10],
-         f"{xgb_name}__tree_method": ["hist"],
-         f"{xgb_name}__verbose": [0],
-      }
+       {
+           f"{xgb_name}__learning_rate": [0.1, 0.01, 0.05],   
+           f"{xgb_name}__n_estimators": [100, 200, 300],      
+           f"{xgb_name}__max_depth": [3, 5, 7][:1],           
+           f"{xgb_name}__subsample": [0.8, 1.0][:1],         
+           f"{xgb_name}__colsample_bytree": [0.8, 1.0][:1],   
+           f"{xgb_name}__eval_metric": ["logloss"],           
+           f"{xgb_name}__early_stopping_rounds": [10],        
+           f"{xgb_name}__tree_method": ["hist"],              
+           f"{xgb_name}__verbose": [0],                      
+       }
    ]
-
    xgb_definition = {
-      "clc": xgb,
-      "estimator_name": xgb_name,
-      "tuned_parameters": tuned_parameters_xgb,
-      "randomized_grid": False,
-      "early": True,
+       "clc": xgb,
+       "estimator_name": xgb_name,
+       "tuned_parameters": tuned_parameters_xgb,
+       "randomized_grid": False,  
+       "early": True,             
    }
 
    model_definition = {xgb_name: xgb_definition}
+
+**Key Configurations**
+
+1. ``learning_rate``: Controls the contribution of each boosting round to the final prediction.
+2. ``n_estimators``: Specifies the total number of boosting rounds (trees).
+3. ``max_depth``: Limits the depth of each tree to prevent overfitting.
+4. ``subsample``: Fraction of training data used for fitting each tree, introducing randomness to improve generalization.
+5. ``colsample_bytree``: Fraction of features considered for each boosting round.
+6. ``eval_metric``: Specifies the evaluation metric to monitor during training (e.g., ``"logloss"``).
+7. ``early_stopping_rounds``: Stops training if validation performance does not improve for a set number of rounds.
+8. ``tree_method``: Chooses the algorithm used for tree construction (``"hist"`` for histogram-based methods, optimized for speed).
+9. ``verbose``: Controls output display during training (set to ``0`` for silent mode).
 
 Step 5: Initialize and configure the ``Model``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2071,12 +2139,12 @@ when using ``XGBRegressor``.
    kfold = False
    calibrate = False
 
-   # Define model object
+   ## Define model object
    model_type = "xgb"
    clc = model_definition[model_type]["clc"]
    estimator_name = model_definition[model_type]["estimator_name"]
 
-   # Set the parameters by cross-validation
+   ## Set the parameters by cross-validation
    tuned_parameters = model_definition[model_type]["tuned_parameters"]
    rand_grid = model_definition[model_type]["randomized_grid"]
    early_stop = model_definition[model_type]["early"]
@@ -2100,13 +2168,31 @@ when using ``XGBRegressor``.
 Step 6: Perform grid search parameter tuning and retrieve split data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+To execute the grid search, simply call:
+
 .. code-block:: python
 
-   model_xgb.grid_search_param_tuning(X, y,)
+   model_xgb.grid_search_param_tuning(X, y)
 
+   ## Get the training, validation, and test data
    X_train, y_train = model_xgb.get_train_data(X, y)
-   X_test, y_test = model_xgb.get_test_data(X, y)
    X_valid, y_valid = model_xgb.get_valid_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+
+
+With the model configured, the next step is to perform grid search parameter tuning 
+to find the optimal hyperparameters for the ``XGBRegressor``. The 
+``grid_search_param_tuning`` method will iterate over all combinations of 
+hyperparameters specified in ``tuned_parameters_xgb``, evaluate each one using the 
+specified scoring metric, and select the best performing set.
+
+This method will:
+
+- **Split the Data**: The data will be split into training and validation sets. Since ``stratify_y=False``, the class distribution will not be maintained across splits.
+- **Iterate Over Hyperparameters**: All combinations of hyperparameters defined in ``tuned_parameters_xgb`` will be tried since ``randomized_grid=False``.
+- **Early Stopping**: With ``boost_early=True`` and ``early_stopping_rounds`` set in the hyperparameters, the model will stop training early if the validation score does not improve.
+- **Scoring**: The model uses :math:`R^2` (R-squared) as the scoring metric, which is suitable for evaluating regression models.
+- **Select Best Model**: The hyperparameter set that yields the best validation score based on the specified metric (:math:`R^2`) will be selected.
 
 
 .. code-block:: bash

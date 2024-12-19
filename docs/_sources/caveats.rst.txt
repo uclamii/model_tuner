@@ -288,6 +288,8 @@ Attempting to stratify based on :math:`X` columns during cross-validation can di
 Therefore, the use of :code:`stratify_y` is recommended during cross-validation to maintain consistency in the target variable distribution across folds, while :code:`stratify_cols` should be avoided.
 
 
+.. _model_calibration:
+
 Model Calibration
 --------------------
 
@@ -666,3 +668,48 @@ Elastic net is well-suited for datasets with mixed feature relevance, reducing o
    - When combining elastic net with RFE, it is important to note that the recursive process may interact with the regularization in elastic net.
    - Elastic net's built-in feature selection can prioritize sparsity, but RFE explicitly removes features step-by-step. This may lead to redundancy in feature selection efforts or alter the balance between :math:`L1` and :math:`L2` penalties as features are eliminated.
    - Careful calibration of :math:`\alpha` and :math:`\lambda` is essential when using RFE alongside elastic net to prevent over-penalization or premature exclusion of relevant features.
+
+.. _CatBoost_Training_Parameters:
+
+CatBoost Training Parameters
+-------------------------------
+
+According to the `CatBoost documentation <https://catboost.ai/docs/en/references/training-parameters/>`_:
+
+   "For the Python package several parameters have aliases. For example, the --iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error."
+
+.. important::
+
+   Attempting to pass more than one of these synonymous hyperparameters will result in the following error:
+
+   ``CatBoostError: only one of the parameters iterations, n_estimators, num_boost_round, num_trees should be initialized.``
+
+   To prevent this issue, ensure you define only **one** of these parameters (e.g., ``n_estimators``) in your configuration, and avoid including any other aliases such as ``iterations`` or ``num_boost_round``.
+
+
+Example: Tuning hyperparameters for CatBoost
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:
+
+.. code-block:: python
+
+   cat = CatBoostClassifier(
+       n_estimators=100,  ## num estimator/iteration/boostrounds
+       learning_rate=0.1,
+       depth=6,
+       loss_function="Logloss",
+   )
+
+   tuned_hyperparameters_cat = {
+       f"{cat_name}__n_estimators": [1500],
+
+       ## Additional hyperparameters
+       f"{cat_name}__learning_rate": [0.01, 0.1],
+       f"{cat_name}__depth": [4, 6, 8],
+       f"{cat_name}__loss_function": ["Logloss"],
+   }
+
+
+
+This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.

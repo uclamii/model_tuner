@@ -84,10 +84,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset-define-x-y">Step 2: Load the dataset, define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-check-for-zero-variance-columns-and-drop-accordingly">Step 3: Check for zero-variance columns and drop accordingly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-create-an-instance-of-the-xgbclassifier">Step 4: Create an instance of the XGBClassifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-5-define-hyperparameters-for-xgboost">Step 5: Define hyperparameters for XGBoost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-tuning-hyperparameters-for-catboost">Example: Tuning hyperparameters for CatBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5-define-hyperparameters-for-xgboost">Step 5: Define Hyperparameters for XGBoost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-initialize-and-configure-the-model">Step 6: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-7-perform-grid-search-parameter-tuning">Step 7: Perform grid search parameter tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 7: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-8-fit-the-model">Step 8: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-9-return-metrics-optional">Step 9: Return metrics (optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the model (if needed)</a></li>
@@ -152,7 +151,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id6">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgboost">Step 4: Define hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id7">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the model</a></li>
@@ -180,6 +179,7 @@
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#catboost-training-parameters">CatBoost Training Parameters</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -465,7 +465,7 @@ to distinguish between two distinct classes or categories. In essence, the model
 learns to classify input data into one of two possible outcomes, typically
 labeled as <code class="docutils literal notranslate"><span class="pre">0</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code>, or negative and positive. This is commonly used in
 scenarios such as spam detection, disease diagnosis, or fraud detection.</p>
-<p>In our library, binary classification is handled seamlessly through the <code class="docutils literal notranslate"><span class="pre">Model</span></code>
+<p>The <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> library handles binary classification seamlessly through the <code class="docutils literal notranslate"><span class="pre">Model</span></code>
 class. Users can specify a binary classifier as the estimator, and the library
 takes care of essential tasks like data preprocessing, model calibration, and
 cross-validation. The library also provides robust support for evaluating the
@@ -477,9 +477,10 @@ decision thresholds, making it easier to deploy effective binary classifiers in
 real-world applications.</p>
 <section id="aids-clinical-trials-group-study">
 <h2>AIDS Clinical Trials Group Study<a class="headerlink" href="#aids-clinical-trials-group-study" title="Link to this heading"></a></h2>
-<p>The UCI Machine Learning Repository is a well-known resource for accessing a wide
+<p>The <a class="reference external" href="https://archive.ics.uci.edu/ml/index.php">UCI Machine Learning Repository</a>
+is a well-known resource for accessing a wide
 range of datasets used for machine learning research and practice. One such dataset
-is the AIDS Clinical Trials Group Study dataset, which can be used to build and
+is the <a class="reference external" href="https://archive.ics.uci.edu/dataset/890/aids+clinical+trials+group+study+175">AIDS Clinical Trials Group Study dataset</a>, which can be used to build and
 evaluate predictive models.</p>
 <p>You can easily fetch this dataset using the ucimlrepo package. If you haven’t
 installed it yet, you can do so by running the following command:</p>
@@ -495,6 +496,7 @@ with a simple command:</p>
 <h3>Step 1: Import Necessary libraries<a class="headerlink" href="#step-1-import-necessary-libraries" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ucimlrepo</span> <span class="kn">import</span> <span class="n">fetch_ucirepo</span>
 <span class="kn">import</span> <span class="nn">xgboost</span> <span class="k">as</span> <span class="nn">xgb</span>
 <span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 </pre></div>
@@ -502,19 +504,19 @@ with a simple command:</p>
 </section>
 <section id="step-2-load-the-dataset-define-x-y">
 <h3>Step 2: Load the dataset, define X, y<a class="headerlink" href="#step-2-load-the-dataset-define-x-y" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># fetch dataset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Fetch dataset</span>
 <span class="n">aids_clinical_trials_group_study_175</span> <span class="o">=</span> <span class="n">fetch_ucirepo</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">890</span><span class="p">)</span>
 
-<span class="c1"># data (as pandas dataframes)</span>
+<span class="c1">## Data (as pandas dataframes)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">features</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">aids_clinical_trials_group_study_175</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">targets</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="c1"># convert a DataFrame to Series when single column</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span> <span class="c1">## convert a DataFrame to Series when single column</span>
 </pre></div>
 </div>
 </section>
 <section id="step-3-check-for-zero-variance-columns-and-drop-accordingly">
 <h3>Step 3: Check for zero-variance columns and drop accordingly<a class="headerlink" href="#step-3-check-for-zero-variance-columns-and-drop-accordingly" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check for zero-variance columns and drop them</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Check for zero-variance columns and drop them</span>
 <span class="n">zero_variance_columns</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">var</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">zero_variance_columns</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">zero_variance_columns</span><span class="p">)</span>
@@ -523,7 +525,7 @@ with a simple command:</p>
 </section>
 <section id="step-4-create-an-instance-of-the-xgbclassifier">
 <h3>Step 4: Create an instance of the XGBClassifier<a class="headerlink" href="#step-4-create-an-instance-of-the-xgbclassifier" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Creating an instance of the XGBClassifier</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Creating an instance of the XGBClassifier</span>
 <span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
    <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;binary:logistic&quot;</span><span class="p">,</span>
@@ -533,27 +535,62 @@ with a simple command:</p>
 </div>
 </section>
 <section id="step-5-define-hyperparameters-for-xgboost">
-<span id="xgb-hyperparams"></span><h3>Step 5: Define hyperparameters for XGBoost<a class="headerlink" href="#step-5-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
+<span id="xgb-hyperparams"></span><h3>Step 5: Define Hyperparameters for XGBoost<a class="headerlink" href="#step-5-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
+<p>In binary classification, we configure the <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code> for tasks where the
+model predicts between two classes (e.g., positive/negative or 0/1). Here, we
+define a grid of hyperparameters to fine-tune the XGBoost model.</p>
+<p>The following code defines the hyperparameter grid and configuration:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgbearly</span> <span class="o">=</span> <span class="kc">True</span>
+
 <span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
 <span class="p">}</span>
 
+<span class="c1">## Define model configuration</span>
 <span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
-   <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
-   <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
-   <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
-   <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-   <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-   <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
+    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>              <span class="c1">## Number of iterations if randomized_grid=True</span>
+    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="n">xgbearly</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
+<p><strong>Key Configurations</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Early Stopping</strong>: Set <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> to halt training when performance on the validation set stops improving.</p></li>
+<li><p><strong>Hyperparameter Grid</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Controls the maximum depth of each decision tree.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Determines the contribution of each tree (smaller values require more boosting rounds).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Specifies the number of boosting rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls verbosity during training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: Evaluation metric for binary classification (e.g., <code class="docutils literal notranslate"><span class="pre">logloss</span></code>).</p></li>
+</ul>
+</li>
+<li><p><strong>General Settings</strong>:</p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">randomized_grid=False</span></code> to perform exhaustive grid search.</p></li>
+<li><p>Set the number of iterations for randomized search with <code class="docutils literal notranslate"><span class="pre">n_iter</span></code> if needed.</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Explanation of Hyperparameters</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Prevents overfitting by limiting the depth of the trees.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Controls the impact of each boosting iteration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Determines the total number of boosting rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: For binary classification, <code class="docutils literal notranslate"><span class="pre">logloss</span></code> evaluates the model’s performance based on negative log-likelihood.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code>: Stops training early if no improvement is seen after a specified number of rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Use <code class="docutils literal notranslate"><span class="pre">0</span></code> to suppress output or <code class="docutils literal notranslate"><span class="pre">1</span></code> to display progress during training.</p></li>
+</ul>
+<p>By defining these hyperparameters, the grid search will explore the parameter combinations to find the optimal configuration for binary classification tasks.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">verbose</span></code> parameter in XGBoost allows you to control the level of output during training:</p>
@@ -566,40 +603,19 @@ with a simple command:</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>When defining hyperparameters for boosting algorithms, frameworks like
-XGBoost allow straightforward configuration, such as specifying <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>
-for the number of boosting rounds. However, CatBoost introduces potential
-pitfalls when defining this parameter.</p>
-<p>According to the <a class="reference external" href="https://catboost.ai/docs/en/references/training-parameters/">CatBoost documentation</a>:</p>
-<blockquote>
-<div><p>“For the Python package several parameters have aliases. For example, the –iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error.”</p>
-</div></blockquote>
-<p>To avoid this issue in CatBoost, ensure you define only one of these parameters (e.g., <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>) and avoid including others such as <code class="docutils literal notranslate"><span class="pre">iterations</span></code> or <code class="docutils literal notranslate"><span class="pre">num_boost_round</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> allow straightforward configuration, such as specifying <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>
+to control the number of boosting rounds. However, <code class="docutils literal notranslate"><span class="pre">CatBoost</span></code> introduces certain
+pitfalls when this parameter is defined.</p>
+<p>Refer to the <a class="reference internal" href="caveats.html#catboost-training-parameters"><span class="std std-ref">important caveat regarding this scenario</span></a> for further details.</p>
 </div>
-</section>
-<section id="example-tuning-hyperparameters-for-catboost">
-<h3>Example: Tuning hyperparameters for CatBoost<a class="headerlink" href="#example-tuning-hyperparameters-for-catboost" title="Link to this heading"></a></h3>
-<p>When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
-    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1">## num estimator/iteration/boostrounds</span>
-    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
-    <span class="n">depth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-    <span class="n">loss_function</span><span class="o">=</span><span class="s2">&quot;Logloss&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">tuned_hyperparameters_cat</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1500</span><span class="p">],</span>
-
-    <span class="c1">## Additional hyperparameters</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__loss_function&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Logloss&quot;</span><span class="p">],</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.</p>
 </section>
 <section id="step-6-initialize-and-configure-the-model">
 <h3>Step 6: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#step-6-initialize-and-configure-the-model" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code> inherently handles missing values (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) without requiring explicit
+imputation strategies. During training, <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> treats missing values as a
+separate category and learns how to route them within its decision trees.
+Therefore, passing a <code class="docutils literal notranslate"><span class="pre">SimpleImputer</span></code> or using an imputation strategy is unnecessary
+when using <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">clc</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
 <span class="n">estimator_name</span> <span class="o">=</span> <span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
@@ -631,12 +647,30 @@ pitfalls when defining this parameter.</p>
 </pre></div>
 </div>
 </section>
-<section id="step-7-perform-grid-search-parameter-tuning">
-<h3>Step 7: Perform grid search parameter tuning<a class="headerlink" href="#step-7-perform-grid-search-parameter-tuning" title="Link to this heading"></a></h3>
+<section id="step-7-perform-grid-search-parameter-tuning-and-retrieve-split-data">
+<h3>Step 7: Perform grid search parameter tuning and retrieve split data<a class="headerlink" href="#step-7-perform-grid-search-parameter-tuning-and-retrieve-split-data" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Perform grid search parameter tuning</span>
 <span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">## Get the training, validation, and test data</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>With the model configured, the next step is to perform grid search parameter tuning
+to find the optimal hyperparameters for the <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning</span></code> method will iterate over all combinations of
+hyperparameters specified in <code class="docutils literal notranslate"><span class="pre">tuned_parameters</span></code>, evaluate each one using the
+specified scoring metric, and select the best performing set.</p>
+<p>This method will:</p>
+<ul class="simple">
+<li><p><strong>Split the Data</strong>: The data will be split into training and validation sets. Since <code class="docutils literal notranslate"><span class="pre">stratify_y=True</span></code>, the class distribution will be maintained across splits.</p></li>
+<li><p><strong>Iterate Over Hyperparameters</strong>: All combinations of hyperparameters defined in <code class="docutils literal notranslate"><span class="pre">tuned_parameters</span></code> will be tried since <code class="docutils literal notranslate"><span class="pre">randomized_grid=False</span></code>.</p></li>
+<li><p><strong>Early Stopping</strong>: With <code class="docutils literal notranslate"><span class="pre">boost_early=True</span></code> and <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> set in the hyperparameters, the model will stop training early if the validation score does not improve.</p></li>
+<li><p><strong>Scoring</strong>: The model uses <code class="docutils literal notranslate"><span class="pre">roc_auc</span></code> (ROC AUC) as the scoring metric suitable for binary classification.</p></li>
+<li><p><strong>Select Best Model</strong>: The hyperparameter set that yields the best validation score will be selected.</p></li>
+</ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
 
 ┌─────────────────┐
@@ -659,17 +693,22 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 </section>
 <section id="step-8-fit-the-model">
 <h3>Step 8: Fit the model<a class="headerlink" href="#step-8-fit-the-model" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Get the training and validation data</span>
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_tuner</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="n">X_train</span><span class="p">,</span>
     <span class="n">y_train</span><span class="p">,</span>
     <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
 <span class="p">)</span>
 </pre></div>
+</div>
+<p>In this step, we train the <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code> using the training data and monitor
+performance on the validation data during training.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The inclusion of <code class="docutils literal notranslate"><span class="pre">validation_data</span></code> allows XGBoost to:</p>
+<ul class="simple">
+<li><p><strong>Monitor Validation Performance</strong>: XGBoost evaluates the model’s performance on the validation set after each boosting round using the specified evaluation metric (e.g., <code class="docutils literal notranslate"><span class="pre">logloss</span></code>).</p></li>
+<li><p><strong>Enable Early Stopping</strong>: If <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> is defined, training will stop automatically if the validation performance does not improve after a set number of rounds, preventing overfitting and saving computation time.</p></li>
+</ul>
 </div>
 </section>
 <section id="step-9-return-metrics-optional">
@@ -737,6 +776,7 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 </section>
 <section id="step-10-calibrate-the-model-if-needed">
 <h3>Step 10: Calibrate the model (if needed)<a class="headerlink" href="#step-10-calibrate-the-model-if-needed" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="caveats.html#model-calibration"><span class="std std-ref">this section</span></a> for more information on model calibration.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 
@@ -1255,22 +1295,19 @@ this imbalanced sampler.</p>
    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-   <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(),</span>
+   <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="step-2-perform-grid-search-parameter-tuning-and-retrieve-split-data">
 <h4>Step 2: Perform grid search parameter tuning and retrieve split data<a class="headerlink" href="#step-2-perform-grid-search-parameter-tuning-and-retrieve-split-data" title="Link to this heading"></a></h4>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span>
-   <span class="n">X</span><span class="p">,</span>
-   <span class="n">y</span><span class="p">,</span>
-   <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_smote</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+<span class="c1">## Get the training, validation, and test data</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">xgb_smote</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
@@ -1692,9 +1729,10 @@ is to generate the training, validation, and test splits. The <code class="docut
 provides built-in methods for creating these splits while maintaining the class
 distribution (as specified by <code class="docutils literal notranslate"><span class="pre">stratify_y=True</span></code>).</p>
 <p>Use the following code to generate the splits:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Get the training, validation, and test data</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>Description of Splits</strong>:</p>
@@ -1946,7 +1984,15 @@ Predictions:
 </section>
 <section id="regression">
 <span id="id5"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
-<p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for regression using <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the California Housing dataset.</p>
+<p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for a <strong>regression task</strong> with <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the <strong>California Housing dataset</strong>.</p>
+<p>The California Housing dataset, available in the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> library, is a commonly used benchmark dataset for regression problems. It contains features such as median income, housing age, and population, which are used to predict the median house value for California districts.</p>
+<p>In this example, we leverage the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class to:</p>
+<ul class="simple">
+<li><p>Set up an <strong>XGBoost regressor</strong> as the estimator.</p></li>
+<li><p>Define a hyperparameter grid for tuning the model.</p></li>
+<li><p>Preprocess the dataset, train the model, and evaluate its performance using the <span class="math notranslate nohighlight">\(R^2\)</span> metric.</p></li>
+</ul>
+<p>The workflow highlights how the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class simplifies regression tasks, including hyperparameter tuning, and performance evaluation.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
 <section id="id6">
@@ -1962,7 +2008,7 @@ Predictions:
 </section>
 <section id="step-2-load-the-dataset">
 <h3>Step 2: Load the dataset<a class="headerlink" href="#step-2-load-the-dataset" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the California Housing dataset</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Load the California Housing dataset</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">fetch_california_housing</span><span class="p">()</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">feature_names</span><span class="p">)</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;target&quot;</span><span class="p">)</span>
@@ -1976,34 +2022,48 @@ Predictions:
 </pre></div>
 </div>
 </section>
-<section id="step-4-define-hyperparameters-for-xgboost">
-<h3>Step 4: Define hyperparameters for XGBoost<a class="headerlink" href="#step-4-define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
+<section id="step-4-define-hyperparameters-for-xgbregressor">
+<h3>Step 4: Define Hyperparameters for XGBRegressor<a class="headerlink" href="#step-4-define-hyperparameters-for-xgbregressor" title="Link to this heading"></a></h3>
+<p>In this step, we configure the <code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code> for a regression task.
+The hyperparameter grid includes key settings to control the learning process,
+tree construction, and generalization performance of the model.</p>
+<p>The hyperparameter grid and model configuration are defined as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="p">{</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>  <span class="c1"># Number of trees.</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>    <span class="c1"># Maximum depth of the trees</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__subsample&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>   <span class="c1"># Subsample ratio of the</span>
-                                                   <span class="c1"># training instances</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__colsample_bytree&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__tree_method&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hist&quot;</span><span class="p">],</span>
-      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-   <span class="p">}</span>
+    <span class="p">{</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__subsample&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__colsample_bytree&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">][:</span><span class="mi">1</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__tree_method&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;hist&quot;</span><span class="p">],</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">}</span>
 <span class="p">]</span>
-
 <span class="n">xgb_definition</span> <span class="o">=</span> <span class="p">{</span>
-   <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
-   <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
-   <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
-   <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-   <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;clc&quot;</span><span class="p">:</span> <span class="n">xgb</span><span class="p">,</span>
+    <span class="s2">&quot;estimator_name&quot;</span><span class="p">:</span> <span class="n">xgb_name</span><span class="p">,</span>
+    <span class="s2">&quot;tuned_parameters&quot;</span><span class="p">:</span> <span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+    <span class="s2">&quot;randomized_grid&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;early&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">model_definition</span> <span class="o">=</span> <span class="p">{</span><span class="n">xgb_name</span><span class="p">:</span> <span class="n">xgb_definition</span><span class="p">}</span>
 </pre></div>
 </div>
+<p><strong>Key Configurations</strong></p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Controls the contribution of each boosting round to the final prediction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>: Specifies the total number of boosting rounds (trees).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_depth</span></code>: Limits the depth of each tree to prevent overfitting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subsample</span></code>: Fraction of training data used for fitting each tree, introducing randomness to improve generalization.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">colsample_bytree</span></code>: Fraction of features considered for each boosting round.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">eval_metric</span></code>: Specifies the evaluation metric to monitor during training (e.g., <code class="docutils literal notranslate"><span class="pre">&quot;logloss&quot;</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code>: Stops training if validation performance does not improve for a set number of rounds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tree_method</span></code>: Chooses the algorithm used for tree construction (<code class="docutils literal notranslate"><span class="pre">&quot;hist&quot;</span></code> for histogram-based methods, optimized for speed).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls output display during training (set to <code class="docutils literal notranslate"><span class="pre">0</span></code> for silent mode).</p></li>
+</ol>
 </section>
 <section id="id7">
 <h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
@@ -2015,12 +2075,12 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kfold</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="n">calibrate</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="c1"># Define model object</span>
+<span class="c1">## Define model object</span>
 <span class="n">model_type</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">clc</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;clc&quot;</span><span class="p">]</span>
 <span class="n">estimator_name</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;estimator_name&quot;</span><span class="p">]</span>
 
-<span class="c1"># Set the parameters by cross-validation</span>
+<span class="c1">## Set the parameters by cross-validation</span>
 <span class="n">tuned_parameters</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">]</span>
 <span class="n">rand_grid</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;randomized_grid&quot;</span><span class="p">]</span>
 <span class="n">early_stop</span> <span class="o">=</span> <span class="n">model_definition</span><span class="p">[</span><span class="n">model_type</span><span class="p">][</span><span class="s2">&quot;early&quot;</span><span class="p">]</span>
@@ -2045,13 +2105,28 @@ when using <code class="docutils literal notranslate"><span class="pre">XGBRegre
 </section>
 <section id="step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">
 <h3>Step 6: Perform grid search parameter tuning and retrieve split data<a class="headerlink" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,)</span>
+<p>To execute the grid search, simply call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
+<span class="c1">## Get the training, validation, and test data</span>
 <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>With the model configured, the next step is to perform grid search parameter tuning
+to find the optimal hyperparameters for the <code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning</span></code> method will iterate over all combinations of
+hyperparameters specified in <code class="docutils literal notranslate"><span class="pre">tuned_parameters_xgb</span></code>, evaluate each one using the
+specified scoring metric, and select the best performing set.</p>
+<p>This method will:</p>
+<ul class="simple">
+<li><p><strong>Split the Data</strong>: The data will be split into training and validation sets. Since <code class="docutils literal notranslate"><span class="pre">stratify_y=False</span></code>, the class distribution will not be maintained across splits.</p></li>
+<li><p><strong>Iterate Over Hyperparameters</strong>: All combinations of hyperparameters defined in <code class="docutils literal notranslate"><span class="pre">tuned_parameters_xgb</span></code> will be tried since <code class="docutils literal notranslate"><span class="pre">randomized_grid=False</span></code>.</p></li>
+<li><p><strong>Early Stopping</strong>: With <code class="docutils literal notranslate"><span class="pre">boost_early=True</span></code> and <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> set in the hyperparameters, the model will stop training early if the validation score does not improve.</p></li>
+<li><p><strong>Scoring</strong>: The model uses <span class="math notranslate nohighlight">\(R^2\)</span> (R-squared) as the scoring metric, which is suitable for evaluating regression models.</p></li>
+<li><p><strong>Select Best Model</strong>: The hyperparameter set that yields the best validation score based on the specified metric (<span class="math notranslate nohighlight">\(R^2\)</span>) will be selected.</p></li>
+</ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
 
 ┌────────────────┐

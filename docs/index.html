@@ -75,6 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#catboost-training-parameters">CatBoost Training Parameters</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -155,10 +156,9 @@
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-2-load-the-dataset-define-x-y">Step 2: Load the dataset, define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-check-for-zero-variance-columns-and-drop-accordingly">Step 3: Check for zero-variance columns and drop accordingly</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-create-an-instance-of-the-xgbclassifier">Step 4: Create an instance of the XGBClassifier</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-5-define-hyperparameters-for-xgboost">Step 5: Define hyperparameters for XGBoost</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#example-tuning-hyperparameters-for-catboost">Example: Tuning hyperparameters for CatBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-5-define-hyperparameters-for-xgboost">Step 5: Define Hyperparameters for XGBoost</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-6-initialize-and-configure-the-model">Step 6: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-perform-grid-search-parameter-tuning">Step 7: Perform grid search parameter tuning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 7: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-8-fit-the-model">Step 8: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-9-return-metrics-optional">Step 9: Return metrics (optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the model (if needed)</a></li>
@@ -223,7 +223,7 @@
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id6">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-define-hyperparameters-for-xgboost">Step 4: Define hyperparameters for XGBoost</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id7">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-fit-the-model">Step 7: Fit the model</a></li>
@@ -297,6 +297,10 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="caveats.html#important-considerations">Important Considerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#catboost-training-parameters">CatBoost Training Parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#example-tuning-hyperparameters-for-catboost">Example: Tuning hyperparameters for CatBoost</a></li>
 </ul>
 </li>
 </ul>
