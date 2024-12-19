@@ -844,27 +844,77 @@ class Model:
         print_per_fold=False,
     ):
         """
-        Evaluate the model on the given dataset and optionally return metrics
-        as a dictionary.
+        Evaluate the model on the given dataset, optionally using cross-validation,
+        and provide metrics or insights into the model's performance.
 
         Parameters:
         -----------
         X : array-like or DataFrame
-            The feature matrix.
+            The feature matrix for evaluation.
         y : array-like
-            The target vector.
+            The target vector for evaluation.
         optimal_threshold : bool, optional (default=False)
             Whether to use the optimal threshold for predictions
-            (for classification models).
+            (for classification models). If False, a default threshold of 0.5 is used.
         model_metrics : bool, optional (default=False)
-            Whether to calculate and print additional model metrics.
+            Whether to calculate and print additional model metrics, such as
+            precision, recall, and F1-score.
+        print_threshold : bool, optional (default=False)
+            Whether to print the threshold used for predictions.
         return_dict : bool, optional (default=False)
-            Whether to return the metrics as a dictionary.
+            Whether to return the calculated metrics as a dictionary.
+        print_per_fold : bool, optional (default=False)
+            If using cross-validation, whether to print metrics for each fold.
 
         Returns:
         --------
         dict, optional
-            Returns a dictionary containing metrics if return_dict=True.
+            Returns a dictionary containing performance metrics if `return_dict=True`.
+            The dictionary structure depends on the model type(classification or regression):
+            - For classification:
+            {
+                "Classification Report": str,
+                "Confusion Matrix": array,
+                "Best Features": list (if feature selection is enabled),
+            }
+            - For regression:
+            {
+                "Regression Report": dict,
+                "Best Features": list (if feature selection is enabled),
+            }
+        None
+            If `return_dict=False`, the function prints metrics and does not
+            return anything.
+
+        Notes:
+        ------
+        - For classification models, confusion matrices and classification reports
+        are printed and optionally included in the returned dictionary.
+        - For regression models, regression metrics are printed and optionally
+        returned.
+        - If cross-validation (`self.kfold`) is enabled, metrics are calculated
+        and printed for each fold, and an aggregated summary is provided.
+        - If feature selection is enabled (`self.feature_selection`), the top
+        selected features are printed and optionally included in the output
+        dictionary.
+
+        Examples:
+        ---------
+        # Example usage for classification:
+        metrics = model.return_metrics(
+            X_test,
+            y_test,
+            optimal_threshold=True,
+            return_dict=True,
+        )
+
+        # Example usage for regression:
+        metrics = model.return_metrics(
+            X_test,
+            y_test,
+            model_metrics=True,
+            return_dict=True,
+        )
         """
 
         if self.kfold:
@@ -1409,6 +1459,51 @@ class Model:
             # self.estimator = clf.best_estimator_
 
     def return_metrics_kfold(self, X, y, test_model, score=None, print_per_fold=False):
+        """
+        Evaluate the model's performance using K-Fold cross-validation and print
+        metrics for each fold. Aggregates predictions and true labels across
+        folds for overall evaluation.
+
+        Parameters:
+        -----------
+        X : array-like or DataFrame
+            The feature matrix to be split into K folds for cross-validation.
+        y : array-like
+            The target vector corresponding to the feature matrix.
+        test_model : estimator object
+            The model to be trained and evaluated. It must implement `fit` and
+            `predict` methods.
+        score : str, optional (default=None)
+            The scoring metric to determine the optimal threshold. If None, the
+            first metric in `self.scoring` is used.
+        print_per_fold : bool, optional (default=False)
+            Whether to print the confusion matrix and classification report for
+            each fold.
+
+        Returns:
+        --------
+        None
+            This function does not return any value. It prints metrics for each
+            fold if `print_per_fold=True`.
+
+        Notes:
+        ------
+        - For each fold, the model is trained on the training subset and
+        evaluated on the test subset.
+        - Confusion matrices and classification reports are generated for each
+        fold if `print_per_fold=True`.
+        - The function aggregates true labels and predictions across folds for
+        overall evaluation (though aggregated results are not explicitly returned).
+        - Ensures `test_model` has the necessary attributes (`model_type` and
+        `estimator_name`) for compatibility with downstream processing.
+
+        Behavior:
+        ---------
+        - If `score` is provided, it determines the threshold used for predictions.
+        If `score` is None, the default threshold (based on the first scoring
+        metric) is used.
+        - Handles both DataFrame and array-like inputs for `X` and `y`.
+        """
 
         # Ensure test_model has necessary attributes
         if not hasattr(test_model, "model_type"):
@@ -1509,7 +1604,6 @@ class Model:
             aggregated_true_labels,
             aggregated_predictions,
             zero_division=0,
-            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
@@ -1799,37 +1893,124 @@ def report_model_metrics(
     print_per_fold=False,
 ):
     """
-    Generate a DataFrame of model performance metrics for binary, multiclass,
-    or regression problems.
+    Generate a comprehensive report of model performance metrics for binary,
+    multiclass classification, or regression problems. Supports both single
+    validation and K-Fold cross-validation.
 
     Parameters:
     -----------
     model : fitted model
-        The trained model with a `predict_proba` or `predict` method.
+        The trained model with `predict_proba` or `predict` methods. It should
+        also include attributes `model_type` (e.g., "regression", "binary", or
+        "multiclass") and optionally `multi_label` for multiclass classification.
 
-    X_valid : DataFrame, optional
-        The feature set used for validating the model(s).
+    X_valid : DataFrame or array-like, optional
+        The feature set used for validation. For K-Fold validation, this should
+        represent the entire dataset.
 
     y_valid : Series or array-like, optional
-        The true labels for the validation set.
+        The true labels for the validation dataset. For K-Fold validation, this
+        should correspond to the entire dataset.
 
     threshold : float, default=0.5
-        The threshold for binary classification.
+        The threshold for binary classification. Predictions above this threshold
+        are classified as the positive class.
+
+    print_results : bool, optional (default=True)
+        Whether to print the metrics report.
+
+    print_per_fold : bool, optional (default=False)
+        If performing K-Fold validation, specifies whether to print metrics for
+        each fold.
 
     Returns:
     --------
     metrics_df : DataFrame
-        A DataFrame containing calculated metrics for each class (multiclass),
-        overall metrics (binary), or regression metrics, including:
-        - For classification: Precision/PPV, Average Precision, Sensitivity,
-          Specificity, AUC ROC, Brier Score
-        - For regression: RMSE, MAE, R^2, Explained Variance
+        A DataFrame containing performance metrics. The exact structure depends
+        on the type of model:
+        - **Binary Classification**: Includes Precision (PPV), Average Precision,
+          Sensitivity, Specificity, AUC-ROC, and Brier Score.
+        - **Multiclass Classification**: Includes Precision, Recall, and F1-Score
+          for each class, as well as weighted averages.
+        - **Regression**: Includes MAE, MSE, RMSE, R² Score, and Explained Variance.
+        - **K-Fold**: Returns averaged metrics across all folds, with individual
+          fold results optionally printed if `print_per_fold=True`.
+
+    Notes:
+    ------
+    - Handles binary, multiclass, and regression models, adapting metrics to the
+      specific task.
+    - For K-Fold cross-validation, calculates metrics for each fold and aggregates
+      them into an average report.
+    - If `model.kfold` is set, the function performs K-Fold validation using
+      `model.kf`, the K-Fold splitter.
+
+    Examples:
+    ---------
+    # Binary classification example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X_test, y_valid=y_test, threshold=0.5
+    )
+
+    # Regression example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X_test, y_valid=y_test
+    )
+
+    # K-Fold validation example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X, y_valid=y, print_per_fold=True
+    )
     """
 
     def calculate_metrics(model, X, y, threshold):
         """
-        Calculate metrics for binary, multiclass classification, or regression.
+        Calculate and return performance metrics for regression, binary, or
+        multiclass classification models.
+
+        Parameters:
+        -----------
+        model : fitted model
+            The trained model with the following expected attributes:
+            - `model_type`: Specifies the type of model ("regression", "binary",
+            or "multiclass").
+            - `multi_label` (optional): Indicates if the model is for multiclass
+            classification.
+            - `class_labels` (required for multiclass): A list of class labels
+            for generating metrics.
+            - `predict_proba` or `predict`: Methods for generating predictions.
+        X : DataFrame or array-like
+            The feature matrix used for generating predictions.
+        y : Series or array-like
+            The true labels for the dataset.
+        threshold : float
+            The classification threshold for binary classification. Predictions
+            with probabilities above this value are classified as the positive
+            class.
+
+        Returns:
+        --------
+        metrics_df : DataFrame
+            A DataFrame containing the calculated metrics:
+            - **Regression**: Includes Mean Absolute Error (MAE), Mean Squared
+            Error (MSE), Root Mean Squared Error (RMSE), R² Score, and Explained
+            Variance.
+            - **Binary Classification**: Includes Precision (PPV), Average
+            Precision, Sensitivity, Specificity, AUC ROC, and Brier Score.
+            - **Multiclass Classification**: Includes Precision, Recall, and
+            F1-Score for each class, as well as weighted averages and accuracy.
+
+        Notes:
+        ------
+        - For regression models, standard regression metrics are calculated.
+        - For binary classification models, threshold-based metrics are computed
+        using probabilities from `predict_proba`.
+        - For multiclass classification models, metrics are calculated for each
+        class, along with weighted averages.
+        - The function assumes that the model has the necessary attributes and
+        methods based on the task type.
         """
+
         if model.model_type == "regression":
             # Regression metrics
             y_pred = model.predict(X)
