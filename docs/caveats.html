@@ -122,6 +122,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#important-considerations">Important Considerations</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#catboost-training-parameters">CatBoost Training Parameters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-tuning-hyperparameters-for-catboost">Example: Tuning hyperparameters for CatBoost</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">About Model Tuner</span></p>
 <ul>
@@ -343,7 +347,7 @@ of the target variable across the different training and validation sets.</p>
 </section>
 </section>
 <section id="model-calibration">
-<h1>Model Calibration<a class="headerlink" href="#model-calibration" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>Model Calibration<a class="headerlink" href="#model-calibration" title="Link to this heading"></a></h1>
 <p>Model calibration refers to the process of adjusting the predicted probabilities of a model so that they more accurately reflect the true likelihood of outcomes. This is crucial in machine learning, particularly for classification problems where the model outputs probabilities rather than just class labels.</p>
 <section id="goal-of-calibration">
 <h2>Goal of Calibration<a class="headerlink" href="#goal-of-calibration" title="Link to this heading"></a></h2>
@@ -466,7 +470,7 @@ false negatives for the minority class. Adjusting the threshold to account for i
 help mitigate this issue, but it requires careful tuning and validation.</p>
 </section>
 <section id="limitations-of-accuracy">
-<span id="id1"></span><h2>Limitations of Accuracy<a class="headerlink" href="#limitations-of-accuracy" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2>Limitations of Accuracy<a class="headerlink" href="#limitations-of-accuracy" title="Link to this heading"></a></h2>
 <p>Traditional accuracy is a misleading metric in imbalanced datasets. For example, a model predicting
 only the majority class can achieve high accuracy despite failing to identify any minority class instances.
 Instead, alternative metrics should be used:</p>
@@ -670,6 +674,41 @@ minority class samples and their neighbors.</p>
 <li><p>Careful calibration of <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\lambda\)</span> is essential when using RFE alongside elastic net to prevent over-penalization or premature exclusion of relevant features.</p></li>
 </ul>
 </div>
+</section>
+</section>
+<section id="catboost-training-parameters">
+<span id="id3"></span><h1>CatBoost Training Parameters<a class="headerlink" href="#catboost-training-parameters" title="Link to this heading"></a></h1>
+<p>According to the <a class="reference external" href="https://catboost.ai/docs/en/references/training-parameters/">CatBoost documentation</a>:</p>
+<blockquote>
+<div><p>“For the Python package several parameters have aliases. For example, the –iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error.”</p>
+</div></blockquote>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Attempting to pass more than one of these synonymous hyperparameters will result in the following error:</p>
+<p><code class="docutils literal notranslate"><span class="pre">CatBoostError:</span> <span class="pre">only</span> <span class="pre">one</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">parameters</span> <span class="pre">iterations,</span> <span class="pre">n_estimators,</span> <span class="pre">num_boost_round,</span> <span class="pre">num_trees</span> <span class="pre">should</span> <span class="pre">be</span> <span class="pre">initialized.</span></code></p>
+<p>To prevent this issue, ensure you define only <strong>one</strong> of these parameters (e.g., <code class="docutils literal notranslate"><span class="pre">n_estimators</span></code>) in your configuration, and avoid including any other aliases such as <code class="docutils literal notranslate"><span class="pre">iterations</span></code> or <code class="docutils literal notranslate"><span class="pre">num_boost_round</span></code>.</p>
+</div>
+<section id="example-tuning-hyperparameters-for-catboost">
+<h2>Example: Tuning hyperparameters for CatBoost<a class="headerlink" href="#example-tuning-hyperparameters-for-catboost" title="Link to this heading"></a></h2>
+<p>When defining hyperparameters for grid search, specify only one alias in your configuration. Below is an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cat</span> <span class="o">=</span> <span class="n">CatBoostClassifier</span><span class="p">(</span>
+    <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>  <span class="c1">## num estimator/iteration/boostrounds</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">loss_function</span><span class="o">=</span><span class="s2">&quot;Logloss&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tuned_hyperparameters_cat</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1500</span><span class="p">],</span>
+
+    <span class="c1">## Additional hyperparameters</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span>
+    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cat_name</span><span class="si">}</span><span class="s2">__loss_function&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This ensures compatibility with CatBoost’s requirements and avoids errors during hyperparameter tuning.</p>
 </section>
 </section>
 
