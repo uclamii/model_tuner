@@ -2,7 +2,7 @@ from catboost import CatBoostClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 import model_tuner
 
 print()
@@ -64,3 +64,4 @@ model.return_metrics(
 )
 
 print(model.classification_report)
+
