@@ -841,6 +841,7 @@ class Model:
         model_metrics=False,
         print_threshold=False,
         return_dict=False,
+        print_per_fold=False,
     ):
         """
         Evaluate the model on the given dataset and optionally return metrics
@@ -878,14 +879,16 @@ class Model:
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
-                    self.return_metrics_kfold(X, y, self.test_model, score)
+                    self.return_metrics_kfold(
+                        X, y, self.test_model, score, print_per_fold
+                    )
 
                     if optimal_threshold:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(self, X, y, threshold)
+                        report_model_metrics(self, X, y, threshold, True, print_per_fold)
                     print("-" * 80)
                     print()
 
@@ -906,7 +909,7 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(self, X, y, threshold)
+                        report_model_metrics(self, X, y, threshold, print_per_fold)
                     print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
@@ -917,7 +920,7 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(self, X, y, threshold)
+                        report_model_metrics(self, X, y, threshold, print_per_fold)
                     print("-" * 80)
                 print()
                 self.classification_report = classification_report(
@@ -1405,7 +1408,7 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
-    def return_metrics_kfold(self, X, y, test_model, score=None):
+    def return_metrics_kfold(self, X, y, test_model, score=None, print_per_fold=False):
 
         # Ensure test_model has necessary attributes
         if not hasattr(test_model, "model_type"):
@@ -1430,40 +1433,40 @@ class Model:
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
                 y_pred = test_model.predict(X_test)
-
-                # Print confusion matrix for this fold
-                print(f"Confusion Matrix for Fold {fold_idx}:")
                 conf_matrix = confusion_matrix(y_test, y_pred)
-                _confusion_matrix_print(conf_matrix, self.labels)
-
-                # Print classification report for this fold
-                print(f"Classification Report for Fold {fold_idx}:")
-                print(classification_report(y_test, y_pred, zero_division=0))
-                print("*" * 80)
-
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(y_pred)
+                # Print confusion matrix for this fold
+                if print_per_fold:
+                    print(f"Confusion Matrix for Fold {fold_idx}:")
+                    _confusion_matrix_print(conf_matrix, self.labels)
+
+                    # Print classification report for this fold
+                    print(f"Classification Report for Fold {fold_idx}:")
+                    print(classification_report(y_test, y_pred, zero_division=0))
+                    print("*" * 80)
+
         else:
             for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
                 y_pred = test_model.predict(X_test)
-
-                # Print confusion matrix for this fold
-                print(f"Confusion Matrix for Fold {fold_idx}:")
                 conf_matrix = confusion_matrix(y_test, y_pred)
-                _confusion_matrix_print(conf_matrix, self.labels)
-
-                # Print classification report for this fold
-                print(f"Classification Report for Fold {fold_idx}:")
-                print(classification_report(y_test, y_pred, zero_division=0))
-                print("*" * 80)
 
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(y_pred)
+
+                # Print confusion matrix for this fold
+                if print_per_fold:
+                    print(f"Confusion Matrix for Fold {fold_idx}:")
+                    _confusion_matrix_print(conf_matrix, self.labels)
+                    # Print classification report for this fold
+                    print(f"Classification Report for Fold {fold_idx}:")
+                    print(classification_report(y_test, y_pred, zero_division=0))
+                    print("*" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
 
@@ -1793,6 +1796,7 @@ def report_model_metrics(
     y_valid=None,
     threshold=0.5,
     print_results=True,
+    print_per_fold=False,
 ):
     """
     Generate a DataFrame of model performance metrics for binary, multiclass,
@@ -1949,7 +1953,7 @@ def report_model_metrics(
                 aggregated_metrics.append(fold_metrics)
 
             # Print fold-specific metrics
-            if print_results:
+            if print_results and print_per_fold:
                 print(f"Metrics for Fold {fold_idx}:")
                 print(fold_metrics)
                 print("*" * 80)

@@ -60,6 +60,7 @@ model.return_metrics(
     optimal_threshold=True,
     print_threshold=True,
     model_metrics=True,
+    print_per_fold=False,
 )
 
 # report_model_metrics(model, X, y)
