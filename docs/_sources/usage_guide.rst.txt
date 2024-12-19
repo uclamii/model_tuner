@@ -796,28 +796,6 @@ See :ref:`this section <model_calibration>` for more information on model calibr
 
    <div style="height: 50px;"></div>
 
-Classification report (optional)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A classification report is readily available at this stage, should you wish to 
-print and examine it. A call to ``print(model_tuner.classification_report)`` will
-output it as follows:
-
-.. code-block:: python 
-
-   print(model_xgb.classification_report)
-
-.. code-block:: bash
-
-                 precision    recall  f1-score   support
-
-              0       0.91      0.94      0.92       324
-              1       0.79      0.71      0.75       104
-
-       accuracy                           0.88       428
-      macro avg       0.85      0.82      0.84       428
-   weighted avg       0.88      0.88      0.88       428
-
 Recursive Feature Elimination (RFE)
 -------------------------------------
 
@@ -2267,6 +2245,34 @@ Step 8: Return metrics (optional)
    'Median Absolute Error': 0.26315186452865597,
    'Mean Squared Error': 0.28411432705731066,
    'RMSE': 0.533023758436067}
+
+
+Report Model Metrics
+=========================
+
+Classification report (optional)
+------------------------------------
+
+A classification report is readily available at this stage, should you wish to 
+print and examine it. A call to ``print(model_xgb.classification_report)`` will
+output it as follows:
+
+.. code-block:: python 
+
+   print(model_xgb.classification_report)
+
+.. code-block:: bash
+
+                 precision    recall  f1-score   support
+
+              0       0.91      0.94      0.92       324
+              1       0.79      0.71      0.75       104
+
+       accuracy                           0.88       428
+      macro avg       0.85      0.82      0.84       428
+   weighted avg       0.88      0.88      0.88       428
+
+   
 
 Bootstrap metrics
 ===========================
