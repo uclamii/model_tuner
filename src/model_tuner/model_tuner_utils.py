@@ -925,9 +925,7 @@ class Model:
                         report_model_metrics(self, X, y, threshold, print_per_fold)
                     print("-" * 80)
                 print()
-                self.classification_report = classification_report(
-                    y, y_pred_valid, output_dict=True
-                )
+                self.classification_report = classification_report(y, y_pred_valid)
                 print(
                     classification_report(
                         y,
