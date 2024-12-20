@@ -147,4 +147,10 @@ y_pred = model.predict(X_test, optimal_threshold=True)
 
 ### Report Model Metrics
 
-report_model_metrics(model, X_test, y_test)
+model.return_metrics(
+    X_test,
+    y_test,
+    optimal_threshold=True,
+    print_threshold=True,
+    model_metrics=True,
+)
