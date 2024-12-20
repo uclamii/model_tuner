@@ -6,7 +6,7 @@ from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
-from sklearn.metrics import get_scorer, explained_variance_score, mean_squared_error
+from sklearn.metrics import get_scorer
 from sklearn.metrics import (
     fbeta_score,
     mean_absolute_error,
@@ -17,13 +17,18 @@ from sklearn.metrics import (
     roc_auc_score,
     average_precision_score,
     brier_score_loss,
+    mean_squared_error,
+    mean_absolute_error,
+    r2_score,
+    explained_variance_score,
 )
+
 
 from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.model_selection import ParameterGrid
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, label_binarize
 from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
@@ -118,6 +123,7 @@ class Model:
         calibration_method="sigmoid",
         custom_scorer=[],
         bayesian=False,
+        sort_preprocess=True,
     ):
 
         # Check if model_type is provided and valid
@@ -135,6 +141,7 @@ class Model:
         self.multi_label = multi_label
         self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
+        self.sort_preprocess = sort_preprocess
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
@@ -303,14 +310,14 @@ class Model:
                     name = f"preprocess_column_transformer_{name}"
                 column_transformer_steps.append((name, transformer))
             elif is_preprocessing_step(transformer):
-                if is_imputer(transformer):
+                if is_imputer(transformer) and self.sort_preprocess:
                     # Imputation steps
                     if not name:
                         name = f"preprocess_imputer_step_{len(imputation_steps)}"
                     else:
                         name = f"preprocess_imputer_{name}"
                     imputation_steps.append((name, transformer))
-                elif is_scaler(transformer):
+                elif is_scaler(transformer) and self.sort_preprocess:
                     # Scaling steps
                     if not name:
                         name = f"preprocess_scaler_step_{len(scaling_steps)}"
@@ -344,12 +351,15 @@ class Model:
                 other_steps.append((name, transformer))
 
         # Assemble the preprocessing steps in the correct order
-        preprocessing_steps = (
-            column_transformer_steps
-            + imputation_steps
-            + scaling_steps
-            + other_preprocessing_steps
-        )
+        if self.sort_preprocess:
+            preprocessing_steps = (
+                column_transformer_steps
+                + scaling_steps
+                + imputation_steps
+                + other_preprocessing_steps
+            )
+        else:
+            preprocessing_steps = column_transformer_steps + other_preprocessing_steps
 
         # Initialize the main pipeline steps list
         main_pipeline_steps = []
@@ -381,6 +391,19 @@ class Model:
         self.estimator = self.PipelineClass(self.pipeline_steps)
 
     def reset_estimator(self):
+        """
+        Resets the estimator to its original state, reinitializing the pipeline
+        with the configured steps or the original estimator.
+
+        This method is useful when modifications (e.g., hyperparameter tuning,
+        calibration) have altered the current estimator, and it needs to be
+        reverted to its initial configuration for retraining or evaluation.
+
+        Returns:
+        --------
+        None
+        """
+
         if self.pipeline_steps:
             self.estimator = self.PipelineClass(copy.deepcopy(self.pipeline_steps))
         else:
@@ -390,6 +413,26 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
+        """
+        Applies imbalance sampling to the training data, optionally including
+        preprocessing steps if a pipeline is configured.
+
+        This method is used to handle class imbalance by resampling the training
+        data using a resampling technique (e.g., SMOTE, RandomUnderSampler).
+        Preprocessing steps, if defined in the pipeline, are applied prior to
+        resampling.
+
+        Parameters:
+        -----------
+        X_train : pandas.DataFrame or array-like
+            The training features.
+        y_train : pandas.Series or array-like
+            The training target labels.
+
+        Returns:
+        --------
+        None
+        """
 
         ####  Preprocessor, Resampler, rfe, Estimator
 
@@ -414,6 +457,29 @@ class Model:
         print()
 
     def calibrateModel(self, X, y, score=None):
+        """
+        Calibrates the model to improve probability estimates, with support for
+        k-fold cross-validation and prefit workflows. This method adjusts the
+        model's predicted probabilities to align better with observed outcomes,
+        using specified calibration techniques (e.g., Platt scaling or isotonic
+        regression).
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature dataset for calibration.
+        y : pandas.Series or array-like
+            The target dataset for calibration.
+        score : str or list of str, optional (default=None)
+            The scoring metric(s) to guide calibration. If None, the first scoring
+            metric from `self.scoring` is used. For k-fold workflows, calibration
+            is performed for each specified score.
+
+        Returns:
+        --------
+        None
+        """
+
         if self.kfold:
             if score == None:
                 if self.calibrate:
@@ -563,6 +629,10 @@ class Model:
 
         return
 
+    ############################################################################
+    ##  These functions return subsets of the dataset (features and labels)   ##
+    ##  based on predefined indices stored in the class attributes            ##
+    ############################################################################
     def get_train_data(self, X, y):
         return X.loc[self.X_train_index], y.loc[self.y_train_index]
 
@@ -572,7 +642,27 @@ class Model:
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
 
+    ############################################################################
+
     def calibrate_report(self, X, y, score=None):
+        """
+        Generates and prints a calibration report, including a confusion matrix
+        and classification report, for the given dataset.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature dataset for evaluation.
+        y : pandas.Series or array-like
+            The target dataset for evaluation.
+        score : str, optional (default=None)
+            The scoring metric used for calibration reporting.
+
+        Returns:
+        --------
+        None
+        """
+
         y_pred_valid = self.predict(X, optimal_threshold=False)
         if self.multi_label:
             conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
@@ -589,6 +679,28 @@ class Model:
         print("-" * 80)
 
     def fit(self, X, y, validation_data=None, score=None):
+        """
+        Trains the model using the best hyperparameters obtained from tuning
+        and optionally supports k-fold cross-validation and early stopping.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            Training feature dataset.
+        y : pandas.Series or array-like
+            Training target dataset.
+        validation_data : tuple, optional (default=None)
+            A tuple containing validation feature and target datasets
+            (X_valid, y_valid). Required for early stopping.
+        score : str, optional (default=None)
+            The scoring metric to optimize during training. If None, the default
+            scoring metric from the class is used.
+
+        Returns:
+        --------
+        None
+        """
+
         self.reset_estimator()
         if self.kfold:
             if score == None:
@@ -773,7 +885,8 @@ class Model:
                         ).fit(X, y)
                     except ValueError as error:
                         print(
-                            "Specified score not found in scoring dictionary. Please use a score that was parsed for tuning."
+                            "Specified score not found in scoring dictionary. "
+                            "Please use a score that was parsed for tuning."
                         )
                         raise error
 
@@ -789,12 +902,55 @@ class Model:
         n_samples=500,
         balance=False,
     ):
+        """
+        Evaluates bootstrap metrics for a trained model using
+        the test dataset. This function supports both
+        classification and regression tasks by leveraging
+        evaluate_bootstrap_metrics to compute confidence
+        intervals for the specified metrics.
+
+        Parameters:
+        -----------
+        X_test : pandas.DataFrame
+            Test dataset features.
+        y_test : pandas.Series or pandas.DataFrame
+            Test dataset labels.
+        metrics : list of str
+            List of metric names to calculate (e.g., "roc_auc",
+            "f1_weighted").
+        threshold : float, optional
+            Threshold for converting predicted probabilities
+            into class predictions. Default is 0.5.
+        num_resamples : int, optional
+            Number of bootstrap iterations. Default is 500.
+        n_samples : int, optional
+            Number of samples per bootstrap iteration.
+            Default is 500.
+        balance : bool, optional
+            Whether to balance the class distribution during
+            resampling. Default is False.
+
+        Returns:
+        --------
+        pandas.DataFrame
+            DataFrame containing mean and confidence intervals
+            for the specified metrics.
+
+        Raises:
+        -------
+        ValueError
+            If X_test or y_test are not provided as Pandas
+            DataFrames or if unsupported input types are
+            specified.
+        """
+
         # Custom type check for X_test and y_test
         if not isinstance(X_test, pd.DataFrame) or not isinstance(
             y_test, (pd.Series, pd.DataFrame)
         ):
             raise ValueError(
-                "Specifying X_test and/or y_test as anything other than pandas DataFrames is not supported."
+                "Specifying X_test and/or y_test as anything other "
+                "than pandas DataFrames is not supported."
             )
 
         if self.model_type != "regression":
@@ -823,7 +979,90 @@ class Model:
             )
         return bootstrap_metrics
 
-    def return_metrics(self, X, y, optimal_threshold=False):
+    def return_metrics(
+        self,
+        X,
+        y,
+        optimal_threshold=False,
+        model_metrics=False,
+        print_threshold=False,
+        return_dict=False,
+        print_per_fold=False,
+    ):
+        """
+        Evaluate the model on the given dataset, optionally using cross-validation,
+        and provide metrics or insights into the model's performance.
+
+        Parameters:
+        -----------
+        X : array-like or DataFrame
+            The feature matrix for evaluation.
+        y : array-like
+            The target vector for evaluation.
+        optimal_threshold : bool, optional (default=False)
+            Whether to use the optimal threshold for predictions
+            (for classification models). If False, a default threshold of 0.5 is used.
+        model_metrics : bool, optional (default=False)
+            Whether to calculate and print additional model metrics, such as
+            precision, recall, and F1-score.
+        print_threshold : bool, optional (default=False)
+            Whether to print the threshold used for predictions.
+        return_dict : bool, optional (default=False)
+            Whether to return the calculated metrics as a dictionary.
+        print_per_fold : bool, optional (default=False)
+            If using cross-validation, whether to print metrics for each fold.
+
+        Returns:
+        --------
+        dict, optional
+            Returns a dictionary containing performance metrics if
+            `return_dict=True`. The dictionary structure depends on the model
+            type(classification or regression):
+                - For classification:
+                    {
+                        "Classification Report": str,
+                        "Confusion Matrix": array,
+                        "Best Features": list (if feature selection is enabled),
+                    }
+                - For regression:
+                    {
+                        "Regression Report": dict,
+                        "Best Features": list (if feature selection is enabled),
+                    }
+        None
+            If `return_dict=False`, the function prints metrics and does not
+            return anything.
+
+        Notes:
+        ------
+        - For classification models, confusion matrices and classification
+        reports are printed and optionally included in the returned dictionary.
+        - For regression models, regression metrics are printed and optionally
+        returned.
+        - If cross-validation (`self.kfold`) is enabled, metrics are calculated
+        and printed for each fold, and an aggregated summary is provided.
+        - If feature selection is enabled (`self.feature_selection`), the top
+        selected features are printed and optionally included in the output
+        dictionary.
+
+        Examples:
+        ---------
+        # Example usage for classification:
+        metrics = model.return_metrics(
+            X_test,
+            y_test,
+            optimal_threshold=True,
+            return_dict=True,
+        )
+
+        # Example usage for regression:
+        metrics = model.return_metrics(
+            X_test,
+            y_test,
+            model_metrics=True,
+            return_dict=True,
+        )
+        """
 
         if self.kfold:
             for score in self.scoring:
@@ -837,7 +1076,20 @@ class Model:
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
-                    self.return_metrics_kfold(X, y, self.test_model, score)
+                    self.return_metrics_kfold(
+                        X, y, self.test_model, score, print_per_fold
+                    )
+
+                    if optimal_threshold:
+                        threshold = self.threshold[self.scoring[0]]
+                    else:
+                        threshold = 0.5
+                    if model_metrics:
+                        report_model_metrics(
+                            self, X, y, threshold, True, print_per_fold
+                        )
+                    print("-" * 80)
+                    print()
 
                 else:
                     self.regression_report_kfold(X, y, self.test_model, score)
@@ -851,6 +1103,15 @@ class Model:
                 if self.multi_label:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self._confusion_matrix_print_ML(conf_mat)
+                    if optimal_threshold:
+                        threshold = self.threshold[self.scoring[0]]
+                    else:
+                        threshold = 0.5
+                    if model_metrics:
+                        report_model_metrics(
+                            self, X, y, threshold, True, print_per_fold
+                        )
+                    print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     print("Confusion matrix on set provided: ")
@@ -859,42 +1120,79 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
-                    model_metrics_df = report_model_metrics(self, X, y, threshold)
-                    print("-" * 80)
-                    pprint(model_metrics_df.iloc[0].to_dict())
+                    if model_metrics:
+                        report_model_metrics(
+                            self, X, y, threshold, True, print_per_fold
+                        )
                     print("-" * 80)
                 print()
-                self.classification_report = classification_report(
-                    y, y_pred_valid, output_dict=True
+                self.classification_report = classification_report(y, y_pred_valid)
+                print(
+                    classification_report(
+                        y,
+                        y_pred_valid,
+                        target_names=self.class_labels,
+                    )
                 )
-                print(classification_report(y, y_pred_valid))
                 print("-" * 80)
 
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
 
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                        "Best Features": best_features,
-                    }
+                    if return_dict:
+                        return {
+                            "Classification Report": self.classification_report,
+                            "Confusion Matrix": conf_mat,
+                            "Best Features": best_features,
+                        }
                 else:
-                    return {
-                        "Classification Report": self.classification_report,
-                        "Confusion Matrix": conf_mat,
-                    }
+                    if return_dict:
+                        return {
+                            "Classification Report": self.classification_report,
+                            "Confusion Matrix": conf_mat,
+                        }
             else:
                 reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
                     best_features = self.print_selected_best_features(X)
-                    return {
-                        "Regression Report": reg_report,
-                        "Best Features": best_features,
-                    }
+                    if return_dict:
+                        return {
+                            "Regression Report": reg_report,
+                            "Best Features": best_features,
+                        }
                 else:
-                    return reg_report
+                    if return_dict:
+                        return reg_report
+
+        if print_threshold:
+            if self.model_type != "regression":
+                print(f"Optimal threshold used: {threshold}")
+            else:
+                print()
 
     def predict(self, X, y=None, optimal_threshold=False):
+        """
+        Makes predictions and predicts probabilities, allowing
+        threshold tuning.
+
+        Parameters:
+        -----------
+        X : The feature matrix for prediction.
+        y : The true target labels, required only for k-fold predictions.
+            Default is None.
+        optimal_threshold : Whether to use an optimal classification threshold
+                            for predictions. Default is False.
+
+        Returns:
+        --------
+        Predicted class labels or predictions adjusted by the optimal threshold.
+
+        Raises:
+        -------
+        ValueError
+            Raised if invalid inputs or configurations are provided.
+        """
+
         if self.model_type == "regression":
             optimal_threshold = False
         if self.kfold and y is not None:
@@ -911,6 +1209,27 @@ class Model:
                 return self.estimator.predict(X)
 
     def predict_proba(self, X, y=None):
+        """
+        Predicts class probabilities for the input data.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like. The feature matrix for prediction.
+        y : pandas.Series or array-like, optional. The true target labels,
+            required only for k-fold predictions. Default is None.
+
+        Returns:
+        --------
+        numpy.ndarray or array-like. Predicted probabilities for each class.
+
+        Notes:
+        ------
+        - If `self.kfold` is True and `y` is provided, cross-validated
+        probabilities are computed using the specified estimator.
+        - If k-fold validation is not enabled, probabilities are predicted
+        using the fitted estimator.
+        """
+
         if self.kfold and y is not None:
             return cross_val_predict(
                 self.estimator, X, y, cv=self.kf, method="predict_proba"
@@ -925,6 +1244,41 @@ class Model:
         f1_beta_tune=False,
         betas=[1, 2],
     ):
+        """
+        Performs grid or Bayesian search parameter tuning, optionally
+        tuning F-beta score thresholds for classification tasks.
+
+        Parameters:
+        -----------
+        X : The feature matrix for training and validation.
+        y : The target vector corresponding to `X`.
+        f1_beta_tune : Whether to tune F-beta score thresholds during parameter
+                       tuning. Default is False.
+        betas : List of beta values to use for F-beta score tuning.Default is [1, 2].
+
+        Raises:
+        -------
+        ValueError
+            Raised if invalid data or configurations are provided.
+
+        KeyError
+            Raised if required scoring metrics are missing.
+
+        Description:
+        ------------
+        - Tunes hyperparameters for a model using grid search or Bayesian
+        optimization.
+        - Supports tuning F-beta thresholds for classification tasks.
+        - Can handle both k-fold cross-validation and train-validation-test
+        workflows.
+
+        Output:
+        -------
+        - Updates `self.best_params_per_score` with the best parameters and
+        scores for each metric.
+        - Optionally updates `self.threshold` with tuned F-beta thresholds.
+        - Prints the best parameters and scores if `self.display` is enabled.
+        """
 
         if self.display:
             print_pipeline(self.estimator)
@@ -1089,7 +1443,8 @@ class Model:
                             self.estimator_name
                         ].get_params()
 
-                        ### updating the params in the param grid with these updated parameters
+                        ### updating the params in the param grid with these
+                        ### updated parameters
                         for (
                             param_name,
                             param_value,
@@ -1147,6 +1502,36 @@ class Model:
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
     def print_selected_best_features(self, X):
+        """
+        Prints and returns the selected top K best features based on the feature
+        selection step.
+
+        Parameters:
+        -----------
+        X : The feature matrix used during the feature selection process.
+
+        Returns:
+        --------
+            A list of the selected features or column indices.
+
+        Raises:
+        -------
+        AttributeError
+            Raised if the feature selection pipeline is not properly
+            configured or trained.
+
+        Description:
+        ------------
+        - Retrieves the top K features selected by the feature
+        selection pipeline.
+        - Prints the names or column indices of the selected
+        features to the console.
+        - Returns the selected features as a list.
+
+        For Array-like Data:
+            - Prints the indices of the selected feature columns.
+            - Returns a list of column indices.
+        """
 
         feat_select_pipeline = self.get_feature_selection_pipeline()
         feat_select_pipeline = feat_select_pipeline[0]
@@ -1262,6 +1647,31 @@ class Model:
             return
 
     def get_best_score_params(self, X, y):
+        """
+        Tunes hyperparameters for the model based on specified scoring metrics
+        and updates the best parameters and scores for each metric.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix used for hyperparameter tuning.
+
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the grid or scoring metrics are invalid.
+
+        Description:
+        ------------
+        - This method performs hyperparameter tuning using grid search,
+        randomized search, or Bayesian search based on the class
+        configuration.
+        - Supports multiple scoring metrics and stores the best
+        parameters and scores for each.
+        """
 
         for score in self.scoring:
 
@@ -1336,9 +1746,52 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
-    def return_metrics_kfold(self, X, y, test_model, score=None):
+    def return_metrics_kfold(self, X, y, test_model, score=None, print_per_fold=False):
+        """
+        Evaluate the model's performance using K-Fold cross-validation and print
+        metrics for each fold. Aggregates predictions and true labels across
+        folds for overall evaluation.
 
-        aggregated_pred_list = []
+        Parameters:
+        -----------
+        X : array-like or DataFrame
+            The feature matrix to be split into K folds for cross-validation.
+        y : array-like
+            The target vector corresponding to the feature matrix.
+        test_model : estimator object
+            The model to be trained and evaluated. It must implement `fit` and
+            `predict` methods.
+        score : str, optional (default=None)
+            The scoring metric to determine the optimal threshold. If None, the
+            first metric in `self.scoring` is used.
+        print_per_fold : bool, optional (default=False)
+            Whether to print the confusion matrix and classification report for
+            each fold.
+
+        Returns:
+        --------
+        None
+            This function does not return any value. It prints metrics for each
+            fold if `print_per_fold=True`.
+
+        Notes:
+        ------
+        - For each fold, the model is trained on the training subset and
+        evaluated on the test subset.
+        - Confusion matrices and classification reports are generated for each
+        fold if `print_per_fold=True`.
+        - The function aggregates true labels and predictions across folds for
+        overall evaluation (though aggregated results are not explicitly returned).
+        - Ensures `test_model` has the necessary attributes (`model_type` and
+        `estimator_name`) for compatibility with downstream processing.
+        """
+
+        # Ensure test_model has necessary attributes
+        if not hasattr(test_model, "model_type"):
+            test_model.model_type = self.model_type
+        if not hasattr(test_model, "estimator_name"):
+            test_model.estimator_name = self.estimator_name
+
         if score is not None:
             threshold = self.threshold[score]
         else:
@@ -1347,34 +1800,89 @@ class Model:
         if threshold == 0:
             threshold = 0.5
 
+        aggregated_true_labels = []
+        aggregated_predictions = []
+
         if isinstance(X, pd.DataFrame):
-            for train, test in self.kf.split(X, y):
+            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
-                aggregated_pred_list.append(
-                    report_model_metrics(test_model, X_test, y_test, threshold),
-                )
+                y_pred = test_model.predict(X_test)
+                conf_matrix = confusion_matrix(y_test, y_pred)
+                # Aggregate true labels and predictions
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(y_pred)
+                # Print confusion matrix for this fold
+                if print_per_fold:
+                    print(f"Confusion Matrix for Fold {fold_idx}:")
+                    _confusion_matrix_print(conf_matrix, self.labels)
+
+                    # Print classification report for this fold
+                    print(f"Classification Report for Fold {fold_idx}:")
+                    print(classification_report(y_test, y_pred, zero_division=0))
+                    print("*" * 80)
+
         else:
-            for train, test in self.kf.split(X, y):
+            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                aggregated_pred_list.append(
-                    report_model_metrics(test_model, X_test, y_test, threshold),
-                )
+                y_pred = test_model.predict(X_test)
+                conf_matrix = confusion_matrix(y_test, y_pred)
 
-        concat_df = pd.concat(aggregated_pred_list)
-        # Calculate the mean for each column
-        mean_df = concat_df.groupby(concat_df.index).mean()
-        mean_dict = mean_df.iloc[0].to_dict()
-        print("-" * 80)
-        print(f"Average performance across {len(aggregated_pred_list)} Folds:")
-        pprint(mean_dict)
-        print("-" * 80)
-        return mean_dict
+                # Aggregate true labels and predictions
+                aggregated_true_labels.extend(y_test)
+                aggregated_predictions.extend(y_pred)
+
+                # Print confusion matrix for this fold
+                if print_per_fold:
+                    print(f"Confusion Matrix for Fold {fold_idx}:")
+                    _confusion_matrix_print(conf_matrix, self.labels)
+                    # Print classification report for this fold
+                    print(f"Classification Report for Fold {fold_idx}:")
+                    print(classification_report(y_test, y_pred, zero_division=0))
+                    print("*" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
+        """
+        Generates and averages confusion matrices across k-folds, producing
+        a combined classification report.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix for k-fold cross-validation.
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+        test_model : object
+            The model to be trained and evaluated on each fold.
+        score : str, optional
+            Optional scoring metric label for reporting purposes.
+            Default is None.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing the averaged classification report and
+            confusion matrix:
+            - "Classification Report": The averaged classification report as a
+            dictionary.
+            - "Confusion Matrix": The averaged confusion matrix as a NumPy array.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the input data is incompatible with k-fold splitting.
+
+        Description:
+        ------------
+        - This method performs k-fold cross-validation to generate confusion
+        matrices for each fold.
+        - Averages the confusion matrices across all folds and produces a
+        combinedclassification report.
+        - Prints the averaged confusion matrix and classification report.
+        """
 
         aggregated_true_labels = []
         aggregated_predictions = []
@@ -1415,7 +1923,6 @@ class Model:
             aggregated_true_labels,
             aggregated_predictions,
             zero_division=0,
-            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
@@ -1433,6 +1940,44 @@ class Model:
         }
 
     def regression_report_kfold(self, X, y, test_model, score=None):
+        """
+        Generates and averages confusion matrices across k-folds, producing
+        a combined classification report.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix for k-fold cross-validation.
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+        test_model : object
+            The model to be trained and evaluated on each fold.
+        score : str, optional
+            Optional scoring metric label for reporting purposes.
+            Default is None.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing the averaged classification report and
+            confusion matrix:
+            - "Classification Report": The averaged classification report as a
+            dictionary.
+            - "Confusion Matrix": The averaged confusion matrix as a NumPy array.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the input data is incompatible with k-fold splitting.
+
+        Description:
+        ------------
+        - This method performs k-fold cross-validation to generate confusion
+        matrices for each fold.
+        - Averages the confusion matrices across all folds and produces a
+        combined classification report.
+        - Prints the averaged confusion matrix and classification report.
+        """
 
         aggregated_pred_list = []
 
@@ -1471,8 +2016,8 @@ class Model:
         r2 = r2_score(y_true, y_pred)
 
         reg_dict = {
+            "R²": r2,
             "Explained Variance": explained_variance,
-            "R2": r2,
             "Mean Absolute Error": mae,
             "Median Absolute Error": median_abs_error,
             "Mean Squared Error": mse,
@@ -1480,12 +2025,31 @@ class Model:
         }
 
         if print_results:
-            print("*" * 80)
-            pprint(reg_dict)
-            print("*" * 80)
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+            for key, value in reg_dict.items():
+                # Use LaTeX keys directly in output
+                print(f"{key}: {value:.4f}")  # Regular key with value, no green color
+            print("\033[1m" + "*" * 80 + "\033[0m")  # Bold the line separator
+
         return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
+        """
+        Prints a formatted confusion matrix for multi-label classification.
+
+        Parameters:
+        -----------
+        conf_matrix_list : list of numpy.ndarray
+            A list of confusion matrices, one for each label or class.
+
+        Description:
+        ------------
+        - This method iterates over a list of confusion matrices, printing each
+        in a formatted table with clear labeling.
+        - Assumes binary classification for each label (e.g., Positive vs. Negative).
+        - Includes class labels and column/row names for readability.
+        """
+
         border = "-" * 80
         print(border)
         for i, conf_matrix in enumerate(conf_matrix_list):
@@ -1518,6 +2082,62 @@ def train_val_test_split(
     random_state=3,
     stratify_cols=None,
 ):
+    """
+    Splits data into train, validation, and test sets, supporting stratification
+    by specific columns or the target variable.
+
+    Parameters:
+    -----------
+    X : pandas.DataFrame or array-like
+        The feature matrix to split.
+    y : pandas.Series or array-like
+        The target vector corresponding to `X`.
+    stratify_y : pandas.Series or None, optional
+        Specifies whether to stratify based on the target variable.
+        Default is None.
+    train_size : float, optional
+        Proportion of the data to allocate to the training set.
+        Default is 0.6.
+    validation_size : float, optional
+        Proportion of the data to allocate to the validation set.
+        Default is 0.2.
+    test_size : float, optional
+        Proportion of the data to allocate to the test set.
+        Default is 0.2.
+    random_state : int, optional
+        Random seed for reproducibility. Default is 3.
+    stratify_cols : list, pandas.DataFrame, or None, optional
+        Columns to use for stratification, in addition to or instead of `y`.
+        Default is None.
+
+    Returns:
+    --------
+    tuple of (pandas.DataFrame, pandas.Series)
+        A tuple containing train, validation, and test sets:
+        (`X_train`, `X_valid`, `X_test`, `y_train`, `y_valid`, `y_test`).
+
+    Raises:
+    -------
+    ValueError
+        Raised if the sizes for train, validation, and test do not sum to 1.0
+        or if invalid stratification keys are provided.
+
+    Description:
+    ------------
+    - Splits data into three sets: train, validation, and test.
+    - Supports stratification based on the target variable (`y`) or specific
+      columns (`stratify_cols`).
+    - Ensures the proportions of the split sets are consistent with the
+      specified `train_size`, `validation_size`, and `test_size`.
+
+    Notes:
+    ------
+    - The sum of `train_size`, `validation_size`, and `test_size` must equal 1.0.
+    - Stratification ensures the distribution of classes or categories is
+      preserved across splits.
+    - The function works seamlessly with both `pandas.DataFrame` and array-like
+      data structures.
+    """
 
     # Standardize stratification parameters
     if stratify_y is False:
@@ -1608,6 +2228,16 @@ def kfold_split(
 
 
 def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
+    """
+    :param classifier: Machine learning model or pipeline to evaluate.
+    :param X: Feature matrix (pandas.DataFrame or array-like).
+    :param y: Target vector (pandas.Series or array-like).
+    :param kf: Cross-validation splitting strategy.
+    :param scoring: List of scoring metrics. Default = ["roc_auc"].
+
+    :return: Cross-validation results including training scores, validation
+             scores, and fitted estimators.
+    """
     return cross_validate(
         classifier,
         X,
@@ -1620,6 +2250,12 @@ def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
 
 
 def _confusion_matrix_print(conf_matrix, labels):
+    """
+    :param conf_matrix: Confusion matrix as a 2x2 NumPy array.
+    :param labels: List of labels for the matrix cells.
+
+    :return: Prints a formatted confusion matrix.
+    """
     max_length = max(len(str(conf_matrix.max())), 2)
     border = "-" * 80
     print(border)
@@ -1698,52 +2334,338 @@ def report_model_metrics(
     X_valid=None,
     y_valid=None,
     threshold=0.5,
+    print_results=True,
+    print_per_fold=False,
 ):
     """
-    Generate a DataFrame of model performance metrics for given models,
-    predictions, or probability estimates.
+    Generate a comprehensive report of model performance metrics for binary,
+    multiclass classification, or regression problems. Supports both single
+    validation and K-Fold cross-validation.
 
     Parameters:
     -----------
+    model : fitted model
+        The trained model with `predict_proba` or `predict` methods. It should
+        also include attributes `model_type` (e.g., "regression", "binary", or
+        "multiclass") and optionally `multi_label` for multiclass classification.
 
-    X_valid : DataFrame, optional
-        The feature set used for validating the model(s).
+    X_valid : DataFrame or array-like, optional
+        The feature set used for validation. For K-Fold validation, this should
+        represent the entire dataset.
 
-    y_valid : Series, optional
-        The true labels for the validation set.
+    y_valid : Series or array-like, optional
+        The true labels for the validation dataset. For K-Fold validation, this
+        should correspond to the entire dataset.
 
+    threshold : float, default=0.5
+        The threshold for binary classification. Predictions above this threshold
+        are classified as the positive class.
+
+    print_results : bool, optional (default=True)
+        Whether to print the metrics report.
+
+    print_per_fold : bool, optional (default=False)
+        If performing K-Fold validation, specifies whether to print metrics for
+        each fold.
 
     Returns:
     --------
     metrics_df : DataFrame
-        A DataFrame containing calculated metrics for each model or prediction
-        column, with metrics including:
-        - Precision/PPV
-        - Average Precision
-        - Sensitivity (Recall)
-        - Specificity
-        - AUC ROC
-        - Brier Score
+        A DataFrame containing performance metrics. The exact structure depends
+        on the type of model:
+        - **Binary Classification**: Includes Precision (PPV), Average Precision,
+          Sensitivity, Specificity, AUC-ROC, and Brier Score.
+        - **Multiclass Classification**: Includes Precision, Recall, and F1-Score
+          for each class, as well as weighted averages.
+        - **Regression**: Includes MAE, MSE, RMSE, R² Score, and Explained Variance.
+        - **K-Fold**: Returns averaged metrics across all folds, with individual
+          fold results optionally printed if `print_per_fold=True`.
+
+    Notes:
+    ------
+    - Handles binary, multiclass, and regression models, adapting metrics to the
+      specific task.
+    - For K-Fold cross-validation, calculates metrics for each fold and aggregates
+      them into an average report.
+    - If `model.kfold` is set, the function performs K-Fold validation using
+      `model.kf`, the K-Fold splitter.
+
+    Examples:
+    ---------
+    # Binary classification example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X_test, y_valid=y_test, threshold=0.5
+    )
+
+    # Regression example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X_test, y_valid=y_test
+    )
+
+    # K-Fold validation example:
+    metrics_df = report_model_metrics(
+        model, X_valid=X, y_valid=y, print_per_fold=True
+    )
     """
 
-    metrics = {}
-    y_pred_proba = model.predict_proba(X_valid)[:, 1]
-    y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
-    tn, fp, fn, tp = confusion_matrix(y_valid, y_pred).ravel()
-    precision = precision_score(y_valid, y_pred)
-    recall = recall_score(y_valid, y_pred)
-    roc_auc = roc_auc_score(y_valid, y_pred_proba)
-    brier_score = brier_score_loss(y_valid, y_pred_proba)
-    avg_precision = average_precision_score(y_valid, y_pred_proba)
-    specificity = tn / (tn + fp)
-    metrics = {
-        "Precision/PPV": precision,
-        "Average Precision": avg_precision,
-        "Sensitivity": recall,
-        "Specificity": specificity,
-        "AUC ROC": roc_auc,
-        "Brier Score": brier_score,
-    }
+    def calculate_metrics(model, X, y, threshold):
+        """
+        Calculate and return performance metrics for regression, binary, or
+        multiclass classification models.
 
-    metrics_df = pd.DataFrame(metrics, index=[0])
-    return metrics_df
+        Parameters:
+        -----------
+        model : fitted model
+            The trained model with the following expected attributes:
+            - `model_type`: Specifies the type of model ("regression", "binary",
+            or "multiclass").
+            - `multi_label` (optional): Indicates if the model is for multiclass
+            classification.
+            - `class_labels` (required for multiclass): A list of class labels
+            for generating metrics.
+            - `predict_proba` or `predict`: Methods for generating predictions.
+        X : DataFrame or array-like
+            The feature matrix used for generating predictions.
+        y : Series or array-like
+            The true labels for the dataset.
+        threshold : float
+            The classification threshold for binary classification. Predictions
+            with probabilities above this value are classified as the positive
+            class.
+
+        Returns:
+        --------
+        metrics_df : DataFrame
+            A DataFrame containing the calculated metrics:
+            - **Regression**: Includes Mean Absolute Error (MAE), Mean Squared
+            Error (MSE), Root Mean Squared Error (RMSE), R² Score, and Explained
+            Variance.
+            - **Binary Classification**: Includes Precision (PPV), Average
+            Precision, Sensitivity, Specificity, AUC ROC, and Brier Score.
+            - **Multiclass Classification**: Includes Precision, Recall, and
+            F1-Score for each class, as well as weighted averages and accuracy.
+
+        Notes:
+        ------
+        - For regression models, standard regression metrics are calculated.
+        - For binary classification models, threshold-based metrics are computed
+        using probabilities from `predict_proba`.
+        - For multiclass classification models, metrics are calculated for each
+        class, along with weighted averages.
+        - The function assumes that the model has the necessary attributes and
+        methods based on the task type.
+        """
+
+        if model.model_type == "regression":
+            # Regression metrics
+            y_pred = model.predict(X)
+            return pd.DataFrame(
+                [
+                    {
+                        "Metric": "Mean Absolute Error (MAE)",
+                        "Value": mean_absolute_error(y, y_pred),
+                    },
+                    {
+                        "Metric": "Mean Squared Error (MSE)",
+                        "Value": mean_squared_error(y, y_pred),
+                    },
+                    {
+                        "Metric": "Root Mean Squared Error (RMSE)",
+                        "Value": np.sqrt(mean_squared_error(y, y_pred)),
+                    },
+                    {"Metric": "R² Score", "Value": r2_score(y, y_pred)},
+                    {
+                        "Metric": "Explained Variance",
+                        "Value": explained_variance_score(y, y_pred),
+                    },
+                ]
+            )
+        elif hasattr(model, "multi_label") and model.multi_label:
+            # Multiclass metrics
+            y_pred = np.argmax(model.predict_proba(X), axis=1)
+            report = classification_report(
+                y,
+                y_pred,
+                output_dict=True,
+                target_names=model.class_labels,
+                zero_division=0,
+            )
+            metrics = []
+            for label, scores in report.items():
+                if label in model.class_labels:
+                    metrics.extend(
+                        [
+                            {
+                                "Class": label,
+                                "Metric": "Precision",
+                                "Value": scores.get("precision", 0),
+                            },
+                            {
+                                "Class": label,
+                                "Metric": "Recall",
+                                "Value": scores.get("recall", 0),
+                            },
+                            {
+                                "Class": label,
+                                "Metric": "F1-Score",
+                                "Value": scores.get("f1-score", 0),
+                            },
+                        ]
+                    )
+            metrics.extend(
+                [
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Precision",
+                        "Value": report["weighted avg"]["precision"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Recall",
+                        "Value": report["weighted avg"]["recall"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "F1-Score",
+                        "Value": report["weighted avg"]["f1-score"],
+                    },
+                    {
+                        "Class": "Weighted Avg",
+                        "Metric": "Accuracy",
+                        "Value": report["accuracy"],
+                    },
+                ]
+            )
+            return pd.DataFrame(metrics)
+        else:
+            # Binary classification metrics
+            y_pred_proba = model.predict_proba(X)[:, 1]
+            y_pred = [1 if pred > threshold else 0 for pred in y_pred_proba]
+            tn, fp, fn, tp = confusion_matrix(y, y_pred).ravel()
+            return pd.DataFrame(
+                [
+                    {"Metric": "Precision/PPV", "Value": precision_score(y, y_pred)},
+                    {
+                        "Metric": "Average Precision",
+                        "Value": average_precision_score(y, y_pred_proba),
+                    },
+                    {"Metric": "Sensitivity", "Value": recall_score(y, y_pred)},
+                    {"Metric": "Specificity", "Value": tn / (tn + fp)},
+                    {"Metric": "AUC ROC", "Value": roc_auc_score(y, y_pred_proba)},
+                    {
+                        "Metric": "Brier Score",
+                        "Value": brier_score_loss(y, y_pred_proba),
+                    },
+                ]
+            )
+
+    if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
+        print("\nRunning k-fold model metrics...\n")
+        aggregated_metrics = []
+        for fold_idx, (train, test) in tqdm(
+            enumerate(model.kf.split(X_valid, y_valid), start=1),
+            total=model.kf.get_n_splits(),
+            desc="Processing Folds",
+        ):
+            X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
+            y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
+
+            # Fit and predict for this fold
+            model.fit(X_train, y_train)
+
+            # Calculate metrics using existing logic
+            fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
+
+            if isinstance(fold_metrics, pd.DataFrame):
+                fold_metrics["Fold"] = fold_idx
+                aggregated_metrics.append(fold_metrics)
+
+            # Print fold-specific metrics
+            if print_results and print_per_fold:
+                print(f"Metrics for Fold {fold_idx}:")
+                print(fold_metrics)
+                print("*" * 80)
+
+        # Define the desired metric order
+        metric_order = [
+            "Precision/PPV",
+            "Average Precision",
+            "Sensitivity",
+            "Specificity",
+            "AUC ROC",
+            "Brier Score",
+        ]
+
+        # Combine metrics from all folds
+        if isinstance(aggregated_metrics[0], pd.DataFrame):
+            all_folds_df = pd.concat(aggregated_metrics)
+
+            # Group by Metric and calculate the mean for the Value column
+            avg_metrics_df = (
+                all_folds_df.groupby("Metric")["Value"].mean().reset_index()
+            )
+
+            # Reorder the DataFrame based on the metric order
+            avg_metrics_df["Metric"] = pd.Categorical(
+                avg_metrics_df["Metric"],
+                categories=metric_order,
+                ordered=True,
+            )
+            avg_metrics_df = avg_metrics_df.sort_values("Metric").reset_index(
+                drop=True,
+            )
+
+            if print_results:
+                print("\nAverage Metrics Across All Folds:")
+                print(avg_metrics_df)
+                print("-" * 80)
+
+            return avg_metrics_df
+
+        # Combine metrics from all folds
+        if isinstance(aggregated_metrics[0], pd.DataFrame):
+            all_folds_df = pd.concat(aggregated_metrics)
+            avg_metrics_df = (
+                all_folds_df.drop(columns=["Fold"])
+                .mean(axis=0)
+                .to_frame(name="Average")
+                .T
+            )
+        else:
+            all_folds_df = pd.concat(aggregated_metrics)
+            avg_metrics_df = all_folds_df.mean(axis=0).to_frame(name="Average").T
+
+        if print_results:
+            print("\nAverage Metrics Across All Folds:")
+            print(avg_metrics_df.T)
+            print("-" * 80)
+
+        return avg_metrics_df
+
+    else:
+        # Standard single validation logic
+        metrics = calculate_metrics(model, X_valid, y_valid, threshold)
+
+        if isinstance(metrics, pd.DataFrame):
+            if print_results:
+                print("*" * 80)
+                print(f"Report Model Metrics: {model.estimator_name}")
+                print()
+                print(metrics)
+                print("*" * 80)
+            return metrics
+        else:
+            metrics_df = pd.DataFrame(metrics, index=[0]).T.rename(columns={0: ""})
+
+            if print_results:
+                print("*" * 80)
+                print(f"Report Model Metrics: {model.estimator_name}")
+                print()
+                for key, value in metrics.items():
+                    print(
+                        f"{key}: {value:.4f}"
+                        if isinstance(value, float)
+                        else f"{value}"
+                    )
+
+            return metrics_df
