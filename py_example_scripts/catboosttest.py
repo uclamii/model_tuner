@@ -23,10 +23,12 @@ estimator_name = "cat"
 tuned_parameters = {
     f"{estimator_name}__depth": [10],
     f"{estimator_name}__learning_rate": [1e-4],
-    f"{estimator_name}__n_estimators": [30],
+    # f"{estimator_name}__n_estimators": [30],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["Logloss"],
+    # f"{estimator_name}__num_boost_round": [2],  ## L.S. added 12/4/2024
+    f"{estimator_name}__iterations": [3],  ## L.S. added 12/4/2024
 }
 
 model = Model(
@@ -39,7 +41,7 @@ model = Model(
     grid=tuned_parameters,
     randomized_grid=False,
     n_iter=4,
-    boost_early=True,
+    boost_early=False,
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,

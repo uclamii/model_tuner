@@ -36,7 +36,7 @@ xgbearly = True
 tuned_parameters = {
     f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
     f"{estimator_name}__learning_rate": [1e-4],
-    f"{estimator_name}__n_estimators": [30],
+    f"{estimator_name}__n_estimators": [3],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],

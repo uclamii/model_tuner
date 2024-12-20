@@ -1126,7 +1126,9 @@ class Model:
                         )
                     print("-" * 80)
                 print()
-                self.classification_report = classification_report(y, y_pred_valid)
+                self.classification_report = classification_report(
+                    y, y_pred_valid, output_dict=True
+                )
                 print(
                     classification_report(
                         y,
@@ -1167,6 +1169,7 @@ class Model:
         if print_threshold:
             if self.model_type != "regression":
                 print(f"Optimal threshold used: {threshold}")
+                print()
             else:
                 print()
 
@@ -2016,7 +2019,7 @@ class Model:
         r2 = r2_score(y_true, y_pred)
 
         reg_dict = {
-            "R²": r2,
+            "R2": r2,
             "Explained Variance": explained_variance,
             "Mean Absolute Error": mae,
             "Median Absolute Error": median_abs_error,
