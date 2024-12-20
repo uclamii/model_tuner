@@ -495,80 +495,113 @@ Get train, val, test data
       - Feature selection and preprocessing steps are dynamically applied based on the pipeline configuration.
       - When a custom scoring metric is specified, it must match one of the predefined or user-defined metrics.
   
-  
+.. _Return_Metrics:
 
 ``return_metrics()``
----------------------------------------------------------------
+--------------------------------------------------------------
 
 .. function:: return_metrics(X, y, optimal_threshold=False, model_metrics=False, print_threshold=False, return_dict=False, print_per_fold=False)
-   :noindex:
 
-   Returns evaluation metrics with a confusion matrix and classification report, optionally using optimized classification thresholds.
+   A flexible function to evaluate model performance by generating classification or regression metrics. It provides options to print confusion matrices, classification reports, and regression metrics, and supports optimal threshold display and dictionary outputs.
 
    :param X: The feature matrix for evaluation.
    :type X: ``pandas.DataFrame`` or array-like
-   :param y: The target vector corresponding to ``X``.
+   :param y: The target vector for evaluation.
    :type y: ``pandas.Series`` or array-like
-   :param optimal_threshold: Whether to use the optimal threshold for predictions. Default is ``False``.
+   :param optimal_threshold: Whether to use the optimal threshold for predictions (classification only). Default is ``False``.
    :type optimal_threshold: bool, optional
-   :param model_metrics: Whether to calculate and print additional model metrics. Default is ``False``.
+   :param model_metrics: Whether to calculate and print detailed model metrics using ``report_model_metrics()``. Default is ``False``.
    :type model_metrics: bool, optional
-   :param print_threshold: Whether to print the optimal threshold used in the evaluation. Default is ``False``.
+   :param print_threshold: Whether to print the optimal threshold used for predictions (classification only). Default is ``False``.
    :type print_threshold: bool, optional
-   :param return_dict: Whether to return the metrics as a dictionary. Default is ``False``.
+   :param return_dict: Whether to return the metrics as a dictionary instead of printing them. Default is ``False``.
    :type return_dict: bool, optional
-   :param print_per_fold: Whether to print metrics for each fold during k-fold evaluation. Default is ``False``.
+   :param print_per_fold: For cross-validation, whether to print metrics for each fold. Default is ``False``.
    :type print_per_fold: bool, optional
-
-   :return: A dictionary containing evaluation metrics, confusion matrix, and feature selection results (if applicable), or nothing if ``return_dict`` is ``False``.
-   :rtype: dict, optional
-   :raises ValueError: Raised if invalid data or configurations are provided.
-   :raises KeyError: Raised if required scoring metrics or thresholds are missing.
+   :return: A dictionary containing metrics if ``return_dict=True``; otherwise, the metrics are printed.
+   :rtype: dict or None
 
    **Description:**
 
-   - This method evaluates the model on a given dataset and provides detailed metrics, including:
+   The ``return_metrics()`` function is designed to be highly adaptable, allowing users to:
+   
+   - **Print Classification Metrics**: Displays a confusion matrix and the accompanying classification report when evaluating a classification model.
+   
+   - **Print Regression Metrics**: Outputs standard regression metrics (e.g., R², Mean Absolute Error) when evaluating a regression model.
+   
+   - **Report Detailed Model Metrics**: By setting ``model_metrics=True``, the function invokes ``report_model_metrics()`` to provide detailed insights into metrics like precision, recall, and AUC-ROC.
+   
+   - **Display the Optimal Threshold**: Setting ``print_threshold=True`` displays the threshold value used for classification predictions, particularly when an optimal threshold has been tuned.
 
-     - Confusion matrix.
-     - Classification report for classification models.
-     - Regression report for regression models.
-   - Supports both single validation sets and k-fold cross-validation workflows.
-   - Optionally calculates metrics using an optimal threshold for classification models.
+   - **Return Results as a Dictionary**: If ``return_dict=True``, the metrics are returned in a structured dictionary, allowing users to programmatically access the results. This is especially useful for further analysis or logging.
 
    **Behavior:**
 
-   - **For Classification Models**:
+   - **Classification Models**:
 
-     - Computes and prints a confusion matrix, either for single-label or multi-label classification.
-     - Generates a classification report summarizing precision, recall, F1-score, and support.
-     - Optionally evaluates additional model metrics if ``model_metrics`` is enabled.
-     - Allows returning metrics as a dictionary when ``return_dict`` is set to ``True``.
+     - Generates and prints a confusion matrix.
+     - Prints a detailed classification report, including precision, recall, F1-score, and accuracy.
+     - Optionally prints additional model metrics and the optimal threshold.
 
-   - **For Regression Models**:
+   - **Regression Models**:
 
-     - Produces a regression report detailing performance metrics like RMSE, MAE, and R².
-     - Optionally identifies and returns the best-selected features if feature selection is enabled.
+     - Outputs standard regression metrics such as R², Mean Absolute Error, and Root Mean Squared Error.
 
-   **Attributes Used:**
+   - **Cross-Validation**:
 
-   - ``self.kfold``: Indicates whether k-fold cross-validation is enabled.
-   - ``self.model_type``: Specifies whether the model is for regression or classification.
-   - ``self.multi_label``: Determines if multi-label classification is applied.
-   - ``self.threshold``: Stores optimized classification thresholds.
-   - ``self.scoring``: List of scoring metrics used for evaluation.
-   - ``self.class_labels``: Names of the classes for the classification report.
-   - ``self.labels``: Labels used for confusion matrix formatting.
+     - For k-fold validation, the function aggregates metrics across folds and prints the averaged results. If ``print_per_fold=True``, metrics for each fold are also printed in addition to the averaged results.
+
 
    **Output:**
 
-   - Prints evaluation metrics, including confusion matrix and classification/regression reports.
-   - Optionally returns metrics and other results as a dictionary.
+   - If ``return_dict=True``, returns:
+     
+     - **Classification Models**:
+
+       - A dictionary with:
+
+         - ``Classification Report``: The classification report as a string.
+         - ``Confusion Matrix``: The confusion matrix as an array.
+         - ``Best Features``: (Optional) List of the top features if feature selection is enabled.
+
+     - **Regression Models**:
+
+       - A dictionary with:
+
+         - ``Regression Report``: A dictionary of regression metrics.
+         - ``Best Features``: (Optional) List of the top features if feature selection is enabled.
+   
+   - If ``return_dict=False``, prints the metrics directly to the console.
+
+   **Examples:**
+   ::
+      # Example usage for validation metrics:
+      print("Validation Metrics")
+      model.return_metrics(
+          X=X_valid,
+          y=y_valid,
+          optimal_threshold=True,
+          print_threshold=True,
+          model_metrics=True,
+      )
+      print()
+
+      # Example usage for test metrics:
+      print("Test Metrics")
+      model.return_metrics(
+          X=X_test,
+          y=y_test,
+          optimal_threshold=True,
+          print_threshold=True,
+          model_metrics=True,
+      )
+      print()
 
    .. note::
 
-      - The method handles both single-label and multi-label classification tasks.
-      - For regression models, feature selection results can be included in the returned dictionary.
-      - Supports detailed per-fold metrics when k-fold cross-validation is enabled and ``print_per_fold`` is set to ``True``.
+      - This function is suitable for both classification and regression models.
+      - Supports cross-validation workflows by calculating metrics across multiple folds.
+      - Enables users to programmatically access metrics via the dictionary output for custom analysis.
 
 
 ``predict()``
@@ -1441,7 +1474,7 @@ evaluate predictive models.
 You can easily fetch this dataset using the ucimlrepo package. If you haven't 
 installed it yet, you can do so by running the following command:
 
-.. code-block:: bash
+.. code-block:: python
    
    pip install ucimlrepo
 
@@ -1662,7 +1695,7 @@ This method will:
 - **Select Best Model**: The hyperparameter set that yields the best validation score will be selected.
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Pipeline Steps:
 
@@ -1707,15 +1740,21 @@ performance on the validation data during training.
 Step 9: Return metrics (optional)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can use this function to evaluate the model by printing the output.
+.. hint::
+
+   Use the :ref:`return metrics <Return_Metrics>` function to evaluate the model by printing the output. 
 
 .. code-block:: python
 
+
+   # ------------------------- VALID AND TEST METRICS -----------------------------
    print("Validation Metrics")
    model_xgb.return_metrics(
       X=X_valid,
       y=y_valid,
       optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
    )
    print()
 
@@ -1725,10 +1764,12 @@ You can use this function to evaluate the model by printing the output.
       X=X_test,
       y=y_test,
       optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
    )
    print()
 
-.. code-block:: bash
+.. code-block:: text
 
    Validation Metrics
    Confusion matrix on set provided: 
@@ -1739,6 +1780,17 @@ You can use this function to evaluate the model by printing the output.
    Actual: Pos  93 (tp)   11 (fn)
            Neg  76 (fp)  248 (tn)
    --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.550296
+   1  Average Precision  0.802568
+   2        Sensitivity  0.894231
+   3        Specificity  0.765432
+   4            AUC ROC  0.926089
+   5        Brier Score  0.166657
+   ********************************************************************************
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
@@ -1762,20 +1814,30 @@ You can use this function to evaluate the model by printing the output.
    Actual: Pos  99 (tp)    6 (fn)
            Neg  82 (fp)  241 (tn)
    --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.546961
+   1  Average Precision  0.816902
+   2        Sensitivity  0.942857
+   3        Specificity  0.746130
+   4            AUC ROC  0.934306
+   5        Brier Score  0.167377
+   ********************************************************************************
    --------------------------------------------------------------------------------
 
-                precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
               0       0.98      0.75      0.85       323
               1       0.55      0.94      0.69       105
- 
+
        accuracy                           0.79       428
       macro avg       0.76      0.84      0.77       428
    weighted avg       0.87      0.79      0.81       428
 
    --------------------------------------------------------------------------------
    Optimal threshold used: 0.26
-
 
 .. note::
 
@@ -1812,7 +1874,7 @@ See :ref:`this section <model_calibration>` for more information on model calibr
    y_test_pred = model_xgb.predict_proba(X_test)[:, 1]
 
 
-.. code-block:: bash
+.. code-block:: text
 
 
    Change back to CPU
@@ -2023,7 +2085,7 @@ retaining a manageable subset of predictors.
 
    print()
 
-.. code-block:: bash
+.. code-block:: text
 
    Pipeline Steps:
 
@@ -2112,7 +2174,7 @@ retaining a manageable subset of predictors.
    the ``pipeline_steps`` inside the ``Model``` class above is necessary to print the
    output of the feature names selected, thus yielding:
 
-   .. code-block:: bash
+   .. code-block:: text
 
       Feature names selected:
       ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
@@ -2368,7 +2430,7 @@ Step 2: Perform grid search parameter tuning and retrieve split data
    X_test, y_test = xgb_smote.get_test_data(X, y)
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Pipeline Steps:
 
@@ -2419,7 +2481,7 @@ Step 3: Fit the model
 Step 4: Return metrics (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: bash
+.. code-block:: text
 
    Validation Metrics
    Confusion matrix on set provided: 
@@ -2804,7 +2866,7 @@ To execute the grid search, simply call:
    model.grid_search_param_tuning(X, y)
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Pipeline Steps:
 
@@ -2909,7 +2971,7 @@ Use the following code to return metrics:
       optimal_threshold=True,
    )
 
-.. code-block:: bash
+.. code-block:: text
 
    Validation Metrics
    --------------------------------------------------------------------------------
@@ -3032,7 +3094,7 @@ Use the following code:
    print(metrics_df)
 
 
-.. code-block:: bash
+.. code-block:: text
 
    0 Precision/PPV                  0.833333
    0 Sensitivity/Recall             1.000000
@@ -3088,7 +3150,7 @@ Use the following code:
    print(f"Predictions: \n {y_pred}")
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Predicted Probabilities: 
    [0.961671   0.02298635 0.749543   0.02298635 0.0244073  0.02298635
@@ -3282,7 +3344,7 @@ This method will:
 - **Select Best Model**: The hyperparameter set that yields the best validation score based on the specified metric (:math:`R^2`) will be selected.
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Pipeline Steps:
 
@@ -3346,7 +3408,7 @@ Step 8: Return metrics (optional)
    'RMSE': 0.533023758436067}
 
 
-Report Model Metrics
+Performance Assessment
 =========================
 
 .. _Classification_Report:
@@ -3361,7 +3423,7 @@ output the classification report as follows:
 
    print(model_xgb.classification_report)
 
-.. code-block:: bash
+.. code-block:: text
 
                  precision    recall  f1-score   support
 
@@ -3488,7 +3550,7 @@ Continuing from the model output object (``model_xgb``) from the :ref:`regressio
    )
 
 
-.. code-block:: bash
+.. code-block:: text
 
    Bootstrap Metrics
    100%|██████████| 300/300 [00:00<00:00, 358.05it/s]
