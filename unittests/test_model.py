@@ -925,13 +925,13 @@ def single_class_data():
     return X_train, y_train
 
 
-def test_process_imbalance_sampler_imbalanced_data(
+def test_verify_imbalance_sampler_imbalanced_data(
     capfd, imbalanced_data, model_with_sampler
 ):
-    """Test process_imbalance_sampler with imbalanced data."""
+    """Test verify_imbalance_sampler with imbalanced data."""
     X_train, y_train = imbalanced_data
 
-    model_with_sampler.process_imbalance_sampler(X_train, y_train)
+    model_with_sampler.verify_imbalance_sampler(X_train, y_train)
 
     # Capture printed output
     captured = capfd.readouterr()
@@ -941,13 +941,11 @@ def test_process_imbalance_sampler_imbalanced_data(
     assert "1    12" in captured.out, "Should print correct count for minority class."
 
 
-def test_process_imbalance_sampler_balanced_data(
-    capfd, balanced_data, model_with_sampler
-):
-    """Test process_imbalance_sampler with already balanced data."""
+def test__balanced_data(capfd, balanced_data, model_with_sampler):
+    """Test verify_imbalance_sampler with already balanced data."""
     X_train, y_train = balanced_data
 
-    model_with_sampler.process_imbalance_sampler(X_train, y_train)
+    model_with_sampler.verify_imbalance_sampler(X_train, y_train)
 
     # Capture printed output
     captured = capfd.readouterr()
@@ -958,14 +956,14 @@ def test_process_imbalance_sampler_balanced_data(
     assert "1    2" in captured.out, "Should print correct count for minority class."
 
 
-def test_process_imbalance_sampler_single_class_data(
+def test_verify_imbalance_sampler_single_class_data(
     single_class_data, model_with_sampler
 ):
-    """Test process_imbalance_sampler with single-class data."""
+    """Test verify_imbalance_sampler with single-class data."""
     X_train, y_train = single_class_data
 
     with pytest.raises(ValueError):
-        model_with_sampler.process_imbalance_sampler(X_train, y_train)
+        model_with_sampler.verify_imbalance_sampler(X_train, y_train)
 
 
 @pytest.fixture
