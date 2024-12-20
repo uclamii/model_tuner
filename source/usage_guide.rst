@@ -77,81 +77,6 @@ Regression Example
 
       <a href="./example_htmls/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a>
 
-
-Key Methods and Functionalities
-========================================
-
-``__init__(...)``
-    Initializes the model tuner with configurations, including estimator, cross-validation settings, scoring metrics, pipeline steps, feature selection, imbalance sampler, Bayesian search, and model calibration options.
-
-``reset_estimator()``
-    Resets the estimator and pipeline configuration.
-
-``process_imbalance_sampler(X_train, y_train)``
-    Processes the imbalance sampler, applying it to resample the training data.
-
-``calibrateModel(X, y, score=None)``
-    Calibrates the model with cross-validation support and configurable calibration methods, improving probability estimates.
-
-``get_train_data(X, y), get_valid_data(X, y), get_test_data(X, y)``
-    Retrieves train, validation, and test data based on specified indices.
-
-``calibrate_report(X, y, score=None)``
-    Generates a calibration report, including a confusion matrix and classification report.
-
-``fit(X, y, validation_data=None, score=None)``
-    Fits the model to training data and, if applicable, tunes threshold and performs early stopping. Allows feature selection and processing steps as part of the pipeline.
-
-``return_metrics(X_test, y_test, optimal_threshold=False)``
-    Returns evaluation metrics with confusion matrix and classification report, optionally using optimized classification thresholds.
-
-``predict(X, y=None, optimal_threshold=False), predict_proba(X, y=None)``
-    Makes predictions and predicts probabilities, allowing threshold tuning.
-
-``grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])``
-    Performs grid or Bayesian search parameter tuning, optionally tuning F-beta score thresholds for classification.
-
-``print_selected_best_features(X)``
-    Prints and returns the selected top K best features based on the feature selection step.
-
-``tune_threshold_Fbeta(score, y_valid, betas, y_valid_proba, kfold=False)``
-    Tunes classification threshold for optimal F-beta score, balancing precision and recall across various thresholds.
-
-``train_val_test_split(X, y, stratify_y, train_size, validation_size, test_size, random_state, stratify_cols)``
-    Splits data into train, validation, and test sets, supporting stratification by specific columns or the target variable.
-
-``get_best_score_params(X, y)``
-    Retrieves the best hyperparameters for the model based on cross-validation scores for specified metrics.
-
-``conf_mat_class_kfold(X, y, test_model, score=None)``
-    Generates and averages confusion matrices across k-folds, producing a combined classification report.
-
-``regression_report_kfold(X, y, test_model, score=None)``
-    Generates averaged regression metrics across k-folds.
-
-``regression_report(y_true, y_pred, print_results=True)``
-    Generates a regression report with metrics like Mean Absolute Error, R-squared, and Root Mean Squared Error.
-
-
-Helper Functions
-=================
-
-``kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)``
-    Splits data using k-fold or stratified k-fold cross-validation.
-
-``get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"])``
-    Performs cross-validation and returns training scores and estimator instances.
-
-``_confusion_matrix_print(conf_matrix, labels)``
-    Prints the formatted confusion matrix for binary classification.
-
-``print_pipeline(pipeline)``
-    Displays an ASCII representation of the pipeline steps for visual clarity.
-
-``report_model_metrics(model, X_valid=None, y_valid=None, threshold=0.5)``
-    Generates a DataFrame of key model performance metrics, including Precision, Sensitivity, Specificity, and AUC-ROC.
-
-
 .. note::
 
    - This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
@@ -234,6 +159,1166 @@ Input Parameters
    :raises IndexError: Raised for indexing issues, particularly in confusion matrix formatting functions.
    :raises KeyError: Raised when accessing dictionary keys that are not available, such as missing scores in ``self.best_params_per_score``.
    :raises RuntimeError: Raised for unexpected issues during model fitting or transformations that do not fit into the other exception categories.
+
+Key Methods and Functionalities
+========================================
+
+``__init__(...)``
+---------------------
+
+    Initializes the model tuner with configurations, including estimator, cross-validation settings, scoring metrics, pipeline steps, feature selection, imbalance sampler, Bayesian search, and model calibration options.
+
+``reset_estimator()``
+----------------------
+
+.. function:: reset_estimator()
+   :noindex:
+
+   Resets the estimator and pipeline configuration.
+
+   **Description:**
+
+   - This function reinitializes the ``estimator`` attribute of the class based on the current pipeline configuration.
+   - If ``pipeline_steps`` are defined, it creates a new pipeline using ``self.PipelineClass`` and a deep copy of the steps.
+   - If ``pipeline_steps`` are not defined, it resets the ``estimator`` to a single-step pipeline containing the original estimator.
+
+   **Behavior:**
+
+   - If ``self.pipeline_steps`` is not empty:
+
+     - Creates a pipeline using the defined steps.
+   - If ``self.pipeline_steps`` is empty:
+
+     - Resets the ``estimator`` to a single-step pipeline with the original estimator.
+
+   **Attributes Used:**
+
+   - ``self.pipeline_steps``: The steps of the pipeline (if defined).
+   - ``self.PipelineClass``: The class used to construct pipelines.
+   - ``self.estimator_name``: The name of the primary estimator step.
+   - ``self.original_estimator``: The original estimator to be reset.
+
+   **Output:**
+
+   - The function updates the ``self.estimator`` attribute and does not return a value.
+
+   **Notes:**
+
+   - This function is intended for internal use as a helper function to manage pipeline and estimator states.
+   - Ensures that the pipeline or estimator is always in a valid state after modifications or resets.
+
+
+``process_imbalance_sampler()``
+------------------------------------------------
+
+.. function:: process_imbalance_sampler(X_train, y_train)
+   :noindex:
+
+   Processes the imbalance sampler, applying it to resample the training data.
+
+   :param X_train: Training features to be resampled.
+   :type X_train: ``pandas.DataFrame`` or array-like
+   :param y_train: Training target labels to be resampled.
+   :type y_train: ``pandas.Series`` or array-like
+   :raises KeyError: Raised if the ``resampler`` step is missing in the pipeline.
+   :raises ValueError: Raised if ``X_train`` or ``y_train`` are incompatible with the pipeline or resampler.
+
+   **Output:**
+
+   - Prints the class distribution of ``y_train`` after resampling.
+   - Does not modify the original ``X_train`` or ``y_train``.
+
+   **Description:**
+
+   - This function applies an imbalance sampler to resample the training data, ensuring the target distribution is balanced.
+   - If preprocessing steps are defined in the pipeline, they are applied to the training features before resampling.
+   - Prints the distribution of ``y_train`` after resampling to provide visibility into the balance of classes.
+
+   **Behavior:**
+
+   - If preprocessing steps exist (``self.pipeline_steps``):
+
+     - Applies preprocessing to ``X_train`` using the preprocessing pipeline obtained from ``get_preprocessing_pipeline()``.
+
+   - Clones the ``resampler`` step from the pipeline to ensure independent operation.
+   - Resamples the training data using the cloned resampler, modifying the distribution of ``y_train``.
+
+   **Attributes Used:**
+
+   - ``self.pipeline_steps``: Indicates whether preprocessing steps are defined.
+   - ``self.get_preprocessing_pipeline()``: Retrieves the preprocessing pipeline (if available).
+   - ``self.estimator.named_steps["resampler"]``: The resampler to apply for balancing the target classes.
+
+   .. note:: 
+
+      - The function assumes that the pipeline includes a valid ``resampler`` step under ``named_steps``.
+      - Ensures compatibility with ``pandas.DataFrame`` and array-like structures for ``y_train``.
+      - Prints the class distribution of ``y_train`` after resampling for user awareness.
+
+
+
+
+``calibrateModel()``
+------------------------------------------------
+
+.. function:: calibrateModel(X, y, score=None)
+   :noindex:
+
+   Calibrates the model with cross-validation support and configurable calibration methods, improving probability estimates.
+
+   :param X: Feature set used for model calibration.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: Target set corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param score: Optional scoring metric(s) for evaluating the calibration. Default is ``None``.
+   :type score: str or list of str, optional
+   :raises ValueError: Raised if incompatible parameters (e.g., invalid scoring metric) are passed.
+   :raises KeyError: Raised if required attributes or parameters are missing.
+
+
+   **Description:**
+
+   - Supports model calibration with both k-fold cross-validation and a pre-split train-validation-test workflow.
+   - Uses ``CalibratedClassifierCV`` for calibration with methods such as ``sigmoid`` or ``isotonic`` (defined by ``self.calibration_method``).
+   - Handles cases where imbalance sampling or early stopping is applied during training.
+   - Provides additional support for CPU/GPU device management if applicable.
+
+   **Behavior:**
+
+   - **With K-Fold Cross-Validation**:
+
+     - Resets the estimator to avoid conflicts with pre-calibrated models.
+     - Calibrates the model using k-fold splits with the configured calibration method.
+     - Optionally evaluates calibration using the provided scoring metric(s).
+     - Generates and prints confusion matrices for each fold (if applicable).
+
+   - **Without K-Fold Cross-Validation**:
+
+     - Performs a train-validation-test split using ``train_val_test_split``.
+     - Resets the estimator and applies preprocessing or imbalance sampling if configured.
+     - Fits the model on training data, with or without early stopping.
+     - Calibrates the pre-trained model on the test set and evaluates calibration results.
+
+   **Attributes Used:**
+
+   - ``self.kfold``: Indicates whether k-fold cross-validation is enabled.
+   - ``self.calibrate``: Determines whether calibration is applied.
+   - ``self.calibration_method``: Specifies the calibration method (e.g., ``sigmoid`` or ``isotonic``).
+   - ``self.best_params_per_score``: Stores the best parameters for each scoring metric.
+   - ``self.n_splits``: Number of splits for cross-validation.
+   - ``self.stratify_y``, ``self.stratify_cols``: Used for stratified train-validation-test splitting.
+   - ``self.imbalance_sampler``: Indicates if an imbalance sampler is applied.
+   - ``self.boost_early``: Enables early stopping during training.
+
+   **Output:**
+
+   - Modifies the class attribute ``self.estimator`` to include the calibrated model.
+   - Generates calibration reports and scoring metrics if applicable.
+   - Prints performance metrics (e.g., scores and confusion matrices) for the calibrated model.
+
+   .. note:: 
+
+      - When ``score`` is provided, the function evaluates calibration using the specified metric(s).
+      - Requires the estimator to be compatible with ``CalibratedClassifierCV``.
+      - Handles both balanced and imbalanced datasets with preprocessing support.
+
+
+Get train, val, test data
+-------------------------------
+
+**Description:**
+
+- These functions return subsets of the dataset (features and labels) based on predefined indices stored in the class attributes:
+
+  - ``self.X_train_index`` and ``self.y_train_index`` for training data.
+  - ``self.X_valid_index`` and ``self.y_valid_index`` for validation data.
+  - ``self.X_test_index`` and ``self.y_test_index`` for test data.
+- Designed to work with ``pandas.DataFrame`` and ``pandas.Series`` objects.
+
+
+``get_train_data()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. function:: get_train_data(X, y)
+   :noindex:
+
+   Retrieves the training data based on specified indices.
+
+   :param X: Full dataset containing features.
+   :type X: ``pandas.DataFrame``
+   :param y: Full dataset containing target labels.
+   :type y: ``pandas.Series``
+   :return: A tuple containing the training features and labels.
+   :rtype: tuple of (``pandas.DataFrame``, ``pandas.Series``)
+
+``get_valid_data()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. function:: get_valid_data(X, y)
+   :noindex:
+
+   Retrieves the validation data based on specified indices.
+
+   :param X: Full dataset containing features.
+   :type X: ``pandas.DataFrame``
+   :param y: Full dataset containing target labels.
+   :type y: ``pandas.Series``
+   :return: A tuple containing the validation features and labels.
+   :rtype: tuple of (``pandas.DataFrame``, ``pandas.Series``)
+
+``get_test_data()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. function:: get_test_data(X, y)
+   :noindex:
+
+   Retrieves the test data based on specified indices.
+
+   :param X: Full dataset containing features.
+   :type X: ``pandas.DataFrame``
+   :param y: Full dataset containing target labels.
+   :type y: ``pandas.Series``
+   :return: A tuple containing the test features and labels.
+   :rtype: tuple of (``pandas.DataFrame``, ``pandas.Series``)
+
+
+.. note::
+
+   - These methods assume that the indices (e.g., ``self.X_train_index``) are defined and valid.
+   - The methods return subsets of the provided ``X`` and ``y`` data by indexing the rows based on the stored indices.
+   - Useful for workflows where train, validation, and test splits are dynamically managed or predefined.
+
+``calibrate_report()``
+---------------------------------------
+
+.. function:: calibrate_report(X, y, score=None)
+   :noindex:
+
+   Generates a calibration report, including a confusion matrix and classification report.
+
+   :param X: Features dataset for validation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: True labels for the validation dataset.
+   :type y: ``pandas.Series`` or array-like
+   :param score: Optional scoring metric name to include in the report. Default is ``None``.
+   :type score: str, optional
+   :raises ValueError: Raised if the provided ``X`` or ``y`` are incompatible with the model or metrics.
+
+   **Description:**
+
+   - This method evaluates the performance of a calibrated model on the validation dataset.
+   - Generates and prints:
+     - A confusion matrix, with support for multi-label classification if applicable.
+     - A classification report summarizing precision, recall, and F1-score for each class.
+
+   **Behavior:**
+
+   - Calls the ``predict`` method to obtain predictions for the validation dataset.
+   - Uses ``confusion_matrix`` or ``multilabel_confusion_matrix`` based on the value of ``self.multi_label`` to compute the confusion matrix.
+   - Prints a labeled confusion matrix using the ``_confusion_matrix_print()`` function.
+   - Generates a classification report using ``classification_report`` from ``sklearn.metrics`` and assigns it to the ``self.classification_report`` attribute.
+
+   **Output:**
+
+   - Prints the following to the console:
+
+     - The confusion matrix with labels.
+     - The classification report.
+     - A separator line for readability.
+
+   - Updates the attribute ``self.classification_report`` with the generated classification report.
+
+   .. note::
+
+      - If the model is multi-label, a confusion matrix is generated for each label.
+      - The optional ``score`` parameter can be used to specify and display a scoring metric in the report heading.
+      - Designed to work with models that support binary, multi-class, or multi-label predictions.
+
+
+``fit()``
+------------------------------------------------
+
+.. function:: fit(X, y, validation_data=None, score=None)
+   :noindex:
+   
+   Fits the model to training data and, if applicable, tunes thresholds and performs early stopping. Allows feature selection and processing steps as part of the pipeline.
+
+   :param X: Training features.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: Training target labels.
+   :type y: ``pandas.Series`` or array-like
+   :param validation_data: Tuple containing validation features and labels. Required for early stopping. Default is ``None``.
+   :type validation_data: tuple of (``pandas.DataFrame``, ``pandas.Series``), optional
+   :param score: Optional scoring metric to guide the fitting process. Default is ``None``.
+   :type score: str, optional
+   :raises ValueError: Raised if invalid scoring metrics or parameters are provided.
+
+   **Description:**
+
+   - This method trains the model with support for both k-fold cross-validation and single train-validation-test workflows.
+   - If feature selection or preprocessing steps are configured, they are applied before fitting.
+   - For certain estimators, early stopping is supported when validation data is provided.
+   - The method dynamically sets model parameters based on tuning results for the specified or default scoring metric.
+
+   **Behavior:**
+
+      - **With K-Fold Cross-Validation**:
+
+      - Resets the estimator and fits the model using k-fold splits.
+      - If a scoring metric is provided, applies it to guide the cross-validation.
+      - Stores cross-validation results in the `self.xval_output` attribute.
+
+      - **Without K-Fold Cross-Validation**:
+
+      - Resets the estimator and applies feature selection or preprocessing if configured.
+      - Fits the model on training data. If early stopping is enabled, uses validation data to monitor performance and stop training early.
+
+
+   **Attributes Used:**
+
+   - ``self.kfold``: Indicates whether k-fold cross-validation is enabled.
+   - ``self.best_params_per_score``: Stores tuned parameters for different scoring metrics.
+   - ``self.feature_selection``, ``self.pipeline_steps``: Flags for feature selection and preprocessing steps.
+   - ``self.imbalance_sampler``: Specifies whether imbalance sampling is applied.
+   - ``self.boost_early``: Enables early stopping during training.
+   - ``self.estimator_name``: Name of the estimator in the pipeline.
+
+   **Output:**
+
+   - Updates the class attribute ``self.estimator`` with the fitted model.
+   - For k-fold cross-validation, stores results in ``self.xval_output``.
+
+   .. note:: 
+
+      - Early stopping requires both validation features and labels.
+      - Feature selection and preprocessing steps are dynamically applied based on the pipeline configuration.
+      - When a custom scoring metric is specified, it must match one of the predefined or user-defined metrics.
+  
+  
+
+``return_metrics()``
+---------------------------------------------------------------
+
+.. function:: return_metrics(X, y, optimal_threshold=False, model_metrics=False, print_threshold=False, return_dict=False, print_per_fold=False)
+   :noindex:
+
+   Returns evaluation metrics with a confusion matrix and classification report, optionally using optimized classification thresholds.
+
+   :param X: The feature matrix for evaluation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param optimal_threshold: Whether to use the optimal threshold for predictions. Default is ``False``.
+   :type optimal_threshold: bool, optional
+   :param model_metrics: Whether to calculate and print additional model metrics. Default is ``False``.
+   :type model_metrics: bool, optional
+   :param print_threshold: Whether to print the optimal threshold used in the evaluation. Default is ``False``.
+   :type print_threshold: bool, optional
+   :param return_dict: Whether to return the metrics as a dictionary. Default is ``False``.
+   :type return_dict: bool, optional
+   :param print_per_fold: Whether to print metrics for each fold during k-fold evaluation. Default is ``False``.
+   :type print_per_fold: bool, optional
+
+   :return: A dictionary containing evaluation metrics, confusion matrix, and feature selection results (if applicable), or nothing if ``return_dict`` is ``False``.
+   :rtype: dict, optional
+   :raises ValueError: Raised if invalid data or configurations are provided.
+   :raises KeyError: Raised if required scoring metrics or thresholds are missing.
+
+   **Description:**
+
+   - This method evaluates the model on a given dataset and provides detailed metrics, including:
+
+     - Confusion matrix.
+     - Classification report for classification models.
+     - Regression report for regression models.
+   - Supports both single validation sets and k-fold cross-validation workflows.
+   - Optionally calculates metrics using an optimal threshold for classification models.
+
+   **Behavior:**
+
+   - **For Classification Models**:
+
+     - Computes and prints a confusion matrix, either for single-label or multi-label classification.
+     - Generates a classification report summarizing precision, recall, F1-score, and support.
+     - Optionally evaluates additional model metrics if ``model_metrics`` is enabled.
+     - Allows returning metrics as a dictionary when ``return_dict`` is set to ``True``.
+
+   - **For Regression Models**:
+
+     - Produces a regression report detailing performance metrics like RMSE, MAE, and R².
+     - Optionally identifies and returns the best-selected features if feature selection is enabled.
+
+   **Attributes Used:**
+
+   - ``self.kfold``: Indicates whether k-fold cross-validation is enabled.
+   - ``self.model_type``: Specifies whether the model is for regression or classification.
+   - ``self.multi_label``: Determines if multi-label classification is applied.
+   - ``self.threshold``: Stores optimized classification thresholds.
+   - ``self.scoring``: List of scoring metrics used for evaluation.
+   - ``self.class_labels``: Names of the classes for the classification report.
+   - ``self.labels``: Labels used for confusion matrix formatting.
+
+   **Output:**
+
+   - Prints evaluation metrics, including confusion matrix and classification/regression reports.
+   - Optionally returns metrics and other results as a dictionary.
+
+   .. note::
+
+      - The method handles both single-label and multi-label classification tasks.
+      - For regression models, feature selection results can be included in the returned dictionary.
+      - Supports detailed per-fold metrics when k-fold cross-validation is enabled and ``print_per_fold`` is set to ``True``.
+
+
+``predict()``
+----------------------------------------------------------------------------
+
+.. function:: predict(X, y=None, optimal_threshold=False)
+   :noindex:
+
+   Makes predictions and predicts probabilities, allowing threshold tuning.
+
+   :param X: The feature matrix for prediction.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The true target labels, required only for k-fold predictions. Default is ``None``.
+   :type y: ``pandas.Series`` or array-like, optional
+   :param optimal_threshold: Whether to use an optimal classification threshold for predictions. Default is ``False``.
+   :type optimal_threshold: bool, optional
+   :return: Predicted class labels or predictions adjusted by the optimal threshold.
+   :rtype: ``numpy.ndarray`` or array-like
+   :raises ValueError: Raised if invalid inputs or configurations are provided.
+
+   **Description:**
+
+   - Predicts target values for the input data.
+   - Supports both regression and classification tasks, with specific behavior for each:
+
+     - For regression: Direct predictions are returned, ignoring thresholds.
+     - For classification: Predictions are adjusted using an optimal threshold when enabled.
+
+   - If k-fold cross-validation is active, performs predictions for each fold using ``cross_val_predict``.
+
+   **Behavior:**
+
+   - **With K-Fold Cross-Validation**:
+
+     - Returns predictions based on cross-validated folds.
+
+   - **Without K-Fold Cross-Validation**:
+
+     - Uses the trained model's ``predict()`` method.
+     - Applies the optimal threshold to adjust classification predictions, if specified.
+
+   **Related Methods:**
+
+   - ``predict_proba(X, y=None)``:
+
+     - Predicts probabilities for classification tasks.
+     - Supports k-fold cross-validation using ``cross_val_predict`` with the ``method="predict_proba"`` option.
+
+   .. note::
+
+      - Optimal thresholding is useful for fine-tuning classification performance metrics such as F1-score or precision-recall balance.
+      - For classification, the threshold can be tuned for specific scoring metrics (e.g., ROC-AUC).
+      - Works seamlessly with pipelines or directly with the underlying model.
+
+``grid_search_param_tuning()``
+----------------------------------------------------------------------------
+
+.. function:: grid_search_param_tuning(X, y, f1_beta_tune=False, betas=[1, 2])
+   :noindex:
+
+   Performs grid or Bayesian search parameter tuning, optionally tuning F-beta score thresholds for classification.
+
+   :param X: The feature matrix for training and validation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param f1_beta_tune: Whether to tune F-beta score thresholds during parameter search. Default is ``False``.
+   :type f1_beta_tune: bool, optional
+   :param betas: List of beta values to use for F-beta score tuning. Default is ``[1, 2]``.
+   :type betas: list of int, optional
+   :raises ValueError: Raised if the provided data or configurations are incompatible with parameter tuning.
+   :raises KeyError: Raised if required scoring metrics are missing.
+
+   **Description:**
+
+   - This method tunes hyperparameters for a model using grid search or Bayesian optimization.
+   - Supports tuning F-beta thresholds for classification tasks.
+   - Can handle both k-fold cross-validation and single train-validation-test workflows.
+
+   **Behavior:**
+
+   - **With K-Fold Cross-Validation**:
+
+     - Splits data into k folds using ``kfold_split`` and performs parameter tuning.
+     - Optionally tunes thresholds for F-beta scores on validation splits.
+
+   - **Without K-Fold Cross-Validation**:
+
+     - Performs a train-validation-test split using ``train_val_test_split``.
+     - Applies preprocessing, feature selection, and imbalance sampling if configured.
+     - Tunes parameters and thresholds based on validation scores.
+
+   **Attributes Used:**
+
+   - ``self.kfold``: Indicates whether k-fold cross-validation is enabled.
+   - ``self.scoring``: List of scoring metrics used for evaluation.
+   - ``self.best_params_per_score``: Stores the best parameter set for each scoring metric.
+   - ``self.grid``: Parameter grid for tuning.
+   - ``self.calibrate``: Specifies whether the model calibration is enabled.
+   - ``self.imbalance_sampler``: Indicates if imbalance sampling is applied.
+   - ``self.feature_selection``: Specifies whether feature selection is applied.
+   - ``self.pipeline_steps``: Configuration for preprocessing steps.
+   - ``self.boost_early``: Enables early stopping during model training.
+   - ``self.threshold``: Stores tuned thresholds for F-beta score optimization.
+
+   **Output:**
+
+   - Updates the class attribute ``self.best_params_per_score`` with the best parameters and scores for each metric.
+   - Optionally updates ``self.threshold`` with tuned F-beta thresholds.
+   - Prints best parameters and scores if ``self.display`` is enabled.
+
+   .. note:: 
+
+      - Threshold tuning requires classification tasks and is not applicable for regression.
+      - Early stopping is supported if ``self.boost_early`` is enabled and validation data is provided.
+      - Works seamlessly with pipelines for preprocessing and feature selection.
+
+
+``print_selected_best_features()``
+----------------------------------------------------------------------------
+
+.. function:: print_selected_best_features(X)
+   :noindex:
+
+   Prints and returns the selected top K best features based on the feature selection step.
+
+   :param X: The feature matrix used during the feature selection process.
+   :type X: ``pandas.DataFrame`` or array-like
+   :return: A list of the selected features or column indices.
+   :rtype: list
+   :raises AttributeError: Raised if the feature selection pipeline is not properly configured or trained.
+
+   **Description:**
+
+   - This method retrieves the top K features selected by the feature selection pipeline.
+   - Prints the names or column indices of the selected features to the console.
+   - Returns the selected features as a list.
+
+   **Behavior:**
+
+   - **For DataFrames**:
+
+     - Prints the names of the selected feature columns.
+     - Returns a list of column names corresponding to the selected features.
+
+   - **For Array-like Data**:
+
+     - Prints the indices of the selected feature columns.
+     - Returns a list of column indices.
+
+   **Attributes Used:**
+
+   - ``self.get_feature_selection_pipeline()``: Retrieves the feature selection pipeline used for selecting features.
+
+   **Output:**
+
+   - Prints the selected features or indices to the console.
+   - Returns the selected features as a list.
+
+   .. note:: 
+
+      - Assumes that a feature selection pipeline has been configured and trained prior to calling this method.
+      - Designed to work with both ``pandas.DataFrame`` and array-like structures for feature matrices.
+
+
+
+
+
+``tune_threshold_Fbeta()``
+----------------------------------------------------------------------------
+
+.. function:: tune_threshold_Fbeta(score, y_valid, betas, y_valid_proba, kfold=False)
+   :noindex:
+
+   Tunes classification threshold for optimal F-beta score, balancing precision and recall across various thresholds.
+
+   :param score: A label or name for the score used to store the best threshold.
+   :type score: str
+   :param y_valid: Ground truth (actual) labels for the validation dataset.
+   :type y_valid: array-like of shape (n_samples,)
+   :param betas: A list of beta values to consider when calculating the F-beta score. Beta controls the balance between precision and recall.
+   :type betas: list of float
+   :param y_valid_proba: Predicted probabilities for the positive class in the validation dataset. Used to evaluate thresholds.
+   :type y_valid_proba: array-like of shape (n_samples,)
+   :param kfold: If ``True``, returns the best threshold for the given score. If False, updates the ``threshold`` attribute in place. Default is ``False``.
+   :type kfold: bool, optional
+   :return: The best threshold for the given score if ``kfold`` is ``True``, otherwise returns ``None``.
+   :rtype: float or None
+   :raises ValueError: Raised if input arrays have mismatched dimensions or invalid beta values.
+   :raises TypeError: Raised if invalid data types are passed for parameters.
+
+   **Description:**
+
+   - This method identifies the optimal classification threshold for maximizing the F-beta score.
+   - The F-beta score balances precision and recall, with beta determining the relative weight of recall.
+   - Evaluates thresholds ranging from 0 to 1 (with a step size of 0.01) to find the best threshold for each beta value.
+
+   **Behavior:**
+
+   - **Threshold Evaluation**:
+
+     - For each threshold, computes binary predictions and evaluates the resulting F-beta score.
+     - Penalizes thresholds leading to undesirable outcomes, such as excessive false positives compared to true negatives.
+
+   - **K-Fold Mode**:
+
+     - If ``kfold=True``, returns the optimal threshold without modifying class attributes.
+
+   - **Non K-Fold Mode**:
+
+     - Updates the ``self.threshold`` attribute with the optimal threshold for the specified score.
+
+   **Attributes Used:**
+
+   - ``self.threshold``: Stores the optimal threshold for each scoring metric.
+   - ``self.beta``: Stores the beta value corresponding to the maximum F-beta score.
+
+   **Notes:**
+
+   - The method iterates over thresholds and calculates F-beta scores for each beta value, identifying the best-performing threshold.
+   - Penalizes thresholds where false positives exceed true negatives to ensure practical performance.
+   - Designed to support models evaluated on binary classification tasks.
+
+   **Example:**
+   ::
+      optimal_threshold = tune_threshold_Fbeta(
+          score="roc_auc",
+          y_valid=y_valid,
+          betas=[0.5, 1, 2],
+          y_valid_proba=model.predict_proba(X_valid)[:, 1],
+          kfold=False,
+      )
+
+
+``train_val_test_split()``
+--------------------------------------------------------------------------------------------------------------------
+
+.. function:: train_val_test_split(X, y, stratify_y=None, train_size=0.6, validation_size=0.2, test_size=0.2, random_state=3, stratify_cols=None)
+   :noindex:
+
+   Splits data into train, validation, and test sets, supporting stratification by specific columns or the target variable.
+
+   :param X: The feature matrix to split.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param stratify_y: Specifies whether to stratify based on the target variable. Default is ``None``.
+   :type stratify_y: ``pandas.Series`` or None, optional
+   :param train_size: Proportion of the data to allocate to the training set. Default is ``0.6``.
+   :type train_size: float, optional
+   :param validation_size: Proportion of the data to allocate to the validation set. Default is ``0.2``.
+   :type validation_size: float, optional
+   :param test_size: Proportion of the data to allocate to the test set. Default is ``0.2``.
+   :type test_size: float, optional
+   :param random_state: Random seed for reproducibility. Default is ``3``.
+   :type random_state: int, optional
+   :param stratify_cols: Columns to use for stratification, in addition to or instead of ``y``. Default is ``None``.
+   :type stratify_cols: list, ``pandas.DataFrame``, or None, optional
+   :return: A tuple containing train, validation, and test sets: (``X_train``, ``X_valid``, ``X_test``, ``y_train``, ``y_valid``, ``y_test``).
+   :rtype: tuple of (``pandas.DataFrame``, ``pandas.Series``)
+   :raises ValueError: Raised if the sizes for train, validation, and test do not sum to 1.0 or if invalid stratification keys are provided.
+
+   **Description:**
+
+   - This function splits data into three sets: train, validation, and test.
+   - Supports stratification based on the target variable (``y``) or specific columns (``stratify_cols``).
+   - Ensures the proportions of the split sets are consistent with the specified ``train_size``, ``validation_size``, and ``test_size``.
+
+   **Behavior:**
+
+   - Combines ``stratify_cols`` and ``y`` (if both are provided) to create a stratification key.
+   - Handles missing values in ``stratify_cols`` by filling with empty strings.
+   - Uses a two-step splitting approach:
+
+     1. Splits data into train and combined validation-test sets.
+     2. Further splits the combined set into validation and test sets.
+
+   **Attributes Used:**
+
+   - Handles configurations for stratification and proportional splitting.
+
+   .. note:: 
+
+      - The sum of ``train_size``, ``validation_size``, and ``test_size`` must equal ``1.0``.
+      - Stratification ensures the distribution of classes or categories is preserved across splits.
+      - The function works seamlessly with both ``pandas.DataFrame`` and array-like data structures.
+
+   **Example:**
+   ::
+      X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+          X=features,
+          y=target,
+          stratify_y=target,
+          train_size=0.6,
+          validation_size=0.20,
+          test_size=0.20,
+          random_state=42,
+          stratify_cols=['category_column']
+      )
+
+
+
+
+``get_best_score_params()``
+---------------------------------
+
+.. function:: get_best_score_params(X, y)
+   :noindex:
+
+   Retrieves the best hyperparameters for the model based on cross-validation scores for specified metrics.
+
+   :param X: The feature matrix for training during hyperparameter tuning.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :return: ``None``. Updates the class attributes with the best parameters and scores.
+   :rtype: ``None``
+   :raises ValueError: Raised if ``self.grid`` or ``self.kf`` is not properly configured.
+   :raises KeyError: Raised if scoring metrics are missing or invalid.
+
+   **Description:**
+
+   - This method performs hyperparameter tuning using either grid search, randomized grid search, or Bayesian search.
+   - Identifies the best parameter set for each scoring metric specified in the class's ``scoring`` attribute.
+   - Updates the class attributes with the best estimator and scores.
+
+   **Supported Search Methods:**
+
+   - **Grid Search**: Exhaustively searches over all parameter combinations.
+   - **Randomized Grid Search**: Randomly samples a subset of parameter combinations.
+   - **Bayesian Search**: Uses Bayesian optimization for hyperparameter tuning.
+
+   **Behavior:**
+
+   - **Randomized Search**:
+
+     - If ``self.randomized_grid`` is ``True``, uses ```RandomizedSearchCV``` to perform hyperparameter tuning.
+
+   - **Bayesian Search**:
+
+     - If ``self.bayesian`` is True, uses ``BayesSearchCV`` for Bayesian optimization.
+     - Removes any ``bayes__`` prefixed parameters from the grid and uses them as additional arguments for ``BayesSearchCV``.
+
+   - **Grid Search**:
+
+     - Defaults to ``GridSearchCV`` if neither ``randomized_grid`` nor ``bayesian`` is enabled.
+
+   - After fitting the model:
+
+     - Updates ``self.estimator`` and ``self.test_model`` with the best estimator.
+     - Stores the best parameters and score for each scoring metric in ``self.best_params_per_score``.
+
+   **Attributes Updated:**
+
+   - ``self.estimator``: Updated with the best model after tuning.
+   - ``self.test_model``: Updated with the same best model.
+   - ``self.best_params_per_score``: A dictionary storing the best parameters and scores for each scoring metric.
+
+   **Output:**
+
+   - Prints:
+
+     - The best parameter set and score for each metric.
+     - A summary of grid scores for all parameter combinations.
+
+   - Updates class attributes with the tuning results.
+
+   .. note:: 
+
+      - Supports custom scoring metrics via ``self.custom_scorer``.
+      - The method assumes ``self.kf`` is a valid cross-validator (e.g., ``KFold`` or ``StratifiedKFold``) and ``self.grid`` is properly defined.
+      - Designed to work seamlessly with classification and regression models.
+
+
+
+``conf_mat_class_kfold()``
+--------------------------------------------------------
+
+.. function:: conf_mat_class_kfold(X, y, test_model, score=None)
+   :noindex:
+
+   Generates and averages confusion matrices across k-folds, producing a combined classification report.
+
+   :param X: The feature matrix for k-fold cross-validation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param test_model: The model to be trained and evaluated on each fold.
+   :type test_model: object
+   :param score: Optional scoring metric label for reporting purposes. Default is ``None``.
+   :type score: str, optional
+   :return: A dictionary containing the averaged classification report and confusion matrix.
+   :rtype: dict
+   :raises ValueError: Raised if the input data is incompatible with k-fold splitting.
+
+   **Description:**
+   
+   - This method performs k-fold cross-validation to generate confusion matrices for each fold.
+   - Averages the confusion matrices across all folds and produces a combined classification report.
+   - Prints the averaged confusion matrix and classification report.
+
+   **Behavior:**
+
+   - For each fold in k-fold cross-validation:
+
+     1. Splits the data into training and testing subsets.
+     2. Fits the ``test_model`` on the training subset.
+     3. Predicts the target values for the testing subset.
+     4. Computes the confusion matrix for the fold and appends it to a list.
+
+   - Aggregates predictions and true labels across all folds.
+   - Averages the confusion matrices and generates an overall classification report.
+
+   **Output:**
+
+   - Prints:
+
+     - The averaged confusion matrix across all folds.
+     - The overall classification report across all folds.
+
+   - Returns:
+
+     - A dictionary containing:
+
+       - ``"Classification Report"``: The averaged classification report as a dictionary.
+       - ``"Confusion Matrix"``: The averaged confusion matrix as a NumPy array.
+
+   .. note::
+
+      - Designed for classification tasks evaluated with k-fold cross-validation.
+      - Handles both ``pandas.DataFrame`` and array-like structures for ``X`` and ``y``.
+      - If ``score`` is provided, it is included in the printed report headers.
+
+
+
+``regression_report_kfold()``
+------------------------------------------------------------
+
+.. function:: regression_report_kfold(X, y, test_model, score=None)
+   :noindex:
+
+   Generates averaged regression metrics across k-folds.
+
+   :param X: The feature matrix for k-fold cross-validation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: The target vector corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param test_model: The model to be trained and evaluated on each fold.
+   :type test_model: object
+   :param score: Optional scoring metric label for reporting purposes. Default is ``None``.
+   :type score: str, optional
+   :return: A dictionary containing averaged regression metrics across all folds.
+   :rtype: dict
+   :raises ValueError: Raised if the input data is incompatible with k-fold splitting.
+
+
+   **Description:**
+
+   - This method evaluates regression performance metrics using k-fold cross-validation.
+   - Trains the ``test_model`` on training splits and evaluates it on validation splits for each fold.
+   - Aggregates regression metrics from all folds and calculates their averages.
+
+   **Behavior:**
+
+   - For each fold in k-fold cross-validation:
+
+     1. Splits the data into training and testing subsets.
+     2. Fits the ``test_model`` on the training subset.
+     3. Predicts the target values for the testing subset.
+     4. Computes regression metrics (e.g., RMSE, MAE, R²) and stores them.
+
+   - Aggregates metrics across all folds and calculates their mean.
+
+   **Output:**
+
+   - Prints:
+
+     - The averaged regression metrics across all folds.
+
+   - Returns:
+
+     - A dictionary containing the averaged regression metrics.
+
+   **Attributes Used:**
+
+   - ``self.regression_report()``: Used to compute regression metrics for each fold.
+
+   .. note:: 
+
+      - Designed specifically for regression tasks evaluated with k-fold cross-validation.
+      - Handles both ``pandas.DataFrame`` and array-like structures for ``X`` and ``y``.
+
+
+``regression_report()``
+--------------------------------------------------------------
+
+.. function:: regression_report(y_true, y_pred, print_results=True)
+   :noindex:
+   
+   Generates a regression report with metrics like Mean Absolute Error, R-squared, and Root Mean Squared Error.
+
+   :param y_true: Ground truth (actual) values for the target variable.
+   :type y_true: array-like
+   :param y_pred: Predicted values for the target variable.
+   :type y_pred: array-like
+   :param print_results: Whether to print the regression metrics to the console. Default is ``True``.
+   :type print_results: bool, optional
+   :return: A dictionary containing various regression metrics.
+   :rtype: dict
+   :raises ValueError: Raised if ``y_true`` and ``y_pred`` have mismatched dimensions.
+
+   **Description:**
+
+   - Computes common regression metrics to evaluate the performance of a regression model.
+   - Metrics include R², explained variance, mean absolute error (MAE), median absolute error, mean squared error (MSE), and root mean squared error (RMSE).
+
+   **Metrics Computed:**
+
+   - ``R²``: Coefficient of determination, indicating the proportion of variance in the dependent variable explained by the independent variable(s).
+   - ``Explained Variance``: Measures the proportion of variance explained by the model.
+   - ``Mean Absolute Error (MAE)``: Average of the absolute differences between actual and predicted values.
+   - ``Median Absolute Error``: Median of the absolute differences between actual and predicted values.
+   - ``Mean Squared Error (MSE)``: Average of the squared differences between actual and predicted values.
+   - ``Root Mean Squared Error (RMSE)``: Square root of the mean squared error.
+
+   **Behavior:**
+
+   - Computes all metrics and stores them in a dictionary.
+   - Optionally prints the metrics to the console, formatted for easy readability.
+
+   **Output:**
+
+   - Prints:
+
+     - A formatted list of regression metrics if ``print_results=True``.
+
+   - Returns:
+
+     - A dictionary containing the computed metrics.
+
+   .. note::
+
+      - This method is designed for regression tasks and is not applicable to classification models.
+      - The returned dictionary can be used for further analysis or logging.
+
+
+
+
+``report_model_metrics()``
+---------------------------------------------------------------------------
+
+.. function:: report_model_metrics(model, X_valid=None, y_valid=None, threshold=0.5, print_results=True, print_per_fold=False)
+   :noindex:
+
+   Generate a DataFrame of model performance metrics, adapting to regression, 
+   binary classification, or multiclass classification problems.
+
+   **Key Features:**
+
+   - Handles regression, binary classification, and multiclass classification tasks.
+   - Supports K-Fold cross-validation with optional metrics printing for individual folds.
+   - Adapts metrics calculation based on the model's ``model_type`` attribute.
+
+   :param model: The trained model with the necessary attributes and methods for prediction, 
+       including ``predict_proba`` or ``predict``, and attributes like ``model_type`` 
+       and ``multi_label`` (for multiclass classification).
+   :type model: object
+   :param X_valid: Feature set used for validation. If performing K-Fold validation, this 
+       represents the entire dataset. Default is ``None``.
+   :type X_valid: pandas.DataFrame or array-like, optional
+   :param y_valid: True labels for the validation dataset. If performing K-Fold validation, 
+       this corresponds to the entire dataset. Default is ``None``.
+   :type y_valid: pandas.Series or array-like, optional
+   :param threshold: Classification threshold for binary classification models. Predictions 
+       above this threshold are classified as the positive class. Default is ``0.5``.
+   :type threshold: float, optional
+   :param print_results: Whether to print the metrics report. Default is ``True``.
+   :type print_results: bool, optional
+   :param print_per_fold: If performing K-Fold validation, specifies whether to print metrics 
+       for each fold. Default is ``False``.
+   :type print_per_fold: bool, optional
+   :rtype: pandas.DataFrame
+   :raises ValueError: Raised if the provided ``model_type`` is invalid or incompatible with the data.
+   :raises AttributeError: Raised if the required attributes or methods are missing from the model.
+   :raises TypeError: Raised for incorrect parameter types, such as non-numeric thresholds.
+
+   :returns: A pandas DataFrame containing calculated performance metrics. The structure of the 
+       DataFrame depends on the model type:
+
+       - **Regression**: Includes Mean Absolute Error (MAE), Mean Squared Error (MSE), 
+         Root Mean Squared Error (RMSE), R² Score, and Explained Variance.
+       - **Binary Classification**: Includes Precision (PPV), Average Precision, Sensitivity, 
+         Specificity, AUC-ROC, and Brier Score.
+       - **Multiclass Classification**: Includes Precision, Recall, and F1-Score for each class, 
+         along with weighted averages and accuracy.
+
+   .. note::
+
+      - For regression models, standard regression metrics are calculated.
+      - For binary classification models, threshold-based metrics are computed using probabilities from ``predict_proba``.
+      - For multiclass classification models, metrics are calculated for each class, along with weighted averages.
+      - K-Fold cross-validation aggregates metrics across folds, with an option to print results for each fold.
+
+
+   **Examples:**
+   ::
+
+       ## Example for binary classification:
+       metrics_df = report_model_metrics(model, X_valid=X_test, y_valid=y_test, threshold=0.5)
+
+       ## Example for regression:
+       metrics_df = report_model_metrics(model, X_valid=X_test, y_valid=y_test)
+
+       ## Example for K-Fold validation:
+       metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_per_fold=True)
+
+
+Helper Functions
+=================
+
+``kfold_split()``
+----------------------------------------------------------------------------------------------------
+
+.. function:: kfold_split(classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3)
+   :noindex:
+
+   Splits data using k-fold or stratified k-fold cross-validation.
+
+   :param classifier: The classifier or model to be evaluated during cross-validation.
+   :type classifier: object
+   :param X: Features dataset to split into k-folds.
+   :type X: pandas.DataFrame or array-like
+   :param y: Target dataset corresponding to ``X``.
+   :type y: pandas.Series or array-like
+   :param stratify: Whether to use stratified k-fold cross-validation. If ``True``, uses ``StratifiedKFold``. Otherwise, uses ``KFold``. Default is ``False``.
+   :type stratify: bool, optional
+   :param scoring: Scoring metric(s) to evaluate during cross-validation. Default is ``["roc_auc"]``.
+   :type scoring: list of str, optional
+   :param n_splits: Number of splits/folds to create for cross-validation. Default is ``10``.
+   :type n_splits: int, optional
+   :param random_state: Random seed for reproducibility. Default is ``3``.
+   :type random_state: int, optional
+
+   :return: A ``KFold`` or ``StratifiedKFold`` cross-validator object based on the ``stratify`` parameter.
+   :rtype: ``sklearn.model_selection.KFold`` or ``sklearn.model_selection.StratifiedKFold``
+
+   :raises ValueError: Raised if invalid parameters (e.g., negative ``n_splits``) are provided.
+
+
+   .. note::
+
+      - Use ``stratify=True`` for datasets where maintaining the proportion of classes in each fold is important.
+      - Use ``stratify=False`` for general k-fold splitting.
+
+
+
+``get_cross_validate()``
+----------------------------------------------------------------------------------------------------
+
+.. function:: get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"])
+   :noindex:
+
+   Performs cross-validation using the provided classifier, dataset, and cross-validation strategy.
+
+   :param classifier: The classifier or model to be evaluated during cross-validation.
+   :type classifier: object
+   :param X: Features dataset to use during cross-validation.
+   :type X: ``pandas.DataFrame`` or array-like
+   :param y: Target dataset corresponding to ``X``.
+   :type y: ``pandas.Series`` or array-like
+   :param kf: Cross-validator object, such as ``KFold`` or ``StratifiedKFold``, specifying the cross-validation strategy.
+   :type kf: ``sklearn.model_selection.KFold`` or ``sklearn.model_selection.StratifiedKFold``
+   :param scoring: Scoring metric(s) to evaluate during cross-validation. Default is ``["roc_auc"]``.
+   :type scoring: list of str, optional  
+
+   :return: A dictionary containing cross-validation results, including train and test scores for each fold.
+
+      **Returned Dictionary Keys**:
+
+      - ``test_score``: Test scores for each fold.
+      - ``train_score``: Training scores for each fold.
+      - ``estimator``: The estimator fitted on each fold.
+      - ``fit_time``: Time taken to fit the model on each fold.
+      - ``score_time``: Time taken to score the model on each fold.
+   :rtype: dict  
+
+   :raises ValueError: Raised if invalid ``kf`` or ``scoring`` parameters are provided.
+
+   .. note::
+
+      - Supports multiple scoring metrics, which can be specified as a list (e.g., ``["accuracy", "roc_auc"]``).
+      - Returns additional information such as train scores and estimators for further analysis.
+      - Ensure the classifier supports the metrics defined in the ``scoring`` parameter.
+
+
+
+
+``_confusion_matrix_print()``
+---------------------------------------------------
+
+.. function:: _confusion_matrix_print(conf_matrix, labels)
+   :noindex:
+
+   Prints the formatted confusion matrix for binary classification.
+
+   :param conf_matrix: The confusion matrix to print, typically a 2x2 numpy array or similar structure. 
+   :type conf_matrix: numpy.ndarray or array-like
+   :param labels: A list of labels corresponding to the confusion matrix entries in the order ``[TN, FP, FN, TP]``.
+   :type labels: list of str
+
+   **Description:**
+
+   - Formats and prints a binary classification confusion matrix with labeled cells for True Positive (TP), True Negative (TN), False Positive (FP), and False Negative (FN).
+   - Includes additional formatting to enhance readability, such as aligned columns and labeled rows.
+
+   **Output:**
+
+   - The function prints a structured table representation of the confusion matrix directly to the console.
+
+
+``print_pipeline()``
+-----------------------------
+
+.. function:: print_pipeline(pipeline)
+   :noindex:
+
+   Displays an ASCII representation of the pipeline steps for visual clarity.
+
+   :param pipeline: The pipeline object containing different steps to display. Typically, a ``sklearn.pipeline.Pipeline`` object or similar structure.
+   :type pipeline: ``sklearn.pipeline.Pipeline`` or object with a ``steps`` attribute
+
+   **Description:**
+
+   - This function iterates over the steps in a pipeline and displays each step in a visually formatted ASCII art representation.
+   - For each pipeline step:
+
+     - Displays the step name and its class name in a boxed format.
+     - Connects steps with vertical connectors (`│`) and arrows (`▼`) for clarity.
+   - Dynamically adjusts box width based on the longest step name or class name to maintain alignment.
+
+   **Output:**
+
+   - The function prints the pipeline structure directly to the console, providing an easy-to-read ASCII visualization.
+
+   .. note:: 
+
+      - If the pipeline has no steps or lacks a ``steps`` attribute, the function prints a message: ``"No steps found in the pipeline!"``.
+      - Designed for readability, especially in terminal environments.
+
+
 
 Pipeline Management
 ============================================

@@ -10,7 +10,7 @@
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=f712845e" />
+      <link rel="stylesheet" type="text/css" href="_static/custom.css?v=72ec8e44" />
 
   
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/usage_guide.html" />
@@ -61,10 +61,41 @@
 <li class="toctree-l2"><a class="reference internal" href="#regression-example">Regression Example</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#key-methods-and-functionalities">Key Methods and Functionalities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#helper-functions">Helper Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#input-parameters">Input Parameters</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#Model"><code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#key-methods-and-functionalities">Key Methods and Functionalities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#init"><code class="docutils literal notranslate"><span class="pre">__init__(...)</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reset-estimator"><code class="docutils literal notranslate"><span class="pre">reset_estimator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#process-imbalance-sampler"><code class="docutils literal notranslate"><span class="pre">process_imbalance_sampler()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#calibratemodel"><code class="docutils literal notranslate"><span class="pre">calibrateModel()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-train-val-test-data">Get train, val, test data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get-train-data"><code class="docutils literal notranslate"><span class="pre">get_train_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-valid-data"><code class="docutils literal notranslate"><span class="pre">get_valid_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-test-data"><code class="docutils literal notranslate"><span class="pre">get_test_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#calibrate-report"><code class="docutils literal notranslate"><span class="pre">calibrate_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fit"><code class="docutils literal notranslate"><span class="pre">fit()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#return-metrics"><code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#predict"><code class="docutils literal notranslate"><span class="pre">predict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#grid-search-param-tuning"><code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#print-selected-best-features"><code class="docutils literal notranslate"><span class="pre">print_selected_best_features()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tune-threshold-fbeta"><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#train-val-test-split"><code class="docutils literal notranslate"><span class="pre">train_val_test_split()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-best-score-params"><code class="docutils literal notranslate"><span class="pre">get_best_score_params()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conf-mat-class-kfold"><code class="docutils literal notranslate"><span class="pre">conf_mat_class_kfold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#regression-report-kfold"><code class="docutils literal notranslate"><span class="pre">regression_report_kfold()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#regression-report"><code class="docutils literal notranslate"><span class="pre">regression_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#report-model-metrics"><code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#helper-functions">Helper Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#kfold-split"><code class="docutils literal notranslate"><span class="pre">kfold_split()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-cross-validate"><code class="docutils literal notranslate"><span class="pre">get_cross_validate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#confusion-matrix-print"><code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#print-pipeline"><code class="docutils literal notranslate"><span class="pre">print_pipeline()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#pipeline-management">Pipeline Management</a><ul>
@@ -137,7 +168,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-7-generate-data-splits">Step 7: Generate data splits</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Step 8: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">Step 9: Return metrics (optional)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#report-model-metrics">Report Model Metrics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Report Model Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-predict-probabilities-and-generate-predictions">Step 10: Predict probabilities and generate predictions</a></li>
@@ -147,11 +178,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#regression">Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id6">Step 1: Import necessary libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return metrics (optional)</a></li>
@@ -159,7 +190,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#id8">Report Model Metrics</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#id9">Report Model Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#classification-report-optional">Classification report (optional)</a></li>
 </ul>
 </li>
@@ -250,61 +281,6 @@
 <li><a href="./example_htmls/Model_Tuner_Regression_Redfin_Real_Estate.html" target="_blank">Redfin Real Estate - Los Angeles Data HTML File</a></li>
 </ul>
 </div></blockquote>
-</section>
-</section>
-<section id="key-methods-and-functionalities">
-<h1>Key Methods and Functionalities<a class="headerlink" href="#key-methods-and-functionalities" title="Link to this heading"></a></h1>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">__init__(...)</span></code></dt><dd><p>Initializes the model tuner with configurations, including estimator, cross-validation settings, scoring metrics, pipeline steps, feature selection, imbalance sampler, Bayesian search, and model calibration options.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">reset_estimator()</span></code></dt><dd><p>Resets the estimator and pipeline configuration.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">process_imbalance_sampler(X_train,</span> <span class="pre">y_train)</span></code></dt><dd><p>Processes the imbalance sampler, applying it to resample the training data.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">calibrateModel(X,</span> <span class="pre">y,</span> <span class="pre">score=None)</span></code></dt><dd><p>Calibrates the model with cross-validation support and configurable calibration methods, improving probability estimates.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">get_train_data(X,</span> <span class="pre">y),</span> <span class="pre">get_valid_data(X,</span> <span class="pre">y),</span> <span class="pre">get_test_data(X,</span> <span class="pre">y)</span></code></dt><dd><p>Retrieves train, validation, and test data based on specified indices.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">calibrate_report(X,</span> <span class="pre">y,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates a calibration report, including a confusion matrix and classification report.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">fit(X,</span> <span class="pre">y,</span> <span class="pre">validation_data=None,</span> <span class="pre">score=None)</span></code></dt><dd><p>Fits the model to training data and, if applicable, tunes threshold and performs early stopping. Allows feature selection and processing steps as part of the pipeline.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">return_metrics(X_test,</span> <span class="pre">y_test,</span> <span class="pre">optimal_threshold=False)</span></code></dt><dd><p>Returns evaluation metrics with confusion matrix and classification report, optionally using optimized classification thresholds.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">predict(X,</span> <span class="pre">y=None,</span> <span class="pre">optimal_threshold=False),</span> <span class="pre">predict_proba(X,</span> <span class="pre">y=None)</span></code></dt><dd><p>Makes predictions and predicts probabilities, allowing threshold tuning.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning(X,</span> <span class="pre">y,</span> <span class="pre">f1_beta_tune=False,</span> <span class="pre">betas=[1,</span> <span class="pre">2])</span></code></dt><dd><p>Performs grid or Bayesian search parameter tuning, optionally tuning F-beta score thresholds for classification.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">print_selected_best_features(X)</span></code></dt><dd><p>Prints and returns the selected top K best features based on the feature selection step.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta(score,</span> <span class="pre">y_valid,</span> <span class="pre">betas,</span> <span class="pre">y_valid_proba,</span> <span class="pre">kfold=False)</span></code></dt><dd><p>Tunes classification threshold for optimal F-beta score, balancing precision and recall across various thresholds.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">train_val_test_split(X,</span> <span class="pre">y,</span> <span class="pre">stratify_y,</span> <span class="pre">train_size,</span> <span class="pre">validation_size,</span> <span class="pre">test_size,</span> <span class="pre">random_state,</span> <span class="pre">stratify_cols)</span></code></dt><dd><p>Splits data into train, validation, and test sets, supporting stratification by specific columns or the target variable.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">get_best_score_params(X,</span> <span class="pre">y)</span></code></dt><dd><p>Retrieves the best hyperparameters for the model based on cross-validation scores for specified metrics.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">conf_mat_class_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates and averages confusion matrices across k-folds, producing a combined classification report.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">regression_report_kfold(X,</span> <span class="pre">y,</span> <span class="pre">test_model,</span> <span class="pre">score=None)</span></code></dt><dd><p>Generates averaged regression metrics across k-folds.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">regression_report(y_true,</span> <span class="pre">y_pred,</span> <span class="pre">print_results=True)</span></code></dt><dd><p>Generates a regression report with metrics like Mean Absolute Error, R-squared, and Root Mean Squared Error.</p>
-</dd>
-</dl>
-</section>
-<section id="helper-functions">
-<h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Link to this heading"></a></h1>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">kfold_split(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">stratify=False,</span> <span class="pre">scoring=[&quot;roc_auc&quot;],</span> <span class="pre">n_splits=10,</span> <span class="pre">random_state=3)</span></code></dt><dd><p>Splits data using k-fold or stratified k-fold cross-validation.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">get_cross_validate(classifier,</span> <span class="pre">X,</span> <span class="pre">y,</span> <span class="pre">kf,</span> <span class="pre">scoring=[&quot;roc_auc&quot;])</span></code></dt><dd><p>Performs cross-validation and returns training scores and estimator instances.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print(conf_matrix,</span> <span class="pre">labels)</span></code></dt><dd><p>Prints the formatted confusion matrix for binary classification.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">print_pipeline(pipeline)</span></code></dt><dd><p>Displays an ASCII representation of the pipeline steps for visual clarity.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">report_model_metrics(model,</span> <span class="pre">X_valid=None,</span> <span class="pre">y_valid=None,</span> <span class="pre">threshold=0.5)</span></code></dt><dd><p>Generates a DataFrame of key model performance metrics, including Precision, Sensitivity, Specificity, and AUC-ROC.</p>
-</dd>
-</dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
@@ -313,6 +289,7 @@
 <li><p>Ensure that all dependencies are installed and properly imported before using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class from the <code class="docutils literal notranslate"><span class="pre">model_tuner</span></code> library.</p></li>
 </ul>
 </div>
+</section>
 </section>
 <section id="input-parameters">
 <h1>Input Parameters<a class="headerlink" href="#input-parameters" title="Link to this heading"></a></h1>
@@ -371,6 +348,1367 @@ or a DataFrame containing the columns for stratification. Default is <code class
 </dl>
 </dd></dl>
 
+</section>
+<section id="key-methods-and-functionalities">
+<h1>Key Methods and Functionalities<a class="headerlink" href="#key-methods-and-functionalities" title="Link to this heading"></a></h1>
+<section id="init">
+<h2><code class="docutils literal notranslate"><span class="pre">__init__(...)</span></code><a class="headerlink" href="#init" title="Link to this heading"></a></h2>
+<blockquote>
+<div><p>Initializes the model tuner with configurations, including estimator, cross-validation settings, scoring metrics, pipeline steps, feature selection, imbalance sampler, Bayesian search, and model calibration options.</p>
+</div></blockquote>
+</section>
+<section id="reset-estimator">
+<h2><code class="docutils literal notranslate"><span class="pre">reset_estimator()</span></code><a class="headerlink" href="#reset-estimator" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">reset_estimator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Resets the estimator and pipeline configuration.</p>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This function reinitializes the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> attribute of the class based on the current pipeline configuration.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code> are defined, it creates a new pipeline using <code class="docutils literal notranslate"><span class="pre">self.PipelineClass</span></code> and a deep copy of the steps.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code> are not defined, it resets the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> to a single-step pipeline containing the original estimator.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code> is not empty:</p>
+<ul>
+<li><p>Creates a pipeline using the defined steps.</p></li>
+</ul>
+</li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code> is empty:</p>
+<ul>
+<li><p>Resets the <code class="docutils literal notranslate"><span class="pre">estimator</span></code> to a single-step pipeline with the original estimator.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code>: The steps of the pipeline (if defined).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.PipelineClass</span></code>: The class used to construct pipelines.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.estimator_name</span></code>: The name of the primary estimator step.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.original_estimator</span></code>: The original estimator to be reset.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>The function updates the <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> attribute and does not return a value.</p></li>
+</ul>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li><p>This function is intended for internal use as a helper function to manage pipeline and estimator states.</p></li>
+<li><p>Ensures that the pipeline or estimator is always in a valid state after modifications or resets.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="process-imbalance-sampler">
+<h2><code class="docutils literal notranslate"><span class="pre">process_imbalance_sampler()</span></code><a class="headerlink" href="#process-imbalance-sampler" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">process_imbalance_sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Processes the imbalance sampler, applying it to resample the training data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X_train</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – Training features to be resampled.</p></li>
+<li><p><strong>y_train</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – Training target labels to be resampled.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – Raised if the <code class="docutils literal notranslate"><span class="pre">resampler</span></code> step is missing in the pipeline.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if <code class="docutils literal notranslate"><span class="pre">X_train</span></code> or <code class="docutils literal notranslate"><span class="pre">y_train</span></code> are incompatible with the pipeline or resampler.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints the class distribution of <code class="docutils literal notranslate"><span class="pre">y_train</span></code> after resampling.</p></li>
+<li><p>Does not modify the original <code class="docutils literal notranslate"><span class="pre">X_train</span></code> or <code class="docutils literal notranslate"><span class="pre">y_train</span></code>.</p></li>
+</ul>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This function applies an imbalance sampler to resample the training data, ensuring the target distribution is balanced.</p></li>
+<li><p>If preprocessing steps are defined in the pipeline, they are applied to the training features before resampling.</p></li>
+<li><p>Prints the distribution of <code class="docutils literal notranslate"><span class="pre">y_train</span></code> after resampling to provide visibility into the balance of classes.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>If preprocessing steps exist (<code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code>):</p>
+<ul>
+<li><p>Applies preprocessing to <code class="docutils literal notranslate"><span class="pre">X_train</span></code> using the preprocessing pipeline obtained from <code class="docutils literal notranslate"><span class="pre">get_preprocessing_pipeline()</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Clones the <code class="docutils literal notranslate"><span class="pre">resampler</span></code> step from the pipeline to ensure independent operation.</p></li>
+<li><p>Resamples the training data using the cloned resampler, modifying the distribution of <code class="docutils literal notranslate"><span class="pre">y_train</span></code>.</p></li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code>: Indicates whether preprocessing steps are defined.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.get_preprocessing_pipeline()</span></code>: Retrieves the preprocessing pipeline (if available).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.estimator.named_steps[&quot;resampler&quot;]</span></code>: The resampler to apply for balancing the target classes.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The function assumes that the pipeline includes a valid <code class="docutils literal notranslate"><span class="pre">resampler</span></code> step under <code class="docutils literal notranslate"><span class="pre">named_steps</span></code>.</p></li>
+<li><p>Ensures compatibility with <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and array-like structures for <code class="docutils literal notranslate"><span class="pre">y_train</span></code>.</p></li>
+<li><p>Prints the class distribution of <code class="docutils literal notranslate"><span class="pre">y_train</span></code> after resampling for user awareness.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="calibratemodel">
+<h2><code class="docutils literal notranslate"><span class="pre">calibrateModel()</span></code><a class="headerlink" href="#calibratemodel" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">calibrateModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Calibrates the model with cross-validation support and configurable calibration methods, improving probability estimates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – Feature set used for model calibration.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – Target set corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Optional scoring metric(s) for evaluating the calibration. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if incompatible parameters (e.g., invalid scoring metric) are passed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – Raised if required attributes or parameters are missing.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>Supports model calibration with both k-fold cross-validation and a pre-split train-validation-test workflow.</p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">CalibratedClassifierCV</span></code> for calibration with methods such as <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> or <code class="docutils literal notranslate"><span class="pre">isotonic</span></code> (defined by <code class="docutils literal notranslate"><span class="pre">self.calibration_method</span></code>).</p></li>
+<li><p>Handles cases where imbalance sampling or early stopping is applied during training.</p></li>
+<li><p>Provides additional support for CPU/GPU device management if applicable.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>With K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Resets the estimator to avoid conflicts with pre-calibrated models.</p></li>
+<li><p>Calibrates the model using k-fold splits with the configured calibration method.</p></li>
+<li><p>Optionally evaluates calibration using the provided scoring metric(s).</p></li>
+<li><p>Generates and prints confusion matrices for each fold (if applicable).</p></li>
+</ul>
+</li>
+<li><p><strong>Without K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Performs a train-validation-test split using <code class="docutils literal notranslate"><span class="pre">train_val_test_split</span></code>.</p></li>
+<li><p>Resets the estimator and applies preprocessing or imbalance sampling if configured.</p></li>
+<li><p>Fits the model on training data, with or without early stopping.</p></li>
+<li><p>Calibrates the pre-trained model on the test set and evaluates calibration results.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.kfold</span></code>: Indicates whether k-fold cross-validation is enabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.calibrate</span></code>: Determines whether calibration is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.calibration_method</span></code>: Specifies the calibration method (e.g., <code class="docutils literal notranslate"><span class="pre">sigmoid</span></code> or <code class="docutils literal notranslate"><span class="pre">isotonic</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code>: Stores the best parameters for each scoring metric.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.n_splits</span></code>: Number of splits for cross-validation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.stratify_y</span></code>, <code class="docutils literal notranslate"><span class="pre">self.stratify_cols</span></code>: Used for stratified train-validation-test splitting.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.imbalance_sampler</span></code>: Indicates if an imbalance sampler is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.boost_early</span></code>: Enables early stopping during training.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Modifies the class attribute <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> to include the calibrated model.</p></li>
+<li><p>Generates calibration reports and scoring metrics if applicable.</p></li>
+<li><p>Prints performance metrics (e.g., scores and confusion matrices) for the calibrated model.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>When <code class="docutils literal notranslate"><span class="pre">score</span></code> is provided, the function evaluates calibration using the specified metric(s).</p></li>
+<li><p>Requires the estimator to be compatible with <code class="docutils literal notranslate"><span class="pre">CalibratedClassifierCV</span></code>.</p></li>
+<li><p>Handles both balanced and imbalanced datasets with preprocessing support.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="get-train-val-test-data">
+<h2>Get train, val, test data<a class="headerlink" href="#get-train-val-test-data" title="Link to this heading"></a></h2>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>These functions return subsets of the dataset (features and labels) based on predefined indices stored in the class attributes:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.X_train_index</span></code> and <code class="docutils literal notranslate"><span class="pre">self.y_train_index</span></code> for training data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.X_valid_index</span></code> and <code class="docutils literal notranslate"><span class="pre">self.y_valid_index</span></code> for validation data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.X_test_index</span></code> and <code class="docutils literal notranslate"><span class="pre">self.y_test_index</span></code> for test data.</p></li>
+</ul>
+</li>
+<li><p>Designed to work with <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> objects.</p></li>
+</ul>
+<section id="get-train-data">
+<h3><code class="docutils literal notranslate"><span class="pre">get_train_data()</span></code><a class="headerlink" href="#get-train-data" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_train_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Retrieves the training data based on specified indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Full dataset containing features.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>) – Full dataset containing target labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the training features and labels.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-valid-data">
+<h3><code class="docutils literal notranslate"><span class="pre">get_valid_data()</span></code><a class="headerlink" href="#get-valid-data" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_valid_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Retrieves the validation data based on specified indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Full dataset containing features.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>) – Full dataset containing target labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the validation features and labels.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="get-test-data">
+<h3><code class="docutils literal notranslate"><span class="pre">get_test_data()</span></code><a class="headerlink" href="#get-test-data" title="Link to this heading"></a></h3>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_test_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Retrieves the test data based on specified indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>) – Full dataset containing features.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>) – Full dataset containing target labels.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the test features and labels.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>These methods assume that the indices (e.g., <code class="docutils literal notranslate"><span class="pre">self.X_train_index</span></code>) are defined and valid.</p></li>
+<li><p>The methods return subsets of the provided <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> data by indexing the rows based on the stored indices.</p></li>
+<li><p>Useful for workflows where train, validation, and test splits are dynamically managed or predefined.</p></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="calibrate-report">
+<h2><code class="docutils literal notranslate"><span class="pre">calibrate_report()</span></code><a class="headerlink" href="#calibrate-report" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">calibrate_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generates a calibration report, including a confusion matrix and classification report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – Features dataset for validation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – True labels for the validation dataset.</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Optional scoring metric name to include in the report. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the provided <code class="docutils literal notranslate"><span class="pre">X</span></code> or <code class="docutils literal notranslate"><span class="pre">y</span></code> are incompatible with the model or metrics.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method evaluates the performance of a calibrated model on the validation dataset.</p></li>
+<li><p>Generates and prints:
+- A confusion matrix, with support for multi-label classification if applicable.
+- A classification report summarizing precision, recall, and F1-score for each class.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>Calls the <code class="docutils literal notranslate"><span class="pre">predict</span></code> method to obtain predictions for the validation dataset.</p></li>
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">confusion_matrix</span></code> or <code class="docutils literal notranslate"><span class="pre">multilabel_confusion_matrix</span></code> based on the value of <code class="docutils literal notranslate"><span class="pre">self.multi_label</span></code> to compute the confusion matrix.</p></li>
+<li><p>Prints a labeled confusion matrix using the <code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print()</span></code> function.</p></li>
+<li><p>Generates a classification report using <code class="docutils literal notranslate"><span class="pre">classification_report</span></code> from <code class="docutils literal notranslate"><span class="pre">sklearn.metrics</span></code> and assigns it to the <code class="docutils literal notranslate"><span class="pre">self.classification_report</span></code> attribute.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints the following to the console:</p>
+<ul>
+<li><p>The confusion matrix with labels.</p></li>
+<li><p>The classification report.</p></li>
+<li><p>A separator line for readability.</p></li>
+</ul>
+</li>
+<li><p>Updates the attribute <code class="docutils literal notranslate"><span class="pre">self.classification_report</span></code> with the generated classification report.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If the model is multi-label, a confusion matrix is generated for each label.</p></li>
+<li><p>The optional <code class="docutils literal notranslate"><span class="pre">score</span></code> parameter can be used to specify and display a scoring metric in the report heading.</p></li>
+<li><p>Designed to work with models that support binary, multi-class, or multi-label predictions.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="fit">
+<h2><code class="docutils literal notranslate"><span class="pre">fit()</span></code><a class="headerlink" href="#fit" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Fits the model to training data and, if applicable, tunes thresholds and performs early stopping. Allows feature selection and processing steps as part of the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – Training features.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – Training target labels.</p></li>
+<li><p><strong>validation_data</strong> (tuple of (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>), optional) – Tuple containing validation features and labels. Required for early stopping. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Optional scoring metric to guide the fitting process. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if invalid scoring metrics or parameters are provided.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method trains the model with support for both k-fold cross-validation and single train-validation-test workflows.</p></li>
+<li><p>If feature selection or preprocessing steps are configured, they are applied before fitting.</p></li>
+<li><p>For certain estimators, early stopping is supported when validation data is provided.</p></li>
+<li><p>The method dynamically sets model parameters based on tuning results for the specified or default scoring metric.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>With K-Fold Cross-Validation</strong>:</p></li>
+<li><p>Resets the estimator and fits the model using k-fold splits.</p></li>
+<li><p>If a scoring metric is provided, applies it to guide the cross-validation.</p></li>
+<li><p>Stores cross-validation results in the <cite>self.xval_output</cite> attribute.</p></li>
+<li><p><strong>Without K-Fold Cross-Validation</strong>:</p></li>
+<li><p>Resets the estimator and applies feature selection or preprocessing if configured.</p></li>
+<li><p>Fits the model on training data. If early stopping is enabled, uses validation data to monitor performance and stop training early.</p></li>
+</ul>
+</div></blockquote>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.kfold</span></code>: Indicates whether k-fold cross-validation is enabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code>: Stores tuned parameters for different scoring metrics.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.feature_selection</span></code>, <code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code>: Flags for feature selection and preprocessing steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.imbalance_sampler</span></code>: Specifies whether imbalance sampling is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.boost_early</span></code>: Enables early stopping during training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.estimator_name</span></code>: Name of the estimator in the pipeline.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Updates the class attribute <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> with the fitted model.</p></li>
+<li><p>For k-fold cross-validation, stores results in <code class="docutils literal notranslate"><span class="pre">self.xval_output</span></code>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Early stopping requires both validation features and labels.</p></li>
+<li><p>Feature selection and preprocessing steps are dynamically applied based on the pipeline configuration.</p></li>
+<li><p>When a custom scoring metric is specified, it must match one of the predefined or user-defined metrics.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="return-metrics">
+<h2><code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code><a class="headerlink" href="#return-metrics" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">return_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimal_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_per_fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Returns evaluation metrics with a confusion matrix and classification report, optionally using optimized classification thresholds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for evaluation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>optimal_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use the optimal threshold for predictions. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>model_metrics</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to calculate and print additional model metrics. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>print_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print the optimal threshold used in the evaluation. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>return_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to return the metrics as a dictionary. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>print_per_fold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print metrics for each fold during k-fold evaluation. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing evaluation metrics, confusion matrix, and feature selection results (if applicable), or nothing if <code class="docutils literal notranslate"><span class="pre">return_dict</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a>, optional</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if invalid data or configurations are provided.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – Raised if required scoring metrics or thresholds are missing.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method evaluates the model on a given dataset and provides detailed metrics, including:</p>
+<ul>
+<li><p>Confusion matrix.</p></li>
+<li><p>Classification report for classification models.</p></li>
+<li><p>Regression report for regression models.</p></li>
+</ul>
+</li>
+<li><p>Supports both single validation sets and k-fold cross-validation workflows.</p></li>
+<li><p>Optionally calculates metrics using an optimal threshold for classification models.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>For Classification Models</strong>:</p>
+<ul>
+<li><p>Computes and prints a confusion matrix, either for single-label or multi-label classification.</p></li>
+<li><p>Generates a classification report summarizing precision, recall, F1-score, and support.</p></li>
+<li><p>Optionally evaluates additional model metrics if <code class="docutils literal notranslate"><span class="pre">model_metrics</span></code> is enabled.</p></li>
+<li><p>Allows returning metrics as a dictionary when <code class="docutils literal notranslate"><span class="pre">return_dict</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>For Regression Models</strong>:</p>
+<ul>
+<li><p>Produces a regression report detailing performance metrics like RMSE, MAE, and R².</p></li>
+<li><p>Optionally identifies and returns the best-selected features if feature selection is enabled.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.kfold</span></code>: Indicates whether k-fold cross-validation is enabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.model_type</span></code>: Specifies whether the model is for regression or classification.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.multi_label</span></code>: Determines if multi-label classification is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.threshold</span></code>: Stores optimized classification thresholds.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.scoring</span></code>: List of scoring metrics used for evaluation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.class_labels</span></code>: Names of the classes for the classification report.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.labels</span></code>: Labels used for confusion matrix formatting.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints evaluation metrics, including confusion matrix and classification/regression reports.</p></li>
+<li><p>Optionally returns metrics and other results as a dictionary.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The method handles both single-label and multi-label classification tasks.</p></li>
+<li><p>For regression models, feature selection results can be included in the returned dictionary.</p></li>
+<li><p>Supports detailed per-fold metrics when k-fold cross-validation is enabled and <code class="docutils literal notranslate"><span class="pre">print_per_fold</span></code> is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="predict">
+<h2><code class="docutils literal notranslate"><span class="pre">predict()</span></code><a class="headerlink" href="#predict" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimal_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Makes predictions and predicts probabilities, allowing threshold tuning.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for prediction.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like, optional) – The true target labels, required only for k-fold predictions. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>optimal_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use an optimal classification threshold for predictions. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predicted class labels or predictions adjusted by the optimal threshold.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or array-like</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if invalid inputs or configurations are provided.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>Predicts target values for the input data.</p></li>
+<li><p>Supports both regression and classification tasks, with specific behavior for each:</p>
+<ul>
+<li><p>For regression: Direct predictions are returned, ignoring thresholds.</p></li>
+<li><p>For classification: Predictions are adjusted using an optimal threshold when enabled.</p></li>
+</ul>
+</li>
+<li><p>If k-fold cross-validation is active, performs predictions for each fold using <code class="docutils literal notranslate"><span class="pre">cross_val_predict</span></code>.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>With K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Returns predictions based on cross-validated folds.</p></li>
+</ul>
+</li>
+<li><p><strong>Without K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Uses the trained model’s <code class="docutils literal notranslate"><span class="pre">predict()</span></code> method.</p></li>
+<li><p>Applies the optimal threshold to adjust classification predictions, if specified.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Related Methods:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">predict_proba(X,</span> <span class="pre">y=None)</span></code>:</p>
+<ul>
+<li><p>Predicts probabilities for classification tasks.</p></li>
+<li><p>Supports k-fold cross-validation using <code class="docutils literal notranslate"><span class="pre">cross_val_predict</span></code> with the <code class="docutils literal notranslate"><span class="pre">method=&quot;predict_proba&quot;</span></code> option.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Optimal thresholding is useful for fine-tuning classification performance metrics such as F1-score or precision-recall balance.</p></li>
+<li><p>For classification, the threshold can be tuned for specific scoring metrics (e.g., ROC-AUC).</p></li>
+<li><p>Works seamlessly with pipelines or directly with the underlying model.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="grid-search-param-tuning">
+<h2><code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning()</span></code><a class="headerlink" href="#grid-search-param-tuning" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">grid_search_param_tuning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1_beta_tune</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[1,</span> <span class="pre">2]</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Performs grid or Bayesian search parameter tuning, optionally tuning F-beta score thresholds for classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for training and validation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>f1_beta_tune</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to tune F-beta score thresholds during parameter search. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>betas</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – List of beta values to use for F-beta score tuning. Default is <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the provided data or configurations are incompatible with parameter tuning.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – Raised if required scoring metrics are missing.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method tunes hyperparameters for a model using grid search or Bayesian optimization.</p></li>
+<li><p>Supports tuning F-beta thresholds for classification tasks.</p></li>
+<li><p>Can handle both k-fold cross-validation and single train-validation-test workflows.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>With K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Splits data into k folds using <code class="docutils literal notranslate"><span class="pre">kfold_split</span></code> and performs parameter tuning.</p></li>
+<li><p>Optionally tunes thresholds for F-beta scores on validation splits.</p></li>
+</ul>
+</li>
+<li><p><strong>Without K-Fold Cross-Validation</strong>:</p>
+<ul>
+<li><p>Performs a train-validation-test split using <code class="docutils literal notranslate"><span class="pre">train_val_test_split</span></code>.</p></li>
+<li><p>Applies preprocessing, feature selection, and imbalance sampling if configured.</p></li>
+<li><p>Tunes parameters and thresholds based on validation scores.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.kfold</span></code>: Indicates whether k-fold cross-validation is enabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.scoring</span></code>: List of scoring metrics used for evaluation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code>: Stores the best parameter set for each scoring metric.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.grid</span></code>: Parameter grid for tuning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.calibrate</span></code>: Specifies whether the model calibration is enabled.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.imbalance_sampler</span></code>: Indicates if imbalance sampling is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.feature_selection</span></code>: Specifies whether feature selection is applied.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.pipeline_steps</span></code>: Configuration for preprocessing steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.boost_early</span></code>: Enables early stopping during model training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.threshold</span></code>: Stores tuned thresholds for F-beta score optimization.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Updates the class attribute <code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code> with the best parameters and scores for each metric.</p></li>
+<li><p>Optionally updates <code class="docutils literal notranslate"><span class="pre">self.threshold</span></code> with tuned F-beta thresholds.</p></li>
+<li><p>Prints best parameters and scores if <code class="docutils literal notranslate"><span class="pre">self.display</span></code> is enabled.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Threshold tuning requires classification tasks and is not applicable for regression.</p></li>
+<li><p>Early stopping is supported if <code class="docutils literal notranslate"><span class="pre">self.boost_early</span></code> is enabled and validation data is provided.</p></li>
+<li><p>Works seamlessly with pipelines for preprocessing and feature selection.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="print-selected-best-features">
+<h2><code class="docutils literal notranslate"><span class="pre">print_selected_best_features()</span></code><a class="headerlink" href="#print-selected-best-features" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">print_selected_best_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Prints and returns the selected top K best features based on the feature selection step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix used during the feature selection process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of the selected features or column indices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.13)"><strong>AttributeError</strong></a> – Raised if the feature selection pipeline is not properly configured or trained.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method retrieves the top K features selected by the feature selection pipeline.</p></li>
+<li><p>Prints the names or column indices of the selected features to the console.</p></li>
+<li><p>Returns the selected features as a list.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>For DataFrames</strong>:</p>
+<ul>
+<li><p>Prints the names of the selected feature columns.</p></li>
+<li><p>Returns a list of column names corresponding to the selected features.</p></li>
+</ul>
+</li>
+<li><p><strong>For Array-like Data</strong>:</p>
+<ul>
+<li><p>Prints the indices of the selected feature columns.</p></li>
+<li><p>Returns a list of column indices.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.get_feature_selection_pipeline()</span></code>: Retrieves the feature selection pipeline used for selecting features.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints the selected features or indices to the console.</p></li>
+<li><p>Returns the selected features as a list.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Assumes that a feature selection pipeline has been configured and trained prior to calling this method.</p></li>
+<li><p>Designed to work with both <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and array-like structures for feature matrices.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="tune-threshold-fbeta">
+<h2><code class="docutils literal notranslate"><span class="pre">tune_threshold_Fbeta()</span></code><a class="headerlink" href="#tune-threshold-fbeta" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">tune_threshold_Fbeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_valid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_valid_proba</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kfold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Tunes classification threshold for optimal F-beta score, balancing precision and recall across various thresholds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A label or name for the score used to store the best threshold.</p></li>
+<li><p><strong>y_valid</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Ground truth (actual) labels for the validation dataset.</p></li>
+<li><p><strong>betas</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – A list of beta values to consider when calculating the F-beta score. Beta controls the balance between precision and recall.</p></li>
+<li><p><strong>y_valid_proba</strong> (<em>array-like</em><em> of </em><em>shape</em><em> (</em><em>n_samples</em><em>,</em><em>)</em>) – Predicted probabilities for the positive class in the validation dataset. Used to evaluate thresholds.</p></li>
+<li><p><strong>kfold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the best threshold for the given score. If False, updates the <code class="docutils literal notranslate"><span class="pre">threshold</span></code> attribute in place. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The best threshold for the given score if <code class="docutils literal notranslate"><span class="pre">kfold</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, otherwise returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a> or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if input arrays have mismatched dimensions or invalid beta values.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – Raised if invalid data types are passed for parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method identifies the optimal classification threshold for maximizing the F-beta score.</p></li>
+<li><p>The F-beta score balances precision and recall, with beta determining the relative weight of recall.</p></li>
+<li><p>Evaluates thresholds ranging from 0 to 1 (with a step size of 0.01) to find the best threshold for each beta value.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>Threshold Evaluation</strong>:</p>
+<ul>
+<li><p>For each threshold, computes binary predictions and evaluates the resulting F-beta score.</p></li>
+<li><p>Penalizes thresholds leading to undesirable outcomes, such as excessive false positives compared to true negatives.</p></li>
+</ul>
+</li>
+<li><p><strong>K-Fold Mode</strong>:</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">kfold=True</span></code>, returns the optimal threshold without modifying class attributes.</p></li>
+</ul>
+</li>
+<li><p><strong>Non K-Fold Mode</strong>:</p>
+<ul>
+<li><p>Updates the <code class="docutils literal notranslate"><span class="pre">self.threshold</span></code> attribute with the optimal threshold for the specified score.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.threshold</span></code>: Stores the optimal threshold for each scoring metric.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.beta</span></code>: Stores the beta value corresponding to the maximum F-beta score.</p></li>
+</ul>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li><p>The method iterates over thresholds and calculates F-beta scores for each beta value, identifying the best-performing threshold.</p></li>
+<li><p>Penalizes thresholds where false positives exceed true negatives to ensure practical performance.</p></li>
+<li><p>Designed to support models evaluated on binary classification tasks.</p></li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimal_threshold</span> <span class="o">=</span> <span class="n">tune_threshold_Fbeta</span><span class="p">(</span>
+    <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span>
+    <span class="n">y_valid</span><span class="o">=</span><span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">y_valid_proba</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="train-val-test-split">
+<h2><code class="docutils literal notranslate"><span class="pre">train_val_test_split()</span></code><a class="headerlink" href="#train-val-test-split" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">train_val_test_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify_cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Splits data into train, validation, and test sets, supporting stratification by specific columns or the target variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix to split.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>stratify_y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or None, optional) – Specifies whether to stratify based on the target variable. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>train_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to allocate to the training set. Default is <code class="docutils literal notranslate"><span class="pre">0.6</span></code>.</p></li>
+<li><p><strong>validation_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to allocate to the validation set. Default is <code class="docutils literal notranslate"><span class="pre">0.2</span></code>.</p></li>
+<li><p><strong>test_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Proportion of the data to allocate to the test set. Default is <code class="docutils literal notranslate"><span class="pre">0.2</span></code>.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility. Default is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p></li>
+<li><p><strong>stratify_cols</strong> (list, <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, or None, optional) – Columns to use for stratification, in addition to or instead of <code class="docutils literal notranslate"><span class="pre">y</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing train, validation, and test sets: (<code class="docutils literal notranslate"><span class="pre">X_train</span></code>, <code class="docutils literal notranslate"><span class="pre">X_valid</span></code>, <code class="docutils literal notranslate"><span class="pre">X_test</span></code>, <code class="docutils literal notranslate"><span class="pre">y_train</span></code>, <code class="docutils literal notranslate"><span class="pre">y_valid</span></code>, <code class="docutils literal notranslate"><span class="pre">y_test</span></code>).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple of (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>, <code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code>)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the sizes for train, validation, and test do not sum to 1.0 or if invalid stratification keys are provided.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This function splits data into three sets: train, validation, and test.</p></li>
+<li><p>Supports stratification based on the target variable (<code class="docutils literal notranslate"><span class="pre">y</span></code>) or specific columns (<code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code>).</p></li>
+<li><p>Ensures the proportions of the split sets are consistent with the specified <code class="docutils literal notranslate"><span class="pre">train_size</span></code>, <code class="docutils literal notranslate"><span class="pre">validation_size</span></code>, and <code class="docutils literal notranslate"><span class="pre">test_size</span></code>.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>Combines <code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> (if both are provided) to create a stratification key.</p></li>
+<li><p>Handles missing values in <code class="docutils literal notranslate"><span class="pre">stratify_cols</span></code> by filling with empty strings.</p></li>
+<li><p>Uses a two-step splitting approach:</p>
+<ol class="arabic simple">
+<li><p>Splits data into train and combined validation-test sets.</p></li>
+<li><p>Further splits the combined set into validation and test sets.</p></li>
+</ol>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p>Handles configurations for stratification and proportional splitting.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The sum of <code class="docutils literal notranslate"><span class="pre">train_size</span></code>, <code class="docutils literal notranslate"><span class="pre">validation_size</span></code>, and <code class="docutils literal notranslate"><span class="pre">test_size</span></code> must equal <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
+<li><p>Stratification ensures the distribution of classes or categories is preserved across splits.</p></li>
+<li><p>The function works seamlessly with both <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and array-like data structures.</p></li>
+</ul>
+</div>
+<p><strong>Example:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_valid</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_val_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+    <span class="n">stratify_y</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
+    <span class="n">train_size</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+    <span class="n">validation_size</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+    <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">stratify_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;category_column&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="get-best-score-params">
+<h2><code class="docutils literal notranslate"><span class="pre">get_best_score_params()</span></code><a class="headerlink" href="#get-best-score-params" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_best_score_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Retrieves the best hyperparameters for the model based on cross-validation scores for specified metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for training during hyperparameter tuning.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>. Updates the class attributes with the best parameters and scores.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if <code class="docutils literal notranslate"><span class="pre">self.grid</span></code> or <code class="docutils literal notranslate"><span class="pre">self.kf</span></code> is not properly configured.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – Raised if scoring metrics are missing or invalid.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method performs hyperparameter tuning using either grid search, randomized grid search, or Bayesian search.</p></li>
+<li><p>Identifies the best parameter set for each scoring metric specified in the class’s <code class="docutils literal notranslate"><span class="pre">scoring</span></code> attribute.</p></li>
+<li><p>Updates the class attributes with the best estimator and scores.</p></li>
+</ul>
+<p><strong>Supported Search Methods:</strong></p>
+<ul class="simple">
+<li><p><strong>Grid Search</strong>: Exhaustively searches over all parameter combinations.</p></li>
+<li><p><strong>Randomized Grid Search</strong>: Randomly samples a subset of parameter combinations.</p></li>
+<li><p><strong>Bayesian Search</strong>: Uses Bayesian optimization for hyperparameter tuning.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p><strong>Randomized Search</strong>:</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.randomized_grid</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, uses <code class="docutils literal notranslate"><span class="pre">`RandomizedSearchCV`</span></code> to perform hyperparameter tuning.</p></li>
+</ul>
+</li>
+<li><p><strong>Bayesian Search</strong>:</p>
+<ul>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.bayesian</span></code> is True, uses <code class="docutils literal notranslate"><span class="pre">BayesSearchCV</span></code> for Bayesian optimization.</p></li>
+<li><p>Removes any <code class="docutils literal notranslate"><span class="pre">bayes__</span></code> prefixed parameters from the grid and uses them as additional arguments for <code class="docutils literal notranslate"><span class="pre">BayesSearchCV</span></code>.</p></li>
+</ul>
+</li>
+<li><p><strong>Grid Search</strong>:</p>
+<ul>
+<li><p>Defaults to <code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code> if neither <code class="docutils literal notranslate"><span class="pre">randomized_grid</span></code> nor <code class="docutils literal notranslate"><span class="pre">bayesian</span></code> is enabled.</p></li>
+</ul>
+</li>
+<li><p>After fitting the model:</p>
+<ul>
+<li><p>Updates <code class="docutils literal notranslate"><span class="pre">self.estimator</span></code> and <code class="docutils literal notranslate"><span class="pre">self.test_model</span></code> with the best estimator.</p></li>
+<li><p>Stores the best parameters and score for each scoring metric in <code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Updated:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.estimator</span></code>: Updated with the best model after tuning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.test_model</span></code>: Updated with the same best model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.best_params_per_score</span></code>: A dictionary storing the best parameters and scores for each scoring metric.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints:</p>
+<ul>
+<li><p>The best parameter set and score for each metric.</p></li>
+<li><p>A summary of grid scores for all parameter combinations.</p></li>
+</ul>
+</li>
+<li><p>Updates class attributes with the tuning results.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Supports custom scoring metrics via <code class="docutils literal notranslate"><span class="pre">self.custom_scorer</span></code>.</p></li>
+<li><p>The method assumes <code class="docutils literal notranslate"><span class="pre">self.kf</span></code> is a valid cross-validator (e.g., <code class="docutils literal notranslate"><span class="pre">KFold</span></code> or <code class="docutils literal notranslate"><span class="pre">StratifiedKFold</span></code>) and <code class="docutils literal notranslate"><span class="pre">self.grid</span></code> is properly defined.</p></li>
+<li><p>Designed to work seamlessly with classification and regression models.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="conf-mat-class-kfold">
+<h2><code class="docutils literal notranslate"><span class="pre">conf_mat_class_kfold()</span></code><a class="headerlink" href="#conf-mat-class-kfold" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">conf_mat_class_kfold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generates and averages confusion matrices across k-folds, producing a combined classification report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for k-fold cross-validation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>test_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The model to be trained and evaluated on each fold.</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Optional scoring metric label for reporting purposes. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the averaged classification report and confusion matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the input data is incompatible with k-fold splitting.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method performs k-fold cross-validation to generate confusion matrices for each fold.</p></li>
+<li><p>Averages the confusion matrices across all folds and produces a combined classification report.</p></li>
+<li><p>Prints the averaged confusion matrix and classification report.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>For each fold in k-fold cross-validation:</p>
+<ol class="arabic simple">
+<li><p>Splits the data into training and testing subsets.</p></li>
+<li><p>Fits the <code class="docutils literal notranslate"><span class="pre">test_model</span></code> on the training subset.</p></li>
+<li><p>Predicts the target values for the testing subset.</p></li>
+<li><p>Computes the confusion matrix for the fold and appends it to a list.</p></li>
+</ol>
+</li>
+<li><p>Aggregates predictions and true labels across all folds.</p></li>
+<li><p>Averages the confusion matrices and generates an overall classification report.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints:</p>
+<ul>
+<li><p>The averaged confusion matrix across all folds.</p></li>
+<li><p>The overall classification report across all folds.</p></li>
+</ul>
+</li>
+<li><p>Returns:</p>
+<ul>
+<li><p>A dictionary containing:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Classification</span> <span class="pre">Report&quot;</span></code>: The averaged classification report as a dictionary.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;Confusion</span> <span class="pre">Matrix&quot;</span></code>: The averaged confusion matrix as a NumPy array.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Designed for classification tasks evaluated with k-fold cross-validation.</p></li>
+<li><p>Handles both <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and array-like structures for <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">score</span></code> is provided, it is included in the printed report headers.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="regression-report-kfold">
+<h2><code class="docutils literal notranslate"><span class="pre">regression_report_kfold()</span></code><a class="headerlink" href="#regression-report-kfold" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">regression_report_kfold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generates averaged regression metrics across k-folds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – The feature matrix for k-fold cross-validation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – The target vector corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>test_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The model to be trained and evaluated on each fold.</p></li>
+<li><p><strong>score</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Optional scoring metric label for reporting purposes. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing averaged regression metrics across all folds.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the input data is incompatible with k-fold splitting.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This method evaluates regression performance metrics using k-fold cross-validation.</p></li>
+<li><p>Trains the <code class="docutils literal notranslate"><span class="pre">test_model</span></code> on training splits and evaluates it on validation splits for each fold.</p></li>
+<li><p>Aggregates regression metrics from all folds and calculates their averages.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>For each fold in k-fold cross-validation:</p>
+<ol class="arabic simple">
+<li><p>Splits the data into training and testing subsets.</p></li>
+<li><p>Fits the <code class="docutils literal notranslate"><span class="pre">test_model</span></code> on the training subset.</p></li>
+<li><p>Predicts the target values for the testing subset.</p></li>
+<li><p>Computes regression metrics (e.g., RMSE, MAE, R²) and stores them.</p></li>
+</ol>
+</li>
+<li><p>Aggregates metrics across all folds and calculates their mean.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints:</p>
+<ul>
+<li><p>The averaged regression metrics across all folds.</p></li>
+</ul>
+</li>
+<li><p>Returns:</p>
+<ul>
+<li><p>A dictionary containing the averaged regression metrics.</p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Attributes Used:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.regression_report()</span></code>: Used to compute regression metrics for each fold.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Designed specifically for regression tasks evaluated with k-fold cross-validation.</p></li>
+<li><p>Handles both <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> and array-like structures for <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="regression-report">
+<h2><code class="docutils literal notranslate"><span class="pre">regression_report()</span></code><a class="headerlink" href="#regression-report" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">regression_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generates a regression report with metrics like Mean Absolute Error, R-squared, and Root Mean Squared Error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>array-like</em>) – Ground truth (actual) values for the target variable.</p></li>
+<li><p><strong>y_pred</strong> (<em>array-like</em>) – Predicted values for the target variable.</p></li>
+<li><p><strong>print_results</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print the regression metrics to the console. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing various regression metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if <code class="docutils literal notranslate"><span class="pre">y_true</span></code> and <code class="docutils literal notranslate"><span class="pre">y_pred</span></code> have mismatched dimensions.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>Computes common regression metrics to evaluate the performance of a regression model.</p></li>
+<li><p>Metrics include R², explained variance, mean absolute error (MAE), median absolute error, mean squared error (MSE), and root mean squared error (RMSE).</p></li>
+</ul>
+<p><strong>Metrics Computed:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">R²</span></code>: Coefficient of determination, indicating the proportion of variance in the dependent variable explained by the independent variable(s).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Explained</span> <span class="pre">Variance</span></code>: Measures the proportion of variance explained by the model.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Mean</span> <span class="pre">Absolute</span> <span class="pre">Error</span> <span class="pre">(MAE)</span></code>: Average of the absolute differences between actual and predicted values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Median</span> <span class="pre">Absolute</span> <span class="pre">Error</span></code>: Median of the absolute differences between actual and predicted values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Mean</span> <span class="pre">Squared</span> <span class="pre">Error</span> <span class="pre">(MSE)</span></code>: Average of the squared differences between actual and predicted values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Root</span> <span class="pre">Mean</span> <span class="pre">Squared</span> <span class="pre">Error</span> <span class="pre">(RMSE)</span></code>: Square root of the mean squared error.</p></li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul class="simple">
+<li><p>Computes all metrics and stores them in a dictionary.</p></li>
+<li><p>Optionally prints the metrics to the console, formatted for easy readability.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>Prints:</p>
+<ul>
+<li><p>A formatted list of regression metrics if <code class="docutils literal notranslate"><span class="pre">print_results=True</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Returns:</p>
+<ul>
+<li><p>A dictionary containing the computed metrics.</p></li>
+</ul>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>This method is designed for regression tasks and is not applicable to classification models.</p></li>
+<li><p>The returned dictionary can be used for further analysis or logging.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="report-model-metrics">
+<h2><code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code><a class="headerlink" href="#report-model-metrics" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">report_model_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_valid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_valid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_per_fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generate a DataFrame of model performance metrics, adapting to regression,
+binary classification, or multiclass classification problems.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p>Handles regression, binary classification, and multiclass classification tasks.</p></li>
+<li><p>Supports K-Fold cross-validation with optional metrics printing for individual folds.</p></li>
+<li><p>Adapts metrics calculation based on the model’s <code class="docutils literal notranslate"><span class="pre">model_type</span></code> attribute.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The trained model with the necessary attributes and methods for prediction,
+including <code class="docutils literal notranslate"><span class="pre">predict_proba</span></code> or <code class="docutils literal notranslate"><span class="pre">predict</span></code>, and attributes like <code class="docutils literal notranslate"><span class="pre">model_type</span></code>
+and <code class="docutils literal notranslate"><span class="pre">multi_label</span></code> (for multiclass classification).</p></li>
+<li><p><strong>X_valid</strong> (<em>pandas.DataFrame</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – Feature set used for validation. If performing K-Fold validation, this
+represents the entire dataset. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>y_valid</strong> (<em>pandas.Series</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – True labels for the validation dataset. If performing K-Fold validation,
+this corresponds to the entire dataset. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Classification threshold for binary classification models. Predictions
+above this threshold are classified as the positive class. Default is <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.</p></li>
+<li><p><strong>print_results</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to print the metrics report. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>print_per_fold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If performing K-Fold validation, specifies whether to print metrics
+for each fold. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pandas.DataFrame</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if the provided <code class="docutils literal notranslate"><span class="pre">model_type</span></code> is invalid or incompatible with the data.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.13)"><strong>AttributeError</strong></a> – Raised if the required attributes or methods are missing from the model.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.13)"><strong>TypeError</strong></a> – Raised for incorrect parameter types, such as non-numeric thresholds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A pandas DataFrame containing calculated performance metrics. The structure of the
+DataFrame depends on the model type:</p>
+<ul class="simple">
+<li><p><strong>Regression</strong>: Includes Mean Absolute Error (MAE), Mean Squared Error (MSE),
+Root Mean Squared Error (RMSE), R² Score, and Explained Variance.</p></li>
+<li><p><strong>Binary Classification</strong>: Includes Precision (PPV), Average Precision, Sensitivity,
+Specificity, AUC-ROC, and Brier Score.</p></li>
+<li><p><strong>Multiclass Classification</strong>: Includes Precision, Recall, and F1-Score for each class,
+along with weighted averages and accuracy.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>For regression models, standard regression metrics are calculated.</p></li>
+<li><p>For binary classification models, threshold-based metrics are computed using probabilities from <code class="docutils literal notranslate"><span class="pre">predict_proba</span></code>.</p></li>
+<li><p>For multiclass classification models, metrics are calculated for each class, along with weighted averages.</p></li>
+<li><p>K-Fold cross-validation aggregates metrics across folds, with an option to print results for each fold.</p></li>
+</ul>
+</div>
+<p><strong>Examples:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## Example for binary classification:</span>
+<span class="n">metrics_df</span> <span class="o">=</span> <span class="n">report_model_metrics</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_valid</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1">## Example for regression:</span>
+<span class="n">metrics_df</span> <span class="o">=</span> <span class="n">report_model_metrics</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_valid</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">=</span><span class="n">y_test</span><span class="p">)</span>
+
+<span class="c1">## Example for K-Fold validation:</span>
+<span class="n">metrics_df</span> <span class="o">=</span> <span class="n">report_model_metrics</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X_valid</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">y_valid</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">print_per_fold</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+<section id="helper-functions">
+<h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Link to this heading"></a></h1>
+<section id="kfold-split">
+<h2><code class="docutils literal notranslate"><span class="pre">kfold_split()</span></code><a class="headerlink" href="#kfold-split" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">kfold_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stratify</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['roc_auc']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Splits data using k-fold or stratified k-fold cross-validation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The classifier or model to be evaluated during cross-validation.</p></li>
+<li><p><strong>X</strong> (<em>pandas.DataFrame</em><em> or </em><em>array-like</em>) – Features dataset to split into k-folds.</p></li>
+<li><p><strong>y</strong> (<em>pandas.Series</em><em> or </em><em>array-like</em>) – Target dataset corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>stratify</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use stratified k-fold cross-validation. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, uses <code class="docutils literal notranslate"><span class="pre">StratifiedKFold</span></code>. Otherwise, uses <code class="docutils literal notranslate"><span class="pre">KFold</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>scoring</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Scoring metric(s) to evaluate during cross-validation. Default is <code class="docutils literal notranslate"><span class="pre">[&quot;roc_auc&quot;]</span></code>.</p></li>
+<li><p><strong>n_splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Number of splits/folds to create for cross-validation. Default is <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Random seed for reproducibility. Default is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">KFold</span></code> or <code class="docutils literal notranslate"><span class="pre">StratifiedKFold</span></code> cross-validator object based on the <code class="docutils literal notranslate"><span class="pre">stratify</span></code> parameter.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">sklearn.model_selection.KFold</span></code> or <code class="docutils literal notranslate"><span class="pre">sklearn.model_selection.StratifiedKFold</span></code></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if invalid parameters (e.g., negative <code class="docutils literal notranslate"><span class="pre">n_splits</span></code>) are provided.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">stratify=True</span></code> for datasets where maintaining the proportion of classes in each fold is important.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">stratify=False</span></code> for general k-fold splitting.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="get-cross-validate">
+<h2><code class="docutils literal notranslate"><span class="pre">get_cross_validate()</span></code><a class="headerlink" href="#get-cross-validate" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_cross_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">classifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['roc_auc']</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Performs cross-validation using the provided classifier, dataset, and cross-validation strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classifier</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><em>object</em></a>) – The classifier or model to be evaluated during cross-validation.</p></li>
+<li><p><strong>X</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code> or array-like) – Features dataset to use during cross-validation.</p></li>
+<li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">pandas.Series</span></code> or array-like) – Target dataset corresponding to <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></li>
+<li><p><strong>kf</strong> (<code class="docutils literal notranslate"><span class="pre">sklearn.model_selection.KFold</span></code> or <code class="docutils literal notranslate"><span class="pre">sklearn.model_selection.StratifiedKFold</span></code>) – Cross-validator object, such as <code class="docutils literal notranslate"><span class="pre">KFold</span></code> or <code class="docutils literal notranslate"><span class="pre">StratifiedKFold</span></code>, specifying the cross-validation strategy.</p></li>
+<li><p><strong>scoring</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Scoring metric(s) to evaluate during cross-validation. Default is <code class="docutils literal notranslate"><span class="pre">[&quot;roc_auc&quot;]</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A dictionary containing cross-validation results, including train and test scores for each fold.</p>
+<p><strong>Returned Dictionary Keys</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_score</span></code>: Test scores for each fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">train_score</span></code>: Training scores for each fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">estimator</span></code>: The estimator fitted on each fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit_time</span></code>: Time taken to fit the model on each fold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">score_time</span></code>: Time taken to score the model on each fold.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)">dict</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – Raised if invalid <code class="docutils literal notranslate"><span class="pre">kf</span></code> or <code class="docutils literal notranslate"><span class="pre">scoring</span></code> parameters are provided.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Supports multiple scoring metrics, which can be specified as a list (e.g., <code class="docutils literal notranslate"><span class="pre">[&quot;accuracy&quot;,</span> <span class="pre">&quot;roc_auc&quot;]</span></code>).</p></li>
+<li><p>Returns additional information such as train scores and estimators for further analysis.</p></li>
+<li><p>Ensure the classifier supports the metrics defined in the <code class="docutils literal notranslate"><span class="pre">scoring</span></code> parameter.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="confusion-matrix-print">
+<h2><code class="docutils literal notranslate"><span class="pre">_confusion_matrix_print()</span></code><a class="headerlink" href="#confusion-matrix-print" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">_confusion_matrix_print</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conf_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Prints the formatted confusion matrix for binary classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>conf_matrix</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em> or </em><em>array-like</em>) – The confusion matrix to print, typically a 2x2 numpy array or similar structure.</p></li>
+<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – A list of labels corresponding to the confusion matrix entries in the order <code class="docutils literal notranslate"><span class="pre">[TN,</span> <span class="pre">FP,</span> <span class="pre">FN,</span> <span class="pre">TP]</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>Formats and prints a binary classification confusion matrix with labeled cells for True Positive (TP), True Negative (TN), False Positive (FP), and False Negative (FN).</p></li>
+<li><p>Includes additional formatting to enhance readability, such as aligned columns and labeled rows.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>The function prints a structured table representation of the confusion matrix directly to the console.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="print-pipeline">
+<h2><code class="docutils literal notranslate"><span class="pre">print_pipeline()</span></code><a class="headerlink" href="#print-pipeline" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">print_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Displays an ASCII representation of the pipeline steps for visual clarity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pipeline</strong> (<code class="docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code> or object with a <code class="docutils literal notranslate"><span class="pre">steps</span></code> attribute) – The pipeline object containing different steps to display. Typically, a <code class="docutils literal notranslate"><span class="pre">sklearn.pipeline.Pipeline</span></code> object or similar structure.</p>
+</dd>
+</dl>
+<p><strong>Description:</strong></p>
+<ul class="simple">
+<li><p>This function iterates over the steps in a pipeline and displays each step in a visually formatted ASCII art representation.</p></li>
+<li><p>For each pipeline step:</p>
+<ul>
+<li><p>Displays the step name and its class name in a boxed format.</p></li>
+<li><p>Connects steps with vertical connectors (<cite>│</cite>) and arrows (<cite>▼</cite>) for clarity.</p></li>
+</ul>
+</li>
+<li><p>Dynamically adjusts box width based on the longest step name or class name to maintain alignment.</p></li>
+</ul>
+<p><strong>Output:</strong></p>
+<ul class="simple">
+<li><p>The function prints the pipeline structure directly to the console, providing an easy-to-read ASCII visualization.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>If the pipeline has no steps or lacks a <code class="docutils literal notranslate"><span class="pre">steps</span></code> attribute, the function prints a message: <code class="docutils literal notranslate"><span class="pre">&quot;No</span> <span class="pre">steps</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">pipeline!&quot;</span></code>.</p></li>
+<li><p>Designed for readability, especially in terminal environments.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
 </section>
 <section id="pipeline-management">
 <h1>Pipeline Management<a class="headerlink" href="#pipeline-management" title="Link to this heading"></a></h1>
@@ -1895,8 +3233,8 @@ weighted<span class="w"> </span>avg<span class="w">       </span><span class="m"
 <span class="w">        </span><span class="o">[</span><span class="w"> </span><span class="m">1</span>,<span class="w">  </span><span class="m">9</span><span class="o">]]])}</span>
 </pre></div>
 </div>
-<section id="report-model-metrics">
-<h4>Report Model Metrics<a class="headerlink" href="#report-model-metrics" title="Link to this heading"></a></h4>
+<section id="id5">
+<h4>Report Model Metrics<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <p>You can summarize and display the model’s performance metrics using the
 <code class="docutils literal notranslate"><span class="pre">report_model_metrics</span></code> function. This function computes key metrics like
 <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">precision, recall, F1-score, and ROC AUC</span></a> for each class, as well as macro and weighted averages.</p>
@@ -1984,7 +3322,7 @@ Predictions:
 </section>
 </section>
 <section id="regression">
-<span id="id5"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
+<span id="id6"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for a <strong>regression task</strong> with <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the <strong>California Housing dataset</strong>.</p>
 <p>The California Housing dataset, available in the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> library, is a commonly used benchmark dataset for regression problems. It contains features such as median income, housing age, and population, which are used to predict the median house value for California districts.</p>
 <p>In this example, we leverage the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class to:</p>
@@ -1996,8 +3334,8 @@ Predictions:
 <p>The workflow highlights how the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class simplifies regression tasks, including hyperparameter tuning, and performance evaluation.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
-<section id="id6">
-<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
@@ -2066,8 +3404,8 @@ tree construction, and generalization performance of the model.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls output display during training (set to <code class="docutils literal notranslate"><span class="pre">0</span></code> for silent mode).</p></li>
 </ol>
 </section>
-<section id="id7">
-<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<section id="id8">
+<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code> inherently handles missing values (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) without requiring explicit
 imputation strategies. During training, <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> treats missing values as a
 separate category and learns how to route them within its decision trees.
@@ -2190,8 +3528,8 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 </section>
 </section>
 </section>
-<section id="id8">
-<h1>Report Model Metrics<a class="headerlink" href="#id8" title="Link to this heading"></a></h1>
+<section id="id9">
+<h1>Report Model Metrics<a class="headerlink" href="#id9" title="Link to this heading"></a></h1>
 <section id="classification-report-optional">
 <h2>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h2>
 <p>A classification report is readily available at this stage, should you wish to
