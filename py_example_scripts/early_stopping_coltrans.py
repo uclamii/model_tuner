@@ -7,6 +7,12 @@ import seaborn as sns
 from sklearn.impute import SimpleImputer
 from model_tuner import Model
 from sklearn.pipeline import Pipeline
+import model_tuner
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 
 titanic = sns.load_dataset("titanic")

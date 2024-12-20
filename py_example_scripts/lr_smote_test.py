@@ -2,21 +2,25 @@ import pandas as pd
 import numpy as np
 import os
 import sys
+import model_tuner
 
 from sklearn.datasets import make_classification
 
 from sklearn.datasets import load_breast_cancer
 from imblearn.over_sampling import SMOTE
 
-from functions import *
-
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects
 from sklearn.linear_model import LogisticRegression
 
 
 from ucimlrepo import fetch_ucirepo
+
+print()
+print(f"Model Tuner version: {model_tuner.__version__}")
+print(f"Model Tuner authors: {model_tuner.__author__}")
+print()
 
 # fetch dataset
 aids_clinical_trials_group_study_175 = fetch_ucirepo(id=890)
@@ -120,11 +124,33 @@ X_valid, y_valid = model.get_valid_data(X, y)
 model.fit(X_train, y_train)
 
 print("Validation Metrics")
-model.return_metrics(X_valid, y_valid)
+model.return_metrics(
+    X_valid,
+    y_valid,
+    optimal_threshold=True,
+    print_threshold=True,
+    model_metrics=True,
+)
 print("Test Metrics")
-model.return_metrics(X_test, y_test)
+model.return_metrics(
+    X_test,
+    y_test,
+    optimal_threshold=True,
+    print_threshold=True,
+    model_metrics=True,
+)
 
 y_prob = model.predict_proba(X_test)
 
 ### F1 Weighted
 y_pred = model.predict(X_test, optimal_threshold=True)
+
+### Report Model Metrics
+
+model.return_metrics(
+    X_test,
+    y_test,
+    optimal_threshold=True,
+    print_threshold=True,
+    model_metrics=True,
+)
