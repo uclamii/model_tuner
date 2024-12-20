@@ -391,6 +391,36 @@ class Model:
         self.estimator = self.PipelineClass(self.pipeline_steps)
 
     def reset_estimator(self):
+        """
+        Resets the estimator to its original state, reinitializing the pipeline
+        with the configured steps or the original estimator.
+
+        This method is useful when modifications (e.g., hyperparameter tuning,
+        calibration) have altered the current estimator, and it needs to be
+        reverted to its initial configuration for retraining or evaluation.
+
+        Behavior:
+        ---------
+        - If `self.pipeline_steps` is defined, the method reinitializes the
+        estimator as a pipeline using the specified steps.
+        - If `self.pipeline_steps` is not defined, the method resets the estimator
+        to a basic pipeline containing only the original estimator.
+
+        Attributes Used:
+        ----------------
+        - `self.pipeline_steps`: A list of preprocessing or feature selection
+        steps for the pipeline. If defined, these are included in the reset pipeline.
+        - `self.PipelineClass`: The pipeline class (e.g., `sklearn.pipeline.Pipeline`)
+        used to construct the model.
+        - `self.original_estimator`: The original estimator before any modifications.
+        - `self.estimator_name`: The name of the estimator step in the pipeline.
+
+        Returns:
+        --------
+        None
+
+        """
+
         if self.pipeline_steps:
             self.estimator = self.PipelineClass(copy.deepcopy(self.pipeline_steps))
         else:
@@ -400,6 +430,44 @@ class Model:
         return
 
     def process_imbalance_sampler(self, X_train, y_train):
+        """
+        Applies imbalance sampling to the training data, optionally including
+        preprocessing steps if a pipeline is configured.
+
+        This method is used to handle class imbalance by resampling the training
+        data using a resampling technique (e.g., SMOTE, RandomUnderSampler).
+        Preprocessing steps, if defined in the pipeline, are applied prior to
+        resampling.
+
+        Parameters:
+        -----------
+        X_train : pandas.DataFrame or array-like
+            The training features.
+        y_train : pandas.Series or array-like
+            The training target labels.
+
+        Behavior:
+        ---------
+        - If `self.pipeline_steps` is defined, preprocessing (e.g., scaling,
+        imputation) is applied to `X_train` before resampling.
+        - The resampler is cloned from the `resampler` step in the pipeline and
+        is used to fit and resample the transformed data.
+        - The method prints the distribution of the target labels (`y_res`)
+        after resampling.
+
+        Attributes Used:
+        ----------------
+        - `self.pipeline_steps`: A list of preprocessing or feature selection
+            steps for the pipeline.
+        - `self.get_preprocessing_pipeline()`: Retrieves the preprocessing pipeline.
+        - `self.estimator.named_steps["resampler"]`: The resampler used for
+        imbalance correction.
+
+        Returns:
+        --------
+        None
+
+        """
 
         ####  Preprocessor, Resampler, rfe, Estimator
 
@@ -424,6 +492,54 @@ class Model:
         print()
 
     def calibrateModel(self, X, y, score=None):
+        """
+        Calibrates the model to improve probability estimates, with support for
+        k-fold cross-validation and prefit workflows. This method adjusts the
+        model's predicted probabilities to align better with observed outcomes,
+        using specified calibration techniques (e.g., Platt scaling or isotonic
+        regression).
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature dataset for calibration.
+        y : pandas.Series or array-like
+            The target dataset for calibration.
+        score : str or list of str, optional (default=None)
+            The scoring metric(s) to guide calibration. If None, the first scoring
+            metric from `self.scoring` is used. For k-fold workflows, calibration
+            is performed for each specified score.
+
+        Behavior:
+        ---------
+        - **With K-Fold Cross-Validation**:
+            - Resets the estimator for calibration.
+            - Fits the model on the entire dataset using the best parameters found
+            for the selected score(s).
+            - Uses `CalibratedClassifierCV` to calibrate the model and evaluates
+            performance using confusion matrices and classification reports.
+        - **Without K-Fold Cross-Validation**:
+            - Splits the data into train, validation, and test sets.
+            - Applies preprocessing and resampling steps (if configured).
+            - Fits the model using the best parameters for the selected score.
+            - Calibrates the model using validation data and evaluates performance
+            using a calibration report.
+
+        Attributes Used:
+        ----------------
+        - `self.kfold`: Boolean indicating whether k-fold cross-validation is used.
+        - `self.calibrate`: Boolean indicating whether to perform calibration.
+        - `self.best_params_per_score`: A dictionary containing the best parameters
+        for each scoring metric.
+        - `self.calibration_method`: The calibration method to use
+        (e.g., 'sigmoid' or 'isotonic').
+        - `self.process_imbalance_sampler`: Handles class imbalance if configured.
+
+        Returns:
+        --------
+        None
+        """
+
         if self.kfold:
             if score == None:
                 if self.calibrate:
@@ -573,6 +689,10 @@ class Model:
 
         return
 
+    ############################################################################
+    ##  These functions return subsets of the dataset (features and labels)   ##
+    ##  based on predefined indices stored in the class attributes            ##
+    ############################################################################
     def get_train_data(self, X, y):
         return X.loc[self.X_train_index], y.loc[self.y_train_index]
 
@@ -582,7 +702,33 @@ class Model:
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
 
+    ############################################################################
+
     def calibrate_report(self, X, y, score=None):
+        """
+        Generates and prints a calibration report, including a confusion matrix
+        and classification report, for the given dataset.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature dataset for evaluation.
+        y : pandas.Series or array-like
+            The target dataset for evaluation.
+        score : str, optional (default=None)
+            The scoring metric used for calibration reporting.
+
+        Behavior:
+        ---------
+        - Predicts target values using the model on the provided dataset.
+        - Computes the confusion matrix and displays it with labels.
+        - Generates a classification report summarizing key performance metrics.
+
+        Returns:
+        --------
+        None
+        """
+
         y_pred_valid = self.predict(X, optimal_threshold=False)
         if self.multi_label:
             conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
@@ -599,6 +745,40 @@ class Model:
         print("-" * 80)
 
     def fit(self, X, y, validation_data=None, score=None):
+        """
+        Trains the model using the best hyperparameters obtained from tuning
+        and optionally supports k-fold cross-validation and early stopping.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            Training feature dataset.
+        y : pandas.Series or array-like
+            Training target dataset.
+        validation_data : tuple, optional (default=None)
+            A tuple containing validation feature and target datasets
+            (X_valid, y_valid). Required for early stopping.
+        score : str, optional (default=None)
+            The scoring metric to optimize during training. If None, the default
+            scoring metric from the class is used.
+
+        Behavior:
+        ---------
+        - If k-fold cross-validation is enabled (`self.kfold`):
+        - Resets the estimator and fits the model using the specified metric.
+        - Stores cross-validation results in `self.xval_output`.
+        - If k-fold cross-validation is disabled:
+        - Applies preprocessing and feature selection pipelines (if configured).
+        - Fits the model using the best hyperparameters for the specified or
+            default scoring metric.
+        - Supports early stopping if `validation_data` is provided.
+        - Handles imbalanced sampling if `self.imbalance_sampler` is configured.
+
+        Returns:
+        --------
+        None
+        """
+
         self.reset_estimator()
         if self.kfold:
             if score == None:
@@ -783,7 +963,8 @@ class Model:
                         ).fit(X, y)
                     except ValueError as error:
                         print(
-                            "Specified score not found in scoring dictionary. Please use a score that was parsed for tuning."
+                            "Specified score not found in scoring dictionary. "
+                            "Please use a score that was parsed for tuning."
                         )
                         raise error
 
@@ -799,12 +980,55 @@ class Model:
         n_samples=500,
         balance=False,
     ):
+        """
+        Evaluates bootstrap metrics for a trained model using
+        the test dataset. This function supports both
+        classification and regression tasks by leveraging
+        evaluate_bootstrap_metrics to compute confidence
+        intervals for the specified metrics.
+
+        Parameters:
+        -----------
+        X_test : pandas.DataFrame
+            Test dataset features.
+        y_test : pandas.Series or pandas.DataFrame
+            Test dataset labels.
+        metrics : list of str
+            List of metric names to calculate (e.g., "roc_auc",
+            "f1_weighted").
+        threshold : float, optional
+            Threshold for converting predicted probabilities
+            into class predictions. Default is 0.5.
+        num_resamples : int, optional
+            Number of bootstrap iterations. Default is 500.
+        n_samples : int, optional
+            Number of samples per bootstrap iteration.
+            Default is 500.
+        balance : bool, optional
+            Whether to balance the class distribution during
+            resampling. Default is False.
+
+        Returns:
+        --------
+        pandas.DataFrame
+            DataFrame containing mean and confidence intervals
+            for the specified metrics.
+
+        Raises:
+        -------
+        ValueError
+            If X_test or y_test are not provided as Pandas
+            DataFrames or if unsupported input types are
+            specified.
+        """
+
         # Custom type check for X_test and y_test
         if not isinstance(X_test, pd.DataFrame) or not isinstance(
             y_test, (pd.Series, pd.DataFrame)
         ):
             raise ValueError(
-                "Specifying X_test and/or y_test as anything other than pandas DataFrames is not supported."
+                "Specifying X_test and/or y_test as anything other "
+                "than pandas DataFrames is not supported."
             )
 
         if self.model_type != "regression":
@@ -869,27 +1093,28 @@ class Model:
         Returns:
         --------
         dict, optional
-            Returns a dictionary containing performance metrics if `return_dict=True`.
-            The dictionary structure depends on the model type(classification or regression):
-            - For classification:
-            {
-                "Classification Report": str,
-                "Confusion Matrix": array,
-                "Best Features": list (if feature selection is enabled),
-            }
-            - For regression:
-            {
-                "Regression Report": dict,
-                "Best Features": list (if feature selection is enabled),
-            }
+            Returns a dictionary containing performance metrics if
+            `return_dict=True`. The dictionary structure depends on the model
+            type(classification or regression):
+                - For classification:
+                    {
+                        "Classification Report": str,
+                        "Confusion Matrix": array,
+                        "Best Features": list (if feature selection is enabled),
+                    }
+                - For regression:
+                    {
+                        "Regression Report": dict,
+                        "Best Features": list (if feature selection is enabled),
+                    }
         None
             If `return_dict=False`, the function prints metrics and does not
             return anything.
 
         Notes:
         ------
-        - For classification models, confusion matrices and classification reports
-        are printed and optionally included in the returned dictionary.
+        - For classification models, confusion matrices and classification
+        reports are printed and optionally included in the returned dictionary.
         - For regression models, regression metrics are printed and optionally
         returned.
         - If cross-validation (`self.kfold`) is enabled, metrics are calculated
@@ -1022,6 +1247,28 @@ class Model:
                 print()
 
     def predict(self, X, y=None, optimal_threshold=False):
+        """
+        Makes predictions and predicts probabilities, allowing
+        threshold tuning.
+
+        Parameters:
+        -----------
+        X : The feature matrix for prediction.
+        y : The true target labels, required only for k-fold predictions.
+            Default is None.
+        optimal_threshold : Whether to use an optimal classification threshold
+                            for predictions. Default is False.
+
+        Returns:
+        --------
+        Predicted class labels or predictions adjusted by the optimal threshold.
+
+        Raises:
+        -------
+        ValueError
+            Raised if invalid inputs or configurations are provided.
+        """
+
         if self.model_type == "regression":
             optimal_threshold = False
         if self.kfold and y is not None:
@@ -1038,6 +1285,27 @@ class Model:
                 return self.estimator.predict(X)
 
     def predict_proba(self, X, y=None):
+        """
+        Predicts class probabilities for the input data.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like. The feature matrix for prediction.
+        y : pandas.Series or array-like, optional. The true target labels,
+            required only for k-fold predictions. Default is None.
+
+        Returns:
+        --------
+        numpy.ndarray or array-like. Predicted probabilities for each class.
+
+        Notes:
+        ------
+        - If `self.kfold` is True and `y` is provided, cross-validated
+        probabilities are computed using the specified estimator.
+        - If k-fold validation is not enabled, probabilities are predicted
+        using the fitted estimator.
+        """
+
         if self.kfold and y is not None:
             return cross_val_predict(
                 self.estimator, X, y, cv=self.kf, method="predict_proba"
@@ -1052,6 +1320,69 @@ class Model:
         f1_beta_tune=False,
         betas=[1, 2],
     ):
+        """
+        Performs grid or Bayesian search parameter tuning, optionally
+        tuning F-beta score thresholds for classification tasks.
+
+        Parameters:
+        -----------
+        X : The feature matrix for training and validation.
+        y : The target vector corresponding to `X`.
+        f1_beta_tune : Whether to tune F-beta score thresholds during parameter
+                       tuning. Default is False.
+        betas : List of beta values to use for F-beta score tuning.Default is [1, 2].
+
+        Raises:
+        -------
+        ValueError
+            Raised if invalid data or configurations are provided.
+
+        KeyError
+            Raised if required scoring metrics are missing.
+
+        Description:
+        ------------
+        - Tunes hyperparameters for a model using grid search or Bayesian
+        optimization.
+        - Supports tuning F-beta thresholds for classification tasks.
+        - Can handle both k-fold cross-validation and train-validation-test
+        workflows.
+
+        Behavior:
+        ---------
+        With K-Fold Cross-Validation:
+            - Splits data into k folds using `kfold_split` and performs
+            parameter tuning.
+            - Optionally tunes thresholds for F-beta scores on validation
+            splits.
+
+        Without K-Fold Cross-Validation:
+            - Performs a train-validation-test split using `train_val_test_split`.
+            - Applies preprocessing, feature selection, and imbalance
+            sampling if configured.
+            - Tunes parameters and thresholds based on validation scores.
+
+        Attributes Used:
+        ----------------
+        - self.kfold : Indicates whether k-fold cross-validation is enabled.
+        - self.scoring : List of scoring metrics used for evaluation.
+        - self.best_params_per_score : Stores the best parameter set for each
+        scoring metric.
+        - self.grid : Parameter grid for tuning.
+        - self.calibrate : Specifies whether model calibration is enabled.
+        - self.imbalance_sampler : Indicates if imbalance sampling is applied.
+        - self.feature_selection : Specifies whether feature selection is applied.
+        - self.pipeline_steps : Configuration for preprocessing steps.
+        - self.boost_early : Enables early stopping during model training.
+        - self.threshold : Stores tuned thresholds for F-beta score optimization.
+
+        Output:
+        -------
+        - Updates `self.best_params_per_score` with the best parameters and
+        scores for each metric.
+        - Optionally updates `self.threshold` with tuned F-beta thresholds.
+        - Prints the best parameters and scores if `self.display` is enabled.
+        """
 
         if self.display:
             print_pipeline(self.estimator)
@@ -1216,7 +1547,8 @@ class Model:
                             self.estimator_name
                         ].get_params()
 
-                        ### updating the params in the param grid with these updated parameters
+                        ### updating the params in the param grid with these
+                        ### updated parameters
                         for (
                             param_name,
                             param_value,
@@ -1274,6 +1606,48 @@ class Model:
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
     def print_selected_best_features(self, X):
+        """
+        Prints and returns the selected top K best features based on the feature
+        selection step.
+
+        Parameters:
+        -----------
+        X : The feature matrix used during the feature selection process.
+
+        Returns:
+        --------
+            A list of the selected features or column indices.
+
+        Raises:
+        -------
+        AttributeError
+            Raised if the feature selection pipeline is not properly
+            configured or trained.
+
+        Description:
+        ------------
+        - Retrieves the top K features selected by the feature
+        selection pipeline.
+        - Prints the names or column indices of the selected
+        features to the console.
+        - Returns the selected features as a list.
+
+        Behavior:
+        ---------
+        For DataFrames:
+            - Prints the names of the selected feature columns.
+            - Returns a list of column names corresponding to the
+            selected features.
+
+        For Array-like Data:
+            - Prints the indices of the selected feature columns.
+            - Returns a list of column indices.
+
+        Attributes Used:
+        ----------------
+        - self.get_feature_selection_pipeline() : Retrieves the
+        feature selection pipeline used for selecting features.
+        """
 
         feat_select_pipeline = self.get_feature_selection_pipeline()
         feat_select_pipeline = feat_select_pipeline[0]
@@ -1389,6 +1763,56 @@ class Model:
             return
 
     def get_best_score_params(self, X, y):
+        """
+        Tunes hyperparameters for the model based on specified scoring metrics
+        and updates the best parameters and scores for each metric.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix used for hyperparameter tuning.
+
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the grid or scoring metrics are invalid.
+
+        Description:
+        ------------
+        - This method performs hyperparameter tuning using grid search,
+        randomized search, or Bayesian search based on the class
+        configuration.
+        - Supports multiple scoring metrics and stores the best
+        parameters and scores for each.
+
+        Behavior:
+        ---------
+        - For each scoring metric:
+            - Initializes a search method (GridSearchCV, RandomizedSearchCV,
+            or BayesSearchCV) based on the configuration.
+            - Fits the model to the provided data.
+            - Updates the best parameters and scores for the metric.
+        - If `self.display` is True:
+            - Prints the best parameters and score for each scoring metric.
+            - Displays grid scores on the development set.
+
+        Attributes Used:
+        ----------------
+        - self.scoring : List of scoring metrics for evaluation.
+        - self.grid : Hyperparameter search grid.
+        - self.kf : Cross-validation splitting strategy.
+        - self.randomized_grid : Boolean flag for randomized search.
+        - self.bayesian : Boolean flag for Bayesian search.
+        - self.custom_scorer : Custom scoring functions.
+        - self.best_params_per_score : Dictionary to store the best parameters
+          and scores for each metric.
+        - self.estimator : The model being tuned.
+        - self.test_model : The best model after tuning.
+
+        """
 
         for score in self.scoring:
 
@@ -1569,6 +1993,55 @@ class Model:
                     print("*" * 80)
 
     def conf_mat_class_kfold(self, X, y, test_model, score=None):
+        """
+        Generates and averages confusion matrices across k-folds, producing
+        a combined classification report.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix for k-fold cross-validation.
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+        test_model : object
+            The model to be trained and evaluated on each fold.
+        score : str, optional
+            Optional scoring metric label for reporting purposes.
+            Default is None.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing the averaged classification report and
+            confusion matrix:
+            - "Classification Report": The averaged classification report as a
+            dictionary.
+            - "Confusion Matrix": The averaged confusion matrix as a NumPy array.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the input data is incompatible with k-fold splitting.
+
+        Description:
+        ------------
+        - This method performs k-fold cross-validation to generate confusion
+        matrices for each fold.
+        - Averages the confusion matrices across all folds and produces a
+        combinedclassification report.
+        - Prints the averaged confusion matrix and classification report.
+
+        Behavior:
+        ---------
+        For each fold in k-fold cross-validation:
+            1. Splits the data into training and testing subsets.
+            2. Fits the `test_model` on the training subset.
+            3. Predicts the target values for the testing subset.
+            4. Computes the confusion matrix for the fold and appends it to a list.
+        - Aggregates predictions and true labels across all folds.
+        - Averages the confusion matrices and generates an overall classification
+        report.
+        """
 
         aggregated_true_labels = []
         aggregated_predictions = []
@@ -1626,6 +2099,55 @@ class Model:
         }
 
     def regression_report_kfold(self, X, y, test_model, score=None):
+        """
+        Generates and averages confusion matrices across k-folds, producing
+        a combined classification report.
+
+        Parameters:
+        -----------
+        X : pandas.DataFrame or array-like
+            The feature matrix for k-fold cross-validation.
+        y : pandas.Series or array-like
+            The target vector corresponding to `X`.
+        test_model : object
+            The model to be trained and evaluated on each fold.
+        score : str, optional
+            Optional scoring metric label for reporting purposes.
+            Default is None.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing the averaged classification report and
+            confusion matrix:
+            - "Classification Report": The averaged classification report as a
+            dictionary.
+            - "Confusion Matrix": The averaged confusion matrix as a NumPy array.
+
+        Raises:
+        -------
+        ValueError
+            Raised if the input data is incompatible with k-fold splitting.
+
+        Description:
+        ------------
+        - This method performs k-fold cross-validation to generate confusion
+        matrices for each fold.
+        - Averages the confusion matrices across all folds and produces a
+        combined classification report.
+        - Prints the averaged confusion matrix and classification report.
+
+        Behavior:
+        ---------
+        For each fold in k-fold cross-validation:
+            1. Splits the data into training and testing subsets.
+            2. Fits the `test_model` on the training subset.
+            3. Predicts the target values for the testing subset.
+            4. Computes the confusion matrix for the fold and appends it to a list.
+        - Aggregates predictions and true labels across all folds.
+        - Averages the confusion matrices and generates an overall classification
+        report.
+        """
 
         aggregated_pred_list = []
 
@@ -1682,6 +2204,30 @@ class Model:
         return reg_dict
 
     def _confusion_matrix_print_ML(self, conf_matrix_list):
+        """
+        Prints a formatted confusion matrix for multi-label classification.
+
+        Parameters:
+        -----------
+        conf_matrix_list : list of numpy.ndarray
+            A list of confusion matrices, one for each label or class.
+
+        Description:
+        ------------
+        - This method iterates over a list of confusion matrices, printing each
+        in a formatted table with clear labeling.
+        - Assumes binary classification for each label (e.g., Positive vs. Negative).
+        - Includes class labels and column/row names for readability.
+
+        Behavior:
+        ---------
+        - For each confusion matrix in the list:
+            1. Prints a header with the class label and "Predicted" label.
+            2. Formats and prints the confusion matrix, showing actual vs. predicted
+            values for Positive (Pos) and Negative (Neg) cases.
+            3. Displays the labels for each cell of the matrix for clarity.
+        """
+
         border = "-" * 80
         print(border)
         for i, conf_matrix in enumerate(conf_matrix_list):
@@ -1714,6 +2260,75 @@ def train_val_test_split(
     random_state=3,
     stratify_cols=None,
 ):
+    """
+    Splits data into train, validation, and test sets, supporting stratification
+    by specific columns or the target variable.
+
+    Parameters:
+    -----------
+    X : pandas.DataFrame or array-like
+        The feature matrix to split.
+    y : pandas.Series or array-like
+        The target vector corresponding to `X`.
+    stratify_y : pandas.Series or None, optional
+        Specifies whether to stratify based on the target variable.
+        Default is None.
+    train_size : float, optional
+        Proportion of the data to allocate to the training set.
+        Default is 0.6.
+    validation_size : float, optional
+        Proportion of the data to allocate to the validation set.
+        Default is 0.2.
+    test_size : float, optional
+        Proportion of the data to allocate to the test set.
+        Default is 0.2.
+    random_state : int, optional
+        Random seed for reproducibility. Default is 3.
+    stratify_cols : list, pandas.DataFrame, or None, optional
+        Columns to use for stratification, in addition to or instead of `y`.
+        Default is None.
+
+    Returns:
+    --------
+    tuple of (pandas.DataFrame, pandas.Series)
+        A tuple containing train, validation, and test sets:
+        (`X_train`, `X_valid`, `X_test`, `y_train`, `y_valid`, `y_test`).
+
+    Raises:
+    -------
+    ValueError
+        Raised if the sizes for train, validation, and test do not sum to 1.0
+        or if invalid stratification keys are provided.
+
+    Description:
+    ------------
+    - Splits data into three sets: train, validation, and test.
+    - Supports stratification based on the target variable (`y`) or specific
+      columns (`stratify_cols`).
+    - Ensures the proportions of the split sets are consistent with the
+      specified `train_size`, `validation_size`, and `test_size`.
+
+    Behavior:
+    ---------
+    - Combines `stratify_cols` and `y` (if both are provided) to create a
+      stratification key.
+    - Handles missing values in `stratify_cols` by filling with empty strings.
+    - Uses a two-step splitting approach:
+        1. Splits data into train and combined validation-test sets.
+        2. Further splits the combined set into validation and test sets.
+
+    Attributes Used:
+    ----------------
+    - Handles configurations for stratification and proportional splitting.
+
+    Notes:
+    ------
+    - The sum of `train_size`, `validation_size`, and `test_size` must equal 1.0.
+    - Stratification ensures the distribution of classes or categories is
+      preserved across splits.
+    - The function works seamlessly with both `pandas.DataFrame` and array-like
+      data structures.
+    """
 
     # Standardize stratification parameters
     if stratify_y is False:
@@ -1804,6 +2419,16 @@ def kfold_split(
 
 
 def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
+    """
+    :param classifier: Machine learning model or pipeline to evaluate.
+    :param X: Feature matrix (pandas.DataFrame or array-like).
+    :param y: Target vector (pandas.Series or array-like).
+    :param kf: Cross-validation splitting strategy.
+    :param scoring: List of scoring metrics. Default = ["roc_auc"].
+
+    :return: Cross-validation results including training scores, validation
+             scores, and fitted estimators.
+    """
     return cross_validate(
         classifier,
         X,
@@ -1816,6 +2441,12 @@ def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
 
 
 def _confusion_matrix_print(conf_matrix, labels):
+    """
+    :param conf_matrix: Confusion matrix as a 2x2 NumPy array.
+    :param labels: List of labels for the matrix cells.
+
+    :return: Prints a formatted confusion matrix.
+    """
     max_length = max(len(str(conf_matrix.max())), 2)
     border = "-" * 80
     print(border)
