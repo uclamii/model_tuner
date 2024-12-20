@@ -412,7 +412,7 @@ class Model:
             )
         return
 
-    def process_imbalance_sampler(self, X_train, y_train):
+    def verify_imbalance_sampler(self, X_train, y_train):
         """
         Applies imbalance sampling to the training data, optionally including
         preprocessing steps if a pipeline is configured.
@@ -550,7 +550,7 @@ class Model:
                     # fit estimator
 
                     if self.imbalance_sampler:
-                        self.process_imbalance_sampler(X_train, y_train)
+                        self.verify_imbalance_sampler(X_train, y_train)
 
                     if self.boost_early:
                         self.fit(X_train, y_train, validation_data=[X_valid, y_valid])
@@ -601,7 +601,7 @@ class Model:
 
                     # fit estimator
                     if self.imbalance_sampler:
-                        self.process_imbalance_sampler(X_train, y_train)
+                        self.verify_imbalance_sampler(X_train, y_train)
 
                     # fit model
                     self.fit(
@@ -1359,7 +1359,7 @@ class Model:
                 self.y_test_index = y_test.index.to_list()
 
             if self.imbalance_sampler:
-                self.process_imbalance_sampler(X_train, y_train)
+                self.verify_imbalance_sampler(X_train, y_train)
 
             ## casting the ParameterGrid Object to a list so that we can update
             ## update the hyperparameters in both random grid and non random grid
