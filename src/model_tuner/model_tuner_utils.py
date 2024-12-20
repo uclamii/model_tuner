@@ -1169,6 +1169,7 @@ class Model:
         if print_threshold:
             if self.model_type != "regression":
                 print(f"Optimal threshold used: {threshold}")
+                print()
             else:
                 print()
 
