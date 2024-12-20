@@ -462,6 +462,8 @@ Traditional accuracy is a misleading metric in imbalanced datasets. For example,
 only the majority class can achieve high accuracy despite failing to identify any minority class instances. 
 Instead, alternative metrics should be used:
 
+.. _Precision:
+
 - **Precision** for the minority class:
 
    Measures the proportion of correctly predicted minority class instances out of all 
@@ -471,6 +473,8 @@ Instead, alternative metrics should be used:
 
       \text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}
 
+.. _Recall:
+
 - **Recall** for the minority class:
 
    Measures the proportion of correctly predicted minority class instances out of all actual 
@@ -479,6 +483,8 @@ Instead, alternative metrics should be used:
   .. math::
 
       \text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}
+
+.. _F1_Score:
 
 - **F1-Score**, the harmonic mean of precision and recall:
 
@@ -620,6 +626,64 @@ Mitigating the Caveats
 - **Apply with Feature Engineering**: Ensure the feature space is meaningful and represents the underlying data structure.  
 
 - **Tune Oversampling Ratio**: Avoid generating excessive synthetic samples to reduce overfitting.
+
+
+.. _Threshold_Tuning_Considerations:
+
+Threshold Tuning Considerations
+-----------------------------------
+
+**Mathematical Basis**:
+
+In binary classification, the decision rule is represented as:
+
+.. math::
+
+   \hat{y} =
+   \begin{cases} 
+      1 & \text{if } P(\text{positive class} \mid X) > \tau \\
+      0 & \text{otherwise}
+   \end{cases}
+
+Here:
+
+- :math:`P(\text{positive class} \mid X)` is the predicted probability of the positive class given features :math:`X`.
+- :math:`\tau` is the threshold value, which determines the decision boundary.
+
+By default, :math:`\tau = 0.5`, but this may not always align with the desired balance between precision and recall.
+
+The Precision-Recall Tradeoff
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When tuning the threshold :math:`\tau`, it is important to recognize its impact on precision and recall:
+
+- :ref:`Precision <Precision>` increases as :math:`\tau` increases, since the model becomes more conservative in predicting the positive class, reducing false positives.
+
+- :ref:`Recall <Recall>` decreases as :math:`\tau` increases, as the model's stricter criteria result in more false negatives.
+
+This tradeoff is especially critical in domains where false positives or false negatives have significantly different costs, such as:
+
+- Medical diagnostics: Emphasize recall to minimize false negatives.
+- Spam detection: Emphasize precision to reduce false positives.
+
+Threshold Optimization
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Adjusting the threshold based solely on a single metric (e.g., maximizing precision) may lead to suboptimal performance in other metrics. For example:
+
+- Increasing :math:`\tau` to improve precision might drastically reduce recall.
+- Decreasing :math:`\tau` to maximize recall might result in an unacceptably high false positive rate.
+
+A balanced metric like the F-beta score can address this tradeoff:
+
+.. math::
+   F_\beta = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{(\beta^2 \cdot \text{Precision}) + \text{Recall}}
+
+Here, :math:`\beta` adjusts the weight given to recall relative to precision:
+
+- :math:`\beta > 1`: Recall is prioritized.
+- :math:`\beta < 1`: Precision is prioritized.
+
 
 .. _elastic_net:
 
