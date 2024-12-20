@@ -961,7 +961,9 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(self, X, y, threshold, print_per_fold)
+                        report_model_metrics(
+                            self, X, y, threshold, True, print_per_fold
+                        )
                     print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
