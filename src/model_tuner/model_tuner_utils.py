@@ -1133,7 +1133,6 @@ class Model:
                     classification_report(
                         y,
                         y_pred_valid,
-                        output_dict=True,
                         target_names=self.class_labels,
                     )
                 )
