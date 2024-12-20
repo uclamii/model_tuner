@@ -16,7 +16,6 @@ dependencies = [
     "tqdm==4.66.4",
     "catboost==1.2.7",
 
-    "pip==24.0; python_version == '3.7'",
     "numpy==1.21.4; python_version == '3.7'",
     "pandas==1.1.5; python_version == '3.7'",
     "scikit-learn==0.23.2; python_version == '3.7'",
@@ -25,7 +24,6 @@ dependencies = [
     "scikit-optimize==0.8.1; python_version == '3.7'",
     "xgboost==1.6.2; python_version == '3.7'",
 
-    "pip==24.2; python_version >= '3.8' and python_version < '3.11'",
     "setuptools==75.1.0; python_version >= '3.8' and python_version < '3.11'",
     "wheel==0.44.0; python_version >= '3.8' and python_version < '3.11'",
     "numpy>=1.19.5, <2.0.0; python_version >= '3.8' and python_version < '3.11'",
@@ -36,7 +34,6 @@ dependencies = [
     "imbalanced-learn==0.12.4; python_version >= '3.8' and python_version < '3.11'",
     "xgboost==2.1.2; python_version >= '3.8' and python_version < '3.11'",
 
-    "pip==24.2; python_version >= '3.11'",
     "setuptools==75.1.0; python_version >= '3.11'",
     "wheel==0.44.0; python_version >= '3.11'",
     "numpy>=1.19.5, <2.0.0; python_version >= '3.11'",
