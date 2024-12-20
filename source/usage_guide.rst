@@ -1959,254 +1959,6 @@ See :ref:`this section <model_calibration>` for more information on model calibr
 
    <div style="height: 50px;"></div>
 
-Recursive Feature Elimination (RFE)
--------------------------------------
-
-Now that we've trained the models, we can also refine them by identifying which 
-features contribute most to their performance. One effective method for this is 
-Recursive Feature Elimination (RFE). This technique allows us to systematically 
-remove the least important features, retraining the model at each step to evaluate 
-how performance is affected. By focusing only on the most impactful variables, 
-RFE helps streamline the dataset, reduce noise, and improve both the accuracy and 
-interpretability of the final model.
-
-It works by recursively training a model, ranking the importance of features 
-based on the model’s outputas (such as coefficients in linear models or 
-importance scores in tree-based models), and then removing the least important 
-features one by one. This process continues until a specified number of features 
-remains or the desired performance criteria are met.
-
-The primary advantage of RFE is its ability to streamline datasets, improving 
-model performance and interpretability by focusing on features that contribute 
-the most to the predictive power. However, it can be computationally expensive 
-since it involves repeated model training, and its effectiveness depends on the 
-underlying model’s ability to evaluate feature importance. RFE is commonly used 
-with cross-validation to ensure that the selected features generalize well across 
-datasets, making it a robust choice for model optimization and dimensionality 
-reduction.
-
-As an illustrative example, we will retrain the above model using RFE.
-
-.. code-block:: python
-
-   from sklearn.feature_selection import RFE
-   from sklearn.linear_model import ElasticNet
-
-We will begin by appending the feature selection technique to our :ref:`tuned parameters dictionary <xgb_hyperparams>`.
-
-.. code-block:: python
-
-   xgb_definition["tuned_parameters"][f"feature_selection_rfe__n_features_to_select"] = [
-      5,
-      10,
-   ]
-
-Elastic Net for feature selection with RFE
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. note::
-
-   You may wish to explore :ref:`this section <elastic_net>` for the rationale in applying this technique.
-
-We will use elastic net because it strikes a balance between two widely used 
-regularization techniques: Lasso (:math:`L1`) and Ridge (:math:`L2`). Elastic net 
-is particularly effective in scenarios where we expect the dataset to have a mix 
-of strongly and weakly correlated features. Lasso alone tends to select only one 
-feature from a group of highly correlated ones, ignoring the others, while Ridge 
-includes all features but may not perform well when some are entirely irrelevant. 
-Elastic net addresses this limitation by combining both penalties, allowing it to handle 
-multicollinearity more effectively while still performing feature selection.
-
-Additionally, elastic net provides flexibility by controlling the ratio between 
-:math:`L1` and :math:`L2` penalties, enabling fine-tuning to suit the specific needs of 
-our dataset. This makes it a robust choice for datasets with many features, some 
-of which may be irrelevant or redundant, as it can reduce overfitting while 
-retaining a manageable subset of predictors.
-
-
-.. code-block:: python
-
-   rfe_estimator = ElasticNet(alpha=10.0, l1_ratio=0.9)
-
-   rfe = RFE(rfe_estimator)
-
-
-.. code-block:: python
-
-   from model_tuner import Model
-
-   model_xgb = Model(
-      name=f"AIDS_Clinical_{model_type}",
-      estimator_name=estimator_name,
-      calibrate=calibrate,
-      estimator=clc,
-      model_type="classification",
-      kfold=kfold,
-      pipeline_steps=[
-         ("rfe", rfe),
-      ],
-      stratify_y=True,
-      stratify_cols=False,
-      grid=tuned_parameters,
-      randomized_grid=rand_grid,
-      feature_selection=True,
-      boost_early=early_stop,
-      scoring=["roc_auc"],
-      random_state=222,
-      n_jobs=2,
-   )
-
-   model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
-
-   X_train, y_train = model_xgb.get_train_data(X, y)
-   X_valid, y_valid = model_xgb.get_valid_data(X, y)
-   X_test, y_test = model_xgb.get_test_data(X, y)
-
-   model_xgb.fit(
-      X_train,
-      y_train,
-      validation_data=[X_valid, y_valid],
-   )
-
-
-   # ------------------------- VALID AND TEST METRICS -----------------------------
-
-   print("Validation Metrics")
-   model_xgb.return_metrics(
-      X_valid,
-      y_valid,
-      optimal_threshold=True,
-      print_threshold=True,
-      model_metrics=True,
-   )
-   print()
-
-   print("Test Metrics")
-   model_xgb.return_metrics(
-      X_test,
-      y_test,
-      optimal_threshold=True,
-      print_threshold=True,
-      model_metrics=True,
-   )
-
-   print()
-
-.. code-block:: text
-
-   Pipeline Steps:
-
-   ┌─────────────────────────────────┐
-   │ Step 1: feature_selection_rfe   │
-   │ RFE                             │
-   └─────────────────────────────────┘
-                  │
-                  ▼
-   ┌─────────────────────────────────┐
-   │ Step 2: xgb                     │
-   │ XGBClassifier                   │
-   └─────────────────────────────────┘
-
-   100%|██████████| 10/10 [00:20<00:00,  2.10s/it]
-   Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  2.92it/s]
-   Best score/param set found on validation set:
-   {'params': {'feature_selection_rfe__n_features_to_select': 10,
-               'xgb__early_stopping_rounds': 100,
-               'xgb__eval_metric': 'logloss',
-               'xgb__learning_rate': 0.0001,
-               'xgb__max_depth': 10,
-               'xgb__n_estimators': 999},
-   'score': 0.9324994064577399}
-   Best roc_auc: 0.932 
-
-   Validation Metrics
-   Confusion matrix on set provided: 
-   --------------------------------------------------------------------------------
-            Predicted:
-               Pos   Neg
-   --------------------------------------------------------------------------------
-   Actual: Pos  94 (tp)   10 (fn)
-           Neg  70 (fp)  254 (tn)
-   --------------------------------------------------------------------------------
-   ********************************************************************************
-   Report Model Metrics: xgb
-
-               Metric     Value
-   0      Precision/PPV  0.573171
-   1  Average Precision  0.824825
-   2        Sensitivity  0.903846
-   3        Specificity  0.783951
-   4            AUC ROC  0.932499
-   5        Brier Score  0.165950
-   ********************************************************************************
-   --------------------------------------------------------------------------------
-
-                 precision    recall  f1-score   support
-
-              0       0.96      0.78      0.86       324
-              1       0.57      0.90      0.70       104
-
-       accuracy                           0.81       428
-      macro avg       0.77      0.84      0.78       428
-   weighted avg       0.87      0.81      0.82       428
-
-   --------------------------------------------------------------------------------
-
-   Feature names selected:
-   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
-
-   Optimal threshold used: 0.25
-
-   Test Metrics
-   Confusion matrix on set provided: 
-   --------------------------------------------------------------------------------
-            Predicted:
-               Pos   Neg
-   --------------------------------------------------------------------------------
-   Actual: Pos  93 (tp)   11 (fn)
-           Neg  71 (fp)  253 (tn)
-   --------------------------------------------------------------------------------
-   ********************************************************************************
-   Report Model Metrics: xgb
-
-               Metric     Value
-   0      Precision/PPV  0.567073
-   1  Average Precision  0.817957
-   2        Sensitivity  0.894231
-   3        Specificity  0.780864
-   4            AUC ROC  0.930051
-   5        Brier Score  0.165771
-   ********************************************************************************
-   --------------------------------------------------------------------------------
-
-                 precision    recall  f1-score   support
-
-              0       0.96      0.78      0.86       324
-              1       0.57      0.89      0.69       104
-
-       accuracy                           0.81       428
-      macro avg       0.76      0.84      0.78       428
-   weighted avg       0.86      0.81      0.82       428
-
-   --------------------------------------------------------------------------------
-
-   Feature names selected:
-   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
-
-   Optimal threshold used: 0.25
-
-.. important::
-
-   Passing ``feature_selection=True`` in conjunction with accounting for ``rfe`` for 
-   the ``pipeline_steps`` inside the ``Model``` class above is necessary to print the
-   output of the feature names selected, thus yielding:
-
-   .. code-block:: text
-
-      Feature names selected:
-      ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
-
 
 Imbalanced Learning
 ------------------------
@@ -2418,14 +2170,16 @@ Step 1: Initalize and configure the model
 
 .. important::
 
-   In the code block below, we initalize and configure the model by calling the 
-   ``Model`` class, and assign it to a new variable call ``xgb_smote``. Notice that 
-   we pass the ``imbalance_sampler=SMOTE()`` as a necessary step of activating 
-   this imbalanced sampler. 
+   In the code block below, we initialize and configure the model by instantiating the 
+   ``Model`` class and assigning it to a variable named ``xgb_smote``. Note that 
+   the ``imbalance_sampler=SMOTE(random_state=42)`` parameter is included to activate 
+   the imbalanced sampler. Setting a random state of 42 ensures reproducibility of results.
+
 
 .. code-block:: python
 
    from model_tuner import Model
+   from imblearn.over_sampling import SMOTE
 
    xgb_smote = Model(
       name=f"Make_Classification_{model_type}",
@@ -2442,7 +2196,7 @@ Step 1: Initalize and configure the model
       scoring=["roc_auc"],
       random_state=222,
       n_jobs=2,
-      imbalance_sampler=SMOTE(random_state=222),
+      imbalance_sampler=SMOTE(random_state=42),
    )
 
 Step 2: Perform grid search parameter tuning and retrieve split data
@@ -2478,16 +2232,16 @@ Step 2: Perform grid search parameter tuning and retrieve split data
    1         540
    Name: count, dtype: int64
 
-   100%|██████████| 5/5 [00:34<00:00,  6.87s/it]
+   100%|██████████| 5/5 [00:16<00:00,  3.25s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  4.37it/s]Best score/param set found on validation set:
+   100%|██████████| 2/2 [00:00<00:00,  4.17it/s]Best score/param set found on validation set:
    {'params': {'xgb__early_stopping_rounds': 100,
                'xgb__eval_metric': 'logloss',
                'xgb__learning_rate': 0.0001,
-               'xgb__max_depth': 10,
+               'xgb__max_depth': 3,
                'xgb__n_estimators': 999},
-   'score': 0.9990277777777777}
-   Best roc_auc: 0.999 
+   'score': 0.9969444444444445}
+   Best roc_auc: 0.997 
 
 SMOTE: Distribution of y values after resampling
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2509,65 +2263,351 @@ Step 3: Fit the model
 Step 4: Return metrics (optional)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. code-block:: python
+
+   # ------------------------- VALID AND TEST METRICS -----------------------------
+
+   print("Validation Metrics")
+   xgb_smote.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
+   )
+   print()
+
+   print("Test Metrics")
+   xgb_smote.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
+   )
+
+   print()   
+
 .. code-block:: text
 
    Validation Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
    Actual: Pos  20 (tp)    0 (fn)
-           Neg   6 (fp)  174 (tn)
+           Neg   1 (fp)  179 (tn)
    --------------------------------------------------------------------------------
-   --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9955555555555555,
-   'Average Precision': 0.9378696741854636,
-   'Brier Score': 0.20835571676988004,
-   'Precision/PPV': 0.7692307692307693,
-   'Sensitivity': 1.0,
-   'Specificity': 0.9666666666666667}
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.952381
+   1  Average Precision  0.947751
+   2        Sensitivity  1.000000
+   3        Specificity  0.994444
+   4            AUC ROC  0.996944
+   5        Brier Score  0.208997
+   ********************************************************************************
    --------------------------------------------------------------------------------
 
-               precision   recall  f1-score   support
+                 precision    recall  f1-score   support
 
-              0     1.00     0.97      0.98       180
-              1     0.77     1.00      0.87        20
+              0       1.00      0.99      1.00       180
+              1       0.95      1.00      0.98        20
 
-       accuracy                        0.97       200
-      macro avg     0.88     0.98      0.93       200
-   weighted avg     0.98     0.97      0.97       200
+       accuracy                           0.99       200
+      macro avg       0.98      1.00      0.99       200
+   weighted avg       1.00      0.99      1.00       200
 
    --------------------------------------------------------------------------------
+   Optimal threshold used: 0.52
 
    Test Metrics
    Confusion matrix on set provided: 
    --------------------------------------------------------------------------------
             Predicted:
-                Pos   Neg
+               Pos   Neg
    --------------------------------------------------------------------------------
-   Actual: Pos  19 (tp)    1 (fn)
+   Actual: Pos  18 (tp)    2 (fn)
            Neg   3 (fp)  177 (tn)
    --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.857143
+   1  Average Precision  0.897215
+   2        Sensitivity  0.900000
+   3        Specificity  0.983333
+   4            AUC ROC  0.966944
+   5        Brier Score  0.209358
+   ********************************************************************************
    --------------------------------------------------------------------------------
-   {'AUC ROC': 0.9945833333333333,
-   'Average Precision': 0.9334649122807017,
-   'Brier Score': 0.20820269480995568,
-   'Precision/PPV': 0.8636363636363636,
-   'Sensitivity': 0.95,
-   'Specificity': 0.9833333333333333}
-   --------------------------------------------------------------------------------
 
-               precision    recall  f1-score   support
+                 precision    recall  f1-score   support
 
-              0     0.99      0.98      0.99       180
-              1     0.86      0.95      0.90        20
-
-       accuracy                         0.98       200
-      macro avg     0.93      0.97      0.95       200
-   weighted avg     0.98      0.98      0.98       200
+              0       0.99      0.98      0.99       180
+              1       0.86      0.90      0.88        20
+ 
+       accuracy                           0.97       200
+      macro avg       0.92      0.94      0.93       200
+   weighted avg       0.98      0.97      0.98       200
 
    --------------------------------------------------------------------------------
+   Optimal threshold used: 0.52
+
+
+Recursive Feature Elimination (RFE)
+-------------------------------------
+
+Now that we've trained the models, we can also refine them by identifying which 
+features contribute most to their performance. One effective method for this is 
+Recursive Feature Elimination (RFE). This technique allows us to systematically 
+remove the least important features, retraining the model at each step to evaluate 
+how performance is affected. By focusing only on the most impactful variables, 
+RFE helps streamline the dataset, reduce noise, and improve both the accuracy and 
+interpretability of the final model.
+
+It works by recursively training a model, ranking the importance of features 
+based on the model’s outputas (such as coefficients in linear models or 
+importance scores in tree-based models), and then removing the least important 
+features one by one. This process continues until a specified number of features 
+remains or the desired performance criteria are met.
+
+The primary advantage of RFE is its ability to streamline datasets, improving 
+model performance and interpretability by focusing on features that contribute 
+the most to the predictive power. However, it can be computationally expensive 
+since it involves repeated model training, and its effectiveness depends on the 
+underlying model’s ability to evaluate feature importance. RFE is commonly used 
+with cross-validation to ensure that the selected features generalize well across 
+datasets, making it a robust choice for model optimization and dimensionality 
+reduction.
+
+As an illustrative example, we will retrain the above model using RFE.
+
+.. code-block:: python
+
+   from sklearn.feature_selection import RFE
+   from sklearn.linear_model import ElasticNet
+
+We will begin by appending the feature selection technique to our :ref:`tuned parameters dictionary <xgb_hyperparams>`.
+
+.. code-block:: python
+
+   xgb_definition["tuned_parameters"][f"feature_selection_rfe__n_features_to_select"] = [
+      None,
+      5,
+      10,
+   ]
+
+
+Elastic Net for feature selection with RFE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. note::
+
+   You may wish to explore :ref:`this section <elastic_net>` for the rationale in applying this technique.
+
+We will use elastic net because it strikes a balance between two widely used 
+regularization techniques: Lasso (:math:`L1`) and Ridge (:math:`L2`). Elastic net 
+is particularly effective in scenarios where we expect the dataset to have a mix 
+of strongly and weakly correlated features. Lasso alone tends to select only one 
+feature from a group of highly correlated ones, ignoring the others, while Ridge 
+includes all features but may not perform well when some are entirely irrelevant. 
+Elastic net addresses this limitation by combining both penalties, allowing it to handle 
+multicollinearity more effectively while still performing feature selection.
+
+Additionally, elastic net provides flexibility by controlling the ratio between 
+:math:`L1` and :math:`L2` penalties, enabling fine-tuning to suit the specific needs of 
+our dataset. This makes it a robust choice for datasets with many features, some 
+of which may be irrelevant or redundant, as it can reduce overfitting while 
+retaining a manageable subset of predictors.
+
+
+.. code-block:: python
+
+   rfe_estimator = ElasticNet(alpha=10.0, l1_ratio=0.9)
+
+   rfe = RFE(rfe_estimator)
+
+
+.. code-block:: python
+
+   from model_tuner import Model
+
+   model_xgb = Model(
+      name=f"AIDS_Clinical_{model_type}",
+      estimator_name=estimator_name,
+      calibrate=calibrate,
+      estimator=clc,
+      model_type="classification",
+      kfold=kfold,
+      pipeline_steps=[
+         ("rfe", rfe),
+      ],
+      stratify_y=True,
+      stratify_cols=False,
+      grid=tuned_parameters,
+      randomized_grid=rand_grid,
+      feature_selection=True,
+      boost_early=early_stop,
+      scoring=["roc_auc"],
+      random_state=222,
+      n_jobs=2,
+   )
+
+   model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+   X_train, y_train = model_xgb.get_train_data(X, y)
+   X_valid, y_valid = model_xgb.get_valid_data(X, y)
+   X_test, y_test = model_xgb.get_test_data(X, y)
+
+   model_xgb.fit(
+      X_train,
+      y_train,
+      validation_data=[X_valid, y_valid],
+   )
+
+
+   # ------------------------- VALID AND TEST METRICS -----------------------------
+
+   print("Validation Metrics")
+   model_xgb.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
+   )
+   print()
+
+   print("Test Metrics")
+   model_xgb.return_metrics(
+      X_test,
+      y_test,
+      optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
+   )
+
+   print()
+
+.. code-block:: text
+
+   Pipeline Steps:
+
+   ┌─────────────────────────────────┐
+   │ Step 1: feature_selection_rfe   │
+   │ RFE                             │
+   └─────────────────────────────────┘
+                  │
+                  ▼
+   ┌─────────────────────────────────┐
+   │ Step 2: xgb                     │
+   │ XGBClassifier                   │
+   └─────────────────────────────────┘
+
+   100%|██████████| 15/15 [00:40<00:00,  2.70s/it]
+   Fitting model with best params and tuning for best threshold ...
+   100%|██████████| 2/2 [00:00<00:00,  3.53it/s]
+   Best score/param set found on validation set:
+   {'params': {'feature_selection_rfe__n_features_to_select': 10,
+               'xgb__early_stopping_rounds': 100,
+               'xgb__eval_metric': 'logloss',
+               'xgb__learning_rate': 0.0001,
+               'xgb__max_depth': 10,
+               'xgb__n_estimators': 999},
+   'score': 0.9324994064577399}
+   Best roc_auc: 0.932 
+
+   Validation Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  94 (tp)   10 (fn)
+           Neg  70 (fp)  254 (tn)
+   --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.573171
+   1  Average Precision  0.824825
+   2        Sensitivity  0.903846
+   3        Specificity  0.783951
+   4            AUC ROC  0.932499
+   5        Brier Score  0.165950
+   ********************************************************************************
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.96      0.78      0.86       324
+              1       0.57      0.90      0.70       104
+
+       accuracy                           0.81       428
+      macro avg       0.77      0.84      0.78       428
+   weighted avg       0.87      0.81      0.82       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
+
+   Optimal threshold used: 0.25
+
+   Test Metrics
+   Confusion matrix on set provided: 
+   --------------------------------------------------------------------------------
+            Predicted:
+               Pos   Neg
+   --------------------------------------------------------------------------------
+   Actual: Pos  93 (tp)   11 (fn)
+           Neg  71 (fp)  253 (tn)
+   --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.567073
+   1  Average Precision  0.817957
+   2        Sensitivity  0.894231
+   3        Specificity  0.780864
+   4            AUC ROC  0.930051
+   5        Brier Score  0.165771
+   ********************************************************************************
+   --------------------------------------------------------------------------------
+
+                 precision    recall  f1-score   support
+
+              0       0.96      0.78      0.86       324
+              1       0.57      0.89      0.69       104
+
+       accuracy                           0.81       428
+      macro avg       0.76      0.84      0.78       428
+   weighted avg       0.86      0.81      0.82       428
+
+   --------------------------------------------------------------------------------
+
+   Feature names selected:
+   ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
+
+   Optimal threshold used: 0.25
+
+.. important::
+
+   Passing ``feature_selection=True`` in conjunction with accounting for ``rfe`` for 
+   the ``pipeline_steps`` inside the ``Model``` class above is necessary to print the
+   output of the feature names selected, thus yielding:
+
+   .. code-block:: text
+
+      Feature names selected:
+      ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
 
 SHAP (SHapley Additive exPlanations)
@@ -2646,7 +2686,7 @@ Step 5: Generate a summary plot of SHAP values
 
    <div class="no-click">
 
-.. image:: /../assets/shap_summary_plot.png
+.. image:: /../assets/SHAP_summary_plot.png
    :alt: Calibration Curve AIDs
    :align: center
    :width: 600px
@@ -3579,7 +3619,8 @@ output the classification report as follows:
 Bootstrap Metrics
 ===========================
 
-The ``bootstrapper.py`` module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.
+The ``bootstrapper.py`` module provides utility functions for input type checking, 
+data resampling, and evaluating bootstrap metrics.
 
 .. function:: check_input_type(x)
 
