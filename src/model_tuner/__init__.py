@@ -16,11 +16,11 @@ different scaling and imputation techniques, calibrating models, and conducting
 cross-validation. This library is particularly useful for model selection, 
 hyperparameter tuning, and ensuring optimal performance across different metrics.
 
-Version: 0.0.23a
+Version: 0.0.24a
 
 """
 
-__version__ = "0.0.23a"
+__version__ = "0.0.24a"
 __author__ = "Arthur Funnell, Leonid Shpaner, Panayiotis Petousis"
 __email__ = "lshpaner@ucla.edu; alafunnell@gmail.com; pp89@ucla.edu"
 

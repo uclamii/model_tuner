@@ -23,7 +23,6 @@ The following dependencies will be automatically installed when you install `mod
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
 - `catboost==1.2.7`
-- `pip==24.0`
 - `numpy==1.21.4`
 - `pandas==1.1.5`
 - `scikit-learn==0.23.2`
@@ -36,7 +35,6 @@ The following dependencies will be automatically installed when you install `mod
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
 - `catboost==1.2.7`
-- `pip==24.2`
 - `setuptools==75.1.0`
 - `wheel==0.44.0`
 - `numpy>=1.19.5, <2.0.0`
@@ -51,7 +49,6 @@ The following dependencies will be automatically installed when you install `mod
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
 - `catboost==1.2.7`
-- `pip==24.2`
 - `setuptools==75.1.0`
 - `wheel==0.44.0`
 - `numpy>=1.19.5, <2.0.0`
@@ -96,7 +93,7 @@ If you use `model_tuner` in your research or projects, please consider citing it
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.23a},
+  version      = {0.0.24a},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
