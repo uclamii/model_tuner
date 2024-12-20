@@ -399,17 +399,9 @@ class Model:
         calibration) have altered the current estimator, and it needs to be
         reverted to its initial configuration for retraining or evaluation.
 
-        Behavior:
-        ---------
-        - If `self.pipeline_steps` is defined, the method reinitializes the
-        estimator as a pipeline using the specified steps.
-        - If `self.pipeline_steps` is not defined, the method resets the estimator
-        to a basic pipeline containing only the original estimator.
-
         Returns:
         --------
         None
-
         """
 
         if self.pipeline_steps:
@@ -437,19 +429,9 @@ class Model:
         y_train : pandas.Series or array-like
             The training target labels.
 
-        Behavior:
-        ---------
-        - If `self.pipeline_steps` is defined, preprocessing (e.g., scaling,
-        imputation) is applied to `X_train` before resampling.
-        - The resampler is cloned from the `resampler` step in the pipeline and
-        is used to fit and resample the transformed data.
-        - The method prints the distribution of the target labels (`y_res`)
-        after resampling.
-
         Returns:
         --------
         None
-
         """
 
         ####  Preprocessor, Resampler, rfe, Estimator
@@ -492,21 +474,6 @@ class Model:
             The scoring metric(s) to guide calibration. If None, the first scoring
             metric from `self.scoring` is used. For k-fold workflows, calibration
             is performed for each specified score.
-
-        Behavior:
-        ---------
-        - **With K-Fold Cross-Validation**:
-            - Resets the estimator for calibration.
-            - Fits the model on the entire dataset using the best parameters found
-            for the selected score(s).
-            - Uses `CalibratedClassifierCV` to calibrate the model and evaluates
-            performance using confusion matrices and classification reports.
-        - **Without K-Fold Cross-Validation**:
-            - Splits the data into train, validation, and test sets.
-            - Applies preprocessing and resampling steps (if configured).
-            - Fits the model using the best parameters for the selected score.
-            - Calibrates the model using validation data and evaluates performance
-            using a calibration report.
 
         Returns:
         --------
@@ -691,12 +658,6 @@ class Model:
         score : str, optional (default=None)
             The scoring metric used for calibration reporting.
 
-        Behavior:
-        ---------
-        - Predicts target values using the model on the provided dataset.
-        - Computes the confusion matrix and displays it with labels.
-        - Generates a classification report summarizing key performance metrics.
-
         Returns:
         --------
         None
@@ -734,18 +695,6 @@ class Model:
         score : str, optional (default=None)
             The scoring metric to optimize during training. If None, the default
             scoring metric from the class is used.
-
-        Behavior:
-        ---------
-        - If k-fold cross-validation is enabled (`self.kfold`):
-        - Resets the estimator and fits the model using the specified metric.
-        - Stores cross-validation results in `self.xval_output`.
-        - If k-fold cross-validation is disabled:
-        - Applies preprocessing and feature selection pipelines (if configured).
-        - Fits the model using the best hyperparameters for the specified or
-            default scoring metric.
-        - Supports early stopping if `validation_data` is provided.
-        - Handles imbalanced sampling if `self.imbalance_sampler` is configured.
 
         Returns:
         --------
@@ -1321,20 +1270,6 @@ class Model:
         - Can handle both k-fold cross-validation and train-validation-test
         workflows.
 
-        Behavior:
-        ---------
-        With K-Fold Cross-Validation:
-            - Splits data into k folds using `kfold_split` and performs
-            parameter tuning.
-            - Optionally tunes thresholds for F-beta scores on validation
-            splits.
-
-        Without K-Fold Cross-Validation:
-            - Performs a train-validation-test split using `train_val_test_split`.
-            - Applies preprocessing, feature selection, and imbalance
-            sampling if configured.
-            - Tunes parameters and thresholds based on validation scores.
-
         Output:
         -------
         - Updates `self.best_params_per_score` with the best parameters and
@@ -1591,13 +1526,6 @@ class Model:
         features to the console.
         - Returns the selected features as a list.
 
-        Behavior:
-        ---------
-        For DataFrames:
-            - Prints the names of the selected feature columns.
-            - Returns a list of column names corresponding to the
-            selected features.
-
         For Array-like Data:
             - Prints the indices of the selected feature columns.
             - Returns a list of column indices.
@@ -1741,17 +1669,6 @@ class Model:
         configuration.
         - Supports multiple scoring metrics and stores the best
         parameters and scores for each.
-
-        Behavior:
-        ---------
-        - For each scoring metric:
-            - Initializes a search method (GridSearchCV, RandomizedSearchCV,
-            or BayesSearchCV) based on the configuration.
-            - Fits the model to the provided data.
-            - Updates the best parameters and scores for the metric.
-        - If `self.display` is True:
-            - Prints the best parameters and score for each scoring metric.
-            - Displays grid scores on the development set.
         """
 
         for score in self.scoring:
@@ -1865,13 +1782,6 @@ class Model:
         overall evaluation (though aggregated results are not explicitly returned).
         - Ensures `test_model` has the necessary attributes (`model_type` and
         `estimator_name`) for compatibility with downstream processing.
-
-        Behavior:
-        ---------
-        - If `score` is provided, it determines the threshold used for predictions.
-        If `score` is None, the default threshold (based on the first scoring
-        metric) is used.
-        - Handles both DataFrame and array-like inputs for `X` and `y`.
         """
 
         # Ensure test_model has necessary attributes
@@ -1970,17 +1880,6 @@ class Model:
         - Averages the confusion matrices across all folds and produces a
         combinedclassification report.
         - Prints the averaged confusion matrix and classification report.
-
-        Behavior:
-        ---------
-        For each fold in k-fold cross-validation:
-            1. Splits the data into training and testing subsets.
-            2. Fits the `test_model` on the training subset.
-            3. Predicts the target values for the testing subset.
-            4. Computes the confusion matrix for the fold and appends it to a list.
-        - Aggregates predictions and true labels across all folds.
-        - Averages the confusion matrices and generates an overall classification
-        report.
         """
 
         aggregated_true_labels = []
@@ -2076,17 +1975,6 @@ class Model:
         - Averages the confusion matrices across all folds and produces a
         combined classification report.
         - Prints the averaged confusion matrix and classification report.
-
-        Behavior:
-        ---------
-        For each fold in k-fold cross-validation:
-            1. Splits the data into training and testing subsets.
-            2. Fits the `test_model` on the training subset.
-            3. Predicts the target values for the testing subset.
-            4. Computes the confusion matrix for the fold and appends it to a list.
-        - Aggregates predictions and true labels across all folds.
-        - Averages the confusion matrices and generates an overall classification
-        report.
         """
 
         aggregated_pred_list = []
@@ -2158,14 +2046,6 @@ class Model:
         in a formatted table with clear labeling.
         - Assumes binary classification for each label (e.g., Positive vs. Negative).
         - Includes class labels and column/row names for readability.
-
-        Behavior:
-        ---------
-        - For each confusion matrix in the list:
-            1. Prints a header with the class label and "Predicted" label.
-            2. Formats and prints the confusion matrix, showing actual vs. predicted
-            values for Positive (Pos) and Negative (Neg) cases.
-            3. Displays the labels for each cell of the matrix for clarity.
         """
 
         border = "-" * 80
@@ -2247,15 +2127,6 @@ def train_val_test_split(
       columns (`stratify_cols`).
     - Ensures the proportions of the split sets are consistent with the
       specified `train_size`, `validation_size`, and `test_size`.
-
-    Behavior:
-    ---------
-    - Combines `stratify_cols` and `y` (if both are provided) to create a
-      stratification key.
-    - Handles missing values in `stratify_cols` by filling with empty strings.
-    - Uses a two-step splitting approach:
-        1. Splits data into train and combined validation-test sets.
-        2. Further splits the combined set into validation and test sets.
 
     Notes:
     ------
