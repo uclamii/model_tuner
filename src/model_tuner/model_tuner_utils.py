@@ -1014,7 +1014,10 @@ class Model:
                         return reg_report
 
         if print_threshold:
-            print(f"Optimal threshold used: {threshold}")
+            if self.model_type != "regression":
+                print(f"Optimal threshold used: {threshold}")
+            else:
+                print()
 
     def predict(self, X, y=None, optimal_threshold=False):
         if self.model_type == "regression":
