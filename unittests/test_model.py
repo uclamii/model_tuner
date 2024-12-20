@@ -205,7 +205,7 @@ def test_return_metrics_classification(classification_data):
     model.fit(X_train, y_train)
 
     # Test return_metrics method
-    metrics = model.return_metrics(X_test, y_test)
+    metrics = model.return_metrics(X_test, y_test, return_dict=True)
 
     # Validate the structure and content of the metrics
     assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
@@ -248,7 +248,7 @@ def test_return_metrics_regression(regression_data):
     model.fit(X_train, y_train)
 
     # Test return_metrics method
-    metrics = model.return_metrics(X_test, y_test)
+    metrics = model.return_metrics(X_test, y_test, return_dict=True)
 
     # Validate the results
     assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
@@ -260,6 +260,7 @@ def test_return_metrics_regression(regression_data):
         "R2",
         "RMSE",
     ]
+    print(metrics)
     for key in expected_keys:
         assert key in metrics, f"Expected metric '{key}' to be in the results."
         assert isinstance(
@@ -779,6 +780,7 @@ def test_empty_param_grid(lr_model_parameters):
     # set to paramGrid object
     assert isinstance(model.grid, ParameterGrid)  # Should initialize without error
 
+
 from unittest.mock import MagicMock, patch
 
 
@@ -799,7 +801,9 @@ def model():
         grid=[],
     )
 
+
 from imblearn.over_sampling import SMOTE
+
 
 @pytest.fixture
 def model_with_sampler():
@@ -845,69 +849,90 @@ def test_pipeline_structure(model):
     """Test the structure of the pipeline."""
     pipeline = model.get_preprocessing_pipeline()
     assert isinstance(pipeline, Pipeline), "The output should be a Pipeline instance."
-    
+
     # Check if the pipeline contains a scaler
     print(pipeline)
-    scaler = pipeline.named_steps.get('preprocess_scaler_step_0', None)
+    scaler = pipeline.named_steps.get("preprocess_scaler_step_0", None)
     assert isinstance(scaler, StandardScaler), "Pipeline should include a scaler."
+
 
 def test_pipeline_transform(classification_data, model):
     """Test the pipeline transformation."""
     X, y = classification_data
     pipeline = model.get_preprocessing_pipeline()
-    
+
     transformed_data = pipeline.fit_transform(X)
     assert transformed_data is not None, "Transformed data should not be None."
-    assert isinstance(transformed_data, np.ndarray), "Transformed data should be a numpy array."
+    assert isinstance(
+        transformed_data, np.ndarray
+    ), "Transformed data should be a numpy array."
+
 
 def test_pipeline_handles_empty_data(model):
     """Test the pipeline with empty data."""
     pipeline = model.get_preprocessing_pipeline()
-    
-    empty_data = pd.DataFrame({
-        'numerical': [],
-        'categorical': []
-    })
+
+    empty_data = pd.DataFrame({"numerical": [], "categorical": []})
     with pytest.raises(ValueError):
-        pipeline.fit_transform(empty_data) # standard scaler should raise an error
+        pipeline.fit_transform(empty_data)  # standard scaler should raise an error
 
 
 @pytest.fixture
 def imbalanced_data():
     """Fixture for imbalanced data."""
-    X_train = pd.DataFrame({
-        'feature1': [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6,1, 2, 3, 4, 5, 6],
-        'feature2': [10, 20, 30, 40, 50, 60, 10, 20, 30, 40, 50, 60, 10, 20, 30, 40, 50, 60]
-    })
+    X_train = pd.DataFrame(
+        {
+            "feature1": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
+            "feature2": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+            ],
+        }
+    )
     y_train = np.array([0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1])
     return X_train, y_train
+
 
 @pytest.fixture
 def balanced_data():
     """Fixture for balanced data."""
-    X_train = pd.DataFrame({
-        'feature1': [1, 2, 3, 4],
-        'feature2': [10, 20, 30, 40]
-    })
+    X_train = pd.DataFrame({"feature1": [1, 2, 3, 4], "feature2": [10, 20, 30, 40]})
     y_train = np.array([0, 1, 0, 1])
     return X_train, y_train
+
 
 @pytest.fixture
 def single_class_data():
     """Fixture for single-class data."""
-    X_train = pd.DataFrame({
-        'feature1': [1, 2, 3, 4],
-        'feature2': [10, 20, 30, 40]
-    })
+    X_train = pd.DataFrame({"feature1": [1, 2, 3, 4], "feature2": [10, 20, 30, 40]})
     y_train = np.array([0, 0, 0, 0])
     return X_train, y_train
 
-def test_process_imbalance_sampler_imbalanced_data(capfd, imbalanced_data, model_with_sampler):
+
+def test_process_imbalance_sampler_imbalanced_data(
+    capfd, imbalanced_data, model_with_sampler
+):
     """Test process_imbalance_sampler with imbalanced data."""
     X_train, y_train = imbalanced_data
-    
+
     model_with_sampler.process_imbalance_sampler(X_train, y_train)
-    
+
     # Capture printed output
     captured = capfd.readouterr()
 
@@ -915,25 +940,30 @@ def test_process_imbalance_sampler_imbalanced_data(capfd, imbalanced_data, model
     assert "0    12" in captured.out, "Should correctly identify the majority class."
     assert "1    12" in captured.out, "Should print correct count for minority class."
 
-def test_process_imbalance_sampler_balanced_data(capfd, balanced_data, model_with_sampler):
+
+def test_process_imbalance_sampler_balanced_data(
+    capfd, balanced_data, model_with_sampler
+):
     """Test process_imbalance_sampler with already balanced data."""
     X_train, y_train = balanced_data
-    
+
     model_with_sampler.process_imbalance_sampler(X_train, y_train)
-    
+
     # Capture printed output
     captured = capfd.readouterr()
-    
+
     # Validate that the data remains unchanged
     assert "Distribution of y values after resampling: 0" in captured.out
     assert "0    2" in captured.out, "Should correctly identify the majority class."
     assert "1    2" in captured.out, "Should print correct count for minority class."
 
 
-def test_process_imbalance_sampler_single_class_data(single_class_data, model_with_sampler):
+def test_process_imbalance_sampler_single_class_data(
+    single_class_data, model_with_sampler
+):
     """Test process_imbalance_sampler with single-class data."""
     X_train, y_train = single_class_data
-    
+
     with pytest.raises(ValueError):
         model_with_sampler.process_imbalance_sampler(X_train, y_train)
 
@@ -955,6 +985,7 @@ def calibrated_lr_model():
         calibration_method="sigmoid",
     )
 
+
 @pytest.fixture
 def calibrated_kfold_lr_model():
     """Fixture to create a simple Calibrated Logistic Regression model."""
@@ -971,15 +1002,19 @@ def calibrated_kfold_lr_model():
         calibrate=True,
         calibration_method="sigmoid",
     )
-    
+
 
 from sklearn.calibration import CalibratedClassifierCV
+
 
 def test_calibrate_model_default_method(calibrated_lr_model, classification_data):
     """Test that calibrateModel works with the default method."""
     X, y = classification_data
 
-    calibration_methods = ["sigmoid", "isotonic",]
+    calibration_methods = [
+        "sigmoid",
+        "isotonic",
+    ]
 
     for cab_method in calibration_methods:
         model = calibrated_lr_model
@@ -994,20 +1029,30 @@ def test_calibrate_model_default_method(calibrated_lr_model, classification_data
         model.fit(X, y)
 
         # calibrate model
-        model.calibrateModel(X,y)
+        model.calibrateModel(X, y)
 
         # Ensure the calibrated model is an instance of CalibratedClassifierCV
-        assert isinstance(model.estimator, CalibratedClassifierCV), "Expected a CalibratedClassifierCV instance."
-        
+        assert isinstance(
+            model.estimator, CalibratedClassifierCV
+        ), "Expected a CalibratedClassifierCV instance."
+
         # Ensure predictions are probabilistic
         probabilities = model.predict_proba(X)
-        assert np.allclose(probabilities.sum(axis=1), 1), "Probabilities should sum to 1 for each instance."
+        assert np.allclose(
+            probabilities.sum(axis=1), 1
+        ), "Probabilities should sum to 1 for each instance."
 
-def test_calibrate_kfold_model_default_method(calibrated_kfold_lr_model, classification_data):
+
+def test_calibrate_kfold_model_default_method(
+    calibrated_kfold_lr_model, classification_data
+):
     """Test that calibrateModel works with the default method."""
     X, y = classification_data
 
-    calibration_methods = ["sigmoid","isotonic",]
+    calibration_methods = [
+        "sigmoid",
+        "isotonic",
+    ]
 
     for cab_method in calibration_methods:
         model = type(calibrated_kfold_lr_model)(
@@ -1031,18 +1076,23 @@ def test_calibrate_kfold_model_default_method(calibrated_kfold_lr_model, classif
         model.fit(X, y)
 
         # calibrate model
-        model.calibrateModel(X,y)
+        model.calibrateModel(X, y)
 
         # Ensure the calibrated model is an instance of CalibratedClassifierCV
-        assert isinstance(model.estimator, CalibratedClassifierCV), "Expected a CalibratedClassifierCV instance."
-        
+        assert isinstance(
+            model.estimator, CalibratedClassifierCV
+        ), "Expected a CalibratedClassifierCV instance."
+
         # Ensure predictions are probabilistic
         probabilities = model.predict_proba(X)
-        assert np.allclose(probabilities.sum(axis=1), 1), "Probabilities should sum to 1 for each instance."
+        assert np.allclose(
+            probabilities.sum(axis=1), 1
+        ), "Probabilities should sum to 1 for each instance."
+
 
 def test_calibrate_model_invalid_method(calibrated_lr_model, classification_data):
     """Test calibrateModel with an unsupported method."""
-    
+
     X, y = classification_data
 
     model = calibrated_lr_model
@@ -1055,10 +1105,11 @@ def test_calibrate_model_invalid_method(calibrated_lr_model, classification_data
 
     # Fit the model
     model.fit(X, y)
-    
+
     with pytest.raises(Exception):
         # calibrate model
-        model.calibrateModel(X,y)
+        model.calibrateModel(X, y)
+
 
 def test_calibrate_model_edge_probabilities(calibrated_lr_model, classification_data):
     """Test calibrateModel with edge probabilities."""
@@ -1073,8 +1124,10 @@ def test_calibrate_model_edge_probabilities(calibrated_lr_model, classification_
     model.fit(X, y)
 
     # calibrate model
-    model.calibrateModel(X,y)
-    
+    model.calibrateModel(X, y)
+
     # Simulate predictions near 0 and 1
     probabilities = model.predict_proba(X)
-    assert np.all((probabilities >= 0) & (probabilities <= 1)), "Probabilities should be within [0, 1]."
+    assert np.all(
+        (probabilities >= 0) & (probabilities <= 1)
+    ), "Probabilities should be within [0, 1]."
