@@ -406,15 +406,6 @@ class Model:
         - If `self.pipeline_steps` is not defined, the method resets the estimator
         to a basic pipeline containing only the original estimator.
 
-        Attributes Used:
-        ----------------
-        - `self.pipeline_steps`: A list of preprocessing or feature selection
-        steps for the pipeline. If defined, these are included in the reset pipeline.
-        - `self.PipelineClass`: The pipeline class (e.g., `sklearn.pipeline.Pipeline`)
-        used to construct the model.
-        - `self.original_estimator`: The original estimator before any modifications.
-        - `self.estimator_name`: The name of the estimator step in the pipeline.
-
         Returns:
         --------
         None
@@ -454,14 +445,6 @@ class Model:
         is used to fit and resample the transformed data.
         - The method prints the distribution of the target labels (`y_res`)
         after resampling.
-
-        Attributes Used:
-        ----------------
-        - `self.pipeline_steps`: A list of preprocessing or feature selection
-            steps for the pipeline.
-        - `self.get_preprocessing_pipeline()`: Retrieves the preprocessing pipeline.
-        - `self.estimator.named_steps["resampler"]`: The resampler used for
-        imbalance correction.
 
         Returns:
         --------
@@ -524,16 +507,6 @@ class Model:
             - Fits the model using the best parameters for the selected score.
             - Calibrates the model using validation data and evaluates performance
             using a calibration report.
-
-        Attributes Used:
-        ----------------
-        - `self.kfold`: Boolean indicating whether k-fold cross-validation is used.
-        - `self.calibrate`: Boolean indicating whether to perform calibration.
-        - `self.best_params_per_score`: A dictionary containing the best parameters
-        for each scoring metric.
-        - `self.calibration_method`: The calibration method to use
-        (e.g., 'sigmoid' or 'isotonic').
-        - `self.process_imbalance_sampler`: Handles class imbalance if configured.
 
         Returns:
         --------
@@ -1362,20 +1335,6 @@ class Model:
             sampling if configured.
             - Tunes parameters and thresholds based on validation scores.
 
-        Attributes Used:
-        ----------------
-        - self.kfold : Indicates whether k-fold cross-validation is enabled.
-        - self.scoring : List of scoring metrics used for evaluation.
-        - self.best_params_per_score : Stores the best parameter set for each
-        scoring metric.
-        - self.grid : Parameter grid for tuning.
-        - self.calibrate : Specifies whether model calibration is enabled.
-        - self.imbalance_sampler : Indicates if imbalance sampling is applied.
-        - self.feature_selection : Specifies whether feature selection is applied.
-        - self.pipeline_steps : Configuration for preprocessing steps.
-        - self.boost_early : Enables early stopping during model training.
-        - self.threshold : Stores tuned thresholds for F-beta score optimization.
-
         Output:
         -------
         - Updates `self.best_params_per_score` with the best parameters and
@@ -1642,11 +1601,6 @@ class Model:
         For Array-like Data:
             - Prints the indices of the selected feature columns.
             - Returns a list of column indices.
-
-        Attributes Used:
-        ----------------
-        - self.get_feature_selection_pipeline() : Retrieves the
-        feature selection pipeline used for selecting features.
         """
 
         feat_select_pipeline = self.get_feature_selection_pipeline()
@@ -1798,20 +1752,6 @@ class Model:
         - If `self.display` is True:
             - Prints the best parameters and score for each scoring metric.
             - Displays grid scores on the development set.
-
-        Attributes Used:
-        ----------------
-        - self.scoring : List of scoring metrics for evaluation.
-        - self.grid : Hyperparameter search grid.
-        - self.kf : Cross-validation splitting strategy.
-        - self.randomized_grid : Boolean flag for randomized search.
-        - self.bayesian : Boolean flag for Bayesian search.
-        - self.custom_scorer : Custom scoring functions.
-        - self.best_params_per_score : Dictionary to store the best parameters
-          and scores for each metric.
-        - self.estimator : The model being tuned.
-        - self.test_model : The best model after tuning.
-
         """
 
         for score in self.scoring:
@@ -2316,10 +2256,6 @@ def train_val_test_split(
     - Uses a two-step splitting approach:
         1. Splits data into train and combined validation-test sets.
         2. Further splits the combined set into validation and test sets.
-
-    Attributes Used:
-    ----------------
-    - Handles configurations for stratification and proportional splitting.
 
     Notes:
     ------
