@@ -574,8 +574,10 @@ Get train, val, test data
    - If ``return_dict=False``, prints the metrics directly to the console.
 
    **Examples:**
+
    ::
-      # Example usage for validation metrics:
+
+      ## Example usage for validation metrics:
       print("Validation Metrics")
       model.return_metrics(
           X=X_valid,
@@ -586,7 +588,7 @@ Get train, val, test data
       )
       print()
 
-      # Example usage for test metrics:
+      ## Example usage for test metrics:
       print("Test Metrics")
       model.return_metrics(
           X=X_test,
@@ -1151,8 +1153,7 @@ Get train, val, test data
       - This method is designed for regression tasks and is not applicable to classification models.
       - The returned dictionary can be used for further analysis or logging.
 
-
-
+.. _Report_Model_Metrics:
 
 ``report_model_metrics()``
 ---------------------------------------------------------------------------
@@ -1465,8 +1466,7 @@ real-world applications.
 AIDS Clinical Trials Group Study
 ---------------------------------
 
-The `UCI Machine Learning Repository <https://archive.ics.uci.edu/ml/index.php>`_ 
-is a well-known resource for accessing a wide 
+The UCI Machine Learning Repository is a well-known resource for accessing a wide 
 range of datasets used for machine learning research and practice. One such dataset 
 is the `AIDS Clinical Trials Group Study dataset <https://archive.ics.uci.edu/dataset/890/aids+clinical+trials+group+study+175>`_, which can be used to build and 
 evaluate predictive models.
@@ -1665,12 +1665,14 @@ hyperparameters specified in ``tuned_parameters``, evaluate each one using the
 specified scoring metric, and select the best performing set.
 
 In this example, we pass an additional argument, ``f1_beta_tune=True``, which 
-adjusts the F1 score to weigh precision and recall differently during hyperparameter optimization.
-
+adjusts the F1 score to weigh precision and recall differently during 
+hyperparameter optimization.
 
 .. note::
 
-   Why Use ``f1_beta_tune=True``?
+   For a more in depth discussion on threshold tuning, refer to :ref:`this section <F1_Beta>`.
+
+   Why use ``f1_beta_tune=True``?
 
    - Standard F1-Score: Balances precision and recall equally (``beta=1``).
    - Custom Beta Values:
@@ -2074,13 +2076,18 @@ retaining a manageable subset of predictors.
       X_valid,
       y_valid,
       optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
    )
    print()
+
    print("Test Metrics")
    model_xgb.return_metrics(
       X_test,
       y_test,
       optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
    )
 
    print()
@@ -2100,9 +2107,9 @@ retaining a manageable subset of predictors.
    │ XGBClassifier                   │
    └─────────────────────────────────┘
 
-   100%|██████████| 10/10 [00:27<00:00,  2.70s/it]
+   100%|██████████| 10/10 [00:20<00:00,  2.10s/it]
    Fitting model with best params and tuning for best threshold ...
-   100%|██████████| 2/2 [00:00<00:00,  3.12it/s]
+   100%|██████████| 2/2 [00:00<00:00,  2.92it/s]
    Best score/param set found on validation set:
    {'params': {'feature_selection_rfe__n_features_to_select': 10,
                'xgb__early_stopping_rounds': 100,
@@ -2122,13 +2129,24 @@ retaining a manageable subset of predictors.
    Actual: Pos  94 (tp)   10 (fn)
            Neg  70 (fp)  254 (tn)
    --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.573171
+   1  Average Precision  0.824825
+   2        Sensitivity  0.903846
+   3        Specificity  0.783951
+   4            AUC ROC  0.932499
+   5        Brier Score  0.165950
+   ********************************************************************************
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
 
               0       0.96      0.78      0.86       324
               1       0.57      0.90      0.70       104
- 
+
        accuracy                           0.81       428
       macro avg       0.77      0.84      0.78       428
    weighted avg       0.87      0.81      0.82       428
@@ -2138,6 +2156,7 @@ retaining a manageable subset of predictors.
    Feature names selected:
    ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
+   Optimal threshold used: 0.25
 
    Test Metrics
    Confusion matrix on set provided: 
@@ -2148,6 +2167,17 @@ retaining a manageable subset of predictors.
    Actual: Pos  93 (tp)   11 (fn)
            Neg  71 (fp)  253 (tn)
    --------------------------------------------------------------------------------
+   ********************************************************************************
+   Report Model Metrics: xgb
+
+               Metric     Value
+   0      Precision/PPV  0.567073
+   1  Average Precision  0.817957
+   2        Sensitivity  0.894231
+   3        Specificity  0.780864
+   4            AUC ROC  0.930051
+   5        Brier Score  0.165771
+   ********************************************************************************
    --------------------------------------------------------------------------------
 
                  precision    recall  f1-score   support
@@ -2164,9 +2194,7 @@ retaining a manageable subset of predictors.
    Feature names selected:
    ['time', 'preanti', 'str2', 'strat', 'symptom', 'treat', 'offtrt', 'cd40', 'cd420', 'cd80']
 
-
-.. code-block:: python
-
+   Optimal threshold used: 0.25
 
 .. important::
 
@@ -3408,8 +3436,120 @@ Step 8: Return metrics (optional)
    'RMSE': 0.533023758436067}
 
 
-Performance Assessment
-=========================
+Performance Evaluation Metrics
+=================================
+
+Using ``report_model_metrics()``
+--------------------------------
+
+The :ref:`report_model_metrics()<Report_Model_Metrics>` method provides detailed insights into model 
+performance, including metrics such as :ref:`precision, recall, sensitivity, specificity, and AUC-ROC <Limitations_of_Accuracy>`. 
+For regression models, it includes key metrics such as Mean Absolute Error (MAE), Mean Squared Error (MSE), 
+Root Mean Squared Error (RMSE), R² Score, and Explained Variance. 
+
+While this method is integrated into ``return_metrics()``, it can also be invoked independently for 
+custom evaluation workflows. For example, it can be used to focus on specific metrics or to analyze 
+a subset of the data.
+
+
+Using ``return_metrics()``
+--------------------------------
+
+A key feature of :ref:`return_metrics() <Return_Metrics>` is its ability to retrieve and print the 
+threshold value used to train the model. This threshold can be passed directly 
+into ``report_model_metrics()`` for consistent evaluation. 
+
+
+Threshold Tuning
+------------------
+
+Model thresholding is a critical concept in classification tasks, allowing you 
+to fine-tune the decision boundary for predicting positive or negative classes. 
+Instead of relying on the default threshold of 0.5, which may not suit all 
+datasets or evaluation metrics, :ref:`thresholds can be adjusted <Threshold_Tuning_Considerations>` 
+to optimize metrics like :ref:`precision <Precision>`, :ref:`recall <Recall>`, or :ref:`F1-score <F1_Score>` 
+based on your specific objectives.
+
+The ``model.threshold`` attribute provides a dictionary where each scoring metric 
+is paired with its corresponding optimal threshold, enabling precise control over 
+predictions. This is particularly useful in applications where the cost of false 
+positives and false negatives differs significantly.
+
+For example:
+
+.. code-block:: python
+
+   ## Accessing the optimal thresholds for each scoring metric
+   print(model_xgb.threshold)
+
+.. code-block:: text
+
+   {'roc_auc': 0.25}
+
+**When to Use Custom Thresholds**:
+
+- **Imbalanced Datasets**: Adjusting thresholds can help mitigate the effects of class imbalance by prioritizing recall or precision for the minority class.
+- **Domain-Specific Goals**: In medical diagnostics, for instance, you might prefer a lower threshold to maximize sensitivity (recall) and minimize false negatives.
+- **Optimizing for Specific Metrics**: If your primary evaluation metric is F-beta, tuning the threshold ensures better alignment with your goals.
+
+.. _F1_Beta:
+
+How to Automatically Tune Thresholds
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The optimal threshold can be automatically tuned by enabling F-beta optimization 
+during parameter tuning. This can be done by setting ``f1_beta_tune=True`` in 
+the ``grid_search_param_tuning()`` method:
+
+.. code-block:: python
+
+   # Automatically tune thresholds for F-beta optimization
+   model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+After tuning, the optimal thresholds will be stored in the ``model.threshold`` 
+attribute for each scoring metric:
+
+.. code-block:: python
+
+   ## Retrieve the optimal threshold for a specific metric
+   threshold = model_xgb.threshold['roc_auc']
+
+Using threshold in ``report_model_metrics()``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After calling ``return_metrics()`` with ``optimal_threshold=True``, 
+you can reuse the threshold in ``report_model_metrics()`` as shown below:
+
+.. code-block:: python
+   
+   threshold = model_xgb.threshold['roc_auc']  # Retrieve the optimal threshold
+   model_xgb.report_model_metrics(X=X_valid, y=y_valid, threshold=threshold)
+
+Reporting Threshold in ``return_metrics``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``return_metrics`` method provides the flexibility to retrieve and print the 
+threshold used during model evaluation, enabling seamless reuse in other methods 
+or manual experimentation. When ``print_threshold=True`` is specified, the 
+threshold will be included as part of the output, making it easy to reference 
+and apply in subsequent analyses.
+
+**Example**:
+
+.. code-block:: python
+
+   # Retrieve metrics and threshold using return_metrics
+   model_xgb.return_metrics(
+       X=X_valid,
+       y=y_valid,
+       optimal_threshold=True,
+       print_threshold=True,
+       model_metrics=True
+   )
+
+By including ``print_threshold=True``, the optimal threshold used for predictions 
+is displayed, ensuring transparency and providing a valuable reference for further 
+evaluations or custom workflows.
 
 .. _Classification_Report:
 
@@ -3436,7 +3576,7 @@ output the classification report as follows:
 
    
 
-Bootstrap metrics
+Bootstrap Metrics
 ===========================
 
 The ``bootstrapper.py`` module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.

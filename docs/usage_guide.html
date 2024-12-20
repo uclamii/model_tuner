@@ -162,16 +162,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#multi-class-classification">Multi-Class Classification</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#iris-dataset-with-xgboost">Iris Dataset with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Step 1: Import Necessary Libraries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Step 2: Load the dataset. Define X, y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Step 1: Import Necessary Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Step 2: Load the dataset. Define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-define-the-preprocessing-steps">Step 3: Define the preprocessing steps</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-the-estimator-and-hyperparameters">Step 4: Define the estimator and hyperparameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and configure the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning">Step 6: Perform grid search parameter tuning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-generate-data-splits">Step 7: Generate data splits</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Step 8: Fit the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Step 9: Return metrics (optional)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Report Model Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Step 8: Fit the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Step 9: Return metrics (optional)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Report Model Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-predict-probabilities-and-generate-predictions">Step 10: Predict probabilities and generate predictions</a></li>
@@ -181,11 +181,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#regression">Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id8">Step 1: Import necessary libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return metrics (optional)</a></li>
@@ -193,11 +193,19 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#performance-assessment">Performance Assessment</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#performance-evaluation-metrics">Performance Evaluation Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#using-report-model-metrics">Using <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-return-metrics">Using <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#threshold-tuning">Threshold Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#how-to-automatically-tune-thresholds">How to Automatically Tune Thresholds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-threshold-in-report-model-metrics">Using threshold in <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reporting-threshold-in-return-metrics">Reporting Threshold in <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#classification-report-optional">Classification report (optional)</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#bootstrap-metrics">Bootstrap metrics</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="#bootstrap-metrics">Bootstrap Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#check_input_type"><code class="docutils literal notranslate"><span class="pre">check_input_type()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sampling_method"><code class="docutils literal notranslate"><span class="pre">sampling_method()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#evaluate_bootstrap_metrics"><code class="docutils literal notranslate"><span class="pre">evaluate_bootstrap_metrics()</span></code></a></li>
@@ -215,6 +223,7 @@
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#model-calibration">Model Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#threshold-tuning-considerations">Threshold Tuning Considerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#catboost-training-parameters">CatBoost Training Parameters</a></li>
 </ul>
@@ -829,7 +838,7 @@ or a DataFrame containing the columns for stratification. Default is <code class
 <li><p>If <code class="docutils literal notranslate"><span class="pre">return_dict=False</span></code>, prints the metrics directly to the console.</p></li>
 </ul>
 <p><strong>Examples:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example usage for validation metrics:</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## Example usage for validation metrics:</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
     <span class="n">X</span><span class="o">=</span><span class="n">X_valid</span><span class="p">,</span>
@@ -840,7 +849,7 @@ or a DataFrame containing the columns for stratification. Default is <code class
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
 
-<span class="c1"># Example usage for test metrics:</span>
+<span class="c1">## Example usage for test metrics:</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
     <span class="n">X</span><span class="o">=</span><span class="n">X_test</span><span class="p">,</span>
@@ -1519,7 +1528,7 @@ or a DataFrame containing the columns for stratification. Default is <code class
 
 </section>
 <section id="report-model-metrics">
-<h2><code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code><a class="headerlink" href="#report-model-metrics" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2><code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code><a class="headerlink" href="#report-model-metrics" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">report_model_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_valid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_valid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_per_fold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
@@ -1853,8 +1862,7 @@ decision thresholds, making it easier to deploy effective binary classifiers in
 real-world applications.</p>
 <section id="aids-clinical-trials-group-study">
 <h2>AIDS Clinical Trials Group Study<a class="headerlink" href="#aids-clinical-trials-group-study" title="Link to this heading"></a></h2>
-<p>The <a class="reference external" href="https://archive.ics.uci.edu/ml/index.php">UCI Machine Learning Repository</a>
-is a well-known resource for accessing a wide
+<p>The UCI Machine Learning Repository is a well-known resource for accessing a wide
 range of datasets used for machine learning research and practice. One such dataset
 is the <a class="reference external" href="https://archive.ics.uci.edu/dataset/890/aids+clinical+trials+group+study+175">AIDS Clinical Trials Group Study dataset</a>, which can be used to build and
 evaluate predictive models.</p>
@@ -2031,10 +2039,12 @@ to find the optimal hyperparameters for the <code class="docutils literal notran
 hyperparameters specified in <code class="docutils literal notranslate"><span class="pre">tuned_parameters</span></code>, evaluate each one using the
 specified scoring metric, and select the best performing set.</p>
 <p>In this example, we pass an additional argument, <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>, which
-adjusts the F1 score to weigh precision and recall differently during hyperparameter optimization.</p>
+adjusts the F1 score to weigh precision and recall differently during
+hyperparameter optimization.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Why Use <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>?</p>
+<p>For a more in depth discussion on threshold tuning, refer to <a class="reference internal" href="#f1-beta"><span class="std std-ref">this section</span></a>.</p>
+<p>Why use <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code>?</p>
 <ul>
 <li><p>Standard F1-Score: Balances precision and recall equally (<code class="docutils literal notranslate"><span class="pre">beta=1</span></code>).</p></li>
 <li><p>Custom Beta Values:</p>
@@ -2402,13 +2412,18 @@ retaining a manageable subset of predictors.</p>
    <span class="n">X_valid</span><span class="p">,</span>
    <span class="n">y_valid</span><span class="p">,</span>
    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
+
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
 <span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
    <span class="n">X_test</span><span class="p">,</span>
    <span class="n">y_test</span><span class="p">,</span>
    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="nb">print</span><span class="p">()</span>
@@ -2427,9 +2442,9 @@ retaining a manageable subset of predictors.</p>
 │ XGBClassifier                   │
 └─────────────────────────────────┘
 
-100%|██████████| 10/10 [00:27&lt;00:00,  2.70s/it]
+100%|██████████| 10/10 [00:20&lt;00:00,  2.10s/it]
 Fitting model with best params and tuning for best threshold ...
-100%|██████████| 2/2 [00:00&lt;00:00,  3.12it/s]
+100%|██████████| 2/2 [00:00&lt;00:00,  2.92it/s]
 Best score/param set found on validation set:
 {&#39;params&#39;: {&#39;feature_selection_rfe__n_features_to_select&#39;: 10,
             &#39;xgb__early_stopping_rounds&#39;: 100,
@@ -2449,6 +2464,17 @@ Confusion matrix on set provided:
 Actual: Pos  94 (tp)   10 (fn)
         Neg  70 (fp)  254 (tn)
 --------------------------------------------------------------------------------
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.573171
+1  Average Precision  0.824825
+2        Sensitivity  0.903846
+3        Specificity  0.783951
+4            AUC ROC  0.932499
+5        Brier Score  0.165950
+********************************************************************************
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
@@ -2465,6 +2491,7 @@ weighted avg       0.87      0.81      0.82       428
 Feature names selected:
 [&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
 
+Optimal threshold used: 0.25
 
 Test Metrics
 Confusion matrix on set provided:
@@ -2475,6 +2502,17 @@ Confusion matrix on set provided:
 Actual: Pos  93 (tp)   11 (fn)
         Neg  71 (fp)  253 (tn)
 --------------------------------------------------------------------------------
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.567073
+1  Average Precision  0.817957
+2        Sensitivity  0.894231
+3        Specificity  0.780864
+4            AUC ROC  0.930051
+5        Brier Score  0.165771
+********************************************************************************
 --------------------------------------------------------------------------------
 
               precision    recall  f1-score   support
@@ -2490,9 +2528,8 @@ weighted avg       0.86      0.81      0.82       428
 
 Feature names selected:
 [&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+
+Optimal threshold used: 0.25
 </pre></div>
 </div>
 <div class="admonition important">
@@ -2931,8 +2968,8 @@ and the Iris dataset as the example.</p>
 commonly used for multi-class classification. It contains 150 samples from three
 species of Iris flowers (Setosa, Versicolour, and Virginica), with four features:
 sepal length, sepal width, petal length, and petal width.</p>
-<section id="id2">
-<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -2947,8 +2984,8 @@ sepal length, sepal width, petal length, and petal width.</p>
 </pre></div>
 </div>
 </section>
-<section id="id3">
-<h3>Step 2: Load the dataset. Define X, y<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>Step 2: Load the dataset. Define X, y<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span>
@@ -3155,8 +3192,8 @@ distribution (as specified by <code class="docutils literal notranslate"><span c
 </ul>
 <p>These splits ensure that each phase of model development (training, validation, and testing) is performed on separate portions of the dataset, providing a robust evaluation pipeline.</p>
 </section>
-<section id="id4">
-<h3>Step 8: Fit the model<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>Step 8: Fit the model<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <p>After generating the data splits, the next step is to train the model using the
 training data and validate its performance on the validation data during training.
 The <code class="docutils literal notranslate"><span class="pre">fit</span></code> method in the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class handles this process seamlessly,
@@ -3179,8 +3216,8 @@ leveraging the best hyperparameters found during grid search.</p>
 <p>This step ensures that the model is fitted using the best configuration from the grid search and optimized for generalization. With the model trained, proceed to Step 9 to evaluate its performance on validation and test datasets.</p>
 </div>
 </section>
-<section id="id5">
-<h3>Step 9: Return metrics (optional)<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Step 9: Return metrics (optional)<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>Once the model is trained, you can evaluate its performance on the validation
 and test datasets by returning key metrics. The <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code> method from
 the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class calculates and displays metrics like <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">ROC AUC, precision, recall, and F1-score</span></a>.</p>
@@ -3306,8 +3343,8 @@ weighted avg       0.91      0.90      0.90        30
         [ 1,  9]]])}
 </pre></div>
 </div>
-<section id="id6">
-<h4>Report Model Metrics<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<section id="id7">
+<h4>Report Model Metrics<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
 <p>You can summarize and display the model’s performance metrics using the
 <code class="docutils literal notranslate"><span class="pre">report_model_metrics</span></code> function. This function computes key metrics like
 <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">precision, recall, F1-score, and ROC AUC</span></a> for each class, as well as macro and weighted averages.</p>
@@ -3395,7 +3432,7 @@ Predictions:
 </section>
 </section>
 <section id="regression">
-<span id="id7"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
+<span id="id8"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for a <strong>regression task</strong> with <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the <strong>California Housing dataset</strong>.</p>
 <p>The California Housing dataset, available in the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> library, is a commonly used benchmark dataset for regression problems. It contains features such as median income, housing age, and population, which are used to predict the median house value for California districts.</p>
 <p>In this example, we leverage the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class to:</p>
@@ -3407,8 +3444,8 @@ Predictions:
 <p>The workflow highlights how the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class simplifies regression tasks, including hyperparameter tuning, and performance evaluation.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
-<section id="id8">
-<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<section id="id9">
+<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
@@ -3477,8 +3514,8 @@ tree construction, and generalization performance of the model.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls output display during training (set to <code class="docutils literal notranslate"><span class="pre">0</span></code> for silent mode).</p></li>
 </ol>
 </section>
-<section id="id9">
-<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id10">
+<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code> inherently handles missing values (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) without requiring explicit
 imputation strategies. During training, <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> treats missing values as a
 separate category and learns how to route them within its decision trees.
@@ -3601,8 +3638,98 @@ Best r2: 0.765
 </section>
 </section>
 </section>
-<section id="performance-assessment">
-<h1>Performance Assessment<a class="headerlink" href="#performance-assessment" title="Link to this heading"></a></h1>
+<section id="performance-evaluation-metrics">
+<h1>Performance Evaluation Metrics<a class="headerlink" href="#performance-evaluation-metrics" title="Link to this heading"></a></h1>
+<section id="using-report-model-metrics">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code><a class="headerlink" href="#using-report-model-metrics" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="#report-model-metrics"><span class="std std-ref">report_model_metrics()</span></a> method provides detailed insights into model
+performance, including metrics such as <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">precision, recall, sensitivity, specificity, and AUC-ROC</span></a>.
+For regression models, it includes key metrics such as Mean Absolute Error (MAE), Mean Squared Error (MSE),
+Root Mean Squared Error (RMSE), R² Score, and Explained Variance.</p>
+<p>While this method is integrated into <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code>, it can also be invoked independently for
+custom evaluation workflows. For example, it can be used to focus on specific metrics or to analyze
+a subset of the data.</p>
+</section>
+<section id="using-return-metrics">
+<h2>Using <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code><a class="headerlink" href="#using-return-metrics" title="Link to this heading"></a></h2>
+<p>A key feature of <a class="reference internal" href="#return-metrics"><span class="std std-ref">return_metrics()</span></a> is its ability to retrieve and print the
+threshold value used to train the model. This threshold can be passed directly
+into <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code> for consistent evaluation.</p>
+</section>
+<section id="threshold-tuning">
+<h2>Threshold Tuning<a class="headerlink" href="#threshold-tuning" title="Link to this heading"></a></h2>
+<p>Model thresholding is a critical concept in classification tasks, allowing you
+to fine-tune the decision boundary for predicting positive or negative classes.
+Instead of relying on the default threshold of 0.5, which may not suit all
+datasets or evaluation metrics, <a class="reference internal" href="caveats.html#threshold-tuning-considerations"><span class="std std-ref">thresholds can be adjusted</span></a>
+to optimize metrics like <a class="reference internal" href="caveats.html#precision"><span class="std std-ref">precision</span></a>, <a class="reference internal" href="caveats.html#recall"><span class="std std-ref">recall</span></a>, or <a class="reference internal" href="caveats.html#f1-score"><span class="std std-ref">F1-score</span></a>
+based on your specific objectives.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">model.threshold</span></code> attribute provides a dictionary where each scoring metric
+is paired with its corresponding optimal threshold, enabling precise control over
+predictions. This is particularly useful in applications where the cost of false
+positives and false negatives differs significantly.</p>
+<p>For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Accessing the optimal thresholds for each scoring metric</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{&#39;roc_auc&#39;: 0.25}
+</pre></div>
+</div>
+<p><strong>When to Use Custom Thresholds</strong>:</p>
+<ul class="simple">
+<li><p><strong>Imbalanced Datasets</strong>: Adjusting thresholds can help mitigate the effects of class imbalance by prioritizing recall or precision for the minority class.</p></li>
+<li><p><strong>Domain-Specific Goals</strong>: In medical diagnostics, for instance, you might prefer a lower threshold to maximize sensitivity (recall) and minimize false negatives.</p></li>
+<li><p><strong>Optimizing for Specific Metrics</strong>: If your primary evaluation metric is F-beta, tuning the threshold ensures better alignment with your goals.</p></li>
+</ul>
+<section id="how-to-automatically-tune-thresholds">
+<span id="f1-beta"></span><h3>How to Automatically Tune Thresholds<a class="headerlink" href="#how-to-automatically-tune-thresholds" title="Link to this heading"></a></h3>
+<p>The optimal threshold can be automatically tuned by enabling F-beta optimization
+during parameter tuning. This can be done by setting <code class="docutils literal notranslate"><span class="pre">f1_beta_tune=True</span></code> in
+the <code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning()</span></code> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Automatically tune thresholds for F-beta optimization</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After tuning, the optimal thresholds will be stored in the <code class="docutils literal notranslate"><span class="pre">model.threshold</span></code>
+attribute for each scoring metric:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Retrieve the optimal threshold for a specific metric</span>
+<span class="n">threshold</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="s1">&#39;roc_auc&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="using-threshold-in-report-model-metrics">
+<h3>Using threshold in <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code><a class="headerlink" href="#using-threshold-in-report-model-metrics" title="Link to this heading"></a></h3>
+<p>After calling <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code> with <code class="docutils literal notranslate"><span class="pre">optimal_threshold=True</span></code>,
+you can reuse the threshold in <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code> as shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">threshold</span><span class="p">[</span><span class="s1">&#39;roc_auc&#39;</span><span class="p">]</span>  <span class="c1"># Retrieve the optimal threshold</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">report_model_metrics</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y_valid</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="reporting-threshold-in-return-metrics">
+<h3>Reporting Threshold in <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code><a class="headerlink" href="#reporting-threshold-in-return-metrics" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code> method provides the flexibility to retrieve and print the
+threshold used during model evaluation, enabling seamless reuse in other methods
+or manual experimentation. When <code class="docutils literal notranslate"><span class="pre">print_threshold=True</span></code> is specified, the
+threshold will be included as part of the output, making it easy to reference
+and apply in subsequent analyses.</p>
+<p><strong>Example</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve metrics and threshold using return_metrics</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+    <span class="n">X</span><span class="o">=</span><span class="n">X_valid</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">y_valid</span><span class="p">,</span>
+    <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>By including <code class="docutils literal notranslate"><span class="pre">print_threshold=True</span></code>, the optimal threshold used for predictions
+is displayed, ensuring transparency and providing a valuable reference for further
+evaluations or custom workflows.</p>
+</section>
+</section>
 <section id="classification-report-optional">
 <span id="classification-report"></span><h2>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h2>
 <p>A call to <code class="docutils literal notranslate"><span class="pre">print(model_xgb.classification_report)</span></code> will
@@ -3623,7 +3750,7 @@ weighted avg       0.88      0.88      0.88       428
 </section>
 </section>
 <section id="bootstrap-metrics">
-<h1>Bootstrap metrics<a class="headerlink" href="#bootstrap-metrics" title="Link to this heading"></a></h1>
+<h1>Bootstrap Metrics<a class="headerlink" href="#bootstrap-metrics" title="Link to this heading"></a></h1>
 <p>The <code class="docutils literal notranslate"><span class="pre">bootstrapper.py</span></code> module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="check_input_type">

@@ -63,8 +63,8 @@
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#multi-class-classification">Multi-Class Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-assessment">Performance Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-evaluation-metrics">Performance Evaluation Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap Metrics</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Caveats</span></p>
 <ul>
@@ -75,6 +75,7 @@
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#model-calibration">Model Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#using-imputation-and-scaling-in-pipeline-steps-for-model-preprocessing">Using Imputation and Scaling in Pipeline Steps for Model Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#caveats-in-imbalanced-learning">Caveats in Imbalanced Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#threshold-tuning-considerations">Threshold Tuning Considerations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#catboost-training-parameters">CatBoost Training Parameters</a></li>
 </ul>
@@ -235,16 +236,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#multi-class-classification">Multi-Class Classification</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#iris-dataset-with-xgboost">Iris Dataset with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id2">Step 1: Import Necessary Libraries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id3">Step 2: Load the dataset. Define X, y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id3">Step 1: Import Necessary Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id4">Step 2: Load the dataset. Define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-define-the-preprocessing-steps">Step 3: Define the preprocessing steps</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-define-the-estimator-and-hyperparameters">Step 4: Define the estimator and hyperparameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-5-initialize-and-configure-the-model">Step 5: Initialize and configure the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-6-perform-grid-search-parameter-tuning">Step 6: Perform grid search parameter tuning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-generate-data-splits">Step 7: Generate data splits</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id4">Step 8: Fit the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id5">Step 9: Return metrics (optional)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage_guide.html#id6">Report Model Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id5">Step 8: Fit the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id6">Step 9: Return metrics (optional)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage_guide.html#id7">Report Model Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-10-predict-probabilities-and-generate-predictions">Step 10: Predict probabilities and generate predictions</a></li>
@@ -254,11 +255,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id8">Step 1: Import necessary libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id9">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id9">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#id10">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-7-fit-the-model">Step 7: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage_guide.html#step-8-return-metrics-optional">Step 8: Return metrics (optional)</a></li>
@@ -266,11 +267,19 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-assessment">Performance Assessment</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-evaluation-metrics">Performance Evaluation Metrics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#using-report-model-metrics">Using <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#using-return-metrics">Using <code class="docutils literal notranslate"><span class="pre">return_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage_guide.html#threshold-tuning">Threshold Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#how-to-automatically-tune-thresholds">How to Automatically Tune Thresholds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#using-threshold-in-report-model-metrics">Using threshold in <code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage_guide.html#reporting-threshold-in-return-metrics">Reporting Threshold in <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#classification-report-optional">Classification report (optional)</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap metrics</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap Metrics</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#check_input_type"><code class="docutils literal notranslate"><span class="pre">check_input_type()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#sampling_method"><code class="docutils literal notranslate"><span class="pre">sampling_method()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage_guide.html#evaluate_bootstrap_metrics"><code class="docutils literal notranslate"><span class="pre">evaluate_bootstrap_metrics()</span></code></a></li>
@@ -331,6 +340,11 @@
 <li class="toctree-l3"><a class="reference internal" href="caveats.html#mitigating-the-caveats">Mitigating the Caveats</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="caveats.html#threshold-tuning-considerations">Threshold Tuning Considerations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#the-precision-recall-tradeoff">The Precision-Recall Tradeoff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="caveats.html#threshold-optimization">Threshold Optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="caveats.html#elasticnet-regularization">ElasticNet Regularization</a><ul>

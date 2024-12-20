@@ -64,8 +64,8 @@
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#binary-classification">Binary Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#multi-class-classification">Multi-Class Classification</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage_guide.html#regression">Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-assessment">Performance Assessment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#performance-evaluation-metrics">Performance Evaluation Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_guide.html#bootstrap-metrics">Bootstrap Metrics</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Caveats</span></p>
 <ul class="current">
@@ -117,6 +117,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#mitigating-the-caveats">Mitigating the Caveats</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#threshold-tuning-considerations">Threshold Tuning Considerations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-precision-recall-tradeoff">The Precision-Recall Tradeoff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#threshold-optimization">Threshold Optimization</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#elasticnet-regularization">ElasticNet Regularization</a><ul>
@@ -475,7 +480,7 @@ help mitigate this issue, but it requires careful tuning and validation.</p>
 <p>Traditional accuracy is a misleading metric in imbalanced datasets. For example, a model predicting
 only the majority class can achieve high accuracy despite failing to identify any minority class instances.
 Instead, alternative metrics should be used:</p>
-<ul>
+<ul id="precision">
 <li><p><strong>Precision</strong> for the minority class:</p>
 <blockquote>
 <div><p>Measures the proportion of correctly predicted minority class instances out of all
@@ -484,6 +489,8 @@ instances predicted as the minority class.</p>
 <div class="math notranslate nohighlight">
 \[\text{Precision} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Positives}}\]</div>
 </li>
+</ul>
+<ul id="recall">
 <li><p><strong>Recall</strong> for the minority class:</p>
 <blockquote>
 <div><p>Measures the proportion of correctly predicted minority class instances out of all actual
@@ -492,6 +499,8 @@ minority class instances.</p>
 <div class="math notranslate nohighlight">
 \[\text{Recall} = \frac{\text{True Positives}}{\text{True Positives} + \text{False Negatives}}\]</div>
 </li>
+</ul>
+<ul id="f1-score">
 <li><p><strong>F1-Score</strong>, the harmonic mean of precision and recall:</p>
 <blockquote>
 <div><p>Balances precision and recall to provide a single performance measure.</p>
@@ -627,6 +636,52 @@ minority class samples and their neighbors.</p>
 </section>
 </section>
 </section>
+<section id="threshold-tuning-considerations">
+<span id="id3"></span><h1>Threshold Tuning Considerations<a class="headerlink" href="#threshold-tuning-considerations" title="Link to this heading"></a></h1>
+<p><strong>Mathematical Basis</strong>:</p>
+<p>In binary classification, the decision rule is represented as:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\hat{y} =
+\begin{cases}
+   1 &amp; \text{if } P(\text{positive class} \mid X) &gt; \tau \\
+   0 &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p>Here:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P(\text{positive class} \mid X)\)</span> is the predicted probability of the positive class given features <span class="math notranslate nohighlight">\(X\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\tau\)</span> is the threshold value, which determines the decision boundary.</p></li>
+</ul>
+<p>By default, <span class="math notranslate nohighlight">\(\tau = 0.5\)</span>, but this may not always align with the desired balance between precision and recall.</p>
+<section id="the-precision-recall-tradeoff">
+<h2>The Precision-Recall Tradeoff<a class="headerlink" href="#the-precision-recall-tradeoff" title="Link to this heading"></a></h2>
+<p>When tuning the threshold <span class="math notranslate nohighlight">\(\tau\)</span>, it is important to recognize its impact on precision and recall:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#precision"><span class="std std-ref">Precision</span></a> increases as <span class="math notranslate nohighlight">\(\tau\)</span> increases, since the model becomes more conservative in predicting the positive class, reducing false positives.</p></li>
+<li><p><a class="reference internal" href="#recall"><span class="std std-ref">Recall</span></a> decreases as <span class="math notranslate nohighlight">\(\tau\)</span> increases, as the model’s stricter criteria result in more false negatives.</p></li>
+</ul>
+<p>This tradeoff is especially critical in domains where false positives or false negatives have significantly different costs, such as:</p>
+<ul class="simple">
+<li><p>Medical diagnostics: Emphasize recall to minimize false negatives.</p></li>
+<li><p>Spam detection: Emphasize precision to reduce false positives.</p></li>
+</ul>
+</section>
+<section id="threshold-optimization">
+<h2>Threshold Optimization<a class="headerlink" href="#threshold-optimization" title="Link to this heading"></a></h2>
+<p>Adjusting the threshold based solely on a single metric (e.g., maximizing precision) may lead to suboptimal performance in other metrics. For example:</p>
+<ul class="simple">
+<li><p>Increasing <span class="math notranslate nohighlight">\(\tau\)</span> to improve precision might drastically reduce recall.</p></li>
+<li><p>Decreasing <span class="math notranslate nohighlight">\(\tau\)</span> to maximize recall might result in an unacceptably high false positive rate.</p></li>
+</ul>
+<p>A balanced metric like the F-beta score can address this tradeoff:</p>
+<div class="math notranslate nohighlight">
+\[F_\beta = (1 + \beta^2) \cdot \frac{\text{Precision} \cdot \text{Recall}}{(\beta^2 \cdot \text{Precision}) + \text{Recall}}\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\beta\)</span> adjusts the weight given to recall relative to precision:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\beta &gt; 1\)</span>: Recall is prioritized.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta &lt; 1\)</span>: Precision is prioritized.</p></li>
+</ul>
+</section>
+</section>
 <section id="elasticnet-regularization">
 <span id="elastic-net"></span><h1>ElasticNet Regularization<a class="headerlink" href="#elasticnet-regularization" title="Link to this heading"></a></h1>
 <p>Elastic net minimizes the following cost function:</p>
@@ -678,7 +733,7 @@ minority class samples and their neighbors.</p>
 </section>
 </section>
 <section id="catboost-training-parameters">
-<span id="id3"></span><h1>CatBoost Training Parameters<a class="headerlink" href="#catboost-training-parameters" title="Link to this heading"></a></h1>
+<span id="id4"></span><h1>CatBoost Training Parameters<a class="headerlink" href="#catboost-training-parameters" title="Link to this heading"></a></h1>
 <p>According to the <a class="reference external" href="https://catboost.ai/docs/en/references/training-parameters/">CatBoost documentation</a>:</p>
 <blockquote>
 <div><p>“For the Python package several parameters have aliases. For example, the –iterations parameter has the following synonyms: num_boost_round, n_estimators, num_trees. Simultaneous usage of different names of one parameter raises an error.”</p>

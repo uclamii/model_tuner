@@ -141,6 +141,9 @@ dmypy.json
 Data/
 data_splits/
 structured_data_regressor/
+py_example_scripts/
+unittests/
+catboost_info/
 mlruns/
 src/
 Images/
