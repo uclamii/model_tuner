@@ -793,13 +793,15 @@ Get train, val, test data
    - Designed to support models evaluated on binary classification tasks.
 
    **Example:**
+
    ::
+
       optimal_threshold = tune_threshold_Fbeta(
-          score="roc_auc",
-          y_valid=y_valid,
-          betas=[0.5, 1, 2],
-          y_valid_proba=model.predict_proba(X_valid)[:, 1],
-          kfold=False,
+            score="roc_auc",
+            y_valid=y_valid,
+            betas=[0.5, 1, 2],
+            y_valid_proba=model.predict_proba(X_valid)[:, 1],
+            kfold=False,
       )
 
 
@@ -857,7 +859,9 @@ Get train, val, test data
       - The function works seamlessly with both ``pandas.DataFrame`` and array-like data structures.
 
    **Example:**
+
    ::
+
       X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
           X=features,
           y=target,
@@ -909,7 +913,7 @@ Get train, val, test data
 
    - **Bayesian Search**:
 
-     - If ``self.bayesian`` is True, uses ``BayesSearchCV`` for Bayesian optimization.
+     - If ``self.bayesian`` is ``True``, uses ``BayesSearchCV`` for Bayesian optimization.
      - Removes any ``bayes__`` prefixed parameters from the grid and uses them as additional arguments for ``BayesSearchCV``.
 
    - **Grid Search**:
@@ -1139,7 +1143,7 @@ Get train, val, test data
    :param X_valid: Feature set used for validation. If performing K-Fold validation, this 
        represents the entire dataset. Default is ``None``.
    :type X_valid: pandas.DataFrame or array-like, optional
-   :param y_valid: True labels for the validation dataset. If performing K-Fold validation, 
+   :param y_valid: ``True`` labels for the validation dataset. If performing K-Fold validation, 
        this corresponds to the entire dataset. Default is ``None``.
    :type y_valid: pandas.Series or array-like, optional
    :param threshold: Classification threshold for binary classification models. Predictions 
@@ -1679,7 +1683,10 @@ This method will:
    Best roc_auc: 0.926 
 
 Step 8: Fit the model
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In this step, we train the ``XGBClassifier`` using the training data and monitor 
+performance on the validation data during training.
 
 .. code-block:: python
 
@@ -1688,9 +1695,6 @@ Step 8: Fit the model
        y_train,
        validation_data=[X_valid, y_valid],
    )
-
-In this step, we train the ``XGBClassifier`` using the training data and monitor 
-performance on the validation data during training.
 
 .. note:: 
    
@@ -1739,14 +1743,15 @@ You can use this function to evaluate the model by printing the output.
 
                  precision    recall  f1-score   support
 
-             0        0.96      0.77      0.85       324
-             1        0.55      0.89      0.68       104
+              0       0.96      0.77      0.85       324
+              1       0.55      0.89      0.68       104
 
        accuracy                           0.80       428
       macro avg       0.75      0.83      0.77       428
    weighted avg       0.86      0.80      0.81       428
 
    --------------------------------------------------------------------------------
+   Optimal threshold used: 0.26
 
    Test Metrics
    Confusion matrix on set provided: 
@@ -1759,16 +1764,25 @@ You can use this function to evaluate the model by printing the output.
    --------------------------------------------------------------------------------
    --------------------------------------------------------------------------------
 
-                 precision    recall  f1-score   support
+                precision    recall  f1-score   support
 
               0       0.98      0.75      0.85       323
               1       0.55      0.94      0.69       105
-
+ 
        accuracy                           0.79       428
       macro avg       0.76      0.84      0.77       428
    weighted avg       0.87      0.79      0.81       428
 
    --------------------------------------------------------------------------------
+   Optimal threshold used: 0.26
+
+
+.. note::
+
+   A detailed classification report is also available at this stage for review. 
+   To print and examine it, refer to this :ref:`Model Metrics <Classification_Report>` section for guidance on 
+   accessing and interpreting the report.
+
 
 Step 10: Calibrate the model (if needed)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -3264,7 +3278,7 @@ This method will:
 - **Split the Data**: The data will be split into training and validation sets. Since ``stratify_y=False``, the class distribution will not be maintained across splits.
 - **Iterate Over Hyperparameters**: All combinations of hyperparameters defined in ``tuned_parameters_xgb`` will be tried since ``randomized_grid=False``.
 - **Early Stopping**: With ``boost_early=True`` and ``early_stopping_rounds`` set in the hyperparameters, the model will stop training early if the validation score does not improve.
-- **Scoring**: The model uses :math:`R^2` (R-squared) as the scoring metric, which is suitable for evaluating regression models.
+- **Scoring**: The model uses :math:`R^2` as the scoring metric, which is suitable for evaluating regression models.
 - **Select Best Model**: The hyperparameter set that yields the best validation score based on the specified metric (:math:`R^2`) will be selected.
 
 
@@ -3335,12 +3349,13 @@ Step 8: Return metrics (optional)
 Report Model Metrics
 =========================
 
+.. _Classification_Report:
+
 Classification report (optional)
 ------------------------------------
 
-A classification report is readily available at this stage, should you wish to 
-print and examine it. A call to ``print(model_xgb.classification_report)`` will
-output it as follows:
+A call to ``print(model_xgb.classification_report)`` will
+output the classification report as follows:
 
 .. code-block:: python 
 
