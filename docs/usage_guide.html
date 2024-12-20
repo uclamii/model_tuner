@@ -126,10 +126,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the model (if needed)</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#recursive-feature-elimination-rfe">Recursive Feature Elimination (RFE)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#elastic-net-for-feature-selection-with-rfe">Elastic Net for feature selection with RFE</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="#imbalanced-learning">Imbalanced Learning</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#generating-an-imbalanced-dataset">Generating an imbalanced dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#define-hyperparameters-for-xgboost">Define hyperparameters for XGBoost</a></li>
@@ -147,6 +143,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#step-4-return-metrics-optional">Step 4: Return metrics (optional)</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#recursive-feature-elimination-rfe">Recursive Feature Elimination (RFE)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#elastic-net-for-feature-selection-with-rfe">Elastic Net for feature selection with RFE</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#shap-shapley-additive-explanations">SHAP (SHapley Additive exPlanations)</a><ul>
@@ -2311,239 +2311,6 @@ roc_auc after calibration: 0.9260891500474834
 </a>
 </div><div style="height: 50px;"></div></section>
 </section>
-<section id="recursive-feature-elimination-rfe">
-<h2>Recursive Feature Elimination (RFE)<a class="headerlink" href="#recursive-feature-elimination-rfe" title="Link to this heading"></a></h2>
-<p>Now that we’ve trained the models, we can also refine them by identifying which
-features contribute most to their performance. One effective method for this is
-Recursive Feature Elimination (RFE). This technique allows us to systematically
-remove the least important features, retraining the model at each step to evaluate
-how performance is affected. By focusing only on the most impactful variables,
-RFE helps streamline the dataset, reduce noise, and improve both the accuracy and
-interpretability of the final model.</p>
-<p>It works by recursively training a model, ranking the importance of features
-based on the model’s outputas (such as coefficients in linear models or
-importance scores in tree-based models), and then removing the least important
-features one by one. This process continues until a specified number of features
-remains or the desired performance criteria are met.</p>
-<p>The primary advantage of RFE is its ability to streamline datasets, improving
-model performance and interpretability by focusing on features that contribute
-the most to the predictive power. However, it can be computationally expensive
-since it involves repeated model training, and its effectiveness depends on the
-underlying model’s ability to evaluate feature importance. RFE is commonly used
-with cross-validation to ensure that the selected features generalize well across
-datasets, making it a robust choice for model optimization and dimensionality
-reduction.</p>
-<p>As an illustrative example, we will retrain the above model using RFE.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">RFE</span>
-<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">ElasticNet</span>
-</pre></div>
-</div>
-<p>We will begin by appending the feature selection technique to our <a class="reference internal" href="#xgb-hyperparams"><span class="std std-ref">tuned parameters dictionary</span></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;feature_selection_rfe__n_features_to_select&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="mi">5</span><span class="p">,</span>
-   <span class="mi">10</span><span class="p">,</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-<section id="elastic-net-for-feature-selection-with-rfe">
-<h3>Elastic Net for feature selection with RFE<a class="headerlink" href="#elastic-net-for-feature-selection-with-rfe" title="Link to this heading"></a></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You may wish to explore <a class="reference internal" href="caveats.html#elastic-net"><span class="std std-ref">this section</span></a> for the rationale in applying this technique.</p>
-</div>
-<p>We will use elastic net because it strikes a balance between two widely used
-regularization techniques: Lasso (<span class="math notranslate nohighlight">\(L1\)</span>) and Ridge (<span class="math notranslate nohighlight">\(L2\)</span>). Elastic net
-is particularly effective in scenarios where we expect the dataset to have a mix
-of strongly and weakly correlated features. Lasso alone tends to select only one
-feature from a group of highly correlated ones, ignoring the others, while Ridge
-includes all features but may not perform well when some are entirely irrelevant.
-Elastic net addresses this limitation by combining both penalties, allowing it to handle
-multicollinearity more effectively while still performing feature selection.</p>
-<p>Additionally, elastic net provides flexibility by controlling the ratio between
-<span class="math notranslate nohighlight">\(L1\)</span> and <span class="math notranslate nohighlight">\(L2\)</span> penalties, enabling fine-tuning to suit the specific needs of
-our dataset. This makes it a robust choice for datasets with many features, some
-of which may be irrelevant or redundant, as it can reduce overfitting while
-retaining a manageable subset of predictors.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rfe_estimator</span> <span class="o">=</span> <span class="n">ElasticNet</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">l1_ratio</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
-
-<span class="n">rfe</span> <span class="o">=</span> <span class="n">RFE</span><span class="p">(</span><span class="n">rfe_estimator</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
-
-<span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AIDS_Clinical_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
-   <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
-   <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
-   <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
-   <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
-   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
-      <span class="p">(</span><span class="s2">&quot;rfe&quot;</span><span class="p">,</span> <span class="n">rfe</span><span class="p">),</span>
-   <span class="p">],</span>
-   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
-   <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
-   <span class="n">feature_selection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
-   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
-   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
-   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
-   <span class="n">X_train</span><span class="p">,</span>
-   <span class="n">y_train</span><span class="p">,</span>
-   <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
-<span class="p">)</span>
-
-
-<span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_valid</span><span class="p">,</span>
-   <span class="n">y_valid</span><span class="p">,</span>
-   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="nb">print</span><span class="p">()</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
-<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
-   <span class="n">X_test</span><span class="p">,</span>
-   <span class="n">y_test</span><span class="p">,</span>
-   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="nb">print</span><span class="p">()</span>
-</pre></div>
-</div>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Pipeline Steps:
-
-┌─────────────────────────────────┐
-│ Step 1: feature_selection_rfe   │
-│ RFE                             │
-└─────────────────────────────────┘
-               │
-               ▼
-┌─────────────────────────────────┐
-│ Step 2: xgb                     │
-│ XGBClassifier                   │
-└─────────────────────────────────┘
-
-100%|██████████| 10/10 [00:20&lt;00:00,  2.10s/it]
-Fitting model with best params and tuning for best threshold ...
-100%|██████████| 2/2 [00:00&lt;00:00,  2.92it/s]
-Best score/param set found on validation set:
-{&#39;params&#39;: {&#39;feature_selection_rfe__n_features_to_select&#39;: 10,
-            &#39;xgb__early_stopping_rounds&#39;: 100,
-            &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
-            &#39;xgb__learning_rate&#39;: 0.0001,
-            &#39;xgb__max_depth&#39;: 10,
-            &#39;xgb__n_estimators&#39;: 999},
-&#39;score&#39;: 0.9324994064577399}
-Best roc_auc: 0.932
-
-Validation Metrics
-Confusion matrix on set provided:
---------------------------------------------------------------------------------
-         Predicted:
-            Pos   Neg
---------------------------------------------------------------------------------
-Actual: Pos  94 (tp)   10 (fn)
-        Neg  70 (fp)  254 (tn)
---------------------------------------------------------------------------------
-********************************************************************************
-Report Model Metrics: xgb
-
-            Metric     Value
-0      Precision/PPV  0.573171
-1  Average Precision  0.824825
-2        Sensitivity  0.903846
-3        Specificity  0.783951
-4            AUC ROC  0.932499
-5        Brier Score  0.165950
-********************************************************************************
---------------------------------------------------------------------------------
-
-              precision    recall  f1-score   support
-
-           0       0.96      0.78      0.86       324
-           1       0.57      0.90      0.70       104
-
-    accuracy                           0.81       428
-   macro avg       0.77      0.84      0.78       428
-weighted avg       0.87      0.81      0.82       428
-
---------------------------------------------------------------------------------
-
-Feature names selected:
-[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
-
-Optimal threshold used: 0.25
-
-Test Metrics
-Confusion matrix on set provided:
---------------------------------------------------------------------------------
-         Predicted:
-            Pos   Neg
---------------------------------------------------------------------------------
-Actual: Pos  93 (tp)   11 (fn)
-        Neg  71 (fp)  253 (tn)
---------------------------------------------------------------------------------
-********************************************************************************
-Report Model Metrics: xgb
-
-            Metric     Value
-0      Precision/PPV  0.567073
-1  Average Precision  0.817957
-2        Sensitivity  0.894231
-3        Specificity  0.780864
-4            AUC ROC  0.930051
-5        Brier Score  0.165771
-********************************************************************************
---------------------------------------------------------------------------------
-
-              precision    recall  f1-score   support
-
-           0       0.96      0.78      0.86       324
-           1       0.57      0.89      0.69       104
-
-    accuracy                           0.81       428
-   macro avg       0.76      0.84      0.78       428
-weighted avg       0.86      0.81      0.82       428
-
---------------------------------------------------------------------------------
-
-Feature names selected:
-[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
-
-Optimal threshold used: 0.25
-</pre></div>
-</div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Passing <code class="docutils literal notranslate"><span class="pre">feature_selection=True</span></code> in conjunction with accounting for <code class="docutils literal notranslate"><span class="pre">rfe</span></code> for
-the <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code> inside the <code class="docutils literal notranslate"><span class="pre">Model`</span></code> class above is necessary to print the
-output of the feature names selected, thus yielding:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Feature names selected:
-[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
-</pre></div>
-</div>
-</div>
-</section>
-</section>
 <section id="imbalanced-learning">
 <h2>Imbalanced Learning<a class="headerlink" href="#imbalanced-learning" title="Link to this heading"></a></h2>
 <p>In machine learning, imbalanced datasets are a frequent challenge, especially in
@@ -2722,12 +2489,13 @@ classification performance on imbalanced datasets.</p>
 <h4>Step 1: Initalize and configure the model<a class="headerlink" href="#step-1-initalize-and-configure-the-model" title="Link to this heading"></a></h4>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>In the code block below, we initalize and configure the model by calling the
-<code class="docutils literal notranslate"><span class="pre">Model</span></code> class, and assign it to a new variable call <code class="docutils literal notranslate"><span class="pre">xgb_smote</span></code>. Notice that
-we pass the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE()</span></code> as a necessary step of activating
-this imbalanced sampler.</p>
+<p>In the code block below, we initialize and configure the model by instantiating the
+<code class="docutils literal notranslate"><span class="pre">Model</span></code> class and assigning it to a variable named <code class="docutils literal notranslate"><span class="pre">xgb_smote</span></code>. Note that
+the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE(random_state=42)</span></code> parameter is included to activate
+the imbalanced sampler. Setting a random state of 42 ensures reproducibility of results.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span>
 
 <span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -2744,7 +2512,7 @@ this imbalanced sampler.</p>
    <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
    <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-   <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">),</span>
+   <span class="n">imbalance_sampler</span><span class="o">=</span><span class="n">SMOTE</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -2777,16 +2545,16 @@ Distribution of y values after resampling: target
 1         540
 Name: count, dtype: int64
 
-100%|██████████| 5/5 [00:34&lt;00:00,  6.87s/it]
+100%|██████████| 5/5 [00:16&lt;00:00,  3.25s/it]
 Fitting model with best params and tuning for best threshold ...
-100%|██████████| 2/2 [00:00&lt;00:00,  4.37it/s]Best score/param set found on validation set:
+100%|██████████| 2/2 [00:00&lt;00:00,  4.17it/s]Best score/param set found on validation set:
 {&#39;params&#39;: {&#39;xgb__early_stopping_rounds&#39;: 100,
             &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
             &#39;xgb__learning_rate&#39;: 0.0001,
-            &#39;xgb__max_depth&#39;: 10,
+            &#39;xgb__max_depth&#39;: 3,
             &#39;xgb__n_estimators&#39;: 999},
-&#39;score&#39;: 0.9990277777777777}
-Best roc_auc: 0.999
+&#39;score&#39;: 0.9969444444444445}
+Best roc_auc: 0.997
 </pre></div>
 </div>
 </section>
@@ -2807,66 +2575,334 @@ for the minority class and 540 observations for the majority class.</p>
 </section>
 <section id="step-4-return-metrics-optional">
 <h4>Step 4: Return metrics (optional)<a class="headerlink" href="#step-4-return-metrics-optional" title="Link to this heading"></a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">xgb_smote</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Validation Metrics
 Confusion matrix on set provided:
 --------------------------------------------------------------------------------
          Predicted:
-             Pos   Neg
+            Pos   Neg
 --------------------------------------------------------------------------------
 Actual: Pos  20 (tp)    0 (fn)
-        Neg   6 (fp)  174 (tn)
+        Neg   1 (fp)  179 (tn)
 --------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-{&#39;AUC ROC&#39;: 0.9955555555555555,
-&#39;Average Precision&#39;: 0.9378696741854636,
-&#39;Brier Score&#39;: 0.20835571676988004,
-&#39;Precision/PPV&#39;: 0.7692307692307693,
-&#39;Sensitivity&#39;: 1.0,
-&#39;Specificity&#39;: 0.9666666666666667}
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.952381
+1  Average Precision  0.947751
+2        Sensitivity  1.000000
+3        Specificity  0.994444
+4            AUC ROC  0.996944
+5        Brier Score  0.208997
+********************************************************************************
 --------------------------------------------------------------------------------
 
-            precision   recall  f1-score   support
+              precision    recall  f1-score   support
 
-           0     1.00     0.97      0.98       180
-           1     0.77     1.00      0.87        20
+           0       1.00      0.99      1.00       180
+           1       0.95      1.00      0.98        20
 
-    accuracy                        0.97       200
-   macro avg     0.88     0.98      0.93       200
-weighted avg     0.98     0.97      0.97       200
+    accuracy                           0.99       200
+   macro avg       0.98      1.00      0.99       200
+weighted avg       1.00      0.99      1.00       200
 
 --------------------------------------------------------------------------------
+Optimal threshold used: 0.52
 
 Test Metrics
 Confusion matrix on set provided:
 --------------------------------------------------------------------------------
          Predicted:
-             Pos   Neg
+            Pos   Neg
 --------------------------------------------------------------------------------
-Actual: Pos  19 (tp)    1 (fn)
+Actual: Pos  18 (tp)    2 (fn)
         Neg   3 (fp)  177 (tn)
 --------------------------------------------------------------------------------
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.857143
+1  Average Precision  0.897215
+2        Sensitivity  0.900000
+3        Specificity  0.983333
+4            AUC ROC  0.966944
+5        Brier Score  0.209358
+********************************************************************************
 --------------------------------------------------------------------------------
-{&#39;AUC ROC&#39;: 0.9945833333333333,
-&#39;Average Precision&#39;: 0.9334649122807017,
-&#39;Brier Score&#39;: 0.20820269480995568,
-&#39;Precision/PPV&#39;: 0.8636363636363636,
-&#39;Sensitivity&#39;: 0.95,
-&#39;Specificity&#39;: 0.9833333333333333}
---------------------------------------------------------------------------------
 
-            precision    recall  f1-score   support
+              precision    recall  f1-score   support
 
-           0     0.99      0.98      0.99       180
-           1     0.86      0.95      0.90        20
+           0       0.99      0.98      0.99       180
+           1       0.86      0.90      0.88        20
 
-    accuracy                         0.98       200
-   macro avg     0.93      0.97      0.95       200
-weighted avg     0.98      0.98      0.98       200
+    accuracy                           0.97       200
+   macro avg       0.92      0.94      0.93       200
+weighted avg       0.98      0.97      0.98       200
 
 --------------------------------------------------------------------------------
+Optimal threshold used: 0.52
 </pre></div>
 </div>
 </section>
+</section>
+</section>
+<section id="recursive-feature-elimination-rfe">
+<h2>Recursive Feature Elimination (RFE)<a class="headerlink" href="#recursive-feature-elimination-rfe" title="Link to this heading"></a></h2>
+<p>Now that we’ve trained the models, we can also refine them by identifying which
+features contribute most to their performance. One effective method for this is
+Recursive Feature Elimination (RFE). This technique allows us to systematically
+remove the least important features, retraining the model at each step to evaluate
+how performance is affected. By focusing only on the most impactful variables,
+RFE helps streamline the dataset, reduce noise, and improve both the accuracy and
+interpretability of the final model.</p>
+<p>It works by recursively training a model, ranking the importance of features
+based on the model’s outputas (such as coefficients in linear models or
+importance scores in tree-based models), and then removing the least important
+features one by one. This process continues until a specified number of features
+remains or the desired performance criteria are met.</p>
+<p>The primary advantage of RFE is its ability to streamline datasets, improving
+model performance and interpretability by focusing on features that contribute
+the most to the predictive power. However, it can be computationally expensive
+since it involves repeated model training, and its effectiveness depends on the
+underlying model’s ability to evaluate feature importance. RFE is commonly used
+with cross-validation to ensure that the selected features generalize well across
+datasets, making it a robust choice for model optimization and dimensionality
+reduction.</p>
+<p>As an illustrative example, we will retrain the above model using RFE.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">RFE</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">ElasticNet</span>
+</pre></div>
+</div>
+<p>We will begin by appending the feature selection technique to our <a class="reference internal" href="#xgb-hyperparams"><span class="std std-ref">tuned parameters dictionary</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_definition</span><span class="p">[</span><span class="s2">&quot;tuned_parameters&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;feature_selection_rfe__n_features_to_select&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="kc">None</span><span class="p">,</span>
+   <span class="mi">5</span><span class="p">,</span>
+   <span class="mi">10</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<section id="elastic-net-for-feature-selection-with-rfe">
+<h3>Elastic Net for feature selection with RFE<a class="headerlink" href="#elastic-net-for-feature-selection-with-rfe" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may wish to explore <a class="reference internal" href="caveats.html#elastic-net"><span class="std std-ref">this section</span></a> for the rationale in applying this technique.</p>
+</div>
+<p>We will use elastic net because it strikes a balance between two widely used
+regularization techniques: Lasso (<span class="math notranslate nohighlight">\(L1\)</span>) and Ridge (<span class="math notranslate nohighlight">\(L2\)</span>). Elastic net
+is particularly effective in scenarios where we expect the dataset to have a mix
+of strongly and weakly correlated features. Lasso alone tends to select only one
+feature from a group of highly correlated ones, ignoring the others, while Ridge
+includes all features but may not perform well when some are entirely irrelevant.
+Elastic net addresses this limitation by combining both penalties, allowing it to handle
+multicollinearity more effectively while still performing feature selection.</p>
+<p>Additionally, elastic net provides flexibility by controlling the ratio between
+<span class="math notranslate nohighlight">\(L1\)</span> and <span class="math notranslate nohighlight">\(L2\)</span> penalties, enabling fine-tuning to suit the specific needs of
+our dataset. This makes it a robust choice for datasets with many features, some
+of which may be irrelevant or redundant, as it can reduce overfitting while
+retaining a manageable subset of predictors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rfe_estimator</span> <span class="o">=</span> <span class="n">ElasticNet</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">l1_ratio</span><span class="o">=</span><span class="mf">0.9</span><span class="p">)</span>
+
+<span class="n">rfe</span> <span class="o">=</span> <span class="n">RFE</span><span class="p">(</span><span class="n">rfe_estimator</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AIDS_Clinical_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="n">estimator_name</span><span class="p">,</span>
+   <span class="n">calibrate</span><span class="o">=</span><span class="n">calibrate</span><span class="p">,</span>
+   <span class="n">estimator</span><span class="o">=</span><span class="n">clc</span><span class="p">,</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+   <span class="n">kfold</span><span class="o">=</span><span class="n">kfold</span><span class="p">,</span>
+   <span class="n">pipeline_steps</span><span class="o">=</span><span class="p">[</span>
+      <span class="p">(</span><span class="s2">&quot;rfe&quot;</span><span class="p">,</span> <span class="n">rfe</span><span class="p">),</span>
+   <span class="p">],</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters</span><span class="p">,</span>
+   <span class="n">randomized_grid</span><span class="o">=</span><span class="n">rand_grid</span><span class="p">,</span>
+   <span class="n">feature_selection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">boost_early</span><span class="o">=</span><span class="n">early_stop</span><span class="p">,</span>
+   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_train_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_valid_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">get_test_data</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+   <span class="n">X_train</span><span class="p">,</span>
+   <span class="n">y_train</span><span class="p">,</span>
+   <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">X_valid</span><span class="p">,</span> <span class="n">y_valid</span><span class="p">],</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ------------------------- VALID AND TEST METRICS -----------------------------</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Validation Metrics&quot;</span><span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Test Metrics&quot;</span><span class="p">)</span>
+<span class="n">model_xgb</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_test</span><span class="p">,</span>
+   <span class="n">y_test</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Pipeline Steps:
+
+┌─────────────────────────────────┐
+│ Step 1: feature_selection_rfe   │
+│ RFE                             │
+└─────────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────┐
+│ Step 2: xgb                     │
+│ XGBClassifier                   │
+└─────────────────────────────────┘
+
+100%|██████████| 15/15 [00:40&lt;00:00,  2.70s/it]
+Fitting model with best params and tuning for best threshold ...
+100%|██████████| 2/2 [00:00&lt;00:00,  3.53it/s]
+Best score/param set found on validation set:
+{&#39;params&#39;: {&#39;feature_selection_rfe__n_features_to_select&#39;: 10,
+            &#39;xgb__early_stopping_rounds&#39;: 100,
+            &#39;xgb__eval_metric&#39;: &#39;logloss&#39;,
+            &#39;xgb__learning_rate&#39;: 0.0001,
+            &#39;xgb__max_depth&#39;: 10,
+            &#39;xgb__n_estimators&#39;: 999},
+&#39;score&#39;: 0.9324994064577399}
+Best roc_auc: 0.932
+
+Validation Metrics
+Confusion matrix on set provided:
+--------------------------------------------------------------------------------
+         Predicted:
+            Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  94 (tp)   10 (fn)
+        Neg  70 (fp)  254 (tn)
+--------------------------------------------------------------------------------
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.573171
+1  Average Precision  0.824825
+2        Sensitivity  0.903846
+3        Specificity  0.783951
+4            AUC ROC  0.932499
+5        Brier Score  0.165950
+********************************************************************************
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.96      0.78      0.86       324
+           1       0.57      0.90      0.70       104
+
+    accuracy                           0.81       428
+   macro avg       0.77      0.84      0.78       428
+weighted avg       0.87      0.81      0.82       428
+
+--------------------------------------------------------------------------------
+
+Feature names selected:
+[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
+
+Optimal threshold used: 0.25
+
+Test Metrics
+Confusion matrix on set provided:
+--------------------------------------------------------------------------------
+         Predicted:
+            Pos   Neg
+--------------------------------------------------------------------------------
+Actual: Pos  93 (tp)   11 (fn)
+        Neg  71 (fp)  253 (tn)
+--------------------------------------------------------------------------------
+********************************************************************************
+Report Model Metrics: xgb
+
+            Metric     Value
+0      Precision/PPV  0.567073
+1  Average Precision  0.817957
+2        Sensitivity  0.894231
+3        Specificity  0.780864
+4            AUC ROC  0.930051
+5        Brier Score  0.165771
+********************************************************************************
+--------------------------------------------------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.96      0.78      0.86       324
+           1       0.57      0.89      0.69       104
+
+    accuracy                           0.81       428
+   macro avg       0.76      0.84      0.78       428
+weighted avg       0.86      0.81      0.82       428
+
+--------------------------------------------------------------------------------
+
+Feature names selected:
+[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
+
+Optimal threshold used: 0.25
+</pre></div>
+</div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">feature_selection=True</span></code> in conjunction with accounting for <code class="docutils literal notranslate"><span class="pre">rfe</span></code> for
+the <code class="docutils literal notranslate"><span class="pre">pipeline_steps</span></code> inside the <code class="docutils literal notranslate"><span class="pre">Model`</span></code> class above is necessary to print the
+output of the feature names selected, thus yielding:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Feature names selected:
+[&#39;time&#39;, &#39;preanti&#39;, &#39;str2&#39;, &#39;strat&#39;, &#39;symptom&#39;, &#39;treat&#39;, &#39;offtrt&#39;, &#39;cd40&#39;, &#39;cd420&#39;, &#39;cd80&#39;]
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 <section id="shap-shapley-additive-explanations">
@@ -2924,7 +2960,7 @@ SHAP values provide insights into how individual features contribute to the pred
 <span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">X_test_transformed</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,)</span>
 </pre></div>
 </div>
-<div class="no-click"><a class="reference internal image-reference" href="_images/shap_summary_plot.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/shap_summary_plot.png" style="width: 600px;" />
+<div class="no-click"><a class="reference internal image-reference" href="_images/SHAP_summary_plot.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/SHAP_summary_plot.png" style="width: 600px;" />
 </a>
 </div><div style="height: 50px;"></div></section>
 <section id="feature-importance-and-impact">
@@ -3751,7 +3787,8 @@ weighted avg       0.88      0.88      0.88       428
 </section>
 <section id="bootstrap-metrics">
 <h1>Bootstrap Metrics<a class="headerlink" href="#bootstrap-metrics" title="Link to this heading"></a></h1>
-<p>The <code class="docutils literal notranslate"><span class="pre">bootstrapper.py</span></code> module provides utility functions for input type checking, data resampling, and evaluating bootstrap metrics.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">bootstrapper.py</span></code> module provides utility functions for input type checking,
+data resampling, and evaluating bootstrap metrics.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="check_input_type">
 <span class="sig-name descname"><span class="pre">check_input_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#check_input_type" title="Link to this definition"></a></dt>
