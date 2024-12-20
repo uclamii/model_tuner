@@ -1098,11 +1098,11 @@ or a DataFrame containing the columns for stratification. Default is <code class
 </ul>
 <p><strong>Example:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">optimal_threshold</span> <span class="o">=</span> <span class="n">tune_threshold_Fbeta</span><span class="p">(</span>
-    <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span>
-    <span class="n">y_valid</span><span class="o">=</span><span class="n">y_valid</span><span class="p">,</span>
-    <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
-    <span class="n">y_valid_proba</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
-    <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+      <span class="n">score</span><span class="o">=</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">,</span>
+      <span class="n">y_valid</span><span class="o">=</span><span class="n">y_valid</span><span class="p">,</span>
+      <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+      <span class="n">y_valid_proba</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
+      <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1230,7 +1230,7 @@ or a DataFrame containing the columns for stratification. Default is <code class
 </li>
 <li><p><strong>Bayesian Search</strong>:</p>
 <ul>
-<li><p>If <code class="docutils literal notranslate"><span class="pre">self.bayesian</span></code> is True, uses <code class="docutils literal notranslate"><span class="pre">BayesSearchCV</span></code> for Bayesian optimization.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">self.bayesian</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, uses <code class="docutils literal notranslate"><span class="pre">BayesSearchCV</span></code> for Bayesian optimization.</p></li>
 <li><p>Removes any <code class="docutils literal notranslate"><span class="pre">bayes__</span></code> prefixed parameters from the grid and uses them as additional arguments for <code class="docutils literal notranslate"><span class="pre">BayesSearchCV</span></code>.</p></li>
 </ul>
 </li>
@@ -1504,7 +1504,7 @@ including <code class="docutils literal notranslate"><span class="pre">predict_p
 and <code class="docutils literal notranslate"><span class="pre">multi_label</span></code> (for multiclass classification).</p></li>
 <li><p><strong>X_valid</strong> (<em>pandas.DataFrame</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – Feature set used for validation. If performing K-Fold validation, this
 represents the entire dataset. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>y_valid</strong> (<em>pandas.Series</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – True labels for the validation dataset. If performing K-Fold validation,
+<li><p><strong>y_valid</strong> (<em>pandas.Series</em><em> or </em><em>array-like</em><em>, </em><em>optional</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> labels for the validation dataset. If performing K-Fold validation,
 this corresponds to the entire dataset. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Classification threshold for binary classification models. Predictions
 above this threshold are classified as the positive class. Default is <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.</p></li>
@@ -2054,6 +2054,8 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 </section>
 <section id="step-8-fit-the-model">
 <h3>Step 8: Fit the model<a class="headerlink" href="#step-8-fit-the-model" title="Link to this heading"></a></h3>
+<p>In this step, we train the <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code> using the training data and monitor
+performance on the validation data during training.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_xgb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
     <span class="n">X_train</span><span class="p">,</span>
     <span class="n">y_train</span><span class="p">,</span>
@@ -2061,8 +2063,6 @@ Best<span class="w"> </span>roc_auc:<span class="w"> </span><span class="m">0</s
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>In this step, we train the <code class="docutils literal notranslate"><span class="pre">XGBClassifier</span></code> using the training data and monitor
-performance on the validation data during training.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The inclusion of <code class="docutils literal notranslate"><span class="pre">validation_data</span></code> allows XGBoost to:</p>
@@ -2106,14 +2106,15 @@ Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">93</s
 
 <span class="w">              </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
-<span class="w">          </span><span class="m">0</span><span class="w">        </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.77<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
-<span class="w">          </span><span class="m">1</span><span class="w">        </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.68<span class="w">       </span><span class="m">104</span>
+<span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.96<span class="w">      </span><span class="m">0</span>.77<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">324</span>
+<span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.89<span class="w">      </span><span class="m">0</span>.68<span class="w">       </span><span class="m">104</span>
 
 <span class="w">    </span>accuracy<span class="w">                           </span><span class="m">0</span>.80<span class="w">       </span><span class="m">428</span>
 <span class="w">   </span>macro<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.83<span class="w">      </span><span class="m">0</span>.77<span class="w">       </span><span class="m">428</span>
 weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.86<span class="w">      </span><span class="m">0</span>.80<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
+Optimal<span class="w"> </span>threshold<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>.26
 
 Test<span class="w"> </span>Metrics
 Confusion<span class="w"> </span>matrix<span class="w"> </span>on<span class="w"> </span><span class="nb">set</span><span class="w"> </span>provided:
@@ -2126,7 +2127,7 @@ Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">99</s
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
-<span class="w">              </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
+<span class="w">             </span>precision<span class="w">    </span>recall<span class="w">  </span>f1-score<span class="w">   </span>support
 
 <span class="w">           </span><span class="m">0</span><span class="w">       </span><span class="m">0</span>.98<span class="w">      </span><span class="m">0</span>.75<span class="w">      </span><span class="m">0</span>.85<span class="w">       </span><span class="m">323</span>
 <span class="w">           </span><span class="m">1</span><span class="w">       </span><span class="m">0</span>.55<span class="w">      </span><span class="m">0</span>.94<span class="w">      </span><span class="m">0</span>.69<span class="w">       </span><span class="m">105</span>
@@ -2136,7 +2137,14 @@ Actual:<span class="w"> </span>Pos<span class="w">  </span><span class="m">99</s
 weighted<span class="w"> </span>avg<span class="w">       </span><span class="m">0</span>.87<span class="w">      </span><span class="m">0</span>.79<span class="w">      </span><span class="m">0</span>.81<span class="w">       </span><span class="m">428</span>
 
 --------------------------------------------------------------------------------
+Optimal<span class="w"> </span>threshold<span class="w"> </span>used:<span class="w"> </span><span class="m">0</span>.26
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A detailed classification report is also available at this stage for review.
+To print and examine it, refer to this <a class="reference internal" href="#classification-report"><span class="std std-ref">Model Metrics</span></a> section for guidance on
+accessing and interpreting the report.</p>
 </div>
 </section>
 <section id="step-10-calibrate-the-model-if-needed">
@@ -3463,7 +3471,7 @@ specified scoring metric, and select the best performing set.</p>
 <li><p><strong>Split the Data</strong>: The data will be split into training and validation sets. Since <code class="docutils literal notranslate"><span class="pre">stratify_y=False</span></code>, the class distribution will not be maintained across splits.</p></li>
 <li><p><strong>Iterate Over Hyperparameters</strong>: All combinations of hyperparameters defined in <code class="docutils literal notranslate"><span class="pre">tuned_parameters_xgb</span></code> will be tried since <code class="docutils literal notranslate"><span class="pre">randomized_grid=False</span></code>.</p></li>
 <li><p><strong>Early Stopping</strong>: With <code class="docutils literal notranslate"><span class="pre">boost_early=True</span></code> and <code class="docutils literal notranslate"><span class="pre">early_stopping_rounds</span></code> set in the hyperparameters, the model will stop training early if the validation score does not improve.</p></li>
-<li><p><strong>Scoring</strong>: The model uses <span class="math notranslate nohighlight">\(R^2\)</span> (R-squared) as the scoring metric, which is suitable for evaluating regression models.</p></li>
+<li><p><strong>Scoring</strong>: The model uses <span class="math notranslate nohighlight">\(R^2\)</span> as the scoring metric, which is suitable for evaluating regression models.</p></li>
 <li><p><strong>Select Best Model</strong>: The hyperparameter set that yields the best validation score based on the specified metric (<span class="math notranslate nohighlight">\(R^2\)</span>) will be selected.</p></li>
 </ul>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Pipeline<span class="w"> </span>Steps:
@@ -3531,10 +3539,9 @@ Best<span class="w"> </span>r2:<span class="w"> </span><span class="m">0</span>.
 <section id="id9">
 <h1>Report Model Metrics<a class="headerlink" href="#id9" title="Link to this heading"></a></h1>
 <section id="classification-report-optional">
-<h2>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h2>
-<p>A classification report is readily available at this stage, should you wish to
-print and examine it. A call to <code class="docutils literal notranslate"><span class="pre">print(model_xgb.classification_report)</span></code> will
-output it as follows:</p>
+<span id="classification-report"></span><h2>Classification report (optional)<a class="headerlink" href="#classification-report-optional" title="Link to this heading"></a></h2>
+<p>A call to <code class="docutils literal notranslate"><span class="pre">print(model_xgb.classification_report)</span></code> will
+output the classification report as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">model_xgb</span><span class="o">.</span><span class="n">classification_report</span><span class="p">)</span>
 </pre></div>
 </div>
