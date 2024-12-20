@@ -1,3 +1,9 @@
 .no-click {
     pointer-events: none;
 }
+
+.wy-menu-vertical li a, 
+.rst-content .toctree-l1 a {
+    white-space: normal;  /* Allow text to wrap */
+    word-wrap: break-word; /* Break long words */
+}
