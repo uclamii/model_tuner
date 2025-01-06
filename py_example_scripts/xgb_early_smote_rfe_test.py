@@ -73,6 +73,14 @@ X_valid, y_valid = model.get_valid_data(X, y)
 
 model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
+if model.calibrate:
+    model.calibrateModel(
+        X,
+        y,
+        score="roc_auc",
+    )
+
+
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
 print("Test Metrics")
