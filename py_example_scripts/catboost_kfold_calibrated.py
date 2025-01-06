@@ -19,6 +19,8 @@ y = bc["target"]
 
 estimator_name = "cat"
 
+calibrate = True
+
 tuned_parameters = {
     f"{estimator_name}__depth": [10],
     f"{estimator_name}__learning_rate": [1e-4],
@@ -34,17 +36,20 @@ model = Model(
     stratify_y=True,
     grid=tuned_parameters,
     randomized_grid=False,
-    n_iter=4,
+    # n_iter=4,
     boost_early=False,
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
     kfold=True,
+    calibrate=True,
 )
 
 
 model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
+if model.calibrate:
+    model.calibrateModel(X, y, score="roc_auc")
 
 model.fit(X, y)
 
@@ -60,7 +65,7 @@ model.return_metrics(
     optimal_threshold=True,
     print_threshold=True,
     model_metrics=True,
-    print_per_fold=True,
+    # print_per_fold=True,
 )
 
 print(model.classification_report)
