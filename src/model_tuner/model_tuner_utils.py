@@ -489,7 +489,8 @@ class Model:
                     classifier = self.estimator.set_params(
                         **self.best_params_per_score[self.scoring[0]]["params"]
                     )
-
+                    if self.imbalance_sampler:
+                        self.verify_imbalance_sampler(X, y)
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
@@ -507,6 +508,8 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     )
                     #  calibrate model, and save output
+                    if self.imbalance_sampler:
+                        self.verify_imbalance_sampler(X, y)
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
