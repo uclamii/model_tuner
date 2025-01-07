@@ -207,9 +207,13 @@ class Model:
     """
 
     def get_preprocessing_and_feature_selection_pipeline(self):
+        if hasattr(self.estimator, "steps"):
+            estimator_steps = self.estimator.steps
+        else:
+            estimator_steps = self.estimator.estimator.steps
         steps = [
             (name, transformer)
-            for name, transformer in self.estimator.steps
+            for name, transformer in estimator_steps
             if name.startswith("preprocess_") or name.startswith("feature_selection_")
         ]
         return self.PipelineClass(steps)
@@ -227,10 +231,14 @@ class Model:
         return self.PipelineClass(steps)
 
     def get_preprocessing_pipeline(self):
+        if hasattr(self.estimator, "steps"):
+            estimator_steps = self.estimator.steps
+        else:
+            estimator_steps = self.estimator.estimator.steps
         # Extract steps names that start with 'preprocess_'
         preprocessing_steps = [
             (name, transformer)
-            for name, transformer in self.estimator.steps
+            for name, transformer in estimator_steps
             if name.startswith("preprocess_")
         ]
         return self.PipelineClass(preprocessing_steps)
