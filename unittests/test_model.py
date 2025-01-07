@@ -1079,6 +1079,23 @@ def test_calibrate_kfold_model_default_method(
             model.estimator, CalibratedClassifierCV
         ), "Expected a CalibratedClassifierCV instance."
 
+        # Ensure the calibrated model is an instance of CalibratedClassifierCV
+        # Assert that the number of classes in the classification report matches
+        # the size of the confusion matrix
+
+        model.return_metrics(X, y)
+
+        # print(model.classification_report)
+        # print(model.conf_mat)
+
+        assert (
+            model.classification_report["macro avg"]["support"] == model.conf_mat.sum()
+        ), (
+            f"Mismatch in the number of classes: "
+            f"{model.classification_report['macro avg']['support']} samples in classification_report, "
+            f"{model.conf_mat.sum()} in conf_mat."
+        )
+
         # Ensure predictions are probabilistic
         probabilities = model.predict_proba(X)
         assert np.allclose(
