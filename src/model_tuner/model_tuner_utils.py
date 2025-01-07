@@ -1919,9 +1919,9 @@ class Model:
                 aggregated_predictions.extend(pred_y_test)
 
         if score:
-            print(f"Confusion Matrix Across all {len(conf_ma_list)} Folds for {score}:")
+            print(f"Confusion Matrix Across All {len(conf_ma_list)} Folds for {score}:")
         else:
-            print(f"Confusion Matrix Across all {len(conf_ma_list)} Folds:")
+            print(f"Confusion Matrix Across All {len(conf_ma_list)} Folds:")
         conf_matrix = confusion_matrix(aggregated_true_labels, aggregated_predictions)
         self.conf_mat = conf_matrix
         _confusion_matrix_print(conf_matrix, self.labels)
