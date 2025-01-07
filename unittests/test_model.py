@@ -14,6 +14,8 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import ElasticNet
 
 from model_tuner.model_tuner_utils import train_val_test_split
 
@@ -1144,3 +1146,44 @@ def test_calibrate_model_edge_probabilities(calibrated_lr_model, classification_
     assert np.all(
         (probabilities >= 0) & (probabilities <= 1)
     ), "Probabilities should be within [0, 1]."
+
+
+def test_rfe_calibrate_model(classification_data):
+    rfe_estimator = ElasticNet()
+
+    rfe = RFE(rfe_estimator)
+
+    estimator_name = "RF"
+    tuned_parameters = {
+        estimator_name + "__max_depth": [2, 30],
+    }
+    estimator = RandomForestClassifier(n_estimators=10)
+    X, y = classification_data
+    model = Model(
+        name="test_model",
+        estimator_name=estimator_name,
+        pipeline_steps=[SimpleImputer(), ("rfe", rfe)],
+        estimator=estimator,
+        scoring=["roc_auc"],
+        grid=tuned_parameters,
+        model_type="classification",
+        calibrate=True,
+        feature_selection=True,
+    )
+    model.grid_search_param_tuning(X, y)
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    model.fit(X_train, y_train, score="roc_auc")
+
+    if model.calibrate:
+        model.calibrateModel(
+            X,
+            y,
+            score="roc_auc",
+        )
+
+    print("Validation Metrics")
+    model.return_metrics(X_test, y_test)
+
+    assert hasattr(model.estimator, "predict")
