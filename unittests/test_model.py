@@ -1172,3 +1172,43 @@ def test_rfe_calibrate_model(classification_data):
     model.return_metrics(X_test, y_test)
 
     assert hasattr(model.estimator, "predict")
+
+def test_print_selected_best_features_with_dataframe(model):
+    # Mock the feature selection pipeline and its get_support method
+    model.get_feature_selection_pipeline = MagicMock()
+    mock_pipeline = MagicMock()
+    mock_pipeline.get_support.return_value = [True, False, True]
+    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
+
+    # Create a sample DataFrame
+    X = pd.DataFrame({
+        'feature1': [1, 2, 3],
+        'feature2': [4, 5, 6],
+        'feature3': [7, 8, 9]
+    })
+
+    # Call the method and capture the output
+    selected_features = model.print_selected_best_features(X)
+
+    # Assert the correct features are selected
+    assert selected_features == ['feature1', 'feature3']
+
+def test_print_selected_best_features_with_array(model):
+    # Mock the feature selection pipeline and its get_support method
+    model.get_feature_selection_pipeline = MagicMock()
+    mock_pipeline = MagicMock()
+    mock_pipeline.get_support.return_value = [True, False, True]
+    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
+
+    # Create a sample array-like input
+    X = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ])
+
+    # Call the method and capture the output
+    selected_features = model.print_selected_best_features(X)
+
+    # Assert the correct features are selected
+    assert selected_features == [True, False, True]
