@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
+from sklearn.calibration import CalibratedClassifierCV
 
 from model_tuner.model_tuner_utils import train_val_test_split
 
@@ -1000,9 +1001,6 @@ def calibrated_kfold_lr_model():
         calibrate=True,
         calibration_method="sigmoid",
     )
-
-
-from sklearn.calibration import CalibratedClassifierCV
 
 
 def test_calibrate_model_default_method(calibrated_lr_model, classification_data):
