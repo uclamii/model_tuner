@@ -195,6 +195,9 @@ class Model:
         self.boost_early = boost_early
         self.custom_scorer = custom_scorer
         self.bayesian = bayesian
+        self.conf_mat = (
+            None  # Initialize conf_mat which is going to be filled in return_metrics
+        )
 
         ### for the moment bayesian only works using cross validation, so
         ### we use the structure that already exists for kfold
@@ -1102,6 +1105,7 @@ class Model:
 
                 if self.multi_label:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
+                    self.conf_mat = conf_mat  # store it so we can ext. dict
                     self._confusion_matrix_print_ML(conf_mat)
                     if optimal_threshold:
                         threshold = self.threshold[self.scoring[0]]
@@ -1114,6 +1118,7 @@ class Model:
                     print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
+                    self.conf_mat = conf_mat  # store it so we can ext. dict
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
                     if optimal_threshold:
@@ -1918,12 +1923,14 @@ class Model:
         else:
             print(f"Confusion Matrix Across all {len(conf_ma_list)} Folds:")
         conf_matrix = confusion_matrix(aggregated_true_labels, aggregated_predictions)
+        self.conf_mat = conf_matrix
         _confusion_matrix_print(conf_matrix, self.labels)
         print()
         self.classification_report = classification_report(
             aggregated_true_labels,
             aggregated_predictions,
             zero_division=0,
+            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
