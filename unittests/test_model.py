@@ -1212,3 +1212,60 @@ def test_print_selected_best_features_with_array(model):
 
     # Assert the correct features are selected
     assert selected_features == [True, False, True]
+
+from sklearn.metrics import confusion_matrix, fbeta_score
+
+def test_tune_threshold_Fbeta_basic(model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = [1, 2]
+
+    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
+         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
+        
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+
+        model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+            kfold=False,
+        )
+
+        assert model.threshold["f1"] is not None
+
+def test_tune_threshold_Fbeta_kfold(initialized_kfold_lr_model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = [1, 2]
+
+    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
+         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
+        
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+
+        best_threshold = initialized_kfold_lr_model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+            kfold=True,
+        )
+
+        assert best_threshold is not None
+
+def test_tune_threshold_Fbeta_invalid_input(model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = ["hello", "2"]
+
+    with pytest.raises(ValueError):
+        model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+        )
