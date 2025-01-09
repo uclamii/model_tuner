@@ -195,9 +195,6 @@ class Model:
         self.boost_early = boost_early
         self.custom_scorer = custom_scorer
         self.bayesian = bayesian
-        self.conf_mat = (
-            None  # Initialize conf_mat which is going to be filled in return_metrics
-        )
 
         ### for the moment bayesian only works using cross validation, so
         ### we use the structure that already exists for kfold
@@ -210,38 +207,26 @@ class Model:
     """
 
     def get_preprocessing_and_feature_selection_pipeline(self):
-        if hasattr(self.estimator, "steps"):
-            estimator_steps = self.estimator.steps
-        else:
-            estimator_steps = self.estimator.estimator.steps
         steps = [
             (name, transformer)
-            for name, transformer in estimator_steps
+            for name, transformer in self.estimator.steps
             if name.startswith("preprocess_") or name.startswith("feature_selection_")
         ]
         return self.PipelineClass(steps)
 
     def get_feature_selection_pipeline(self):
-        if hasattr(self.estimator, "steps"):
-            estimator_steps = self.estimator.steps
-        else:
-            estimator_steps = self.estimator.estimator.steps
         steps = [
             (name, transformer)
-            for name, transformer in estimator_steps
+            for name, transformer in self.estimator.steps
             if name.startswith("feature_selection_")
         ]
         return self.PipelineClass(steps)
 
     def get_preprocessing_pipeline(self):
-        if hasattr(self.estimator, "steps"):
-            estimator_steps = self.estimator.steps
-        else:
-            estimator_steps = self.estimator.estimator.steps
         # Extract steps names that start with 'preprocess_'
         preprocessing_steps = [
             (name, transformer)
-            for name, transformer in estimator_steps
+            for name, transformer in self.estimator.steps
             if name.startswith("preprocess_")
         ]
         return self.PipelineClass(preprocessing_steps)
@@ -504,8 +489,7 @@ class Model:
                     classifier = self.estimator.set_params(
                         **self.best_params_per_score[self.scoring[0]]["params"]
                     )
-                    if self.imbalance_sampler:
-                        self.verify_imbalance_sampler(X, y)
+
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
@@ -523,19 +507,16 @@ class Model:
                         **self.best_params_per_score[score]["params"]
                     )
                     #  calibrate model, and save output
-                    if self.imbalance_sampler:
-                        self.verify_imbalance_sampler(X, y)
                     self.estimator = CalibratedClassifierCV(
                         classifier,
                         cv=self.n_splits,
                         method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
-
-                    self.conf_mat_class_kfold(
-                        X=X, y=y, test_model=test_model, score=score
-                    )
-
+                    for s in score:
+                        self.conf_mat_class_kfold(
+                            X=X, y=y, test_model=test_model, score=s
+                        )
         else:
             if score == None:
                 if self.calibrate:
@@ -1121,7 +1102,6 @@ class Model:
 
                 if self.multi_label:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
-                    self.conf_mat = conf_mat  # store it so we can ext. dict
                     self._confusion_matrix_print_ML(conf_mat)
                     if optimal_threshold:
                         threshold = self.threshold[self.scoring[0]]
@@ -1134,7 +1114,6 @@ class Model:
                     print("-" * 80)
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
-                    self.conf_mat = conf_mat  # store it so we can ext. dict
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
                     if optimal_threshold:
@@ -1935,18 +1914,16 @@ class Model:
                 aggregated_predictions.extend(pred_y_test)
 
         if score:
-            print(f"Confusion Matrix Across All {len(conf_ma_list)} Folds for {score}:")
+            print(f"Confusion Matrix Across all {len(conf_ma_list)} Folds for {score}:")
         else:
-            print(f"Confusion Matrix Across All {len(conf_ma_list)} Folds:")
+            print(f"Confusion Matrix Across all {len(conf_ma_list)} Folds:")
         conf_matrix = confusion_matrix(aggregated_true_labels, aggregated_predictions)
-        self.conf_mat = conf_matrix
         _confusion_matrix_print(conf_matrix, self.labels)
         print()
         self.classification_report = classification_report(
             aggregated_true_labels,
             aggregated_predictions,
             zero_division=0,
-            output_dict=True,
         )
         # Now, outside the fold loop, calculate and print the overall classification report
         print(f"Classification Report Averaged Across All Folds for {score}:")
