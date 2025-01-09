@@ -13,6 +13,7 @@ from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import ElasticNet
 
@@ -1004,9 +1005,6 @@ def calibrated_kfold_lr_model():
     )
 
 
-from sklearn.calibration import CalibratedClassifierCV
-
-
 def test_calibrate_model_default_method(calibrated_lr_model, classification_data):
     """Test that calibrateModel works with the default method."""
     X, y = classification_data
@@ -1082,6 +1080,23 @@ def test_calibrate_kfold_model_default_method(
         assert isinstance(
             model.estimator, CalibratedClassifierCV
         ), "Expected a CalibratedClassifierCV instance."
+
+        # Ensure the calibrated model is an instance of CalibratedClassifierCV
+        # Assert that the number of classes in the classification report matches
+        # the size of the confusion matrix
+
+        model.return_metrics(X, y)
+
+        # print(model.classification_report)
+        # print(model.conf_mat)
+
+        assert (
+            model.classification_report["macro avg"]["support"] == model.conf_mat.sum()
+        ), (
+            f"Mismatch in the number of classes: "
+            f"{model.classification_report['macro avg']['support']} samples in classification_report, "
+            f"{model.conf_mat.sum()} in conf_mat."
+        )
 
         # Ensure predictions are probabilistic
         probabilities = model.predict_proba(X)
