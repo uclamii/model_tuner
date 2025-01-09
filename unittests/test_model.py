@@ -16,7 +16,8 @@ from imblearn.over_sampling import SMOTE
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import ElasticNet
-
+from sklearn.model_selection import KFold, StratifiedKFold
+from model_tuner.model_tuner_utils import kfold_split
 from model_tuner.model_tuner_utils import train_val_test_split
 
 
@@ -1187,3 +1188,41 @@ def test_rfe_calibrate_model(classification_data):
     model.return_metrics(X_test, y_test)
 
     assert hasattr(model.estimator, "predict")
+
+
+def test_kfold_split_stratified():
+    """
+    Test that kfold_split returns a StratifiedKFold when stratify=True.
+    """
+    splitter = kfold_split(
+        classifier=None,
+        X=None,
+        y=None,
+        stratify=True,
+        scoring=["roc_auc"],
+        n_splits=5,
+        random_state=42,
+    )
+
+    assert isinstance(splitter, StratifiedKFold), "Expected a StratifiedKFold instance"
+    assert splitter.n_splits == 5, "Expected 5 splits"
+    assert splitter.random_state == 42, "Expected a random state of 42"
+
+
+def test_kfold_split_kfold():
+    """
+    Test that kfold_split returns a KFold when stratify=False.
+    """
+    splitter = kfold_split(
+        classifier=None,
+        X=None,
+        y=None,
+        stratify=False,
+        scoring=["roc_auc"],
+        n_splits=5,
+        random_state=42,
+    )
+
+    assert isinstance(splitter, KFold), "Expected a KFold instance"
+    assert splitter.n_splits == 5, "Expected 5 splits"
+    assert splitter.random_state == 42, "Expected a random state of 42"
