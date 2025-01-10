@@ -1226,3 +1226,103 @@ def test_kfold_split_kfold():
     assert isinstance(splitter, KFold), "Expected a KFold instance"
     assert splitter.n_splits == 5, "Expected 5 splits"
     assert splitter.random_state == 42, "Expected a random state of 42"
+
+
+from skopt.space import Real, Integer
+
+
+def test_grid_search_param_tuning_bayesian(classification_data):
+    """
+    Test that the Model class correctly performs a Bayesian hyperparameter search
+    using skopt's BayesSearchCV backend.
+    """
+    X, y = classification_data
+    estimator_name = "xgb"
+
+    tuned_parameters = {
+        "bayes__n_iter": 5,  # Number of iterations for Bayesian optimization
+        f"{estimator_name}__max_depth": Integer(1, 4),
+        f"{estimator_name}__learning_rate": Real(1e-4, 1e-2, prior="log-uniform"),
+        f"{estimator_name}__n_estimators": Integer(20, 50),
+        f"{estimator_name}__verbosity": [0],
+    }
+
+    model = Model(
+        name="bayes_model",
+        estimator_name=estimator_name,
+        estimator=XGBClassifier(eval_metric="logloss"),
+        grid=tuned_parameters,
+        model_type="classification",
+        scoring=["accuracy"],
+        bayesian=True,
+        kfold=True,
+        random_state=42,
+    )
+
+    model.grid_search_param_tuning(X, y)
+
+    assert (
+        "accuracy" in model.best_params_per_score
+    ), "Bayesian search did not populate best_params_per_score for 'accuracy'."
+
+    best_params = model.best_params_per_score["accuracy"]["params"]
+    assert best_params, "Bayesian search returned an empty best_params dictionary."
+
+    # Optionally, fit the best model and check if it runs
+    model.fit(X, y, score="accuracy")
+
+    # Basic sanity check: we can now predict, and it shouldn't error
+    predictions = model.predict(X)
+    assert len(predictions) == len(y), "Predictions do not match number of samples."
+    assert set(predictions).issubset({0, 1}), "Predictions are outside expected labels."
+
+    print("Best Bayesian Hyperparameters Found:", best_params)
+
+
+@pytest.mark.parametrize("n_iter_value", [1, 3])
+def test_grid_search_param_tuning_randomized(classification_data, n_iter_value):
+    """
+    Test that setting `randomized_grid=True` in the Model class
+    leads to using RandomizedSearchCV.
+    """
+    # Unpack your classification fixture
+    X, y = classification_data
+
+    # Define some parameter grid
+    # In random search, these parameters become discrete choices (or distributions).
+    estimator_name = "rf"
+    tuned_parameters = {
+        f"{estimator_name}__n_estimators": [10, 50],
+        f"{estimator_name}__max_depth": [1, 3, 5],
+    }
+
+    # Instantiate the Model with `randomized_grid=True`
+    model = Model(
+        name="randomized_model",
+        estimator_name=estimator_name,
+        estimator=RandomForestClassifier(random_state=42),
+        grid=tuned_parameters,
+        scoring=["accuracy"],
+        kfold=True,
+        n_splits=4,
+        model_type="classification",
+        randomized_grid=True,  # <--- This triggers RandomizedSearchCV in your code
+        n_iter=n_iter_value,  # <--- Number of random samples
+        random_state=42,  # <--- For reproducibility
+    )
+
+    model.grid_search_param_tuning(X, y)
+    # Check that the model indeed recorded best_params_per_score
+    assert (
+        "accuracy" in model.best_params_per_score
+    ), "Best params were not populated under the 'accuracy' key."
+    best_params = model.best_params_per_score["accuracy"]
+    assert best_params, "No best_params found after randomized grid search."
+
+    # Fit final model with these params to ensure the pipeline can train
+    model.fit(X, y, score="accuracy")
+
+    # Make sure predictions come out
+    predictions = model.predict(X)
+    assert len(predictions) == len(y), "Prediction length mismatch."
+    print(f"Test passed with n_iter={n_iter_value}. Best Params: {best_params}")
