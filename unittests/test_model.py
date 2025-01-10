@@ -1189,7 +1189,6 @@ def test_rfe_calibrate_model(classification_data):
 
     assert hasattr(model.estimator, "predict")
 
-
 def test_kfold_split_stratified():
     """
     Test that kfold_split returns a StratifiedKFold when stratify=True.
@@ -1374,3 +1373,121 @@ def test_grid_search_param_tuning_randomized(classification_data, n_iter_value):
     predictions = model.predict(X)
     assert len(predictions) == len(y), "Prediction length mismatch."
     print(f"Test passed with n_iter={n_iter_value}. Best Params: {best_params}")
+
+def test_print_selected_best_features_with_dataframe(model):
+    # Mock the feature selection pipeline and its get_support method
+    model.get_feature_selection_pipeline = MagicMock()
+    mock_pipeline = MagicMock()
+    mock_pipeline.get_support.return_value = [True, False, True]
+    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
+
+    # Create a sample DataFrame
+    X = pd.DataFrame({
+        'feature1': [1, 2, 3],
+        'feature2': [4, 5, 6],
+        'feature3': [7, 8, 9]
+    })
+
+    # Call the method and capture the output
+    selected_features = model.print_selected_best_features(X)
+
+    # Assert the correct features are selected
+    assert selected_features == ['feature1', 'feature3']
+
+def test_print_selected_best_features_with_array(model):
+    # Mock the feature selection pipeline and its get_support method
+    model.get_feature_selection_pipeline = MagicMock()
+    mock_pipeline = MagicMock()
+    mock_pipeline.get_support.return_value = [True, False, True]
+    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
+
+    # Create a sample array-like input
+    X = np.array([
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9]
+    ])
+
+    # Call the method and capture the output
+    selected_features = model.print_selected_best_features(X)
+
+    # Assert the correct features are selected
+    assert selected_features == [True, False, True]
+
+from sklearn.metrics import confusion_matrix, fbeta_score
+
+def test_tune_threshold_Fbeta_basic(model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = [1, 2]
+
+    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
+         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
+        
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+
+        model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+            kfold=False,
+        )
+
+        assert model.threshold["f1"] is not None
+
+def test_tune_threshold_Fbeta_kfold(initialized_kfold_lr_model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = [1, 2]
+
+    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
+         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
+        
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+
+        best_threshold = initialized_kfold_lr_model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+            kfold=True,
+        )
+
+        assert best_threshold is not None
+
+def test_tune_threshold_Fbeta_invalid_input(model):
+    y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
+    betas = ["hello", "2"]
+
+    with pytest.raises(ValueError):
+        model.tune_threshold_Fbeta(
+            score="f1",
+            y_valid=y_valid,
+            betas=betas,
+            y_valid_proba=y_valid_proba,
+        )
+
+def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
+    X, y = classification_data
+
+    initialized_kfold_lr_model.grid_search_param_tuning(X, y)
+    initialized_kfold_lr_model.fit(X, y)
+
+    test_model = initialized_kfold_lr_model.estimator
+
+    # testing dataframe and numpy array cases
+    for X_test, y_test in [(X, y), (X.values, y.values)]:
+        result = initialized_kfold_lr_model.conf_mat_class_kfold(X.values, y.values, test_model)
+
+        # k=10 , and rounding down using int() results in 8 samples instead of 10 
+        # since the data total X is 100 samples 
+        expected_conf_mat = np.array([[4,0], [0,4]])
+
+        assert result is not None
+
+        assert np.array_equal(result["Confusion Matrix"], expected_conf_mat)
+
