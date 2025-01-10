@@ -1269,3 +1269,24 @@ def test_tune_threshold_Fbeta_invalid_input(model):
             betas=betas,
             y_valid_proba=y_valid_proba,
         )
+
+def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
+    X, y = classification_data
+
+    initialized_kfold_lr_model.grid_search_param_tuning(X, y)
+    initialized_kfold_lr_model.fit(X, y)
+
+    test_model = initialized_kfold_lr_model.estimator
+
+    # testing dataframe and numpy array cases
+    for X_test, y_test in [(X, y), (X.values, y.values)]:
+        result = initialized_kfold_lr_model.conf_mat_class_kfold(X.values, y.values, test_model)
+
+        # k=10 , and rounding down using int() results in 8 samples instead of 10 
+        # since the data total X is 100 samples 
+        expected_conf_mat = np.array([[4,0], [0,4]])
+
+        assert result is not None
+
+        assert np.array_equal(result["Confusion Matrix"], expected_conf_mat)
+
