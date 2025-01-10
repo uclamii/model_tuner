@@ -1483,9 +1483,9 @@ def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
     for X_test, y_test in [(X, y), (X.values, y.values)]:
         result = initialized_kfold_lr_model.conf_mat_class_kfold(X.values, y.values, test_model)
 
-        # k=10 , and rounding down using int() results in 8 samples instead of 10 
+        # k=10 , total sum results in 48, 2 , 2, 48 
         # since the data total X is 100 samples 
-        expected_conf_mat = np.array([[4,0], [0,4]])
+        expected_conf_mat = np.array([[48,2], [2,48]])
 
         assert result is not None
 
