@@ -754,12 +754,7 @@ class Model:
                 classifier.fit(X, y)
                 self.estimator = classifier
                 self.xval_output = get_cross_validate(
-                    classifier,
-                    X,
-                    y,
-                    self.kf,
-                    scoring=scorer,
-                    kfgroups=self.kfold_group
+                    classifier, X, y, self.kf, scoring=scorer, kfgroups=self.kfold_group
                 )
         else:
             if score is None:
@@ -2625,7 +2620,7 @@ def report_model_metrics(
         aggregated_metrics = []
         for fold_idx, (train, test) in tqdm(
             enumerate(
-                model.kf.split(X_valid, y_valid, groups=self.kfold_group), start=1
+                model.kf.split(X_valid, y_valid, groups=model.kfold_group), start=1
             ),
             total=model.kf.get_n_splits(),
             desc="Processing Folds",
@@ -2634,7 +2629,9 @@ def report_model_metrics(
             y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
 
             # Fit and predict for this fold
+            model.kfold = False
             model.fit(X_train, y_train)
+            model.kfold = True
 
             # Calculate metrics using existing logic
             fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
