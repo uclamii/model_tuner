@@ -33,8 +33,8 @@ from sklearn.model_selection import (
     cross_val_predict,
     train_test_split,
     GridSearchCV,
-    RandomizedSearchCV,
 )
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import ParameterSampler
 from tqdm import tqdm
 from sklearn.feature_selection import SelectKBest
@@ -208,7 +208,7 @@ class Model:
         self.kfold_group = kfold_group
 
         if self.kfold_group is not None:
-            self.startify = None
+            self.stratify_y = False
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
