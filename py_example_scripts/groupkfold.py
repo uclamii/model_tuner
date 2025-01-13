@@ -46,6 +46,7 @@ model = Model(
     random_state=42,
     kfold=True,
     kfold_group=bc["groups"],
+    n_splits=4,
 )
 
 
