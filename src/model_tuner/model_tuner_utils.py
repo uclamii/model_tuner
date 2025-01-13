@@ -2615,7 +2615,7 @@ def report_model_metrics(
                 ]
             )
 
-    if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
+    if hasattr(model, "kfold") and model.kfold:  
         print("\nRunning k-fold model metrics...\n")
         aggregated_metrics = []
         for fold_idx, (train, test) in tqdm(
@@ -2625,9 +2625,12 @@ def report_model_metrics(
             total=model.kf.get_n_splits(),
             desc="Processing Folds",
         ):
-            X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
-            y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
-
+            if isinstance(X_valid, pd.DataFrame):
+                X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
+                y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
+            else:
+                X_train, X_test = X_valid[train], X_valid[test]
+                y_train, y_test = y_valid[train], y_valid[test]
             # Fit and predict for this fold
             model.kfold = False
             model.fit(X_train, y_train)
