@@ -208,7 +208,7 @@ class Model:
         self.kfold_group = kfold_group
 
         if self.kfold_group is not None:
-            self.startify = None
+            self.stratify_y = False
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
