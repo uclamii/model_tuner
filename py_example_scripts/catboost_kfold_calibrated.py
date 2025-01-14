@@ -48,11 +48,10 @@ model = Model(
 
 model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
-if model.calibrate:
-    model.calibrateModel(X, y, score="roc_auc")
-
 model.fit(X, y)
 
+if model.calibrate:
+    model.calibrateModel(X, y, score="roc_auc")
 
 y_prob = model.predict_proba(X)
 

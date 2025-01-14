@@ -518,7 +518,7 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
-                    self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
+                    # self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
                 else:
                     pass
             else:
@@ -538,9 +538,9 @@ class Model:
                     ).fit(X, y)
                     test_model = self.estimator
 
-                    self.conf_mat_class_kfold(
-                        X=X, y=y, test_model=test_model, score=score
-                    )
+                    # self.conf_mat_class_kfold(
+                    #     X=X, y=y, test_model=test_model, score=score
+                    # )
 
         else:
             if score == None:
@@ -587,7 +587,7 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_test, y_test)
-                    self.calibrate_report(X_valid, y_valid)
+                    # self.calibrate_report(X_valid, y_valid)
                 else:
                     pass
             else:
@@ -643,7 +643,7 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X_test, y_test)
                     test_model = self.estimator
-                    self.calibrate_report(X_valid, y_valid, score=score)
+                    # self.calibrate_report(X_valid, y_valid, score=score)
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -2615,9 +2615,14 @@ def report_model_metrics(
                 ]
             )
 
-    if hasattr(model, "kfold") and model.kfold:  
+    if hasattr(model, "kfold") and model.kfold:
         print("\nRunning k-fold model metrics...\n")
         aggregated_metrics = []
+        aggregated_y_true = []
+        aggregated_y_pred = []
+        aggregated_y_prob = []
+
+        test_model = model
         for fold_idx, (train, test) in tqdm(
             enumerate(
                 model.kf.split(X_valid, y_valid, groups=model.kfold_group), start=1
@@ -2632,12 +2637,18 @@ def report_model_metrics(
                 X_train, X_test = X_valid[train], X_valid[test]
                 y_train, y_test = y_valid[train], y_valid[test]
             # Fit and predict for this fold
-            model.kfold = False
-            model.fit(X_train, y_train)
-            model.kfold = True
+            test_model.kfold = False
+            test_model.fit(X_train, y_train)
+            test_model.kfold = True
+
+            y_pred_proba = test_model.predict_proba(X_test)[:, 1]
+            y_pred = 1 * (y_pred_proba > threshold)
+            aggregated_y_true.extend(y_test.values.tolist())
+            aggregated_y_pred.extend(y_pred.tolist())
+            aggregated_y_prob.extend(y_pred_proba.tolist())
 
             # Calculate metrics using existing logic
-            fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
+            fold_metrics = calculate_metrics(test_model, X_test, y_test, threshold)
 
             if isinstance(fold_metrics, pd.DataFrame):
                 fold_metrics["Fold"] = fold_idx
@@ -2649,62 +2660,42 @@ def report_model_metrics(
                 print(fold_metrics)
                 print("*" * 80)
 
-        # Define the desired metric order
-        metric_order = [
-            "Precision/PPV",
-            "Average Precision",
-            "Sensitivity",
-            "Specificity",
-            "AUC ROC",
-            "Brier Score",
-        ]
+        tn, fp, fn, tp = confusion_matrix(aggregated_y_true, aggregated_y_pred).ravel()
 
-        # Combine metrics from all folds
-        if isinstance(aggregated_metrics[0], pd.DataFrame):
-            all_folds_df = pd.concat(aggregated_metrics)
-
-            # Group by Metric and calculate the mean for the Value column
-            avg_metrics_df = (
-                all_folds_df.groupby("Metric")["Value"].mean().reset_index()
-            )
-
-            # Reorder the DataFrame based on the metric order
-            avg_metrics_df["Metric"] = pd.Categorical(
-                avg_metrics_df["Metric"],
-                categories=metric_order,
-                ordered=True,
-            )
-            avg_metrics_df = avg_metrics_df.sort_values("Metric").reset_index(
-                drop=True,
-            )
-
-            if print_results:
-                print("\nAverage Metrics Across All Folds:")
-                print(avg_metrics_df)
-                print("-" * 80)
-
-            return avg_metrics_df
-
-        # Combine metrics from all folds
-        if isinstance(aggregated_metrics[0], pd.DataFrame):
-            all_folds_df = pd.concat(aggregated_metrics)
-            avg_metrics_df = (
-                all_folds_df.drop(columns=["Fold"])
-                .mean(axis=0)
-                .to_frame(name="Average")
-                .T
-            )
-        else:
-            all_folds_df = pd.concat(aggregated_metrics)
-            avg_metrics_df = all_folds_df.mean(axis=0).to_frame(name="Average").T
+        avg_metrics_df = pd.DataFrame(
+            [
+                {
+                    "Metric": "Precision/PPV",
+                    "Value": precision_score(aggregated_y_true, aggregated_y_pred),
+                },
+                {
+                    "Metric": "Average Precision",
+                    "Value": average_precision_score(
+                        aggregated_y_true, aggregated_y_prob
+                    ),
+                },
+                {
+                    "Metric": "Sensitivity",
+                    "Value": recall_score(aggregated_y_true, aggregated_y_pred),
+                },
+                {"Metric": "Specificity", "Value": tn / (tn + fp)},
+                {
+                    "Metric": "AUC ROC",
+                    "Value": roc_auc_score(aggregated_y_true, aggregated_y_prob),
+                },
+                {
+                    "Metric": "Brier Score",
+                    "Value": brier_score_loss(aggregated_y_true, aggregated_y_pred),
+                },
+            ]
+        )
 
         if print_results:
             print("\nAverage Metrics Across All Folds:")
-            print(avg_metrics_df.T)
+            print(avg_metrics_df)
             print("-" * 80)
 
         return avg_metrics_df
-
     else:
         # Standard single validation logic
         metrics = calculate_metrics(model, X_valid, y_valid, threshold)
