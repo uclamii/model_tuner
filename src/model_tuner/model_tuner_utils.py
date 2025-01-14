@@ -40,7 +40,7 @@ from tqdm import tqdm
 from sklearn.feature_selection import SelectKBest
 from .bootstrapper import evaluate_bootstrap_metrics
 from sklearn.calibration import CalibratedClassifierCV
-
+from sklearn.model_selection import GroupKFold
 from sklearn.linear_model import LogisticRegression
 
 """
@@ -124,6 +124,7 @@ class Model:
         custom_scorer=[],
         bayesian=False,
         sort_preprocess=True,
+        kfold_group=None,
     ):
 
         # Check if model_type is provided and valid
@@ -203,6 +204,11 @@ class Model:
         ### we use the structure that already exists for kfold
         if self.bayesian:
             self.kfold = True
+
+        self.kfold_group = kfold_group
+
+        if self.kfold_group is not None:
+            self.stratify_y = False
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
@@ -734,6 +740,7 @@ class Model:
                     y,
                     self.kf,
                     scoring=self.scoring[0],
+                    kfgroups=self.kfold_group,
                 )
                 # self.estimator = self.x_valoutput['estimator']
             else:
@@ -747,11 +754,7 @@ class Model:
                 classifier.fit(X, y)
                 self.estimator = classifier
                 self.xval_output = get_cross_validate(
-                    classifier,
-                    X,
-                    y,
-                    self.kf,
-                    scoring=scorer,
+                    classifier, X, y, self.kf, scoring=scorer, kfgroups=self.kfold_group
                 )
         else:
             if score is None:
@@ -1313,6 +1316,7 @@ class Model:
                 X,
                 y,
                 stratify=self.stratify_y,
+                kfold_group=self.kfold_group,
                 scoring=self.scoring,
                 n_splits=self.n_splits,
                 random_state=self.random_state,
@@ -1325,7 +1329,7 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         self.kfold = False
-                        for train, test in self.kf.split(X, y):
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
 
                             self.fit(X.iloc[train], y.iloc[train])
                             y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
@@ -1345,7 +1349,7 @@ class Model:
                     for score in self.scoring:
                         thresh_list = []
                         self.kfold = False
-                        for train, test in self.kf.split(X, y):
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
 
                             self.fit(X[train], y[train])
                             y_pred_proba = self.predict_proba(X[test])[:, 1]
@@ -1749,8 +1753,10 @@ class Model:
                     n_jobs=self.n_jobs,
                     verbose=2,
                 )
-
-            clf.fit(X, y)
+            if self.kfold_group is not None:
+                clf.fit(X, y, groups=self.kfold_group)
+            else:
+                clf.fit(X, y)
             self.estimator = clf.best_estimator_
             self.test_model = clf.best_estimator_
 
@@ -1828,7 +1834,9 @@ class Model:
         aggregated_predictions = []
 
         if isinstance(X, pd.DataFrame):
-            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
+            for fold_idx, (train, test) in enumerate(
+                self.kf.split(X, y, groups=self.kfold_group), start=1
+            ):
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
@@ -1848,7 +1856,9 @@ class Model:
                     print("*" * 80)
 
         else:
-            for fold_idx, (train, test) in enumerate(self.kf.split(X, y), start=1):
+            for fold_idx, (train, test) in enumerate(
+                self.kf.split(X, y, groups=self.kfold_group), start=1
+            ):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
@@ -1914,7 +1924,7 @@ class Model:
         conf_ma_list = []
 
         if isinstance(X, pd.DataFrame):
-            for train, test in self.kf.split(X, y):
+            for train, test in self.kf.split(X, y, groups=self.kfold_group):
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
@@ -1924,7 +1934,7 @@ class Model:
                 aggregated_true_labels.extend(y_test)
                 aggregated_predictions.extend(pred_y_test)
         else:
-            for train, test in self.kf.split(X, y):
+            for train, test in self.kf.split(X, y, groups=self.kfold_group):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
@@ -2006,7 +2016,7 @@ class Model:
         aggregated_pred_list = []
 
         if isinstance(X, pd.DataFrame):
-            for train, test in self.kf.split(X, y):
+            for train, test in self.kf.split(X, y, groups=self.kfold_group):
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
@@ -2015,7 +2025,7 @@ class Model:
                     self.regression_report(y_test, pred_y_test, print_results=False),
                 )
         else:
-            for train, test in self.kf.split(X, y):
+            for train, test in self.kf.split(X, y, groups=self.kfold_group):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
@@ -2226,7 +2236,14 @@ def train_val_test_split(
 
 
 def kfold_split(
-    classifier, X, y, stratify=False, scoring=["roc_auc"], n_splits=10, random_state=3
+    classifier,
+    X,
+    y,
+    stratify=False,
+    kfold_group=None,
+    scoring=["roc_auc"],
+    n_splits=10,
+    random_state=3,
 ):
     """
 
@@ -2243,6 +2260,9 @@ def kfold_split(
             n_splits=n_splits, random_state=random_state, shuffle=True
         )  # Define the stratified ksplit
         return skf
+    elif kfold_group is not None:
+        gkf = GroupKFold(n_splits=n_splits)
+        return gkf
     else:
         kf = KFold(
             n_splits=n_splits, random_state=random_state, shuffle=True
@@ -2251,7 +2271,7 @@ def kfold_split(
         return kf
 
 
-def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
+def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"], kfgroups=None):
     """
     :param classifier: Machine learning model or pipeline to evaluate.
     :param X: Feature matrix (pandas.DataFrame or array-like).
@@ -2262,15 +2282,27 @@ def get_cross_validate(classifier, X, y, kf, scoring=["roc_auc"]):
     :return: Cross-validation results including training scores, validation
              scores, and fitted estimators.
     """
-    return cross_validate(
-        classifier,
-        X,
-        y,
-        scoring=scoring,
-        cv=kf,
-        return_train_score=True,
-        return_estimator=True,
-    )
+    if kfgroups is not None:
+        cross_validate(
+            classifier,
+            X,
+            y,
+            scoring=scoring,
+            cv=kf,
+            groups=kfgroups,
+            return_train_score=True,
+            return_estimator=True,
+        )
+    else:
+        return cross_validate(
+            classifier,
+            X,
+            y,
+            scoring=scoring,
+            cv=kf,
+            return_train_score=True,
+            return_estimator=True,
+        )
 
 
 def _confusion_matrix_print(conf_matrix, labels):
@@ -2583,19 +2615,26 @@ def report_model_metrics(
                 ]
             )
 
-    if hasattr(model, "kfold") and model.kfold:  # Handle k-fold logic
+    if hasattr(model, "kfold") and model.kfold:  
         print("\nRunning k-fold model metrics...\n")
         aggregated_metrics = []
         for fold_idx, (train, test) in tqdm(
-            enumerate(model.kf.split(X_valid, y_valid), start=1),
+            enumerate(
+                model.kf.split(X_valid, y_valid, groups=model.kfold_group), start=1
+            ),
             total=model.kf.get_n_splits(),
             desc="Processing Folds",
         ):
-            X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
-            y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
-
+            if isinstance(X_valid, pd.DataFrame):
+                X_train, X_test = X_valid.iloc[train], X_valid.iloc[test]
+                y_train, y_test = y_valid.iloc[train], y_valid.iloc[test]
+            else:
+                X_train, X_test = X_valid[train], X_valid[test]
+                y_train, y_test = y_valid[train], y_valid[test]
             # Fit and predict for this fold
+            model.kfold = False
             model.fit(X_train, y_train)
+            model.kfold = True
 
             # Calculate metrics using existing logic
             fold_metrics = calculate_metrics(model, X_test, y_test, threshold)
