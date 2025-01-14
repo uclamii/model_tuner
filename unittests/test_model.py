@@ -1189,6 +1189,7 @@ def test_rfe_calibrate_model(classification_data):
 
     assert hasattr(model.estimator, "predict")
 
+    
 def test_kfold_split_stratified():
     """
     Test that kfold_split returns a StratifiedKFold when stratify=True.
@@ -1382,17 +1383,16 @@ def test_print_selected_best_features_with_dataframe(model):
     model.get_feature_selection_pipeline.return_value = [mock_pipeline]
 
     # Create a sample DataFrame
-    X = pd.DataFrame({
-        'feature1': [1, 2, 3],
-        'feature2': [4, 5, 6],
-        'feature3': [7, 8, 9]
-    })
+    X = pd.DataFrame(
+        {"feature1": [1, 2, 3], "feature2": [4, 5, 6], "feature3": [7, 8, 9]}
+    )
 
     # Call the method and capture the output
     selected_features = model.print_selected_best_features(X)
 
     # Assert the correct features are selected
-    assert selected_features == ['feature1', 'feature3']
+    assert selected_features == ["feature1", "feature3"]
+
 
 def test_print_selected_best_features_with_array(model):
     # Mock the feature selection pipeline and its get_support method
@@ -1402,11 +1402,7 @@ def test_print_selected_best_features_with_array(model):
     model.get_feature_selection_pipeline.return_value = [mock_pipeline]
 
     # Create a sample array-like input
-    X = np.array([
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-    ])
+    X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     # Call the method and capture the output
     selected_features = model.print_selected_best_features(X)
@@ -1414,18 +1410,25 @@ def test_print_selected_best_features_with_array(model):
     # Assert the correct features are selected
     assert selected_features == [True, False, True]
 
+
 from sklearn.metrics import confusion_matrix, fbeta_score
+
 
 def test_tune_threshold_Fbeta_basic(model):
     y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
     y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
     betas = [1, 2]
 
-    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
-         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
-        
-        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
-        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+    with patch("sklearn.metrics.confusion_matrix") as mock_confusion_matrix, patch(
+        "sklearn.metrics.fbeta_score"
+    ) as mock_fbeta_score:
+
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(
+            y_true, y_pred
+        )
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(
+            y_true, y_pred, beta=beta
+        )
 
         model.tune_threshold_Fbeta(
             score="f1",
@@ -1437,16 +1440,22 @@ def test_tune_threshold_Fbeta_basic(model):
 
         assert model.threshold["f1"] is not None
 
+
 def test_tune_threshold_Fbeta_kfold(initialized_kfold_lr_model):
     y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
     y_valid_proba = np.array([0.1, 0.4, 0.35, 0.8, 0.2, 0.6, 0.3, 0.9])
     betas = [1, 2]
 
-    with patch('sklearn.metrics.confusion_matrix') as mock_confusion_matrix, \
-         patch('sklearn.metrics.fbeta_score') as mock_fbeta_score:
-        
-        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(y_true, y_pred)
-        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(y_true, y_pred, beta=beta)
+    with patch("sklearn.metrics.confusion_matrix") as mock_confusion_matrix, patch(
+        "sklearn.metrics.fbeta_score"
+    ) as mock_fbeta_score:
+
+        mock_confusion_matrix.side_effect = lambda y_true, y_pred: confusion_matrix(
+            y_true, y_pred
+        )
+        mock_fbeta_score.side_effect = lambda y_true, y_pred, beta: fbeta_score(
+            y_true, y_pred, beta=beta
+        )
 
         best_threshold = initialized_kfold_lr_model.tune_threshold_Fbeta(
             score="f1",
@@ -1457,6 +1466,7 @@ def test_tune_threshold_Fbeta_kfold(initialized_kfold_lr_model):
         )
 
         assert best_threshold is not None
+
 
 def test_tune_threshold_Fbeta_invalid_input(model):
     y_valid = np.array([0, 1, 0, 1, 0, 1, 0, 1])
@@ -1471,6 +1481,7 @@ def test_tune_threshold_Fbeta_invalid_input(model):
             y_valid_proba=y_valid_proba,
         )
 
+
 def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
     X, y = classification_data
 
@@ -1481,7 +1492,9 @@ def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
 
     # testing dataframe and numpy array cases
     for X_test, y_test in [(X, y), (X.values, y.values)]:
-        result = initialized_kfold_lr_model.conf_mat_class_kfold(X.values, y.values, test_model)
+        result = initialized_kfold_lr_model.conf_mat_class_kfold(
+            X.values, y.values, test_model
+        )
 
         # k=10 , total sum results in 48, 2 , 2, 48 
         # since the data total X is 100 samples 
@@ -1491,3 +1504,77 @@ def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
 
         assert np.array_equal(result["Confusion Matrix"], expected_conf_mat)
 
+
+def test_group_kfold_no_group_overlap():
+    """
+    Test that when using GroupKFold, no group is shared between
+    the train and validation (test) splits.
+    """
+
+    # --- 1. Create some synthetic data with groups ---
+    # For demonstration, let's make 100 rows, with 5 distinct groups of 20 rows each.
+    n_samples = 100
+    n_features = 10
+    n_groups = 5
+    group_size = n_samples // n_groups  # 20
+
+    X, y = make_classification(
+        n_samples=n_samples,
+        n_features=n_features,
+        n_informative=5,
+        random_state=42,
+    )
+
+    # Convert X, y to pandas for convenience
+    X = pd.DataFrame(X, columns=[f"feat_{i}" for i in range(n_features)])
+    y = pd.Series(y)
+
+    # Create a column "groups" with 5 repeated values [0,0,0... 1,1,1... 4,4,4]
+    groups = np.repeat(range(n_groups), group_size)
+    np.random.seed(42)
+    np.random.shuffle(groups)  # shuffle groups so they're not contiguous
+    # But it’s fine to leave them unshuffled if you prefer
+
+    # --- 2. Instantiate the Model, specifying GroupKFold usage ---
+    from sklearn.linear_model import LogisticRegression
+    from model_tuner.model_tuner_utils import Model
+
+    estimator_name = "lr"
+    param_grid = {f"{estimator_name}__C": [0.1, 1]}  # minimal grid for speed
+
+    # Create the Model with kfold=True and pass kfold_group=groups
+    model = Model(
+        name="test_group_kfold_model",
+        estimator_name=estimator_name,
+        estimator=LogisticRegression(),
+        model_type="classification",
+        kfold=True,
+        kfold_group=groups,  # <--- pass the group array
+        grid=param_grid,
+        n_splits=3,  # e.g., use 3 folds
+        random_state=42,
+        scoring=["roc_auc"],
+    )
+
+    # --- 3. Run grid search and fit the model ---
+    model.grid_search_param_tuning(X, y)  # populates best_params_per_score
+    model.fit(X, y)  # fit on the entire data
+
+    # --- 4. Verify that no group appears in both train and test for each fold ---
+    # By design, Model’s internal cross-validation uses GroupKFold when kfold_group is set.
+    # The model should have stored the splitter in `model.kf`.
+
+    # We can re-check by iterating over model.kf manually:
+    for train_idx, test_idx in model.kf.split(X, y, groups=groups):
+        train_groups = set(groups[train_idx])
+        test_groups = set(groups[test_idx])
+        overlap = train_groups.intersection(test_groups)
+
+        # If GroupKFold is working correctly, overlap should be empty
+        assert len(overlap) == 0, (
+            f"Groups {overlap} appear in both train and test. "
+            "GroupKFold is not splitting correctly."
+        )
+
+    # If we get here without an assertion, the test passes.
+    print("GroupKFold test passed: No group overlap between train and test folds!")
