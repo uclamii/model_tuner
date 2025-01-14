@@ -1565,6 +1565,10 @@ class Model:
         feat_select_pipeline = feat_select_pipeline[0]
         print()
         support = feat_select_pipeline.get_support()
+        if all(support):
+            print("All features are selected")
+            print()
+            return support
         if isinstance(X, pd.DataFrame):
             print("Feature names selected:")
             support = X.columns[support].to_list()

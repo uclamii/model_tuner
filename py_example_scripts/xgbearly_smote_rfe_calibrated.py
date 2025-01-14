@@ -33,7 +33,7 @@ tuned_parameters = {
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
-    f"feature_selection_rfe__n_features_to_select": [5, 10],
+    f"feature_selection_rfe__n_features_to_select": [10, 0.1, 0.2, 0.5, 1.0],
 }
 
 kfold = False
