@@ -162,6 +162,42 @@ def test_predict_proba_method(classification_data):
     for p in proba:
         assert abs(sum(p) - 1.0) < 1e-6, f"Probabilities do not sum to 1: {p}"
 
+def test_predict_proba_method_kfold(classification_data):
+    X, y = classification_data
+    estimator_name = "RF"
+    tuned_parameters = {
+        estimator_name + "__max_depth": [2, 30],
+    }
+
+    model = Model(
+        name="test_model",
+        estimator_name=estimator_name,
+        estimator=RandomForestClassifier(n_estimators=10),
+        scoring=["accuracy"],
+        grid=tuned_parameters,
+        model_type="classification",
+        kfold=True,
+    )
+
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y, score="accuracy")
+
+    # with and without y
+    for y_test in [None, y]:
+        proba = model.predict_proba(X, y=y_test)
+        assert proba.shape == (len(y), 2)
+        assert np.allclose(proba.sum(axis=1), 1)
+
+        # Assertions
+        assert proba is not None, "predict_proba returned None"
+        assert len(proba) == len(
+            X
+        ), "predict_proba did not return correct number of probabilities"
+
+        # Check if the probabilities sum to 1 for each sample
+        for p in proba:
+            assert abs(sum(p) - 1.0) < 1e-6, f"Probabilities do not sum to 1: {p}"
+
 
 def test_grid_search_param_tuning_early(classification_data):
     X, y = classification_data
