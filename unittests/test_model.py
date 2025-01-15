@@ -382,6 +382,65 @@ def test_bootstrapped_metrics_consistency(classification_data):
 
     print(bootstrap_results)
 
+def test_bootstrapped_metrics_consistency_regression(regression_data):
+        """
+        Test the consistency of bootstrapped metrics for a regression model.
+        """
+        X, y = regression_data
+
+        ## Reuse model initialization from test_imbalance_sampler_integration
+        name = "test_model"
+        estimator_name = "lr"
+        estimator = LinearRegression()
+        tuned_parameters = {
+            estimator_name + "__fit_intercept": [True, False],
+        }
+
+        model = Model(
+            name=name,
+            estimator_name=estimator_name,
+            model_type="regression",
+            estimator=estimator,
+            scoring=["r2"],
+            grid=tuned_parameters,
+        )
+
+        ## Assert model is initialized correctly
+        assert model.name == name
+        assert model.estimator_name == estimator_name
+        assert isinstance(model.estimator.named_steps[estimator_name], LinearRegression)
+
+
+        # Perform grid search to populate `best_params_per_score`
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # Define a simple metric set
+        metrics = ["r2", "neg_mean_squared_error"]
+
+        # Obtain bootstrap metrics
+        bootstrap_results = model.return_bootstrap_metrics(X, y, metrics=metrics)
+
+        print(bootstrap_results)
+
+        # Check the type and content
+        assert isinstance(
+            bootstrap_results, pd.DataFrame
+        ), "Bootstrap metrics should be returned as a pandas dataframe."
+        assert all(
+            metric in bootstrap_results["Metric"].tolist() for metric in metrics
+        ), "All specified metrics should be in the result."
+        assert all(
+            col in bootstrap_results.columns
+            for col in [
+                "Mean",
+                "95% CI Lower",
+                "95% CI Upper",
+            ]
+        ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
+
 
 @pytest.fixture
 def sample_dataframe():
