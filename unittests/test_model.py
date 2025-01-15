@@ -121,9 +121,12 @@ def test_predict_method(classification_data):
     model.grid_search_param_tuning(X, y)
     X_train, y_train = model.get_train_data(X, y)
     model.fit(X_train, y_train, score="accuracy")
-    predictions = model.predict(X)
-    assert len(predictions) == len(y)
-    assert set(predictions).issubset({0, 1})
+
+    # testing with and without optimal_threshold
+    for optimal_threshold in [False, True]:
+        predictions = model.predict(X, optimal_threshold=optimal_threshold)
+        assert len(predictions) == len(y)
+        assert set(predictions).issubset({0, 1})
 
 
 def test_predict_proba_method(classification_data):
