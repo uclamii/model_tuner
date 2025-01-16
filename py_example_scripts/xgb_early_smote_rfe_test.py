@@ -34,7 +34,7 @@ tuned_parameters = {
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
-    f"feature_selection_rfe__n_features_to_select": [5, 10],
+    f"feature_selection_rfe__n_features_to_select": [0.1, 1.0],
 }
 
 kfold = False
@@ -61,7 +61,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
-    imbalance_sampler=SMOTE(),
+    imbalance_sampler=SMOTE(random_state=42),
 )
 
 
