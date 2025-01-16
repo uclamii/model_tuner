@@ -136,27 +136,8 @@ model.return_metrics(
     print_threshold=True,
     model_metrics=True,
 )
-print("Test Metrics")
-model.return_metrics(
-    X,
-    y,
-    optimal_threshold=True,
-    print_threshold=True,
-    model_metrics=True,
-)
 
 y_prob = model.predict_proba(X)
 
 ### F1 Weighted
 y_pred = model.predict(X, optimal_threshold=True)
-
-### Report Model Metrics
-
-model.return_metrics(
-    X,
-    y,
-    optimal_threshold=True,
-    print_threshold=True,
-    model_metrics=True,
-    return_dict=False,
-)
