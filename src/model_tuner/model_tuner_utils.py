@@ -1563,18 +1563,11 @@ class Model:
 
         feat_select_pipeline = self.get_feature_selection_pipeline()
         feat_select_pipeline = feat_select_pipeline[0]
-        print()
         support = feat_select_pipeline.get_support()
-        if all(support):
-            print("All features are selected")
-            print()
-            return support
         if isinstance(X, pd.DataFrame):
-            print("Feature names selected:")
             support = X.columns[support].to_list()
         else:
             print("Feature columns selected:")
-        print(support)
         print()
         return support
 
@@ -1844,7 +1837,9 @@ class Model:
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
-                y_pred = test_model.predict(X_test)
+                # y_pred = test_model.predict(X_test)
+                y_prob = test_model.predict_proba(X_test)[:, 1]
+                y_pred = 1 * (y_prob > threshold)
                 conf_matrix = confusion_matrix(y_test, y_pred)
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
@@ -1866,7 +1861,8 @@ class Model:
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                y_pred = test_model.predict(X_test)
+                y_prob = test_model.predict_proba(X_test)[:, 1]
+                y_pred = 1 * (y_prob > threshold)
                 conf_matrix = confusion_matrix(y_test, y_pred)
 
                 # Aggregate true labels and predictions
@@ -1922,6 +1918,14 @@ class Model:
         - Prints the averaged confusion matrix and classification report.
         """
 
+        if score is not None:
+            threshold = self.threshold[score]
+        else:
+            threshold = self.threshold[self.scoring[0]]
+
+        if threshold == 0:
+            threshold = 0.5
+
         aggregated_true_labels = []
         aggregated_predictions = []
         ### Confusion Matrix across multiple folds
@@ -1932,7 +1936,8 @@ class Model:
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
-                pred_y_test = test_model.predict(X_test)
+                y_prob = test_model.predict_proba(X_test)[:, 1]
+                pred_y_test = 1 * (y_prob > threshold)
                 conf_ma = confusion_matrix(y_test, pred_y_test)
                 conf_ma_list.append(conf_ma)
                 aggregated_true_labels.extend(y_test)
@@ -1942,7 +1947,8 @@ class Model:
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                pred_y_test = test_model.predict(X_test)
+                y_prob = test_model.predict_proba(X_test)[:, 1]
+                pred_y_test = 1 * (y_prob > threshold)
                 conf_ma = confusion_matrix(y_test, pred_y_test)
                 conf_ma_list.append(conf_ma)
                 aggregated_true_labels.extend(y_test)
