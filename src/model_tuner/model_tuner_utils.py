@@ -1094,12 +1094,17 @@ class Model:
                         + "Detailed classification report for %s:" % self.name
                         + "\n"
                     )
-                    self.conf_mat_class_kfold(X, y, self.test_model, score)
+                    self.conf_mat_class_kfold(X, y, self, score, optimal_threshold)
 
                     print("The model is trained on the full development set.")
                     print("The scores are computed on the full evaluation set." + "\n")
                     self.return_metrics_kfold(
-                        X, y, self.test_model, score, print_per_fold
+                        X,
+                        y,
+                        self,
+                        score,
+                        print_per_fold,
+                        optimal_threshold,
                     )
 
                     if optimal_threshold:
@@ -1197,7 +1202,7 @@ class Model:
             else:
                 print()
 
-    def predict(self, X, y=None, optimal_threshold=False):
+    def predict(self, X, y=None, optimal_threshold=False, score=None):
         """
         Makes predictions and predicts probabilities, allowing
         threshold tuning.
@@ -1220,18 +1225,20 @@ class Model:
             Raised if invalid inputs or configurations are provided.
         """
 
+        # Select the threshold if optimal_threshold is True
+        if optimal_threshold:
+            if score is not None:
+                threshold = self.threshold[score]
+            else:
+                threshold = self.threshold[self.scoring[0]]
+
         if self.model_type == "regression":
             optimal_threshold = False
         if self.kfold and y is not None:
             return cross_val_predict(estimator=self.estimator, X=X, y=y, cv=self.kf)
         else:
             if optimal_threshold:
-                return (
-                    self.predict_proba(X)[:, 1]
-                    > self.threshold[
-                        self.scoring[0]
-                    ]  # TODO generalize so that user can select score
-                ) * 1
+                return (self.predict_proba(X)[:, 1] > threshold) * 1
             else:
                 return self.estimator.predict(X)
 
@@ -1773,7 +1780,15 @@ class Model:
             }
             # self.estimator = clf.best_estimator_
 
-    def return_metrics_kfold(self, X, y, test_model, score=None, print_per_fold=False):
+    def return_metrics_kfold(
+        self,
+        X,
+        y,
+        test_model,
+        score=None,
+        print_per_fold=False,
+        optimal_threshold=False,
+    ):
         """
         Evaluate the model's performance using K-Fold cross-validation and print
         metrics for each fold. Aggregates predictions and true labels across
@@ -1819,14 +1834,6 @@ class Model:
         if not hasattr(test_model, "estimator_name"):
             test_model.estimator_name = self.estimator_name
 
-        if score is not None:
-            threshold = self.threshold[score]
-        else:
-            threshold = self.threshold[self.scoring[0]]
-
-        if threshold == 0:
-            threshold = 0.5
-
         aggregated_true_labels = []
         aggregated_predictions = []
 
@@ -1838,8 +1845,9 @@ class Model:
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
                 # y_pred = test_model.predict(X_test)
-                y_prob = test_model.predict_proba(X_test)[:, 1]
-                y_pred = 1 * (y_prob > threshold)
+                y_pred = test_model.predict(
+                    X_test, optimal_threshold=optimal_threshold, score=score
+                )
                 conf_matrix = confusion_matrix(y_test, y_pred)
                 # Aggregate true labels and predictions
                 aggregated_true_labels.extend(y_test)
@@ -1861,8 +1869,9 @@ class Model:
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                y_prob = test_model.predict_proba(X_test)[:, 1]
-                y_pred = 1 * (y_prob > threshold)
+                y_pred = test_model.predict(
+                    X_test, optimal_threshold=optimal_threshold, score=score
+                )
                 conf_matrix = confusion_matrix(y_test, y_pred)
 
                 # Aggregate true labels and predictions
@@ -1878,7 +1887,9 @@ class Model:
                     print(classification_report(y_test, y_pred, zero_division=0))
                     print("*" * 80)
 
-    def conf_mat_class_kfold(self, X, y, test_model, score=None):
+    def conf_mat_class_kfold(
+        self, X, y, test_model, score=None, optimal_threshold=False
+    ):
         """
         Generates and averages confusion matrices across k-folds, producing
         a combined classification report.
@@ -1918,14 +1929,6 @@ class Model:
         - Prints the averaged confusion matrix and classification report.
         """
 
-        if score is not None:
-            threshold = self.threshold[score]
-        else:
-            threshold = self.threshold[self.scoring[0]]
-
-        if threshold == 0:
-            threshold = 0.5
-
         aggregated_true_labels = []
         aggregated_predictions = []
         ### Confusion Matrix across multiple folds
@@ -1936,23 +1939,25 @@ class Model:
                 X_train, X_test = X.iloc[train], X.iloc[test]
                 y_train, y_test = y.iloc[train], y.iloc[test]
                 test_model.fit(X_train, y_train)
-                y_prob = test_model.predict_proba(X_test)[:, 1]
-                pred_y_test = 1 * (y_prob > threshold)
-                conf_ma = confusion_matrix(y_test, pred_y_test)
+                y_pred = test_model.predict(
+                    X_test, optimal_threshold=optimal_threshold, score=score
+                )
+                conf_ma = confusion_matrix(y_test, y_pred)
                 conf_ma_list.append(conf_ma)
                 aggregated_true_labels.extend(y_test)
-                aggregated_predictions.extend(pred_y_test)
+                aggregated_predictions.extend(y_pred)
         else:
             for train, test in self.kf.split(X, y, groups=self.kfold_group):
                 X_train, X_test = X[train], X[test]
                 y_train, y_test = y[train], y[test]
                 test_model.fit(X_train, y_train)
-                y_prob = test_model.predict_proba(X_test)[:, 1]
-                pred_y_test = 1 * (y_prob > threshold)
-                conf_ma = confusion_matrix(y_test, pred_y_test)
+                y_pred = test_model.predict(
+                    X_test, optimal_threshold=optimal_threshold, score=score
+                )
+                conf_ma = confusion_matrix(y_test, y_pred)
                 conf_ma_list.append(conf_ma)
                 aggregated_true_labels.extend(y_test)
-                aggregated_predictions.extend(pred_y_test)
+                aggregated_predictions.extend(y_pred)
 
         if score:
             print(f"Confusion Matrix Across All {len(conf_ma_list)} Folds for {score}:")
