@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pytest
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.feature_selection import SelectKBest
@@ -132,9 +133,11 @@ def test_predict_method(classification_data):
 
     # testing with and without optimal_threshold
     for optimal_threshold in [False, True]:
-        predictions = model.predict(X, optimal_threshold=optimal_threshold)
-        assert len(predictions) == len(y)
-        assert set(predictions).issubset({0, 1})
+        # testing with different options of scoring
+        for score in [None, "accuracy"]:
+            predictions = model.predict(X, score=score, optimal_threshold=optimal_threshold)
+            assert len(predictions) == len(y)
+            assert set(predictions).issubset({0, 1})
 
 
 def test_predict_proba_method(classification_data):
@@ -1595,7 +1598,7 @@ def test_conf_mat_class_kfold(initialized_kfold_lr_model, classification_data):
     initialized_kfold_lr_model.grid_search_param_tuning(X, y)
     initialized_kfold_lr_model.fit(X, y)
 
-    test_model = initialized_kfold_lr_model.estimator
+    test_model = deepcopy(initialized_kfold_lr_model)
 
     # testing dataframe and numpy array cases
     for X_test, y_test in [(X, y), (X.values, y.values)]:
