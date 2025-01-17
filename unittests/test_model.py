@@ -2,7 +2,7 @@ import pytest
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.impute import SimpleImputer
-from model_tuner import Model
+from model_tuner import Model, report_model_metrics
 import pandas as pd
 import numpy as np
 from sklearn.datasets import make_classification, make_regression
@@ -129,9 +129,12 @@ def test_predict_method(classification_data):
     model.grid_search_param_tuning(X, y)
     X_train, y_train = model.get_train_data(X, y)
     model.fit(X_train, y_train, score="accuracy")
-    predictions = model.predict(X)
-    assert len(predictions) == len(y)
-    assert set(predictions).issubset({0, 1})
+
+    # testing with and without optimal_threshold
+    for optimal_threshold in [False, True]:
+        predictions = model.predict(X, optimal_threshold=optimal_threshold)
+        assert len(predictions) == len(y)
+        assert set(predictions).issubset({0, 1})
 
 
 def test_predict_proba_method(classification_data):
@@ -166,6 +169,42 @@ def test_predict_proba_method(classification_data):
     # Check if the probabilities sum to 1 for each sample
     for p in proba:
         assert abs(sum(p) - 1.0) < 1e-6, f"Probabilities do not sum to 1: {p}"
+
+def test_predict_proba_method_kfold(classification_data):
+    X, y = classification_data
+    estimator_name = "RF"
+    tuned_parameters = {
+        estimator_name + "__max_depth": [2, 30],
+    }
+
+    model = Model(
+        name="test_model",
+        estimator_name=estimator_name,
+        estimator=RandomForestClassifier(n_estimators=10),
+        scoring=["accuracy"],
+        grid=tuned_parameters,
+        model_type="classification",
+        kfold=True,
+    )
+
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y, score="accuracy")
+
+    # with and without y
+    for y_test in [None, y]:
+        proba = model.predict_proba(X, y=y_test)
+        assert proba.shape == (len(y), 2)
+        assert np.allclose(proba.sum(axis=1), 1)
+
+        # Assertions
+        assert proba is not None, "predict_proba returned None"
+        assert len(proba) == len(
+            X
+        ), "predict_proba did not return correct number of probabilities"
+
+        # Check if the probabilities sum to 1 for each sample
+        for p in proba:
+            assert abs(sum(p) - 1.0) < 1e-6, f"Probabilities do not sum to 1: {p}"
 
 
 def test_grid_search_param_tuning_early(classification_data):
@@ -389,6 +428,65 @@ def test_bootstrapped_metrics_consistency(classification_data):
     ), "Mismatch in number of metrics returned"
 
     print(bootstrap_results)
+
+def test_bootstrapped_metrics_consistency_regression(regression_data):
+        """
+        Test the consistency of bootstrapped metrics for a regression model.
+        """
+        X, y = regression_data
+
+        ## Reuse model initialization from test_imbalance_sampler_integration
+        name = "test_model"
+        estimator_name = "lr"
+        estimator = LinearRegression()
+        tuned_parameters = {
+            estimator_name + "__fit_intercept": [True, False],
+        }
+
+        model = Model(
+            name=name,
+            estimator_name=estimator_name,
+            model_type="regression",
+            estimator=estimator,
+            scoring=["r2"],
+            grid=tuned_parameters,
+        )
+
+        ## Assert model is initialized correctly
+        assert model.name == name
+        assert model.estimator_name == estimator_name
+        assert isinstance(model.estimator.named_steps[estimator_name], LinearRegression)
+
+
+        # Perform grid search to populate `best_params_per_score`
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # Define a simple metric set
+        metrics = ["r2", "neg_mean_squared_error"]
+
+        # Obtain bootstrap metrics
+        bootstrap_results = model.return_bootstrap_metrics(X, y, metrics=metrics)
+
+        print(bootstrap_results)
+
+        # Check the type and content
+        assert isinstance(
+            bootstrap_results, pd.DataFrame
+        ), "Bootstrap metrics should be returned as a pandas dataframe."
+        assert all(
+            metric in bootstrap_results["Metric"].tolist() for metric in metrics
+        ), "All specified metrics should be in the result."
+        assert all(
+            col in bootstrap_results.columns
+            for col in [
+                "Mean",
+                "95% CI Lower",
+                "95% CI Upper",
+            ]
+        ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
 
 
 @pytest.fixture
@@ -1675,8 +1773,7 @@ def test_compare_report_model_metrics_vs_model_classification_report(
         "Precision and recall from Model.classification_report match report_model_metrics DataFrame."
     )
 
-
-def test_compare_report_model_metrics_vs_model_classification_report(
+def test_compare_report_model_metrics_vs_model_classification_report_f1_tune(
     classification_data,
 ):
     """
