@@ -29,7 +29,7 @@ xgbearly = True
 tuned_parameters = {
     f"{estimator_name}__max_depth": [3],
     f"{estimator_name}__learning_rate": [1e-4],
-    f"{estimator_name}__n_estimators": [100000],
+    f"{estimator_name}__n_estimators": [1000],
     f"{estimator_name}__early_stopping_rounds": [10],
     f"{estimator_name}__verbose": [0],
     f"{estimator_name}__eval_metric": ["logloss"],
@@ -41,7 +41,7 @@ calibrate = True
 
 rfe_estimator = ElasticNet()
 
-rfe = RFE(rfe_estimator)
+rfe = RFE(rfe_estimator, step=0.5)
 
 model = Model(
     name="XGBoost Early",
