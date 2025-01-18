@@ -2700,7 +2700,7 @@ def report_model_metrics(
                 },
                 {
                     "Metric": "Brier Score",
-                    "Value": brier_score_loss(aggregated_y_true, aggregated_y_pred),
+                    "Value": brier_score_loss(aggregated_y_true, aggregated_y_prob),
                 },
             ]
         )
