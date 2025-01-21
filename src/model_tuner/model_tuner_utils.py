@@ -1112,12 +1112,13 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(
+                        metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
                         )
                     print("-" * 80)
                     print()
-
+                    if return_dict:
+                        return metrics.set_index("Metric")["Value"].to_dict()
                 else:
                     self.regression_report_kfold(X, y, self.test_model, score)
 
@@ -1136,10 +1137,12 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(
+                        metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
                         )
                     print("-" * 80)
+                    if return_dict:
+                        return metrics.set_index(["Class", "Metric"])["Value"].to_dict()
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     self.conf_mat = conf_mat  # store it so we can ext. dict
@@ -1150,10 +1153,12 @@ class Model:
                     else:
                         threshold = 0.5
                     if model_metrics:
-                        report_model_metrics(
+                        metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
                         )
                     print("-" * 80)
+                    if return_dict:
+                        return metrics.set_index(["Class", "Metric"])["Value"].to_dict()
                 print()
                 self.classification_report = classification_report(
                     y, y_pred_valid, output_dict=True
