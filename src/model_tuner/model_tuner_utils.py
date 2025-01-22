@@ -1117,7 +1117,7 @@ class Model:
                         )
                     print("-" * 80)
                     print()
-                    if return_dict:
+                    if return_dict and model_metrics:
                         return metrics.set_index("Metric")["Value"].to_dict()
                 else:
                     self.regression_report_kfold(X, y, self.test_model, score)
@@ -1132,6 +1132,16 @@ class Model:
                     conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
                     self.conf_mat = conf_mat  # store it so we can ext. dict
                     self._confusion_matrix_print_ML(conf_mat)
+
+                    print(
+                        classification_report(
+                            y,
+                            y_pred_valid,
+                            target_names=self.class_labels,
+                        )
+                    )
+                    print("-" * 80)
+
                     if optimal_threshold:
                         threshold = self.threshold[self.scoring[0]]
                     else:
@@ -1140,9 +1150,17 @@ class Model:
                         metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
                         )
-                    print("-" * 80)
-                    if return_dict:
                         return metrics.set_index(["Class", "Metric"])["Value"].to_dict()
+
+                    if return_dict:
+                        self.classification_report = classification_report(
+                            y, y_pred_valid, output_dict=True
+                        )
+                        return {
+                            "Classification Report": self.classification_report,
+                            "Confusion Matrix": conf_mat,
+                        }
+
                 else:
                     conf_mat = confusion_matrix(y, y_pred_valid)
                     self.conf_mat = conf_mat  # store it so we can ext. dict
@@ -1156,9 +1174,8 @@ class Model:
                         metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
                         )
+                        return metrics.set_index("Metric")["Value"].to_dict()
                     print("-" * 80)
-                    if return_dict:
-                        return metrics.set_index(["Class", "Metric"])["Value"].to_dict()
                 print()
                 self.classification_report = classification_report(
                     y, y_pred_valid, output_dict=True
