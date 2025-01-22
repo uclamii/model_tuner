@@ -381,6 +381,46 @@ def test_model_metrics_True_classification(classification_data):
     assert "Precision/PPV" in metrics, "Precision/PPV is missing."
 
 
+def test_model_optimal_threshold_True_classification(classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = classification_data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="lr",
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train, f1_beta_tune=True)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(
+        X_test,
+        y_test,
+        model_metrics=True,
+        optimal_threshold=True,
+    )
+    print(metrics)
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Brier Score" in metrics, "Brier Score is missing."
+    assert "Precision/PPV" in metrics, "Precision/PPV is missing."
+
+
 def test_return_metrics_regression(regression_data):
     """
     Test the return_metrics method for a regression model.
