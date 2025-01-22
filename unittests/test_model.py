@@ -582,6 +582,21 @@ def initialized_kfold_lr_model():
         # scoring=["roc_auc"],
     )
 
+@pytest.fixture
+def initialized_kfold_lr_model_multiple_scores():
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  # Example param grid
+
+    return Model(
+        name="test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=True,
+        scoring=["roc_auc", "f1"],
+    )
+
 
 def test_fit_basic(initialized_model, classification_data):
     X, y = classification_data
@@ -597,6 +612,21 @@ def test_fit_basic(initialized_model, classification_data):
     assert hasattr(
         model.estimator, "steps"
     ), "Model should be fitted with steps attribute set."
+
+def test_fit_basic_kfold(initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores, classification_data):
+    X, y = classification_data
+    for model in [initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores]:
+
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # Check if estimator is fitted by checking if steps exist
+        assert hasattr(
+            model.estimator, "steps"
+        ), "Model should be fitted with steps attribute set."
 
 
 def test_fit_with_validation(initialized_model, classification_data):
@@ -663,71 +693,95 @@ def initialized_xgb_model():
         # Include other necessary parameters
     )
 
+@pytest.fixture
+def initialized_xgb_model_multiple_scores():
+    xgb = XGBClassifier(eval_metric="logloss")
+    estimator_name = "xgbclassifier"
+    param_grid = {
+        f"{estimator_name}__max_depth": [3, 10, 20, 200, 500],
+        f"{estimator_name}__learning_rate": [1e-4],
+        f"{estimator_name}__n_estimators": [50],
+        f"{estimator_name}__early_stopping_rounds": [10],
+        f"{estimator_name}__verbose": [0],
+        f"{estimator_name}__eval_metric": ["logloss"],
+    }  # Example param grid for XGBoost
+
+    return Model(
+        name="xgboost_model",
+        estimator_name=estimator_name,
+        estimator=xgb,
+        model_type="classification",
+        grid=param_grid,
+        boost_early=True,  # Enable early stopping
+        # Include other necessary parameters
+        scoring=["roc_auc", "f1"],
+    )
+
 
 def test_fit_with_early_stopping_and_validation(
-    initialized_xgb_model, classification_data
+    initialized_xgb_model, initialized_xgb_model_multiple_scores, classification_data,
 ):
     X, y = classification_data
-    model = initialized_xgb_model
+    for model in [initialized_xgb_model,initialized_xgb_model_multiple_scores]:
 
-    # Split the data into training and validation sets
-    X_train, X_valid, y_train, y_valid = (
-        X.iloc[:50],
-        X.iloc[50:],
-        y.iloc[:50],
-        y.iloc[50:],
-    )
+        # Split the data into training and validation sets
+        X_train, X_valid, y_train, y_valid = (
+            X.iloc[:50],
+            X.iloc[50:],
+            y.iloc[:50],
+            y.iloc[50:],
+        )
 
-    # first need to do gridsearch
-    model.grid_search_param_tuning(X, y)
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
 
-    # Fit the model with early stopping
-    model.fit(
-        X=X_train,
-        y=y_train,
-        validation_data=(X_valid, y_valid),
-    )
+        # Fit the model with early stopping
+        model.fit(
+            X=X_train,
+            y=y_train,
+            validation_data=(X_valid, y_valid),
+        )
 
-    # Check if estimator is fitted
-    assert hasattr(
-        model.estimator, "steps"
-    ), "Model should have a fitted attribute set."
+        # Check if estimator is fitted
+        assert hasattr(
+            model.estimator, "steps"
+        ), "Model should have a fitted attribute set."
 
-    # Check that the early stopping logic was applied
-    assert hasattr(model.estimator.steps[0][1], "best_iteration") or hasattr(
-        model.estimator.steps[0][1], "best_ntree_limit"
-    ), "Model should have early stopping logic applied."
+        # Check that the early stopping logic was applied
+        assert hasattr(model.estimator.steps[0][1], "best_iteration") or hasattr(
+            model.estimator.steps[0][1], "best_ntree_limit"
+        ), "Model should have early stopping logic applied."
 
-    # Ensure the regularization logic finalized correctly
-    assert (
-        model.estimator.steps[0][1].best_iteration <= 50
-    ), "Model should stop before max estimators if early stopping is effective."
+        # Ensure the regularization logic finalized correctly
+        assert (
+            model.estimator.steps[0][1].best_iteration <= 50
+        ), "Model should stop before max estimators if early stopping is effective."
 
 
-def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
-    X, y = classification_data
-    # note this method is only used with kfold so needs to be turned on
-    model = initialized_kfold_lr_model
+    def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
+        X, y = classification_data
+        # note this method is only used with kfold so needs to be turned on
+        model = initialized_kfold_lr_model
 
-    # first need to do gridsearch
-    model.grid_search_param_tuning(X, y)
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
 
-    # Run the method to find the best parameters
-    model.get_best_score_params(X, y)
+        # Run the method to find the best parameters
+        model.get_best_score_params(X, y)
 
-    # Verify that best_params_per_score is set and contains expected keys
-    assert (
-        "roc_auc" in model.best_params_per_score
-    ), "Best score for roc_auc should be in results."
+        # Verify that best_params_per_score is set and contains expected keys
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
 
-    best_params = model.best_params_per_score["roc_auc"]["params"]
+        best_params = model.best_params_per_score["roc_auc"]["params"]
 
-    # Check that the best parameters are from the predefined grid
-    assert best_params["logistic_regression__C"] in [0.1, 1, 10]
-    # We could also assert that the best score is assigned (though its value may vary)
-    assert (
-        "score" in model.best_params_per_score["roc_auc"]
-    ), "Best score value should be present."
+        # Check that the best parameters are from the predefined grid
+        assert best_params["logistic_regression__C"] in [0.1, 1, 10]
+        # We could also assert that the best score is assigned (though its value may vary)
+        assert (
+            "score" in model.best_params_per_score["roc_auc"]
+        ), "Best score value should be present."
 
 
 def test_return_bootstrap_metrics_classification(
