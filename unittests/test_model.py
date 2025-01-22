@@ -613,6 +613,21 @@ def test_fit_basic(initialized_model, classification_data):
         model.estimator, "steps"
     ), "Model should be fitted with steps attribute set."
 
+def test_fit_basic_kfold(initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores, classification_data):
+    X, y = classification_data
+    for model in [initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores]:
+
+        # first need to do gridsearch
+        model.grid_search_param_tuning(X, y)
+
+        # Fit the model
+        model.fit(X, y)
+
+        # Check if estimator is fitted by checking if steps exist
+        assert hasattr(
+            model.estimator, "steps"
+        ), "Model should be fitted with steps attribute set."
+
 
 def test_fit_with_validation(initialized_model, classification_data):
     X, y = classification_data
