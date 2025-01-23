@@ -2176,3 +2176,130 @@ def test_compare_report_model_metrics_vs_model_classification_report_kfold(
     print(
         "Precision and recall from Model.classification_report match report_model_metrics DataFrame."
     )
+
+    
+def test_calibrate_imbalance_sampler_and_extract(classification_data):
+    
+    from imblearn.pipeline import Pipeline
+    
+    X, y = classification_data
+    lr = LogisticRegression()
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  
+    
+    calibrate_imb_model = Model(
+        name="calibrate_imb_test_model",
+        estimator_name="logistic_regression",
+        estimator=lr,
+        model_type="classification",
+        grid=param_grid,
+        kfold=False,
+        calibrate=True,
+        calibration_method="sigmoid",
+        imbalance_sampler=SMOTE()
+    )
+    
+    assert calibrate_imb_model.calibrate == True
+    
+    calibrate_imb_model.grid_search_param_tuning(X, y)
+    
+    X_train, y_train = calibrate_imb_model.get_train_data(X, y)
+    X_valid, y_valid = calibrate_imb_model.get_valid_data(X, y)
+    X_test, y_test = calibrate_imb_model.get_test_data(X, y)
+
+    
+    calibrate_imb_model.fit(X_train, y_train)
+    
+    calibrate_imb_model.calibrateModel(X, y)
+    
+    assert isinstance(
+            calibrate_imb_model.estimator, CalibratedClassifierCV
+        ), "Expected a CalibratedClassifierCV instance."
+
+    probabilities = calibrate_imb_model.predict_proba(X)
+    assert np.allclose(
+        probabilities.sum(axis=1), 1
+    ), "Probabilities should sum to 1 for each instance."
+    
+    
+    preproc_feat_select = calibrate_imb_model.get_preprocessing_and_feature_selection_pipeline()
+    preproc_pipe = calibrate_imb_model.get_preprocessing_pipeline()
+    feat_select = calibrate_imb_model.get_feature_selection_pipeline()
+    
+    assert isinstance(preproc_feat_select, Pipeline), "Expected a imbalanced learn Pipeline instance"
+    assert isinstance(preproc_pipe, Pipeline), "Expected a imbalanced learn Pipeline instance"
+    assert isinstance(feat_select, Pipeline), "Expected a imbalanced learn Pipeline instance"
+    
+
+def test_model_with_column_transformer(classification_data):
+    from sklearn.compose import ColumnTransformer
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.impute import SimpleImputer
+
+    X, y = classification_data
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('scaler', StandardScaler(), slice(0, 5)),  # Scale first 5 features
+            ('imputer', SimpleImputer(), slice(5, 10))  # Impute last 5 features
+        ]
+    )
+
+    model = Model(
+        name="column_transformer_model",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        grid={"lr__C": [0.1, 1, 10]},
+        pipeline_steps=[('ct', preprocessor)],
+        scoring=["accuracy"],
+        random_state=42,
+    )
+
+    assert 'preprocess_column_transformer_ct' in model.estimator.named_steps
+    assert isinstance(model.estimator.named_steps['preprocess_column_transformer_ct'], ColumnTransformer)
+
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+
+    # Verify predictions
+    predictions = model.predict(X)
+    assert len(predictions) == len(y)
+    assert set(predictions).issubset({0, 1})
+
+
+def test_regression_report_kfold(regression_data):
+    X, y = regression_data
+    
+    # Initialize regression model with KFold
+    model = Model(
+        name="kfold_regression_test",
+        estimator_name="linreg",
+        estimator=LinearRegression(),
+        model_type="regression",
+        grid={"linreg__fit_intercept": [True, False]},
+        kfold=True,
+        n_splits=5,
+        random_state=42,
+        scoring=["r2"]
+    )
+    
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+    
+    metrics = model.regression_report_kfold(X, y, model.test_model, score="r2")
+    
+    assert isinstance(metrics, dict)
+    expected_keys = [
+        "R2", "Explained Variance", "Mean Absolute Error",
+        "Median Absolute Error", "Mean Squared Error", "RMSE"
+    ]
+    
+    for key in expected_keys:
+        assert key in metrics
+        assert isinstance(metrics[key], float)
+        if key == "R2":
+            assert -1 <= metrics[key] <= 1
+        elif "Error" in key:
+            assert metrics[key] >= 0
+            
+    assert model.kf.get_n_splits() == 5
