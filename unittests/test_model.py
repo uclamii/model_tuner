@@ -31,6 +31,21 @@ def classification_data():
 
 
 @pytest.fixture
+def multi_classification_data():
+    X, y = make_classification(
+        n_samples=100,
+        n_features=10,
+        n_informative=10,
+        n_redundant=0,
+        random_state=42,
+        n_classes=4,
+    )
+    X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
+    y = pd.Series(y, name="labels")
+    return X, y
+
+
+@pytest.fixture
 def classification_data_large():
     X, y = make_classification(n_samples=100, n_features=10, random_state=42)
     X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
@@ -135,7 +150,9 @@ def test_predict_method(classification_data):
     for optimal_threshold in [False, True]:
         # testing with different options of scoring
         for score in [None, "accuracy"]:
-            predictions = model.predict(X, score=score, optimal_threshold=optimal_threshold)
+            predictions = model.predict(
+                X, score=score, optimal_threshold=optimal_threshold
+            )
             assert len(predictions) == len(y)
             assert set(predictions).issubset({0, 1})
 
@@ -172,6 +189,7 @@ def test_predict_proba_method(classification_data):
     # Check if the probabilities sum to 1 for each sample
     for p in proba:
         assert abs(sum(p) - 1.0) < 1e-6, f"Probabilities do not sum to 1: {p}"
+
 
 def test_predict_proba_method_kfold(classification_data):
     X, y = classification_data
@@ -259,7 +277,11 @@ def test_return_metrics_classification(classification_data):
     model.fit(X_train, y_train)
 
     # Test return_metrics method
-    metrics = model.return_metrics(X_test, y_test, return_dict=True)
+    metrics = model.return_metrics(
+        X_test,
+        y_test,
+        return_dict=True,
+    )
 
     # Validate the structure and content of the metrics
     assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
@@ -271,6 +293,132 @@ def test_return_metrics_classification(classification_data):
     assert isinstance(
         metrics["Confusion Matrix"], (np.ndarray, list)
     ), "Confusion Matrix should be an array or list."
+
+
+def test_return_metrics_multilabel_classification(multi_classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = multi_classification_data
+    print(y)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    estimator_name = "RF"
+    tuned_parameters = {
+        estimator_name + "__max_depth": [2, 30],
+    }
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="RF",
+        model_type="classification",
+        estimator=RandomForestClassifier(n_estimators=10),
+        multi_label=True,
+        class_labels=[str(x) for x in sorted(list(set(y)))],
+        scoring=["roc_auc_ovr"],
+        grid=tuned_parameters,
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(
+        X_test, y_test, model_metrics=False, return_dict=True
+    )
+    print(metrics)
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Classification Report" in metrics, "Classification Report is missing."
+    assert "Confusion Matrix" in metrics, "Confusion Matrix is missing."
+    assert isinstance(
+        metrics["Classification Report"], dict
+    ), "Classification Report should be a dictionary."
+    assert isinstance(
+        metrics["Confusion Matrix"], (np.ndarray, list)
+    ), "Confusion Matrix should be an array or list."
+
+
+def test_model_metrics_True_classification(classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = classification_data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="lr",
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(X_test, y_test, model_metrics=True)
+    print(metrics)
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Brier Score" in metrics, "Brier Score is missing."
+    assert "Precision/PPV" in metrics, "Precision/PPV is missing."
+
+
+def test_model_optimal_threshold_True_classification(classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = classification_data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="lr",
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train, f1_beta_tune=True)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(
+        X_test,
+        y_test,
+        model_metrics=True,
+        optimal_threshold=True,
+    )
+    print(metrics)
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Brier Score" in metrics, "Brier Score is missing."
+    assert "Precision/PPV" in metrics, "Precision/PPV is missing."
 
 
 def test_return_metrics_regression(regression_data):
@@ -432,64 +580,64 @@ def test_bootstrapped_metrics_consistency(classification_data):
 
     print(bootstrap_results)
 
+
 def test_bootstrapped_metrics_consistency_regression(regression_data):
-        """
-        Test the consistency of bootstrapped metrics for a regression model.
-        """
-        X, y = regression_data
+    """
+    Test the consistency of bootstrapped metrics for a regression model.
+    """
+    X, y = regression_data
 
-        ## Reuse model initialization from test_imbalance_sampler_integration
-        name = "test_model"
-        estimator_name = "lr"
-        estimator = LinearRegression()
-        tuned_parameters = {
-            estimator_name + "__fit_intercept": [True, False],
-        }
+    ## Reuse model initialization from test_imbalance_sampler_integration
+    name = "test_model"
+    estimator_name = "lr"
+    estimator = LinearRegression()
+    tuned_parameters = {
+        estimator_name + "__fit_intercept": [True, False],
+    }
 
-        model = Model(
-            name=name,
-            estimator_name=estimator_name,
-            model_type="regression",
-            estimator=estimator,
-            scoring=["r2"],
-            grid=tuned_parameters,
-        )
+    model = Model(
+        name=name,
+        estimator_name=estimator_name,
+        model_type="regression",
+        estimator=estimator,
+        scoring=["r2"],
+        grid=tuned_parameters,
+    )
 
-        ## Assert model is initialized correctly
-        assert model.name == name
-        assert model.estimator_name == estimator_name
-        assert isinstance(model.estimator.named_steps[estimator_name], LinearRegression)
+    ## Assert model is initialized correctly
+    assert model.name == name
+    assert model.estimator_name == estimator_name
+    assert isinstance(model.estimator.named_steps[estimator_name], LinearRegression)
 
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X, y)
 
-        # Perform grid search to populate `best_params_per_score`
-        model.grid_search_param_tuning(X, y)
+    # Fit the model
+    model.fit(X, y)
 
-        # Fit the model
-        model.fit(X, y)
+    # Define a simple metric set
+    metrics = ["r2", "neg_mean_squared_error"]
 
-        # Define a simple metric set
-        metrics = ["r2", "neg_mean_squared_error"]
+    # Obtain bootstrap metrics
+    bootstrap_results = model.return_bootstrap_metrics(X, y, metrics=metrics)
 
-        # Obtain bootstrap metrics
-        bootstrap_results = model.return_bootstrap_metrics(X, y, metrics=metrics)
+    print(bootstrap_results)
 
-        print(bootstrap_results)
-
-        # Check the type and content
-        assert isinstance(
-            bootstrap_results, pd.DataFrame
-        ), "Bootstrap metrics should be returned as a pandas dataframe."
-        assert all(
-            metric in bootstrap_results["Metric"].tolist() for metric in metrics
-        ), "All specified metrics should be in the result."
-        assert all(
-            col in bootstrap_results.columns
-            for col in [
-                "Mean",
-                "95% CI Lower",
-                "95% CI Upper",
-            ]
-        ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
+    # Check the type and content
+    assert isinstance(
+        bootstrap_results, pd.DataFrame
+    ), "Bootstrap metrics should be returned as a pandas dataframe."
+    assert all(
+        metric in bootstrap_results["Metric"].tolist() for metric in metrics
+    ), "All specified metrics should be in the result."
+    assert all(
+        col in bootstrap_results.columns
+        for col in [
+            "Mean",
+            "95% CI Lower",
+            "95% CI Upper",
+        ]
+    ), "Each metric should contain these results Mean, 95% CI Lower, 95% CI Upper."
 
 
 @pytest.fixture
@@ -582,6 +730,7 @@ def initialized_kfold_lr_model():
         # scoring=["roc_auc"],
     )
 
+
 @pytest.fixture
 def initialized_kfold_lr_model_multiple_scores():
     lr = LogisticRegression()
@@ -613,9 +762,17 @@ def test_fit_basic(initialized_model, classification_data):
         model.estimator, "steps"
     ), "Model should be fitted with steps attribute set."
 
-def test_fit_basic_kfold(initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores, classification_data):
+
+def test_fit_basic_kfold(
+    initialized_kfold_lr_model,
+    initialized_kfold_lr_model_multiple_scores,
+    classification_data,
+):
     X, y = classification_data
-    for model in [initialized_kfold_lr_model, initialized_kfold_lr_model_multiple_scores]:
+    for model in [
+        initialized_kfold_lr_model,
+        initialized_kfold_lr_model_multiple_scores,
+    ]:
 
         # first need to do gridsearch
         model.grid_search_param_tuning(X, y)
@@ -693,6 +850,7 @@ def initialized_xgb_model():
         # Include other necessary parameters
     )
 
+
 @pytest.fixture
 def initialized_xgb_model_multiple_scores():
     xgb = XGBClassifier(eval_metric="logloss")
@@ -719,10 +877,12 @@ def initialized_xgb_model_multiple_scores():
 
 
 def test_fit_with_early_stopping_and_validation(
-    initialized_xgb_model, initialized_xgb_model_multiple_scores, classification_data,
+    initialized_xgb_model,
+    initialized_xgb_model_multiple_scores,
+    classification_data,
 ):
     X, y = classification_data
-    for model in [initialized_xgb_model,initialized_xgb_model_multiple_scores]:
+    for model in [initialized_xgb_model, initialized_xgb_model_multiple_scores]:
 
         # Split the data into training and validation sets
         X_train, X_valid, y_train, y_valid = (
@@ -756,7 +916,6 @@ def test_fit_with_early_stopping_and_validation(
         assert (
             model.estimator.steps[0][1].best_iteration <= 50
         ), "Model should stop before max estimators if early stopping is effective."
-
 
     def test_get_best_score_params(initialized_kfold_lr_model, classification_data):
         X, y = classification_data
@@ -1829,6 +1988,7 @@ def test_compare_report_model_metrics_vs_model_classification_report(
     print(
         "Precision and recall from Model.classification_report match report_model_metrics DataFrame."
     )
+
 
 def test_compare_report_model_metrics_vs_model_classification_report_f1_tune(
     classification_data,
