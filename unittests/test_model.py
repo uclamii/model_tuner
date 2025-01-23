@@ -2104,3 +2104,41 @@ def test_model_with_column_transformer(classification_data):
     predictions = model.predict(X)
     assert len(predictions) == len(y)
     assert set(predictions).issubset({0, 1})
+
+
+def test_regression_report_kfold(regression_data):
+    X, y = regression_data
+    
+    # Initialize regression model with KFold
+    model = Model(
+        name="kfold_regression_test",
+        estimator_name="linreg",
+        estimator=LinearRegression(),
+        model_type="regression",
+        grid={"linreg__fit_intercept": [True, False]},
+        kfold=True,
+        n_splits=5,
+        random_state=42,
+        scoring=["r2"]
+    )
+    
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+    
+    metrics = model.regression_report_kfold(X, y, model.test_model, score="r2")
+    
+    assert isinstance(metrics, dict)
+    expected_keys = [
+        "R2", "Explained Variance", "Mean Absolute Error",
+        "Median Absolute Error", "Mean Squared Error", "RMSE"
+    ]
+    
+    for key in expected_keys:
+        assert key in metrics
+        assert isinstance(metrics[key], float)
+        if key == "R2":
+            assert -1 <= metrics[key] <= 1
+        elif "Error" in key:
+            assert metrics[key] >= 0
+            
+    assert model.kf.get_n_splits() == 5
