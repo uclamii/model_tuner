@@ -1111,6 +1111,8 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
+                    if print_threshold:
+                        print(f"Optimal threshold used: {threshold}")
                     if model_metrics:
                         metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
@@ -1146,6 +1148,8 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
+                    if print_threshold:
+                        print(f"Optimal threshold used: {threshold}")
                     if model_metrics:
                         metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
@@ -1170,6 +1174,9 @@ class Model:
                         threshold = self.threshold[self.scoring[0]]
                     else:
                         threshold = 0.5
+                    if print_threshold:
+                        print(f"Optimal threshold used: {threshold}")
+
                     if model_metrics:
                         metrics = report_model_metrics(
                             self, X, y, threshold, True, print_per_fold
@@ -1216,13 +1223,6 @@ class Model:
                 else:
                     if return_dict:
                         return reg_report
-
-        if print_threshold:
-            if self.model_type != "regression":
-                print(f"Optimal threshold used: {threshold}")
-                print()
-            else:
-                print()
 
     def predict(self, X, y=None, optimal_threshold=False, score=None):
         """

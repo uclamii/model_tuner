@@ -129,15 +129,18 @@ if model.calibrate:
     model.calibrateModel(X, y, score="roc_auc")
 
 print("Validation Metrics")
-model.return_metrics(
+return_metrics_dict = model.return_metrics(
     X,
     y,
     optimal_threshold=True,
     print_threshold=True,
     model_metrics=True,
+    return_dict=True,
 )
 
 y_prob = model.predict_proba(X)
 
 ### F1 Weighted
 y_pred = model.predict(X, optimal_threshold=True)
+
+print(return_metrics_dict)
