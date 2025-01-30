@@ -1519,9 +1519,9 @@ class Model:
                             ].best_iteration
                         except:
                             ### catboost case
-                            params[f"{self.estimator_name}__n_estimators"] = clf[
-                                len(clf) - 1
-                            ].best_iteration_
+                            params[f"{self.estimator_name}__n_estimators"] = (
+                                clf[len(clf) - 1].best_iteration_ + 1
+                            )
 
                         # Update the parameters in the grid
                         self.grid[index] = params

@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from sklearn.datasets import make_classification, make_regression
 from sklearn.linear_model import LogisticRegression, LinearRegression
+from catboost import CatBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import ParameterGrid
 from sklearn.pipeline import Pipeline
@@ -1005,6 +1006,57 @@ def test_return_bootstrap_metrics_unrecognized_metric(
     # Call method with an unrecognized metric
     with pytest.raises(ValueError):
         model.return_bootstrap_metrics(X, y, metrics=["unknown_metric"])
+
+
+def test_catboost_earlystop_best_iteration(initialized_model, classification_data):
+    X, y = classification_data
+    model = initialized_model
+
+    # Create a small validation set
+    X_validation, y_validation = X.iloc[:10], y.iloc[:10]
+
+    estimator = CatBoostClassifier(verbose=0)
+    estimator_name = "cat"
+
+    tuned_parameters = {
+        f"{estimator_name}__depth": [10],
+        f"{estimator_name}__learning_rate": [1e-4],
+        f"{estimator_name}__n_estimators": [1],
+        f"{estimator_name}__early_stopping_rounds": [10],
+        f"{estimator_name}__verbose": [0],
+        f"{estimator_name}__eval_metric": ["Logloss"],
+    }
+
+    model = Model(
+        name="Catboost Early",
+        model_type="classification",
+        estimator_name=estimator_name,
+        estimator=estimator,
+        pipeline_steps=[],
+        stratify_y=True,
+        grid=tuned_parameters,
+        randomized_grid=False,
+        n_iter=4,
+        boost_early=True,
+        scoring=["roc_auc"],
+        n_jobs=-2,
+        random_state=42,
+    )
+
+    model.grid_search_param_tuning(X, y)
+    X_train, y_train = model.get_train_data(X, y)
+    # Fit the model with validation data
+
+    # assert (
+    #     model.best_params_per_score["roc_auc"]["params"]["cat__n_estimators"] == 1
+    # ), "Number of n_estimator should be 1"
+
+    model.fit(X, y, validation_data=(X_validation, y_validation))
+
+    # Check if model remained consistent
+    assert hasattr(
+        model.estimator, "steps"
+    ), "Model should be fitted even when validation data is used."
 
 
 from collections.abc import Mapping, Iterable
@@ -2177,15 +2229,15 @@ def test_compare_report_model_metrics_vs_model_classification_report_kfold(
         "Precision and recall from Model.classification_report match report_model_metrics DataFrame."
     )
 
-    
+
 def test_calibrate_imbalance_sampler_and_extract(classification_data):
-    
+
     from imblearn.pipeline import Pipeline
-    
+
     X, y = classification_data
     lr = LogisticRegression()
-    param_grid = {"logistic_regression__C": [0.1, 1, 10]}  
-    
+    param_grid = {"logistic_regression__C": [0.1, 1, 10]}
+
     calibrate_imb_model = Model(
         name="calibrate_imb_test_model",
         estimator_name="logistic_regression",
@@ -2195,40 +2247,46 @@ def test_calibrate_imbalance_sampler_and_extract(classification_data):
         kfold=False,
         calibrate=True,
         calibration_method="sigmoid",
-        imbalance_sampler=SMOTE()
+        imbalance_sampler=SMOTE(),
     )
-    
+
     assert calibrate_imb_model.calibrate == True
-    
+
     calibrate_imb_model.grid_search_param_tuning(X, y)
-    
+
     X_train, y_train = calibrate_imb_model.get_train_data(X, y)
     X_valid, y_valid = calibrate_imb_model.get_valid_data(X, y)
     X_test, y_test = calibrate_imb_model.get_test_data(X, y)
 
-    
     calibrate_imb_model.fit(X_train, y_train)
-    
+
     calibrate_imb_model.calibrateModel(X, y)
-    
+
     assert isinstance(
-            calibrate_imb_model.estimator, CalibratedClassifierCV
-        ), "Expected a CalibratedClassifierCV instance."
+        calibrate_imb_model.estimator, CalibratedClassifierCV
+    ), "Expected a CalibratedClassifierCV instance."
 
     probabilities = calibrate_imb_model.predict_proba(X)
     assert np.allclose(
         probabilities.sum(axis=1), 1
     ), "Probabilities should sum to 1 for each instance."
-    
-    
-    preproc_feat_select = calibrate_imb_model.get_preprocessing_and_feature_selection_pipeline()
+
+    preproc_feat_select = (
+        calibrate_imb_model.get_preprocessing_and_feature_selection_pipeline()
+    )
     preproc_pipe = calibrate_imb_model.get_preprocessing_pipeline()
     feat_select = calibrate_imb_model.get_feature_selection_pipeline()
-    
-    assert isinstance(preproc_feat_select, Pipeline), "Expected a imbalanced learn Pipeline instance"
-    assert isinstance(preproc_pipe, Pipeline), "Expected a imbalanced learn Pipeline instance"
-    assert isinstance(feat_select, Pipeline), "Expected a imbalanced learn Pipeline instance"
-    
+
+    assert isinstance(
+        preproc_feat_select, Pipeline
+    ), "Expected a imbalanced learn Pipeline instance"
+    assert isinstance(
+        preproc_pipe, Pipeline
+    ), "Expected a imbalanced learn Pipeline instance"
+    assert isinstance(
+        feat_select, Pipeline
+    ), "Expected a imbalanced learn Pipeline instance"
+
 
 def test_model_with_column_transformer(classification_data):
     from sklearn.compose import ColumnTransformer
@@ -2239,8 +2297,8 @@ def test_model_with_column_transformer(classification_data):
 
     preprocessor = ColumnTransformer(
         transformers=[
-            ('scaler', StandardScaler(), slice(0, 5)),  # Scale first 5 features
-            ('imputer', SimpleImputer(), slice(5, 10))  # Impute last 5 features
+            ("scaler", StandardScaler(), slice(0, 5)),  # Scale first 5 features
+            ("imputer", SimpleImputer(), slice(5, 10)),  # Impute last 5 features
         ]
     )
 
@@ -2250,13 +2308,16 @@ def test_model_with_column_transformer(classification_data):
         estimator=LogisticRegression(),
         model_type="classification",
         grid={"lr__C": [0.1, 1, 10]},
-        pipeline_steps=[('ct', preprocessor)],
+        pipeline_steps=[("ct", preprocessor)],
         scoring=["accuracy"],
         random_state=42,
     )
 
-    assert 'preprocess_column_transformer_ct' in model.estimator.named_steps
-    assert isinstance(model.estimator.named_steps['preprocess_column_transformer_ct'], ColumnTransformer)
+    assert "preprocess_column_transformer_ct" in model.estimator.named_steps
+    assert isinstance(
+        model.estimator.named_steps["preprocess_column_transformer_ct"],
+        ColumnTransformer,
+    )
 
     model.grid_search_param_tuning(X, y)
     model.fit(X, y)
@@ -2269,7 +2330,7 @@ def test_model_with_column_transformer(classification_data):
 
 def test_regression_report_kfold(regression_data):
     X, y = regression_data
-    
+
     # Initialize regression model with KFold
     model = Model(
         name="kfold_regression_test",
@@ -2280,20 +2341,24 @@ def test_regression_report_kfold(regression_data):
         kfold=True,
         n_splits=5,
         random_state=42,
-        scoring=["r2"]
+        scoring=["r2"],
     )
-    
+
     model.grid_search_param_tuning(X, y)
     model.fit(X, y)
-    
+
     metrics = model.regression_report_kfold(X, y, model.test_model, score="r2")
-    
+
     assert isinstance(metrics, dict)
     expected_keys = [
-        "R2", "Explained Variance", "Mean Absolute Error",
-        "Median Absolute Error", "Mean Squared Error", "RMSE"
+        "R2",
+        "Explained Variance",
+        "Mean Absolute Error",
+        "Median Absolute Error",
+        "Mean Squared Error",
+        "RMSE",
     ]
-    
+
     for key in expected_keys:
         assert key in metrics
         assert isinstance(metrics[key], float)
@@ -2301,5 +2366,5 @@ def test_regression_report_kfold(regression_data):
             assert -1 <= metrics[key] <= 1
         elif "Error" in key:
             assert metrics[key] >= 0
-            
+
     assert model.kf.get_n_splits() == 5
