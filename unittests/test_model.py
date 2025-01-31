@@ -2417,7 +2417,7 @@ def test_grid_search_param_tuning_numpy(classification_data):
         model.grid_search_param_tuning(X, y)
         assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
 
-def test_grid_search_param_tuning_kfold_dataframe_regression(regression_data):
+def test_grid_search_param_tuning_dataframe_regression(regression_data):
     X, y = regression_data
     for kfold in [True, False]:
         model = Model(
@@ -2432,7 +2432,7 @@ def test_grid_search_param_tuning_kfold_dataframe_regression(regression_data):
         model.grid_search_param_tuning(X, y)
         assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
 
-def test_grid_search_param_tuning_kfold_numpy_regression(regression_data):
+def test_grid_search_param_tuning_numpy_regression(regression_data):
     X, y = regression_data
     X = X.values
     y = y.values
