@@ -2448,3 +2448,118 @@ def test_grid_search_param_tuning_numpy_regression(regression_data):
         )
         model.grid_search_param_tuning(X, y)
         assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+
+def test_get_preprocessing_pipeline_after_calibration(classification_data):
+    X, y = classification_data
+
+    # Initialize the model with preprocessing steps and calibration enabled
+    model = Model(
+        name="calibrated_model",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        pipeline_steps=[StandardScaler(), SimpleImputer()],
+        grid={"lr__C": [0.1, 1, 10]},
+        calibrate=True,
+        scoring=["roc_auc"],
+        random_state=42,
+    )
+
+    model.grid_search_param_tuning(X, y)
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+
+    model.fit(X_train, y_train)
+
+    model.calibrateModel(X, y)
+
+    # Attempt to retrieve the preprocessing pipeline
+    preproc_pipeline = model.get_preprocessing_pipeline()
+    x_transformed = preproc_pipeline.transform(X)
+    # Verify the pipeline contains the expected steps
+    assert len(preproc_pipeline.named_steps) == 2, "Preprocessing steps mismatch"
+    assert "preprocess_scaler_step_0" in preproc_pipeline.named_steps, "Scaler missing"
+    assert (
+        "preprocess_imputer_step_0" in preproc_pipeline.named_steps
+    ), "Imputer missing"
+
+
+def test_get_feature_selection_pipeline_after_calibration(classification_data):
+    X, y = classification_data
+
+    # Initialize model with feature selection and calibration
+    model = Model(
+        name="calibrated_model_feature_select",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        pipeline_steps=[("scaler", StandardScaler()), ("selector", SelectKBest(k=5))],
+        grid={"lr__C": [0.1, 1, 10]},
+        calibrate=True,
+        scoring=["roc_auc"],
+        random_state=42,
+        imbalance_sampler=SMOTE()
+    )
+    model.grid_search_param_tuning(X, y)
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+
+    model.fit(X_train, y_train)
+
+    model.calibrateModel(X, y)
+    # Retrieve combined preprocessing and feature selection pipeline
+    feat_pipeline = model.get_feature_selection_pipeline()
+    transformed_x = feat_pipeline.transform(X_test)
+
+    # Check if the selector is correctly identified
+    assert len(feat_pipeline.named_steps) == 1, "Feature selection steps mismatch"
+    assert "feature_selection_selector" in feat_pipeline.named_steps, "Selector missing"
+    assert isinstance(
+        feat_pipeline.named_steps["feature_selection_selector"], SelectKBest
+    )
+
+
+def test_combined_preproc_feat_select_after_calibration(classification_data):
+    X, y = classification_data
+
+    model = Model(
+        name="combined_pipeline_model",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        pipeline_steps=[
+            ("scaler", StandardScaler()),
+            ("imputer", SimpleImputer()),
+            ("selector", SelectKBest(k=5)),
+        ],
+        grid={"lr__C": [0.1, 1, 10]},
+        calibrate=True,
+        scoring=["roc_auc"],
+        random_state=42,
+    )
+
+    model.grid_search_param_tuning(X, y)
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+
+    model.fit(X, y)
+
+    model.calibrateModel(X_train, y_train)
+    # Retrieve combined preprocessing and feature selection pipeline
+    combined_pipeline = model.get_preprocessing_and_feature_selection_pipeline()
+    transformed_x = combined_pipeline.transform(X_test)
+    # Verify all steps are present
+    expected_steps = [
+        "preprocess_scaler_scaler",
+        "preprocess_imputer_imputer",
+        "feature_selection_selector",
+    ]
+    assert (
+        list(combined_pipeline.named_steps.keys()) == expected_steps
+    ), "Combined steps mismatch"
