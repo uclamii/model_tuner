@@ -665,7 +665,6 @@ class Model:
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
 
-
     def fit(self, X, y, validation_data=None, score=None):
         """
         Trains the model using the best hyperparameters obtained from tuning

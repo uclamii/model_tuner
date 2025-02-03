@@ -2,37 +2,28 @@
 
 <img src="https://github.com/uclamii/model_tuner/blob/main/assets/modeltunersmaller.png?raw=true" width="250" style="border: none; outline: none; box-shadow: none;" oncontextmenu="return false;">
 
-<br> 
-
+<br>
 
 [![Downloads](https://pepy.tech/badge/model_tuner)](https://pepy.tech/project/model_tuner) [![PyPI](https://img.shields.io/pypi/v/model_tuner.svg)](https://pypi.org/project/model_tuner/) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-
-
-
 ## Table of Contents
 
-I. [Overview](#overview)  
-II. [Dependencies](#dependencies)  
-III. [Key Methods and Functionalities](#key-methods-and-functionalities)  
-IV. [Helper Functions](#helper-functions)  
-V. [Notes](#notes)  
-VI. [Input Parameters](#input-parameters)  
-VII. [Usage](#usage)  
-- [Binary Classification](#binary-classification)  
-  - [Breast Cancer Example with XGBoost](#breast-cancer-example-with-xgboost)   
-- [Regression](#regression)  
-  - [California Housing with XGBoost](#california-housing-with-xgboost)   
+I. [Overview](#overview)II. [Dependencies](#dependencies)III. [Key Methods and Functionalities](#key-methods-and-functionalities)IV. [Helper Functions](#helper-functions)V. [Notes](#notes)VI. [Input Parameters](#input-parameters)VII. [Usage](#usage)
 
-VIII. [Acknowledgements](#acknowledgements)   
-IX. [License](LICENSE.md)     
+- [Binary Classification](#binary-classification)
+  - [Breast Cancer Example with XGBoost](#breast-cancer-example-with-xgboost)
+- [Regression](#regression)
+  - [California Housing with XGBoost](#california-housing-with-xgboost)
 
+VIII. [Acknowledgements](#acknowledgements)
+IX. [License](LICENSE.md)
 
 ## Overview
 
 The `model_tuner` class is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This class is particularly useful for model selection and hyperparameter tuning, ensuring optimal performance across different metrics.
 
 ## Dependencies
+
 - `pandas`
 - `numpy`
 - `scikit-learn`
@@ -46,7 +37,6 @@ The `model_tuner` class is a versatile and powerful tool designed to facilitate 
 - `process_imbalance_sampler(X_train, y_train)`: Processes imbalance sampler.
 - `calibrateModel(X, y, score=None, stratify=None)`: Calibrates the model.
 - `get_train_data(X, y)`, `get_valid_data(X, y)`, `get_test_data(X, y)`: Methods to retrieve train, validation, and test data.
-- `calibrate_report(X, y, score=None)`: Generates a calibration report.
 - `fit(X, y, validation_data=None, score=None)`: Fits the model to the data.
 - `return_metrics(X_test, y_test)`: Returns evaluation metrics.
 - `predict(X, y=None, optimal_threshold=False)`, `predict_proba(X, y=None)`: Methods to make predictions and predict probabilities.
@@ -66,46 +56,47 @@ The `model_tuner` class is a versatile and powerful tool designed to facilitate 
 - `_confusion_matrix_print(conf_matrix, labels)`: Prints the confusion matrix.
 
 ## Notes
+
 - This class is designed to be flexible and can be extended to include additional functionalities or custom metrics.
 - It is essential to properly configure the parameters during initialization to suit the specific requirements of your machine learning task.
 - Ensure that all dependencies are installed and properly imported before using the ModelTuner class.
 
 ## Input Parameters
 
-   - `name` (str): A name for the model, useful for identifying the model in outputs and logs.  
-   - `estimator_name` (str): The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + "__param_name").  
-   - `estimator` (object): The machine learning model to be tuned and trained.
-   - `calibrate` (bool, optional): Whether to calibrate the classifier. Default is False.
-   - `kfold` (bool, optional): Whether to use k-fold cross-validation. Default is False.
-   - `imbalance_sampler` (object, optional): An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.
-   - `train_size` (float, optional): Proportion of the data to use for training. Default is 0.6.
-   - `validation_size` (float, optional): Proportion of the data to use for validation. Default is 0.2.
-   - `test_size` (float, optional): Proportion of the data to use for testing. Default is 0.2.
-   - `stratify_y` (bool, optional): Whether to stratify by the target variable during train/validation/test split. Default is False.
-   - `stratify_cols` (list, optional): List of columns to stratify by during train/validation/test split. Default is None.
-   - `drop_strat_feat` (list, optional): List of columns to drop after stratification. Default is None.
-   - `grid` (list of dict): Hyperparameter grid for tuning.
-   - `scoring` (list of str): Scoring metrics for evaluation.
-   - `n_splits` (int, optional): Number of splits for k-fold cross-validation. Default is 10.
-   - `random_state` (int, optional): Random state for reproducibility. Default is 3.
-   - `n_jobs` (int, optional): Number of jobs to run in parallel for model fitting. Default is 1.
-   - `display` (bool, optional): Whether to display output messages during the tuning process. Default is True.
-   - `feature_names` (list, optional): List of feature names. Default is None.
-   - `randomized_grid` (bool, optional): Whether to use randomized grid search. Default is False.
-   - `n_iter` (int, optional): Number of iterations for randomized grid search. Default is 100.
-   - `trained` (bool, optional): Whether the model has been trained. Default is False.
-   - `pipeline` (bool, optional): Whether to use a pipeline. Default is True.
-   - `scaler_type` (str, optional): Type of scaler to use. Options are "min_max_scaler", "standard_scaler", "max_abs_scaler", or None. Default is "min_max_scaler".
-   - `impute_strategy` (str, optional): Strategy for imputation. Options are "mean", "median", "most_frequent", or "constant". Default is "mean".
-   - `impute` (bool, optional): Whether to impute missing values. Default is False.
-   - `pipeline_steps` (list, optional): List of pipeline steps. Default is [("min_max_scaler", MinMaxScaler())].
-   - `xgboost_early` (bool, optional): Whether to use early stopping for XGBoost. Default is False.
-   - `selectKBest` (bool, optional): Whether to select K best features. Default is False.
-   - `model_type` (str, optional): Type of model, either "classification" or "regression". Default is "classification".
-   - `class_labels` (list, optional): List of class labels for multi-class classification. Default is None.
-   - `multi_label` (bool, optional): Whether the problem is a multi-label classification problem. Default is False.
-   - `calibration_method` (str, optional): Method for calibration, options are "sigmoid" or "isotonic". Default is "sigmoid".
-   - `custom_scorer` (dict, optional): Custom scorers for evaluation. Default is [].
+- `name` (str): A name for the model, useful for identifying the model in outputs and logs.
+- `estimator_name` (str): The prefix for the estimator used in the pipeline. This is used in parameter tuning (e.g., estimator_name + "__param_name").
+- `estimator` (object): The machine learning model to be tuned and trained.
+- `calibrate` (bool, optional): Whether to calibrate the classifier. Default is False.
+- `kfold` (bool, optional): Whether to use k-fold cross-validation. Default is False.
+- `imbalance_sampler` (object, optional): An imbalanced data sampler from the imblearn library, e.g., RandomUnderSampler or RandomOverSampler.
+- `train_size` (float, optional): Proportion of the data to use for training. Default is 0.6.
+- `validation_size` (float, optional): Proportion of the data to use for validation. Default is 0.2.
+- `test_size` (float, optional): Proportion of the data to use for testing. Default is 0.2.
+- `stratify_y` (bool, optional): Whether to stratify by the target variable during train/validation/test split. Default is False.
+- `stratify_cols` (list, optional): List of columns to stratify by during train/validation/test split. Default is None.
+- `drop_strat_feat` (list, optional): List of columns to drop after stratification. Default is None.
+- `grid` (list of dict): Hyperparameter grid for tuning.
+- `scoring` (list of str): Scoring metrics for evaluation.
+- `n_splits` (int, optional): Number of splits for k-fold cross-validation. Default is 10.
+- `random_state` (int, optional): Random state for reproducibility. Default is 3.
+- `n_jobs` (int, optional): Number of jobs to run in parallel for model fitting. Default is 1.
+- `display` (bool, optional): Whether to display output messages during the tuning process. Default is True.
+- `feature_names` (list, optional): List of feature names. Default is None.
+- `randomized_grid` (bool, optional): Whether to use randomized grid search. Default is False.
+- `n_iter` (int, optional): Number of iterations for randomized grid search. Default is 100.
+- `trained` (bool, optional): Whether the model has been trained. Default is False.
+- `pipeline` (bool, optional): Whether to use a pipeline. Default is True.
+- `scaler_type` (str, optional): Type of scaler to use. Options are "min_max_scaler", "standard_scaler", "max_abs_scaler", or None. Default is "min_max_scaler".
+- `impute_strategy` (str, optional): Strategy for imputation. Options are "mean", "median", "most_frequent", or "constant". Default is "mean".
+- `impute` (bool, optional): Whether to impute missing values. Default is False.
+- `pipeline_steps` (list, optional): List of pipeline steps. Default is [("min_max_scaler", MinMaxScaler())].
+- `xgboost_early` (bool, optional): Whether to use early stopping for XGBoost. Default is False.
+- `selectKBest` (bool, optional): Whether to select K best features. Default is False.
+- `model_type` (str, optional): Type of model, either "classification" or "regression". Default is "classification".
+- `class_labels` (list, optional): List of class labels for multi-class classification. Default is None.
+- `multi_label` (bool, optional): Whether the problem is a multi-label classification problem. Default is False.
+- `calibration_method` (str, optional): Method for calibration, options are "sigmoid" or "isotonic". Default is "sigmoid".
+- `custom_scorer` (dict, optional): Custom scorers for evaluation. Default is [].
 
 ## Usage
 
@@ -114,6 +105,7 @@ The `model_tuner` class is a versatile and powerful tool designed to facilitate 
 Here is an example of using the `ModelTuner` class for binary classification using XGBoost on the Breast Cancer dataset.
 
 #### Breast Cancer Example with XGBoost
+
 ##### Step 1: Import Necessary Libraries
 
 ```python
@@ -136,6 +128,7 @@ y = pd.Series(data.target, name="target")
 ```
 
 ##### Step 3: Create an Instance of the XGBClassifier
+
 ```python
 # Creating an instance of the XGBClassifier
 xgb_model = xgb.XGBClassifier(
@@ -249,7 +242,6 @@ y_valid_pred = model_tuner.predict(X_valid)
 
 ```
 
-
 ##### Output:
 
 ```
@@ -314,12 +306,12 @@ weighted avg       0.98      0.97      0.97       114
 roc_auc after calibration: 0.9987212276214834
 ```
 
-
 ### Regression
 
 Here is an example of using the `ModelTuner` class for regression using XGBoost on the California Housing dataset.
 
 #### California Housing with XGBoost
+
 ##### Step 1: Import Necessary Libraries
 
 ```python
@@ -413,7 +405,6 @@ model_tuner.fit(
 )
 ```
 
-
 ##### Step 8: Return Metrics (Optional)
 
 You can use this function to evaluate the model by printing the output.
@@ -458,10 +449,6 @@ Feature names selected:
 {'Regression Report': {'Explained Variance': 0.8385815985957561, 'R2': 0.8385811859863378, 'Mean Absolute Error': 0.3008222037008959, 'Median Absolute Error': 0.196492121219635, 'Mean Squared Error': 0.21038206511437127, 'RMSE': 0.45867424727618106}, 'K Best Features': ['MedInc', 'HouseAge', 'AveRooms', 'AveBedrms', 'Population', 'AveOccup', 'Latitude', 'Longitude']}
 
 ```
-
-
-
-
 
 ## Acknowledgements
 
