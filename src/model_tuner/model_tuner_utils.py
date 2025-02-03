@@ -2676,7 +2676,6 @@ def report_model_metrics(
             # Fit and predict for this fold
             test_model.kfold = False
             test_model.fit(X_train, y_train)
-            test_model.kfold = True
 
             y_pred_proba = test_model.predict_proba(X_test)[:, 1]
             y_pred = 1 * (y_pred_proba > threshold)
@@ -2696,6 +2695,8 @@ def report_model_metrics(
                 print(f"Metrics for Fold {fold_idx}:")
                 print(fold_metrics)
                 print("*" * 80)
+
+            test_model.kfold = True
 
         tn, fp, fn, tp = confusion_matrix(aggregated_y_true, aggregated_y_pred).ravel()
 
