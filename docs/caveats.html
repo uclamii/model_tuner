@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zero Variance Columns &mdash; Model Tuner 0.0.23a0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=72ec8e44" />
@@ -78,10 +78,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#solution">Solution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#imputation-before-scaling">Imputation Before Scaling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#accurate-calculation-of-scaling-parameters">1. Accurate Calculation of Scaling Parameters</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#consistency-in-data-transformation">2. Consistency in Data Transformation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#prevention-of-distortion-in-scaling">3. Prevention of Distortion in Scaling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#scaling-before-imputation">Scaling Before Imputation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#accurate-imputation-with-normalized-data">Accurate Imputation with Normalized Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#consistency-in-data-transformation">Consistency in Data Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#prevention-of-imputation-bias">Prevention of Imputation Bias</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#avoiding-distortions-in-nearest-neighbor-imputation">Avoiding Distortions in Nearest Neighbor Imputation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visual-proof">Visual Proof</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#column-stratification-with-cross-validation">Column Stratification with Cross-Validation</a><ul>
@@ -273,48 +275,82 @@ with a single column into a 1-dimensional Series. This ensures that <span class=
 the aforementioned warning and ensuring the model processes the target variable correctly.</p>
 </section>
 </section>
-<section id="imputation-before-scaling">
-<h1>Imputation Before Scaling<a class="headerlink" href="#imputation-before-scaling" title="Link to this heading"></a></h1>
-<p><strong>Ensuring Correct Data Preprocessing Order: Imputation Before Scaling</strong></p>
+<section id="scaling-before-imputation">
+<h1>Scaling Before Imputation<a class="headerlink" href="#scaling-before-imputation" title="Link to this heading"></a></h1>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>It is crucial to apply imputation before scaling during the data preprocessing
-pipeline to preserve the mathematical integrity of the transformations. The
+<p>It is crucial to apply scaling before imputation during the data preprocessing
+pipeline to preserve the mathematical integrity of the transformations and ensure accurate imputations. The
 correct sequence for the pipeline is as follows:</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pipeline_steps</span> <span class="o">=</span> <span class="p">[</span>
-   <span class="p">(</span><span class="s2">&quot;Preprocessor&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
-   <span class="p">(</span><span class="s2">&quot;StandardScaler&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+   <span class="p">(</span><span class="s2">&quot;Scaler&quot;</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">()),</span>
+   <span class="p">(</span><span class="s2">&quot;Imputer&quot;</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">()),</span>
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<section id="accurate-calculation-of-scaling-parameters">
-<h2>1. Accurate Calculation of Scaling Parameters<a class="headerlink" href="#accurate-calculation-of-scaling-parameters" title="Link to this heading"></a></h2>
-<p>Scaling methods, such as standardization or min-max scaling, rely on the calculation of statistical properties, such as the mean (<span class="math notranslate nohighlight">\(\mu\)</span>), standard deviation (<span class="math notranslate nohighlight">\(\sigma\)</span>), minimum (<span class="math notranslate nohighlight">\(x_{\min}\)</span>), and maximum (<span class="math notranslate nohighlight">\(x_{\max}\)</span>) of the dataset. These statistics are computed over the full set of available data. If missing values are present during this calculation, the resulting parameters will be incorrect, leading to improper scaling.</p>
-<p>For example, in Z-score standardization, the transformation is defined as:</p>
+<section id="accurate-imputation-with-normalized-data">
+<h2>Accurate Imputation with Normalized Data<a class="headerlink" href="#accurate-imputation-with-normalized-data" title="Link to this heading"></a></h2>
+<p>Imputation methods, such as mean, median, or k-Nearest Neighbors (k-NN), depend
+on the scale of the data. Without scaling, features with large magnitudes can
+disproportionately influence the imputed values, especially in methods like k-NN imputation.</p>
+<p>For example, consider a feature <span class="math notranslate nohighlight">\(X = [1, 2, \text{NaN}, 4, 1000]\)</span> with a
+missing value. The high value of 1000 significantly skews the mean,
+<span class="math notranslate nohighlight">\(\mu = \frac{1 + 2 + 4 + 1000}{4} = 251.75\)</span>, leading to an imputed value of
+251.75, which does not reflect the underlying data pattern.</p>
+<p>If scaling is applied first, the data becomes:</p>
 <div class="math notranslate nohighlight">
-\[z = \frac{x - \mu}{\sigma}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mu = \frac{1}{N} \sum_{i=1}^{N} x_i\)</span> and <span class="math notranslate nohighlight">\(\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}\)</span>, with <span class="math notranslate nohighlight">\(N\)</span> representing the number of data points. If missing values are not imputed first, both <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma\)</span> will be computed based on incomplete data, resulting in inaccurate transformations for all values.</p>
-<p>In contrast, if we impute the missing values first (e.g., by replacing them with the mean or median), the complete dataset is used for calculating these parameters. This ensures the scaling transformation is applied consistently across all data points.</p>
+\[X_{\text{scaled}} = [-0.58, -0.57, \text{NaN}, -0.54, 2.26]\]</div>
+<p>Now, imputing the missing value using the scaled data results in a more accurate
+representation of the data’s distribution. Once the scaling is reversed, the
+imputed value aligns more naturally with the original data.</p>
 </section>
 <section id="consistency-in-data-transformation">
-<h2>2. Consistency in Data Transformation<a class="headerlink" href="#consistency-in-data-transformation" title="Link to this heading"></a></h2>
-<p>Imputing missing values before scaling ensures that the transformation applied is consistent across the entire dataset, including previously missing values. For instance, consider a feature <span class="math notranslate nohighlight">\(X = [1, 2, \text{NaN}, 4, 5]\)</span>. If we impute the missing value using the mean (<span class="math notranslate nohighlight">\(\mu = \frac{1 + 2 + 4 + 5}{4} = 3\)</span>), the imputed dataset becomes:</p>
+<h2>Consistency in Data Transformation<a class="headerlink" href="#consistency-in-data-transformation" title="Link to this heading"></a></h2>
+<p>Scaling before imputation ensures that the transformations applied are consistent
+across the entire dataset, including the imputed values. For instance, consider
+a feature <span class="math notranslate nohighlight">\(X = [1, 2, \text{NaN}, 4, 5]\)</span>. After applying standardization
+first, the available values are transformed using:</p>
 <div class="math notranslate nohighlight">
-\[X_{\text{imputed}} = [1, 2, 3, 4, 5]\]</div>
-<p>Now, applying standardization on the imputed dataset results in consistent Z-scores for each value, based on the correct parameters <span class="math notranslate nohighlight">\(\mu = 3\)</span> and <span class="math notranslate nohighlight">\(\sigma = 1.58\)</span>.</p>
-<p>Had scaling been applied first, without imputing, the calculated mean and standard deviation would be incorrect, leading to inconsistent transformations when imputation is subsequently applied. For example, if we calculated:</p>
-<div class="math notranslate nohighlight">
-\[z_{\text{incomplete}} = \frac{x - 3}{1.58} \quad \text{(based on non-imputed data)}\]</div>
-<p>and later imputed the missing value, the transformed imputed value would not be aligned with the scaled distribution.</p>
+\[z = \frac{x - \mu}{\sigma}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu\)</span> and <span class="math notranslate nohighlight">\(\sigma\)</span> are calculated using only the non-missing
+values. The imputed values are then calculated on this standardized scale,
+maintaining consistency in both the transformation and the imputation process.</p>
+<p>Had imputation been applied first, the calculated mean and standard deviation
+would have been skewed by the imputed value, potentially leading to an inaccurate
+scaling transformation.</p>
 </section>
-<section id="prevention-of-distortion-in-scaling">
-<h2>3. Prevention of Distortion in Scaling<a class="headerlink" href="#prevention-of-distortion-in-scaling" title="Link to this heading"></a></h2>
-<p>Placeholder values used to represent missing data (e.g., large negative numbers like -999) can severely distort scaling transformations if not handled prior to scaling. In min-max scaling, the transformation is:</p>
-<div class="math notranslate nohighlight">
-\[x_{\text{scaled}} = \frac{x - x_{\min}}{x_{\max} - x_{\min}}\]</div>
-<p>where <span class="math notranslate nohighlight">\(x_{\min}\)</span> and <span class="math notranslate nohighlight">\(x_{\max}\)</span> represent the minimum and maximum values of the feature. If a placeholder value like -999 is included, the range <span class="math notranslate nohighlight">\(x_{\max} - x_{\min}\)</span> will be artificially inflated, leading to a heavily skewed scaling of all values. For instance, the min-max scaling of <span class="math notranslate nohighlight">\(X = [1, 2, -999, 4, 5]\)</span> would produce extreme distortions due to the influence of -999 on <span class="math notranslate nohighlight">\(x_{\min}\)</span>.</p>
-<p>By imputing missing values before scaling, we avoid these distortions, ensuring that the scaling operation reflects the true range of the data.</p>
+<section id="prevention-of-imputation-bias">
+<h2>Prevention of Imputation Bias<a class="headerlink" href="#prevention-of-imputation-bias" title="Link to this heading"></a></h2>
+<p>By scaling first, we mitigate the risk of imputing values that disproportionately
+align with features of larger magnitudes. For instance, in datasets where features
+vary widely in scale, imputing before scaling might introduce a bias in imputed
+values that heavily favors dominant features. Scaling ensures that all features
+are on an equal footing prior to imputation.</p>
+</section>
+<section id="avoiding-distortions-in-nearest-neighbor-imputation">
+<h2>Avoiding Distortions in Nearest Neighbor Imputation<a class="headerlink" href="#avoiding-distortions-in-nearest-neighbor-imputation" title="Link to this heading"></a></h2>
+<p>-Nearest Neighbors (k-NN) imputation relies on the calculation of distances
+between data points. If features are not scaled beforehand, large-magnitude
+features dominate the distance calculations, resulting in imputation values that
+may not reflect the true proximity of data points. Scaling first ensures that each
+feature contributes equally to the distance metric.</p>
+<p>For example, consider two features:</p>
+<p><span class="math notranslate nohighlight">\(\text{Feature1} = [1, 2, \text{NaN}, 4]\)</span> and
+<span class="math notranslate nohighlight">\(\text{Feature2} = [100, 200, \text{NaN}, 400]\)</span>.</p>
+<p>Without scaling, the distance calculation is dominated by Feature2 due to its larger magnitude. Scaling the
+features first eliminates this bias, leading to more meaningful imputations.</p>
+</section>
+<section id="visual-proof">
+<h2>Visual Proof<a class="headerlink" href="#visual-proof" title="Link to this heading"></a></h2>
+<p>The accompanying figure demonstrates the difference between the two approaches:</p>
+<ul class="simple">
+<li><p><strong>Left Panel (Impute First, Then Scale)</strong>: Notice the irregular distribution of scaled values after imputation, with some features exhibiting unnatural spikes.</p></li>
+<li><p><strong>Right Panel (Scale First, Then Impute)</strong>: Displays a more uniform and consistent distribution across features, reflecting the integrity of the scaled data.</p></li>
+</ul>
+<div class="no-click"><a class="reference internal image-reference" href="_images/scale_before_impute.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/scale_before_impute.png" style="width: 800px;" />
+</a>
+</div><div style="height: 50px;"></div><p>This highlights that scaling before imputation results in a cleaner, more consistent preprocessing pipeline.</p>
 </section>
 </section>
 <section id="column-stratification-with-cross-validation">
