@@ -2370,6 +2370,85 @@ def test_regression_report_kfold(regression_data):
     assert model.kf.get_n_splits() == 5
 
 
+def test_grid_search_param_tuning_f1_beta_tune(classification_data):
+    X, y = classification_data
+    for kfold in [True, False]:
+        model = Model(
+            name="test_model",
+            estimator_name="lr",
+            estimator=LogisticRegression(),
+            model_type="classification",
+            grid={"lr__C": [0.1, 1, 10]},
+            scoring=["roc_auc"],
+            kfold=kfold,
+        )
+        model.grid_search_param_tuning(X, y, f1_beta_tune=True)
+        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+
+def test_grid_search_param_tuning_dataframe(classification_data):
+    X, y = classification_data
+    for kfold in [True, False]:
+        model = Model(
+            name="test_model",
+            estimator_name="lr",
+            estimator=LogisticRegression(),
+            model_type="classification",
+            grid={"lr__C": [0.1, 1, 10]},
+            scoring=["roc_auc"],
+            kfold=kfold,
+        )
+        model.grid_search_param_tuning(X, y)
+        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+
+def test_grid_search_param_tuning_numpy(classification_data):
+    X, y = classification_data
+    X = X.values
+    y = y.values
+    for kfold in [True, False]:
+        model = Model(
+            name="test_model",
+            estimator_name="lr",
+            estimator=LogisticRegression(),
+            model_type="classification",
+            grid={"lr__C": [0.1, 1, 10]},
+            scoring=["roc_auc"],
+            kfold=kfold,
+        )
+        model.grid_search_param_tuning(X, y)
+        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+
+def test_grid_search_param_tuning_dataframe_regression(regression_data):
+    X, y = regression_data
+    for kfold in [True, False]:
+        model = Model(
+            name="test_model",
+            estimator_name="lr",
+            estimator=LinearRegression(),
+            model_type="regression",
+            grid={"lr__fit_intercept": [True, False]},
+            scoring=["r2"],
+            kfold=kfold,
+        )
+        model.grid_search_param_tuning(X, y)
+        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+
+def test_grid_search_param_tuning_numpy_regression(regression_data):
+    X, y = regression_data
+    X = X.values
+    y = y.values
+    for kfold in [True, False]:
+        model = Model(
+            name="test_model",
+            estimator_name="lr",
+            estimator=LinearRegression(),
+            model_type="regression",
+            grid={"lr__fit_intercept": [True, False]},
+            scoring=["r2"],
+            kfold=kfold,
+        )
+        model.grid_search_param_tuning(X, y)
+        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+
 def test_get_preprocessing_pipeline_after_calibration(classification_data):
     X, y = classification_data
 
