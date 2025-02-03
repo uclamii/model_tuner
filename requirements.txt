@@ -81,5 +81,5 @@ xgboost==2.1.2
 scikit-optimize==0.10.2
 pytest==8.3.3
 pytest-cov==5.0.0
-
+shap==0.46.0
 openpyxl==3.1.5
