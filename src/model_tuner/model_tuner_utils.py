@@ -2566,7 +2566,7 @@ def report_model_metrics(
                         "Metric": "Root Mean Squared Error (RMSE)",
                         "Value": np.sqrt(mean_squared_error(y, y_pred)),
                     },
-                    {"Metric": "R² Score", "Value": r2_score(y, y_pred)},
+                    {"Metric": "R2 Score", "Value": r2_score(y, y_pred)},
                     {
                         "Metric": "Explained Variance",
                         "Value": explained_variance_score(y, y_pred),
@@ -2677,11 +2677,16 @@ def report_model_metrics(
             test_model.kfold = False
             test_model.fit(X_train, y_train)
 
-            y_pred_proba = test_model.predict_proba(X_test)[:, 1]
-            y_pred = 1 * (y_pred_proba > threshold)
-            aggregated_y_true.extend(y_test.values.tolist())
-            aggregated_y_pred.extend(y_pred.tolist())
-            aggregated_y_prob.extend(y_pred_proba.tolist())
+            if model.model_type != "regression":
+                y_pred_proba = test_model.predict_proba(X_test)[:, 1]
+                y_pred = 1 * (y_pred_proba > threshold)
+                aggregated_y_true.extend(y_test.values.tolist())
+                aggregated_y_pred.extend(y_pred.tolist())
+                aggregated_y_prob.extend(y_pred_proba.tolist())
+            else:
+                y_pred = test_model.predict(X_test)
+                aggregated_y_true.extend(y_test.values.tolist())
+                aggregated_y_pred.extend(y_pred.tolist())
 
             # Calculate metrics using existing logic
             fold_metrics = calculate_metrics(test_model, X_test, y_test, threshold)
@@ -2698,35 +2703,71 @@ def report_model_metrics(
 
             test_model.kfold = True
 
-        tn, fp, fn, tp = confusion_matrix(aggregated_y_true, aggregated_y_pred).ravel()
+        if model.model_type == "regression":
+            avg_metrics_df = pd.DataFrame(
+                [
+                    {
+                        "Metric": "Mean Absolute Error (MAE)",
+                        "Value": mean_absolute_error(
+                            aggregated_y_true, aggregated_y_pred
+                        ),
+                    },
+                    {
+                        "Metric": "Mean Squared Error (MSE)",
+                        "Value": mean_squared_error(
+                            aggregated_y_true, aggregated_y_pred
+                        ),
+                    },
+                    {
+                        "Metric": "Root Mean Squared Error (RMSE)",
+                        "Value": np.sqrt(
+                            mean_squared_error(aggregated_y_true, aggregated_y_pred)
+                        ),
+                    },
+                    {
+                        "Metric": "R2 Score",
+                        "Value": r2_score(aggregated_y_true, aggregated_y_pred),
+                    },
+                    {
+                        "Metric": "Explained Variance",
+                        "Value": explained_variance_score(
+                            aggregated_y_true, aggregated_y_pred
+                        ),
+                    },
+                ]
+            )
+        else:
+            tn, fp, fn, tp = confusion_matrix(
+                aggregated_y_true, aggregated_y_pred
+            ).ravel()
 
-        avg_metrics_df = pd.DataFrame(
-            [
-                {
-                    "Metric": "Precision/PPV",
-                    "Value": precision_score(aggregated_y_true, aggregated_y_pred),
-                },
-                {
-                    "Metric": "Average Precision",
-                    "Value": average_precision_score(
-                        aggregated_y_true, aggregated_y_prob
-                    ),
-                },
-                {
-                    "Metric": "Sensitivity",
-                    "Value": recall_score(aggregated_y_true, aggregated_y_pred),
-                },
-                {"Metric": "Specificity", "Value": tn / (tn + fp)},
-                {
-                    "Metric": "AUC ROC",
-                    "Value": roc_auc_score(aggregated_y_true, aggregated_y_prob),
-                },
-                {
-                    "Metric": "Brier Score",
-                    "Value": brier_score_loss(aggregated_y_true, aggregated_y_prob),
-                },
-            ]
-        )
+            avg_metrics_df = pd.DataFrame(
+                [
+                    {
+                        "Metric": "Precision/PPV",
+                        "Value": precision_score(aggregated_y_true, aggregated_y_pred),
+                    },
+                    {
+                        "Metric": "Average Precision",
+                        "Value": average_precision_score(
+                            aggregated_y_true, aggregated_y_prob
+                        ),
+                    },
+                    {
+                        "Metric": "Sensitivity",
+                        "Value": recall_score(aggregated_y_true, aggregated_y_pred),
+                    },
+                    {"Metric": "Specificity", "Value": tn / (tn + fp)},
+                    {
+                        "Metric": "AUC ROC",
+                        "Value": roc_auc_score(aggregated_y_true, aggregated_y_prob),
+                    },
+                    {
+                        "Metric": "Brier Score",
+                        "Value": brier_score_loss(aggregated_y_true, aggregated_y_prob),
+                    },
+                ]
+            )
 
         if print_results:
             print("\nAverage Metrics Across All Folds:")
