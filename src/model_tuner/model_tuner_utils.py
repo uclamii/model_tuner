@@ -587,7 +587,6 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_test, y_test)
-                    # self.calibrate_report(X_valid, y_valid)
                 else:
                     pass
             else:
@@ -643,7 +642,6 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X_test, y_test)
                     test_model = self.estimator
-                    # self.calibrate_report(X_valid, y_valid, score=score)
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -666,42 +664,6 @@ class Model:
 
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
-
-    ############################################################################
-
-    def calibrate_report(self, X, y, score=None):
-        """
-        Generates and prints a calibration report, including a confusion matrix
-        and classification report, for the given dataset.
-
-        Parameters:
-        -----------
-        X : pandas.DataFrame or array-like
-            The feature dataset for evaluation.
-        y : pandas.Series or array-like
-            The target dataset for evaluation.
-        score : str, optional (default=None)
-            The scoring metric used for calibration reporting.
-
-        Returns:
-        --------
-        None
-        """
-
-        y_pred_valid = self.predict(X, optimal_threshold=False)
-        if self.multi_label:
-            conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
-        else:
-            conf_mat = confusion_matrix(y, y_pred_valid)
-        if score:
-            print(f"Confusion matrix on validation set for {score}")
-        else:
-            print(f"Confusion matrix on validation set:")
-        _confusion_matrix_print(conf_mat, self.labels)
-        print()
-        self.classification_report = classification_report(y, y_pred_valid)
-        print(self.classification_report)
-        print("-" * 80)
 
     def fit(self, X, y, validation_data=None, score=None):
         """
