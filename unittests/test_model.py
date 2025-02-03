@@ -47,6 +47,16 @@ def multi_classification_data():
 
 
 @pytest.fixture
+def multiclass_data():
+    X, y = make_classification(
+        n_samples=100, n_features=10, n_classes=3, n_informative=5, random_state=42
+    )
+    X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
+    y = pd.Series(y)
+    return X, y
+
+
+@pytest.fixture
 def classification_data_large():
     X, y = make_classification(n_samples=100, n_features=10, random_state=42)
     X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
@@ -2328,6 +2338,83 @@ def test_model_with_column_transformer(classification_data):
     assert set(predictions).issubset({0, 1})
 
 
+def test_calculate_metrics_classification(classification_data):
+    X, y = classification_data
+    model = Model(
+        name="test_model",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+    )
+    model.fit(X, y)
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {"Precision/PPV", "AUC ROC", "Sensitivity", "Specificity"}
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
+
+
+def test_calculate_metrics_regression(regression_data):
+    X, y = regression_data
+    model = Model(
+        name="kfold_regression_test",
+        estimator_name="linreg",
+        estimator=LinearRegression(),
+        model_type="regression",
+        grid={"linreg__fit_intercept": [True, False]},
+        kfold=True,
+        n_splits=5,
+        random_state=42,
+        scoring=["r2"],
+    )
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {
+        "Mean Absolute Error (MAE)",
+        "Mean Squared Error (MSE)",
+        "Root Mean Squared Error (RMSE)",
+        "R² Score",
+        "Explained Variance",
+    }
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
+
+
+def test_calculate_metrics_multiclass(multiclass_data):
+    X, y = multiclass_data
+    tuned_parameters = {
+        # "depth": [4, 6, 8],  # Example hyperparameters for CatBoost
+        "catboost__learning_rate": [0.01, 0.1],
+        "catboost__iterations": [100, 200],
+    }
+    model = Model(
+        name="test_multiclass_model",
+        estimator_name="catboost",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        multi_label=True,
+        scoring=["roc_auc_ovr"],
+        class_labels=[
+            "0",
+            "1",
+            "2",
+        ],  # Let’s define these for the classification report
+        grid=tuned_parameters,  # Provide the grid
+    )
+    model.grid_search_param_tuning(
+        X,
+        y,
+    )
+    model.fit(X, y)
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {"Precision", "Recall", "F1-Score"}
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
+
+
 def test_regression_report_kfold(regression_data):
     X, y = regression_data
 
@@ -2383,7 +2470,10 @@ def test_grid_search_param_tuning_f1_beta_tune(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y, f1_beta_tune=True)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_dataframe(classification_data):
     X, y = classification_data
@@ -2398,7 +2488,10 @@ def test_grid_search_param_tuning_dataframe(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_numpy(classification_data):
     X, y = classification_data
@@ -2415,7 +2508,10 @@ def test_grid_search_param_tuning_numpy(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_dataframe_regression(regression_data):
     X, y = regression_data
@@ -2430,7 +2526,10 @@ def test_grid_search_param_tuning_dataframe_regression(regression_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+        assert (
+            "r2" in model.best_params_per_score
+        ), "Best score for r2 should be in results."
+
 
 def test_grid_search_param_tuning_numpy_regression(regression_data):
     X, y = regression_data
@@ -2447,7 +2546,10 @@ def test_grid_search_param_tuning_numpy_regression(regression_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+        assert (
+            "r2" in model.best_params_per_score
+        ), "Best score for r2 should be in results."
+
 
 def test_get_preprocessing_pipeline_after_calibration(classification_data):
     X, y = classification_data
@@ -2500,7 +2602,7 @@ def test_get_feature_selection_pipeline_after_calibration(classification_data):
         calibrate=True,
         scoring=["roc_auc"],
         random_state=42,
-        imbalance_sampler=SMOTE()
+        imbalance_sampler=SMOTE(),
     )
     model.grid_search_param_tuning(X, y)
 
