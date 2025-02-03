@@ -47,6 +47,16 @@ def multi_classification_data():
 
 
 @pytest.fixture
+def multiclass_data():
+    X, y = make_classification(
+        n_samples=100, n_features=10, n_classes=3, n_informative=5, random_state=42
+    )
+    X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
+    y = pd.Series(y)
+    return X, y
+
+
+@pytest.fixture
 def classification_data_large():
     X, y = make_classification(n_samples=100, n_features=10, random_state=42)
     X = pd.DataFrame(X, columns=[f"feature_{i}" for i in range(10)])
@@ -516,6 +526,60 @@ def test_imbalance_sampler_integration(classification_data):
         assert not hasattr(
             model.estimator.named_steps, "resampler"
         ), "No imbalance sampler expected"
+
+
+def test_return_metrics_classification_feature_select(classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = classification_data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    rfe_estimator = ElasticNet()
+
+    rfe = RFE(rfe_estimator)
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="lr",
+        pipeline_steps=[rfe],
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+        feature_selection=True,
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(
+        X_test,
+        y_test,
+        return_dict=True,
+    )
+
+    assert any(
+        isinstance(step[1], RFE) for step in model.pipeline_steps
+    ), "RFE not found in the pipeline steps!"
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Classification Report" in metrics, "Classification Report is missing."
+    assert "Confusion Matrix" in metrics, "Confusion Matrix is missing."
+    assert isinstance(
+        metrics["Classification Report"], dict
+    ), "Classification Report should be a dictionary."
+    assert isinstance(
+        metrics["Confusion Matrix"], (np.ndarray, list)
+    ), "Confusion Matrix should be an array or list."
 
 
 def test_bootstrapped_metrics_consistency(classification_data):
@@ -2326,6 +2390,91 @@ def test_model_with_column_transformer(classification_data):
     predictions = model.predict(X)
     assert len(predictions) == len(y)
     assert set(predictions).issubset({0, 1})
+
+
+def test_calculate_metrics_classification(classification_data):
+    X, y = classification_data
+    model = Model(
+        name="test_model",
+        estimator_name="lr",
+        grid={"lr__C": [0.1, 1, 10]},
+        estimator=LogisticRegression(),
+        model_type="classification",
+    )
+
+    model.grid_search_param_tuning(X, y)
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+
+    model.fit(X_train, y_train)
+
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {"Precision/PPV", "AUC ROC", "Sensitivity", "Specificity"}
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
+
+
+def test_calculate_metrics_regression(regression_data):
+    X, y = regression_data
+    model = Model(
+        name="kfold_regression_test",
+        estimator_name="linreg",
+        estimator=LinearRegression(),
+        model_type="regression",
+        grid={"linreg__fit_intercept": [True, False]},
+        kfold=True,
+        n_splits=5,
+        random_state=42,
+        scoring=["r2"],
+    )
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {
+        "Mean Absolute Error (MAE)",
+        "Mean Squared Error (MSE)",
+        "Root Mean Squared Error (RMSE)",
+        "R2 Score",
+        "Explained Variance",
+    }
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
+
+
+def test_calculate_metrics_multiclass(multiclass_data):
+    X, y = multiclass_data
+    tuned_parameters = {
+        # "depth": [4, 6, 8],  # Example hyperparameters for CatBoost
+        "catboost__learning_rate": [0.01, 0.1],
+        "catboost__iterations": [100, 200],
+    }
+    model = Model(
+        name="test_multiclass_model",
+        estimator_name="catboost",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        multi_label=True,
+        scoring=["roc_auc_ovr"],
+        class_labels=[
+            "0",
+            "1",
+            "2",
+        ],  # Let’s define these for the classification report
+        grid=tuned_parameters,  # Provide the grid
+    )
+    model.grid_search_param_tuning(
+        X,
+        y,
+    )
+    model.fit(X, y)
+    metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_results=False)
+    assert isinstance(metrics_df, pd.DataFrame)
+    assert not metrics_df.empty
+    expected_metrics = {"Precision", "Recall", "F1-Score"}
+    assert expected_metrics.issubset(set(metrics_df["Metric"]))
 
 
 def test_regression_report_kfold(regression_data):
