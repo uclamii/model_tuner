@@ -528,6 +528,60 @@ def test_imbalance_sampler_integration(classification_data):
         ), "No imbalance sampler expected"
 
 
+def test_return_metrics_classification_feature_select(classification_data):
+    """
+    Test the return_metrics method for a classification model.
+    """
+    X, y = classification_data
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42
+    )
+
+    rfe_estimator = ElasticNet()
+
+    rfe = RFE(rfe_estimator)
+
+    # Initialize the classification model
+    model = Model(
+        name="test_classification_model",
+        estimator_name="lr",
+        pipeline_steps=[rfe],
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+        feature_selection=True,
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X_train, y_train)
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Test return_metrics method
+    metrics = model.return_metrics(
+        X_test,
+        y_test,
+        return_dict=True,
+    )
+
+    assert any(
+        isinstance(step[1], RFE) for step in model.pipeline_steps
+    ), "RFE not found in the pipeline steps!"
+
+    # Validate the structure and content of the metrics
+    assert isinstance(metrics, dict), "Expected return_metrics to return a dictionary."
+    assert "Classification Report" in metrics, "Classification Report is missing."
+    assert "Confusion Matrix" in metrics, "Confusion Matrix is missing."
+    assert isinstance(
+        metrics["Classification Report"], dict
+    ), "Classification Report should be a dictionary."
+    assert isinstance(
+        metrics["Confusion Matrix"], (np.ndarray, list)
+    ), "Confusion Matrix should be an array or list."
+
+
 def test_bootstrapped_metrics_consistency(classification_data):
     """
     Test the consistency of bootstrapped metrics.
@@ -2384,7 +2438,7 @@ def test_calculate_metrics_regression(regression_data):
         "Mean Absolute Error (MAE)",
         "Mean Squared Error (MSE)",
         "Root Mean Squared Error (RMSE)",
-        "R² Score",
+        "R2 Score",
         "Explained Variance",
     }
     assert expected_metrics.issubset(set(metrics_df["Metric"]))
