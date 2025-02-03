@@ -90,17 +90,6 @@ model.return_metrics(X_valid, y_valid, model_metrics=True)
 print("Test Metrics")
 model.return_metrics(X_test, y_test, model_metrics=True)
 
-quit()
-
-print("Report Model Metrics")
-print()
-# report_model_metrics(
-#     model=model,
-#     X_valid=X_test,
-#     y_valid=y_test,
-# )
-
-
 y_prob = model.predict_proba(X_test)
 
 ### F1 Weighted
