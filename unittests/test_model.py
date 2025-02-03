@@ -2383,7 +2383,10 @@ def test_grid_search_param_tuning_f1_beta_tune(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y, f1_beta_tune=True)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_dataframe(classification_data):
     X, y = classification_data
@@ -2398,7 +2401,10 @@ def test_grid_search_param_tuning_dataframe(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_numpy(classification_data):
     X, y = classification_data
@@ -2415,7 +2421,10 @@ def test_grid_search_param_tuning_numpy(classification_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "roc_auc" in model.best_params_per_score, "Best score for roc_auc should be in results."
+        assert (
+            "roc_auc" in model.best_params_per_score
+        ), "Best score for roc_auc should be in results."
+
 
 def test_grid_search_param_tuning_dataframe_regression(regression_data):
     X, y = regression_data
@@ -2430,7 +2439,10 @@ def test_grid_search_param_tuning_dataframe_regression(regression_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+        assert (
+            "r2" in model.best_params_per_score
+        ), "Best score for r2 should be in results."
+
 
 def test_grid_search_param_tuning_numpy_regression(regression_data):
     X, y = regression_data
@@ -2447,7 +2459,10 @@ def test_grid_search_param_tuning_numpy_regression(regression_data):
             kfold=kfold,
         )
         model.grid_search_param_tuning(X, y)
-        assert "r2" in model.best_params_per_score, "Best score for r2 should be in results."
+        assert (
+            "r2" in model.best_params_per_score
+        ), "Best score for r2 should be in results."
+
 
 def test_get_preprocessing_pipeline_after_calibration(classification_data):
     X, y = classification_data
@@ -2500,7 +2515,7 @@ def test_get_feature_selection_pipeline_after_calibration(classification_data):
         calibrate=True,
         scoring=["roc_auc"],
         random_state=42,
-        imbalance_sampler=SMOTE()
+        imbalance_sampler=SMOTE(),
     )
     model.grid_search_param_tuning(X, y)
 
@@ -2563,3 +2578,62 @@ def test_combined_preproc_feat_select_after_calibration(classification_data):
     assert (
         list(combined_pipeline.named_steps.keys()) == expected_steps
     ), "Combined steps mismatch"
+
+
+def test_fit_with_early_stopping_and_specific_score(
+    initialized_xgb_model_multiple_scores, classification_data
+):
+    X, y = classification_data
+    model = initialized_xgb_model_multiple_scores
+    model.grid_search_param_tuning(X, y)
+
+    # Fit with a specific score
+    score = "f1"
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+
+    model.fit(X_train, y_train, score=score, validation_data=(X_valid, y_valid))
+
+    # Check that best params for 'f1' are used
+    assert "f1" in model.best_params_per_score
+    assert model.best_params_per_score[score]["params"] is not None
+
+    # Verify the model is fitted
+    assert hasattr(model.estimator, "predict")
+
+    # Check that early stopping parameters are applied
+    estimator = model.estimator.named_steps[model.estimator_name]
+    assert (
+        estimator.n_estimators <= 50
+    )  # Initial was 50, should be <= due to early stopping
+
+
+def test_fit_with_early_stopping_default_score(
+    initialized_xgb_model, classification_data
+):
+    X, y = classification_data
+    model = initialized_xgb_model
+    model.grid_search_param_tuning(X, y)
+
+    # Fit without specifying a score, default to first in scoring list
+    default_score = model.scoring[0]
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+    model.fit(X_train, y_train, validation_data=(X_valid, y_valid))
+
+    # Check that best params for default score are used
+    assert default_score in model.best_params_per_score
+    assert model.best_params_per_score[default_score]["params"] is not None
+
+    # Verify the model is fitted
+    assert hasattr(model.estimator, "predict")
+
+    # Check that early stopping parameters are applied
+    estimator = model.estimator.named_steps[model.estimator_name]
+    assert (
+        estimator.n_estimators <= 50
+    )  # Initial was 50, should be <= due to early stopping
