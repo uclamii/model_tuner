@@ -2055,7 +2055,7 @@ make sure to remember to specify this in them for example:
 
 
 Example usage: custom betas (higher recall)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If we want to have a higher recall score and care less about precision then we increase
 the beta value. This looks very similar to the previous example except that when we
 use f1_beta_tune, we also set a beta value like so:

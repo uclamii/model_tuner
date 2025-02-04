@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>iPython Notebooks &mdash; Model Tuner 0.0.23a0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="_static/custom.css?v=72ec8e44" />
@@ -124,6 +124,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-8-fit-the-model">Step 8: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-9-return-metrics-optional">Step 9: Return metrics (optional)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-calibrate-the-model-if-needed">Step 10: Calibrate the model (if needed)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#f1-beta-threshold-tuning">F1 Beta Threshold Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#understanding-f1-beta-score">Understanding F1 Beta Score</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-default-beta-1">Example usage: default (beta = 1)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-custom-betas-higher-recall">Example usage: custom betas (higher recall)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-usage-custom-betas-higher-precision">Example usage: custom betas (higher precision)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#imbalanced-learning">Imbalanced Learning</a><ul>
@@ -1794,7 +1801,7 @@ along with weighted averages and accuracy.</p></li>
 <span class="sig-name descname"><span class="pre">get_preprocessing_and_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_and_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts both the preprocessing and feature selection parts of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_preprocessing_and_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_and_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
@@ -1810,7 +1817,7 @@ along with weighted averages and accuracy.</p></li>
 <span class="sig-name descname"><span class="pre">get_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the feature selection part of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
@@ -1826,7 +1833,7 @@ along with weighted averages and accuracy.</p></li>
 <span class="sig-name descname"><span class="pre">get_preprocessing_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the preprocessing part of the pipeline.</p>
 <p><strong>Example</strong>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">get_preprocessing_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">preprocessing_steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">transformer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">steps</span>
@@ -1873,16 +1880,16 @@ installed it yet, you can do so by running the following command:</p>
 </div>
 <p>Once installed, you can quickly load the AIDS Clinical Trials Group Study dataset
 with a simple command:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ucimlrepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_ucirepo</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ucimlrepo</span> <span class="kn">import</span> <span class="n">fetch_ucirepo</span>
 </pre></div>
 </div>
 <section id="step-1-import-necessary-libraries">
 <h3>Step 1: Import Necessary libraries<a class="headerlink" href="#step-1-import-necessary-libraries" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">ucimlrepo</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_ucirepo</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBClassifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">model_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">ucimlrepo</span> <span class="kn">import</span> <span class="n">fetch_ucirepo</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 </pre></div>
 </div>
 </section>
@@ -2225,8 +2232,8 @@ accessing and interpreting the report.</p>
 <section id="step-10-calibrate-the-model-if-needed">
 <h3>Step 10: Calibrate the model (if needed)<a class="headerlink" href="#step-10-calibrate-the-model-if-needed" title="Link to this heading"></a></h3>
 <p>See <a class="reference internal" href="caveats.html#model-calibration"><span class="std std-ref">this section</span></a> for more information on model calibration.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">calibration_curve</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn.calibration</span> <span class="kn">import</span> <span class="n">calibration_curve</span>
 
 <span class="c1">## Get the predicted probabilities for the validation data from uncalibrated model</span>
 <span class="n">y_prob_uncalibrated</span> <span class="o">=</span> <span class="n">model_xgb</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
@@ -2311,6 +2318,107 @@ roc_auc after calibration: 0.9260891500474834
 </a>
 </div><div style="height: 50px;"></div></section>
 </section>
+<section id="f1-beta-threshold-tuning">
+<h2>F1 Beta Threshold Tuning<a class="headerlink" href="#f1-beta-threshold-tuning" title="Link to this heading"></a></h2>
+<p>In binary classification, selecting an optimal classification threshold is crucial for
+achieving the best balance between precision and recall. The default threshold of 0.5
+may not always yield optimal performance, especially when dealing with imbalanced
+datasets. F1 Beta threshold tuning helps adjust this threshold to maximize the F-beta
+score, which balances precision and recall according to the importance assigned to each
+through the beta parameter.</p>
+<section id="understanding-f1-beta-score">
+<h3>Understanding F1 Beta Score<a class="headerlink" href="#understanding-f1-beta-score" title="Link to this heading"></a></h3>
+<p>The F-beta score is a generalization of the F1-score that allows you to weigh recall
+more heavily than precision (or vice versa) based on the beta parameter:</p>
+<ul class="simple">
+<li><p>F1-Score (beta = 1): Equal importance to precision and recall.</p></li>
+<li><p>F-beta &gt; 1: More emphasis on recall. Useful when false negatives are more critical (e.g., disease detection).</p></li>
+<li><p>F-beta &lt; 1: More emphasis on precision. Suitable when false positives are costlier (e.g., spam detection).</p></li>
+</ul>
+</section>
+<section id="example-usage-default-beta-1">
+<h3>Example usage: default (beta = 1)<a class="headerlink" href="#example-usage-default-beta-1" title="Link to this heading"></a></h3>
+<p>Setting up the Model object ready for tuning.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+
+<span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
+<span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
+   <span class="n">objective</span><span class="o">=</span><span class="s2">&quot;binary:logistic&quot;</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">tuned_parameters_xgb</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__max_depth&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">500</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__learning_rate&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__n_estimators&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__early_stopping_rounds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">100</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__verbose&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xgb_name</span><span class="si">}</span><span class="s2">__eval_metric&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;logloss&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+<span class="n">xgb_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+   <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Threshold Example Model&quot;</span><span class="p">,</span>
+   <span class="n">estimator_name</span><span class="o">=</span><span class="n">xgb_name</span><span class="p">,</span>
+   <span class="n">calibrate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">model_type</span><span class="o">=</span><span class="s2">&quot;classification&quot;</span><span class="p">,</span>
+   <span class="n">estimator</span><span class="o">=</span><span class="n">xgb</span><span class="p">,</span>
+   <span class="n">kfold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">stratify_y</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">stratify_cols</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">grid</span><span class="o">=</span><span class="n">tuned_parameters_xgb</span><span class="p">,</span>
+   <span class="n">randomized_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">boost_early</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+   <span class="n">scoring</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;roc_auc&quot;</span><span class="p">],</span>
+   <span class="n">random_state</span><span class="o">=</span><span class="mi">222</span><span class="p">,</span>
+   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In the grid_search_param_tuning use the f1_beta_tune variable when using
+grid_search_param_tuning(). Set this to True to enable tuning.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will find the best hyperparameters and then find the best threshold for these
+balancing both precision and recall. The threshold is stored in the Model object.
+To access this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">threshold</span>
+</pre></div>
+</div>
+<p>This will give the best threshold found for each score specified in the Model object.</p>
+<p>When using methods to return metrics or report metrics and an optimal threshold was used
+make sure to remember to specify this in them for example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">return_metrics</span><span class="p">(</span>
+   <span class="n">X_valid</span><span class="p">,</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">optimal_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">print_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+   <span class="n">model_metrics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-usage-custom-betas-higher-recall">
+<h3>Example usage: custom betas (higher recall)<a class="headerlink" href="#example-usage-custom-betas-higher-recall" title="Link to this heading"></a></h3>
+<p>If we want to have a higher recall score and care less about precision then we increase
+the beta value. This looks very similar to the previous example except that when we
+use f1_beta_tune, we also set a beta value like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Setting the beta value to 2 will priortise increasing the recall over the precision.</p>
+</section>
+<section id="example-usage-custom-betas-higher-precision">
+<h3>Example usage: custom betas (higher precision)<a class="headerlink" href="#example-usage-custom-betas-higher-precision" title="Link to this heading"></a></h3>
+<p>If we want to have a higher precision score and care less about recall then we decrease
+the beta value. This looks very similar to the previous example except that we set the
+beta value to less than 1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Setting the beta value to 0.5 will priortise increasing the precision over the recall.</p>
+</section>
+</section>
 <section id="imbalanced-learning">
 <h2>Imbalanced Learning<a class="headerlink" href="#imbalanced-learning" title="Link to this heading"></a></h2>
 <p>In machine learning, imbalanced datasets are a frequent challenge, especially in
@@ -2339,9 +2447,9 @@ parameters are specified:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">flip_y=0</span></code>: No label noise is added to the target variable.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">random_state=42</span></code>: Ensures reproducibility by using a fixed random seed.</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_classification</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
 
 <span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span>
    <span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
@@ -2364,7 +2472,7 @@ parameters are specified:</p>
 </div>
 <p>Below, you will see that the dataset we have generated is severely imbalanced with
 900 observations allocated to the majority class (0) and 100 observations to the minority class (1).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <span class="c1">## Create a bar plot</span>
 <span class="n">value_counts</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
@@ -2399,7 +2507,7 @@ parameters are specified:</p>
 <section id="define-hyperparameters-for-xgboost">
 <h3>Define hyperparameters for XGBoost<a class="headerlink" href="#define-hyperparameters-for-xgboost" title="Link to this heading"></a></h3>
 <p>Below, we will use an XGBoost classifier with the following hyperparameters:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBClassifier</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
 
 <span class="n">xgb_name</span> <span class="o">=</span> <span class="s2">&quot;xgb&quot;</span>
 <span class="n">xgb</span> <span class="o">=</span> <span class="n">XGBClassifier</span><span class="p">(</span>
@@ -2494,8 +2602,8 @@ classification performance on imbalanced datasets.</p>
 the <code class="docutils literal notranslate"><span class="pre">imbalance_sampler=SMOTE(random_state=42)</span></code> parameter is included to activate
 the imbalanced sampler. Setting a random state of 42 ensures reproducibility of results.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">model_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">imblearn.over_sampling</span><span class="w"> </span><span class="kn">import</span> <span class="n">SMOTE</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">imblearn.over_sampling</span> <span class="kn">import</span> <span class="n">SMOTE</span>
 
 <span class="n">xgb_smote</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Make_Classification_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -2694,8 +2802,8 @@ with cross-validation to ensure that the selected features generalize well acros
 datasets, making it a robust choice for model optimization and dimensionality
 reduction.</p>
 <p>As an illustrative example, we will retrain the above model using RFE.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.feature_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">RFE</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ElasticNet</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">RFE</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">ElasticNet</span>
 </pre></div>
 </div>
 <p>We will begin by appending the feature selection technique to our <a class="reference internal" href="#xgb-hyperparams"><span class="std std-ref">tuned parameters dictionary</span></a>.</p>
@@ -2730,7 +2838,7 @@ retaining a manageable subset of predictors.</p>
 <span class="n">rfe</span> <span class="o">=</span> <span class="n">RFE</span><span class="p">(</span><span class="n">rfe_estimator</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">model_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 
 <span class="n">model_xgb</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;AIDS_Clinical_</span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
@@ -2936,7 +3044,7 @@ SHAP values provide insights into how individual features contribute to the pred
 <section id="step-3-extract-feature-names-from-the-training-data-and-initialize-the-shap-explainer-for-the-xgboost-classifier">
 <h3>Step 3: Extract feature names from the training data, and initialize the SHAP explainer for the XGBoost classifier<a class="headerlink" href="#step-3-extract-feature-names-from-the-training-data-and-initialize-the-shap-explainer-for-the-xgboost-classifier" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Import SHAP for model explainability</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">shap</span>
+<span class="kn">import</span> <span class="nn">shap</span>
 
 <span class="c1">## Feature names are required for interpretability in SHAP plots</span>
 <span class="n">feature_names</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
@@ -3006,17 +3114,17 @@ species of Iris flowers (Setosa, Versicolour, and Virginica), with four features
 sepal length, sepal width, petal length, and petal width.</p>
 <section id="id3">
 <h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">model_tuner.model_tuner_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">report_model_metrics</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBClassifier</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.pipeline</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pipeline</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">StandardScaler</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.compose</span><span class="w"> </span><span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span> <span class="nn">model_tuner.model_tuner_utils</span> <span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">report_model_metrics</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_iris</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_iris</span>
 </pre></div>
 </div>
 </section>
@@ -3482,12 +3590,12 @@ Predictions:
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
 <section id="id9">
 <h3>Step 1: Import necessary libraries<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="kn">import</span> <span class="n">XGBRegressor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.impute</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleImputer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_california_housing</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">model_tuner</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_california_housing</span>
+<span class="kn">from</span> <span class="nn">model_tuner</span> <span class="kn">import</span> <span class="n">Model</span>
 </pre></div>
 </div>
 </section>
