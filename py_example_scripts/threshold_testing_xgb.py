@@ -27,7 +27,7 @@ from sklearn.linear_model import ElasticNet
 
 import model_tuner  ## import model_tuner to show version info.
 from model_tuner import Model  ## Model class from model_tuner lib.
-from model_tuner.threshold_optimization import find_optimal_threshold_beta_aware
+from model_tuner.threshold_optimization import find_optimal_threshold_beta
 
 from ucimlrepo import fetch_ucirepo
 
@@ -138,15 +138,32 @@ prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
 if model_xgb.calibrate:
     model_xgb.calibrateModel(X, y, score="roc_auc")
 
+threshold, beta = find_optimal_threshold_beta(
+    y_valid,
+    model_xgb.predict_proba(X_valid)[:, 1],
+    target_metric="precision",
+    target_score=0.5,
+    beta_value_range=np.linspace(0.01, 4, 40),
+)
 
-(
-    optimal_beta,
-    optimal_threshold,
-    best_precision,
-    _,
-    _,
-) = find_optimal_threshold_beta_aware(model_xgb, X_test, y_test, target_precision=0.4)
+model_xgb.threshold["roc_auc"] = threshold
 
-print(f"Optimal Beta: {optimal_beta}")
-print(f"Optimal Decision Threshold: {optimal_threshold}")
-print(f"Best Precision Achieved: {best_precision}")
+metrics_df = model_xgb.return_metrics(
+    X_valid, y_valid, optimal_threshold=True, model_metrics=True
+)
+
+
+threshold, beta = find_optimal_threshold_beta(
+    y_valid,
+    model_xgb.predict_proba(X_valid)[:, 1],
+    target_metric="recall",
+    target_score=0.8,
+    beta_value_range=np.linspace(0.01, 4, 1000),
+    delta=0.08,
+)
+
+model_xgb.threshold["roc_auc"] = threshold
+
+metrics_df = model_xgb.return_metrics(
+    X_valid, y_valid, optimal_threshold=True, model_metrics=True
+)
