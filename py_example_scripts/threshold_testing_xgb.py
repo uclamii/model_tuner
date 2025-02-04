@@ -27,7 +27,7 @@ from sklearn.linear_model import ElasticNet
 
 import model_tuner  ## import model_tuner to show version info.
 from model_tuner import Model  ## Model class from model_tuner lib.
-
+from model_tuner.threshold_optimization import find_optimal_threshold_beta_aware
 
 from ucimlrepo import fetch_ucirepo
 
@@ -139,31 +139,13 @@ if model_xgb.calibrate:
     model_xgb.calibrateModel(X, y, score="roc_auc")
 
 
-# ------------------------- VALID AND TEST METRICS -----------------------------
-
-print("Validation Metrics")
-model_xgb.return_metrics(
-    X=X_valid,
-    y=y_valid,
-    optimal_threshold=True,
-    model_metrics=True,
-    print_threshold=True,
-)
-print()
-
-print("Test Metrics")
-model_xgb.return_metrics(
-    X=X_test, y=y_test, optimal_threshold=True, model_metrics=True, print_threshold=True
-)
-
-
 (
     optimal_beta,
     optimal_threshold,
     best_precision,
     _,
     _,
-) = find_optimal_threshold_beta_aware(model_xgb, X_test, y_test, target_precision=0.80)
+) = find_optimal_threshold_beta_aware(model_xgb, X_test, y_test, target_precision=0.4)
 
 print(f"Optimal Beta: {optimal_beta}")
 print(f"Optimal Decision Threshold: {optimal_threshold}")
