@@ -1960,6 +1960,128 @@ See :ref:`this section <model_calibration>` for more information on model calibr
    <div style="height: 50px;"></div>
 
 
+F1 Beta Threshold Tuning
+------------------------
+In binary classification, selecting an optimal classification threshold is crucial for 
+achieving the best balance between precision and recall. The default threshold of 0.5 
+may not always yield optimal performance, especially when dealing with imbalanced 
+datasets. F1 Beta threshold tuning helps adjust this threshold to maximize the F-beta
+score, which balances precision and recall according to the importance assigned to each 
+through the beta parameter.
+
+Understanding F1 Beta Score
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The F-beta score is a generalization of the F1-score that allows you to weigh recall 
+more heavily than precision (or vice versa) based on the beta parameter:
+
+- F1-Score (beta = 1): Equal importance to precision and recall.
+
+- F-beta > 1: More emphasis on recall. Useful when false negatives are more critical (e.g., disease detection).
+
+- F-beta < 1: More emphasis on precision. Suitable when false positives are costlier (e.g., spam detection).
+
+Example usage: default (beta = 1)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Setting up the Model object ready for tuning.
+
+.. code-block:: python
+
+   from xgboost import XGBClassifier
+
+   xgb_name = "xgb"
+   xgb = XGBClassifier(
+      objective="binary:logistic"
+      random_state=222,
+   )
+
+   tuned_parameters_xgb = {
+      f"{xgb_name}__max_depth": [3, 10, 20, 200, 500],
+      f"{xgb_name}__learning_rate": [1e-4],
+      f"{xgb_name}__n_estimators": [1000],
+      f"{xgb_name}__early_stopping_rounds": [100],
+      f"{xgb_name}__verbose": [0],
+      f"{xgb_name}__eval_metric": ["logloss"],
+   }
+
+   xgb_model = Model(
+      name=f"Threshold Example Model",
+      estimator_name=xgb_name,
+      calibrate=False,
+      model_type="classification",
+      estimator=xgb,
+      kfold=False,
+      stratify_y=True,
+      stratify_cols=False,
+      grid=tuned_parameters_xgb,
+      randomized_grid=False,
+      boost_early=False,
+      scoring=["roc_auc"],
+      random_state=222,
+      n_jobs=2,
+   )
+
+
+In the grid_search_param_tuning use the f1_beta_tune variable when using
+grid_search_param_tuning(). Set this to True to enable tuning. 
+
+.. code-block:: python
+
+   xgb_model.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+This will find the best hyperparameters and then find the best threshold for these
+balancing both precision and recall. The threshold is stored in the Model object.
+To access this:
+
+.. code-block:: python
+
+   xgb_model.threshold
+
+This will give the best threshold found for each score specified in the Model object.
+
+When using methods to return metrics or report metrics and an optimal threshold was used
+make sure to remember to specify this in them for example:
+
+.. code-block:: python
+
+   xgb_model.return_metrics(
+      X_valid,
+      y_valid,
+      optimal_threshold=True,
+      print_threshold=True,
+      model_metrics=True,
+   )
+
+
+Example usage: custom betas (higher recall)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If we want to have a higher recall score and care less about precision then we increase
+the beta value. This looks very similar to the previous example except that when we
+use f1_beta_tune, we also set a beta value like so:
+
+
+.. code-block:: python
+
+   xgb_model.grid_search_param_tuning(X, y, f1_beta_tune=True, betas=[2])
+
+Setting the beta value to 2 will priortise increasing the recall over the precision.
+
+
+
+Example usage: custom betas (higher precision)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+If we want to have a higher precision score and care less about recall then we decrease
+the beta value. This looks very similar to the previous example except that we set the
+beta value to less than 1.
+
+
+.. code-block:: python
+
+   xgb_model.grid_search_param_tuning(X, y, f1_beta_tune=True, betas=[0.5])
+
+Setting the beta value to 0.5 will priortise increasing the precision over the recall.
+
 Imbalanced Learning
 ------------------------
 
