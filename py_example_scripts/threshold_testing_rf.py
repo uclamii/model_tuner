@@ -134,7 +134,7 @@ threshold, beta = find_optimal_threshold_beta(
     target_metric="recall",
     target_score=0.8,
     beta_value_range=np.linspace(0.01, 4, 1000),
-    delta=0.08,
+    # delta=0.08,
 )
 
 model.threshold["roc_auc"] = threshold
