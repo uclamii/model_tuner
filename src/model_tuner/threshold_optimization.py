@@ -6,6 +6,7 @@ from sklearn.metrics import (
     fbeta_score,
 )  # For evaluation metrics
 from tqdm import tqdm
+import warnings
 
 
 def threshold_tune(
@@ -60,3 +61,13 @@ def find_optimal_threshold_beta(
             print(f"Found optimal threshold for {target_metric}: {target_score}")
             print(f"Threshold: {threshold}")
             return threshold, beta
+        # Increase delta if no threshold is found
+        delta += 0.01
+
+        if delta > 0.1:
+            warnings.warn(f"Delta has exceeded 0.1. Continuing to increase delta...")
+
+        if delta > 0.2:
+            raise Exception("Delta exceeded 0.2. Unable to find an optimal threshold.")
+
+    return None
