@@ -92,6 +92,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#regression-report-kfold"><code class="docutils literal notranslate"><span class="pre">regression_report_kfold()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#regression-report"><code class="docutils literal notranslate"><span class="pre">regression_report()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#report-model-metrics"><code class="docutils literal notranslate"><span class="pre">report_model_metrics()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#find-optimal-threshold-beta"><code class="docutils literal notranslate"><span class="pre">find_optimal_threshold_beta()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#helper-functions">Helper Functions</a><ul>
@@ -170,16 +171,16 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#multi-class-classification">Multi-Class Classification</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#iris-dataset-with-xgboost">Iris Dataset with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">Step 1: Import Necessary Libraries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">Step 2: Load the dataset. Define X, y</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">Step 1: Import Necessary Libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">Step 2: Load the dataset. Define X, y</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-define-the-preprocessing-steps">Step 3: Define the preprocessing steps</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-the-estimator-and-hyperparameters">Step 4: Define the estimator and hyperparameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5-initialize-and-configure-the-model">Step 5: Initialize and configure the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning">Step 6: Perform grid search parameter tuning</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-generate-data-splits">Step 7: Generate data splits</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">Step 8: Fit the model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">Step 9: Return metrics (optional)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Report Model Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">Step 8: Fit the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Step 9: Return metrics (optional)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Report Model Metrics</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#step-10-predict-probabilities-and-generate-predictions">Step 10: Predict probabilities and generate predictions</a></li>
@@ -189,11 +190,11 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#regression">Regression</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#california-housing-with-xgboost">California Housing with XGBoost</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id9">Step 1: Import necessary libraries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Step 1: Import necessary libraries</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-load-the-dataset">Step 2: Load the dataset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-create-an-instance-of-the-xgbregressor">Step 3: Create an instance of the XGBRegressor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-4-define-hyperparameters-for-xgbregressor">Step 4: Define Hyperparameters for XGBRegressor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id10">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-6-perform-grid-search-parameter-tuning-and-retrieve-split-data">Step 6: Perform grid search parameter tuning and retrieve split data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-7-fit-the-model">Step 7: Fit the model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-8-return-metrics-optional">Step 8: Return metrics (optional)</a></li>
@@ -1612,6 +1613,92 @@ along with weighted averages and accuracy.</p></li>
 </dd></dl>
 
 </section>
+<section id="find-optimal-threshold-beta">
+<span id="id3"></span><h2><code class="docutils literal notranslate"><span class="pre">find_optimal_threshold_beta()</span></code><a class="headerlink" href="#find-optimal-threshold-beta" title="Link to this heading"></a></h2>
+<blockquote>
+<div><dl class="py function">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">find_optimal_threshold_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_proba</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_value_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.linspace(0.01,</span> <span class="pre">4,</span> <span class="pre">400)</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Determine the optimal threshold and beta value for classification models by iteratively tuning
+the decision boundary to meet a target precision or recall score.</p>
+<p><strong>Key Features:</strong></p>
+<ul class="simple">
+<li><p>Iteratively finds an optimal threshold using an expanding delta range if an exact match isn’t found.</p></li>
+<li><p>Supports tuning based on <strong>precision</strong> or <strong>recall</strong>.</p></li>
+<li><p>Uses a progressive delta expansion strategy to allow some flexibility in finding an optimal threshold.</p></li>
+<li><p>Terminates with a warning if delta exceeds 0.2.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – The true labels of the dataset, expected to be binary (0 or 1).</p></li>
+<li><p><strong>y_proba</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – The predicted probabilities outputted by a model for the positive class.</p></li>
+<li><p><strong>target_metric</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – The performance metric to optimize for. Supports either <code class="docutils literal notranslate"><span class="pre">&quot;precision&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;recall&quot;</span></code>.</p></li>
+<li><p><strong>target_score</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – The desired precision or recall score that the function attempts to achieve.</p></li>
+<li><p><strong>beta_value_range</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – The range of beta values to test, controlling the balance between precision and recall.
+Defaults to an array of 400 values between <code class="docutils literal notranslate"><span class="pre">0.01</span></code> and <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">target_metric</span></code> is not one of <code class="docutils literal notranslate"><span class="pre">&quot;precision&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;recall&quot;</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><strong>Exception</strong></a> – If delta exceeds 0.2, meaning an optimal threshold could not be found within tolerance.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> or None</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple containing:</p>
+<ul class="simple">
+<li><p><strong>threshold</strong> (<em>float</em>): The optimal decision threshold for classification.</p></li>
+<li><p><strong>beta</strong> (<em>float</em>): The beta value at which the optimal threshold was found.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> if no suitable threshold is found within the acceptable delta range.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Uses the <code class="docutils literal notranslate"><span class="pre">threshold_tune</span></code> function internally to determine the best threshold for each beta.</p></li>
+<li><p>If no exact match is found initially, the function gradually increases <code class="docutils literal notranslate"><span class="pre">delta</span></code> in increments of <code class="docutils literal notranslate"><span class="pre">0.01</span></code>.</p></li>
+<li><p>If delta exceeds <code class="docutils literal notranslate"><span class="pre">0.2</span></code>, the function raises an exception indicating failure to find an optimal threshold.</p></li>
+</ul>
+</div>
+<p><strong>Examples:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## Example usage for optimizing precision</span>
+<span class="n">threshold</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">find_optimal_threshold_beta</span><span class="p">(</span>
+   <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+   <span class="n">y_proba</span><span class="o">=</span><span class="n">y_probabilities</span><span class="p">,</span>
+   <span class="n">target_metric</span><span class="o">=</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+   <span class="n">target_score</span><span class="o">=</span><span class="mf">0.8</span>
+<span class="p">)</span>
+
+<span class="c1">## Example usage for optimizing recall</span>
+<span class="n">threshold</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">find_optimal_threshold_beta</span><span class="p">(</span>
+   <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+   <span class="n">y_proba</span><span class="o">=</span><span class="n">y_probabilities</span><span class="p">,</span>
+   <span class="n">target_metric</span><span class="o">=</span><span class="s2">&quot;recall&quot;</span><span class="p">,</span>
+   <span class="n">target_score</span><span class="o">=</span><span class="mf">0.85</span>
+<span class="p">)</span>
+
+<span class="c1">## Example handling a case where no exact match is found</span>
+<span class="k">try</span><span class="p">:</span>
+   <span class="n">threshold</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">find_optimal_threshold_beta</span><span class="p">(</span>
+         <span class="n">y</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span>
+         <span class="n">y_proba</span><span class="o">=</span><span class="n">y_probabilities</span><span class="p">,</span>
+         <span class="n">target_metric</span><span class="o">=</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+         <span class="n">target_score</span><span class="o">=</span><span class="mf">0.95</span>
+   <span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+   <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not find an optimal threshold: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+</section>
 </section>
 <section id="helper-functions">
 <h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Link to this heading"></a></h1>
@@ -2426,6 +2513,10 @@ beta value to less than 1.</p>
 <section id="optimizing-model-threshold-for-precision-recall-trade-off">
 <h3>Optimizing Model Threshold for Precision/Recall Trade-off<a class="headerlink" href="#optimizing-model-threshold-for-precision-recall-trade-off" title="Link to this heading"></a></h3>
 <p>This function helps fine-tune a saved model’s decision threshold to maximize precision or recall using a beta-weighted approach.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference internal" href="#find-optimal-threshold-beta"><span class="std std-ref">this section</span></a> for a more detailed explanation with contextual examples.</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">find_optimal_threshold_beta</span><span class="p">(</span>
    <span class="n">y_valid</span><span class="p">,</span>
    <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
@@ -3130,8 +3221,8 @@ and the Iris dataset as the example.</p>
 commonly used for multi-class classification. It contains 150 samples from three
 species of Iris flowers (Setosa, Versicolour, and Virginica), with four features:
 sepal length, sepal width, petal length, and petal width.</p>
-<section id="id3">
-<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>Step 1: Import Necessary Libraries<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -3146,8 +3237,8 @@ sepal length, sepal width, petal length, and petal width.</p>
 </pre></div>
 </div>
 </section>
-<section id="id4">
-<h3>Step 2: Load the dataset. Define X, y<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>Step 2: Load the dataset. Define X, y<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">load_iris</span><span class="p">()</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">data</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">target</span>
@@ -3354,8 +3445,8 @@ distribution (as specified by <code class="docutils literal notranslate"><span c
 </ul>
 <p>These splits ensure that each phase of model development (training, validation, and testing) is performed on separate portions of the dataset, providing a robust evaluation pipeline.</p>
 </section>
-<section id="id5">
-<h3>Step 8: Fit the model<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Step 8: Fit the model<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>After generating the data splits, the next step is to train the model using the
 training data and validate its performance on the validation data during training.
 The <code class="docutils literal notranslate"><span class="pre">fit</span></code> method in the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class handles this process seamlessly,
@@ -3378,8 +3469,8 @@ leveraging the best hyperparameters found during grid search.</p>
 <p>This step ensures that the model is fitted using the best configuration from the grid search and optimized for generalization. With the model trained, proceed to Step 9 to evaluate its performance on validation and test datasets.</p>
 </div>
 </section>
-<section id="id6">
-<h3>Step 9: Return metrics (optional)<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>Step 9: Return metrics (optional)<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p>Once the model is trained, you can evaluate its performance on the validation
 and test datasets by returning key metrics. The <code class="docutils literal notranslate"><span class="pre">return_metrics</span></code> method from
 the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class calculates and displays metrics like <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">ROC AUC, precision, recall, and F1-score</span></a>.</p>
@@ -3505,8 +3596,8 @@ weighted avg       0.91      0.90      0.90        30
         [ 1,  9]]])}
 </pre></div>
 </div>
-<section id="id7">
-<h4>Report Model Metrics<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<section id="id8">
+<h4>Report Model Metrics<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
 <p>You can summarize and display the model’s performance metrics using the
 <code class="docutils literal notranslate"><span class="pre">report_model_metrics</span></code> function. This function computes key metrics like
 <a class="reference internal" href="caveats.html#limitations-of-accuracy"><span class="std std-ref">precision, recall, F1-score, and ROC AUC</span></a> for each class, as well as macro and weighted averages.</p>
@@ -3594,7 +3685,7 @@ Predictions:
 </section>
 </section>
 <section id="regression">
-<span id="id8"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
+<span id="id9"></span><h1>Regression<a class="headerlink" href="#regression" title="Link to this heading"></a></h1>
 <p>Here is an example of using the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class for a <strong>regression task</strong> with <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> on the <strong>California Housing dataset</strong>.</p>
 <p>The California Housing dataset, available in the <code class="docutils literal notranslate"><span class="pre">sklearn</span></code> library, is a commonly used benchmark dataset for regression problems. It contains features such as median income, housing age, and population, which are used to predict the median house value for California districts.</p>
 <p>In this example, we leverage the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class to:</p>
@@ -3606,8 +3697,8 @@ Predictions:
 <p>The workflow highlights how the <code class="docutils literal notranslate"><span class="pre">Model</span></code> class simplifies regression tasks, including hyperparameter tuning, and performance evaluation.</p>
 <section id="california-housing-with-xgboost">
 <h2>California Housing with XGBoost<a class="headerlink" href="#california-housing-with-xgboost" title="Link to this heading"></a></h2>
-<section id="id9">
-<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<section id="id10">
+<h3>Step 1: Import necessary libraries<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">xgboost</span> <span class="kn">import</span> <span class="n">XGBRegressor</span>
@@ -3676,8 +3767,8 @@ tree construction, and generalization performance of the model.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: Controls output display during training (set to <code class="docutils literal notranslate"><span class="pre">0</span></code> for silent mode).</p></li>
 </ol>
 </section>
-<section id="id10">
-<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id11">
+<h3>Step 5: Initialize and configure the <code class="docutils literal notranslate"><span class="pre">Model</span></code><a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">XGBRegressor</span></code> inherently handles missing values (<code class="docutils literal notranslate"><span class="pre">NaN</span></code>) without requiring explicit
 imputation strategies. During training, <code class="docutils literal notranslate"><span class="pre">XGBoost</span></code> treats missing values as a
 separate category and learns how to route them within its decision trees.

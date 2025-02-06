@@ -1224,6 +1224,82 @@ Get train, val, test data
        metrics_df = report_model_metrics(model, X_valid=X, y_valid=y, print_per_fold=True)
 
 
+.. _Find_Optimal_Threshold_beta:
+
+``find_optimal_threshold_beta()``
+---------------------------------------------------------------------------
+
+   .. function:: find_optimal_threshold_beta(y, y_proba, target_metric=None, target_score=None, beta_value_range=np.linspace(0.01, 4, 400))
+      :noindex:
+
+      Determine the optimal threshold and beta value for classification models by iteratively tuning 
+      the decision boundary to meet a target precision or recall score.
+
+      **Key Features:**
+
+      - Iteratively finds an optimal threshold using an expanding delta range if an exact match isn't found.
+      - Supports tuning based on **precision** or **recall**.
+      - Uses a progressive delta expansion strategy to allow some flexibility in finding an optimal threshold.
+      - Terminates with a warning if delta exceeds 0.2.
+
+      :param y: The true labels of the dataset, expected to be binary (0 or 1).
+      :type y: numpy.ndarray or list
+      :param y_proba: The predicted probabilities outputted by a model for the positive class.
+      :type y_proba: numpy.ndarray or list
+      :param target_metric: The performance metric to optimize for. Supports either ``"precision"`` or ``"recall"``.
+      :type target_metric: str, optional
+      :param target_score: The desired precision or recall score that the function attempts to achieve.
+      :type target_score: float, optional
+      :param beta_value_range: The range of beta values to test, controlling the balance between precision and recall.
+         Defaults to an array of 400 values between ``0.01`` and ``4``.
+      :type beta_value_range: numpy.ndarray, optional
+      :raises ValueError: If ``target_metric`` is not one of ``"precision"`` or ``"recall"``.
+      :raises Exception: If delta exceeds 0.2, meaning an optimal threshold could not be found within tolerance.
+      :rtype: tuple or None
+      :returns: A tuple containing:
+      
+         - **threshold** (*float*): The optimal decision threshold for classification.
+         - **beta** (*float*): The beta value at which the optimal threshold was found.
+      
+      Returns ``None`` if no suitable threshold is found within the acceptable delta range.
+
+      .. note::
+
+         - Uses the ``threshold_tune`` function internally to determine the best threshold for each beta.
+         - If no exact match is found initially, the function gradually increases ``delta`` in increments of ``0.01``.
+         - If delta exceeds ``0.2``, the function raises an exception indicating failure to find an optimal threshold.
+
+      **Examples:**
+      ::
+
+         ## Example usage for optimizing precision
+         threshold, beta = find_optimal_threshold_beta(
+            y=y_test, 
+            y_proba=y_probabilities, 
+            target_metric="precision", 
+            target_score=0.8
+         )
+
+         ## Example usage for optimizing recall
+         threshold, beta = find_optimal_threshold_beta(
+            y=y_test, 
+            y_proba=y_probabilities, 
+            target_metric="recall", 
+            target_score=0.85
+         )
+
+         ## Example handling a case where no exact match is found
+         try:
+            threshold, beta = find_optimal_threshold_beta(
+                  y=y_test, 
+                  y_proba=y_probabilities, 
+                  target_metric="precision", 
+                  target_score=0.95
+            )
+         except Exception as e:
+            print(f"Could not find an optimal threshold: {e}")
+
+
 Helper Functions
 =================
 
@@ -2092,6 +2168,10 @@ Optimizing Model Threshold for Precision/Recall Trade-off
 
 This function helps fine-tune a saved model’s decision threshold to maximize precision or recall using a beta-weighted approach.
 
+.. note::
+
+   See :ref:`this section <Find_Optimal_Threshold_beta>` for a more detailed explanation with contextual examples.
+
 .. code-block:: python
 
    threshold, beta = find_optimal_threshold_beta(
@@ -2101,7 +2181,7 @@ This function helps fine-tune a saved model’s decision threshold to maximize p
       target_score=0.5,
       beta_value_range=np.linspace(0.01, 4, 40),
    )
-   
+
 Imbalanced Learning
 ------------------------
 
