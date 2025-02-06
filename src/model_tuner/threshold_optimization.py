@@ -46,11 +46,15 @@ def find_optimal_threshold_beta(
     target_metric=None,
     target_score=None,
     beta_value_range=np.linspace(0.01, 4, 400),
+    delta=0.0,
 ):
-    delta = 0  # Start with delta=0
     threshold = None
 
     while threshold is None:
+        # Increase delta if no threshold is found
+        delta += 0.01
+        print(delta)
+        print(threshold)
 
         for beta in tqdm(beta_value_range, desc="Beta Range Loop"):
 
@@ -68,8 +72,7 @@ def find_optimal_threshold_beta(
                 print(f"Found optimal threshold for {target_metric}: {target_score}")
                 print(f"Threshold: {threshold}")
                 return threshold, beta
-            # Increase delta if no threshold is found
-            delta += 0.01
+            
 
             if delta > 0.1:
                 warnings.warn(
@@ -80,5 +83,7 @@ def find_optimal_threshold_beta(
                 raise Exception(
                     "Delta exceeded 0.2. Unable to find an optimal threshold."
                 )
+            
+            threshold = None
 
-        return None
+    return None
