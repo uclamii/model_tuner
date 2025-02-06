@@ -14,6 +14,18 @@ def threshold_tune(
     betas,
     thresholds_range=np.arange(0, 1, 0.01),
 ):
+    """
+    Tune the threshold to maximize the F-beta score.
+
+    Parameters:
+        y (array-like): True binary labels.
+        y_proba (array-like): Predicted probabilities.
+        betas (array-like): List of beta values for F-beta score calculation.
+        thresholds_range (array-like): Range of thresholds to evaluate.
+
+    Returns:
+        float: Optimal threshold that maximizes the F-beta score.
+    """
 
     fbeta_scores = np.zeros((len(betas), len(thresholds_range)))
 
@@ -35,6 +47,23 @@ def find_optimal_threshold_beta(
     beta_value_range=np.linspace(0.01, 4, 400),
     delta=0.0,
 ):
+    """
+    Find the optimal threshold and beta for a given target metric and score.
+
+    Parameters:
+        y (array-like): True binary labels.
+        y_proba (array-like): Predicted probabilities.
+        target_metric (str): Metric to optimize ("precision" or "recall").
+        target_score (float): Desired target metric score.
+        beta_value_range (array-like): Range of beta values to evaluate.
+        delta (float): Initial tolerance for matching the target score.
+
+    Returns:
+        tuple: Optimal threshold and beta if found; otherwise, None.
+
+    Raises:
+        Exception: If delta exceeds 0.2 and no threshold is found.
+    """
     threshold = None
 
     while threshold is None:
@@ -57,7 +86,6 @@ def find_optimal_threshold_beta(
                 print(f"Found optimal threshold for {target_metric}: {target_score}")
                 print(f"Threshold: {threshold}")
                 return threshold, beta
-            
 
             if delta > 0.1:
                 warnings.warn(
@@ -68,7 +96,7 @@ def find_optimal_threshold_beta(
                 raise Exception(
                     "Delta exceeded 0.2. Unable to find an optimal threshold."
                 )
-            
+
             threshold = None
 
     return None
