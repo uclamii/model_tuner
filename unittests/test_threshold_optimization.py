@@ -57,7 +57,9 @@ def test_find_optimal_threshold_beta(sample_data):
     target_score = 0.7  # Arbitrary chosen target score
 
     threshold, beta = find_optimal_threshold_beta(
-        y, y_proba, target_metric, target_score
+        y, y_proba, target_metric, target_score,
+        beta_value_range=np.linspace(0.01, 4, 40), 
+                                    delta=0.18,
     )
 
     assert 0 <= threshold <= 1, "Threshold should be within [0,1]"
@@ -70,7 +72,11 @@ def test_find_optimal_threshold_invalid_metric(sample_data):
     target_metric = "invalid_metric"
 
     with pytest.raises(ValueError):
-        find_optimal_threshold_beta(y, y_proba, target_metric, target_score=0.7)
+        find_optimal_threshold_beta(y, y_proba, 
+                                    target_metric, 
+                                    target_score=0.7, 
+                                    beta_value_range=np.linspace(0.01, 4, 40), 
+                                    delta=0.18,)
 
 
 def test_find_optimal_threshold_no_suitable_beta(sample_data):
@@ -79,7 +85,9 @@ def test_find_optimal_threshold_no_suitable_beta(sample_data):
     target_metric = "precision"
     target_score = 0.99  # Unreasonably high target precision that won't be met
 
-    result = find_optimal_threshold_beta(y, y_proba, target_metric, target_score)
+    result = find_optimal_threshold_beta(y, y_proba, target_metric, target_score,
+                                         beta_value_range=np.linspace(0.01, 4, 40), 
+                                         delta=0.18,)
 
     assert result is None, "Should return None when no suitable beta is found"
 

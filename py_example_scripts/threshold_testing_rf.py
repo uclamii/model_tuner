@@ -1,20 +1,3 @@
-from sklearn.metrics import (
-    auc,
-    roc_curve,
-    classification_report,
-    confusion_matrix,
-    ConfusionMatrixDisplay,
-    precision_score,
-    recall_score,
-    roc_auc_score,
-    brier_score_loss,
-    precision_score,
-    average_precision_score,
-    precision_recall_curve,
-    f1_score,
-    fbeta_score,
-)
-
 import pandas as pd
 import numpy as np
 
