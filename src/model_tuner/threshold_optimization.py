@@ -1,11 +1,12 @@
-import numpy as np  # For creating ranges for beta and thresholds
+import numpy as np
 from sklearn.metrics import (
     precision_score,
     recall_score,
     fbeta_score,
-)  # For evaluation metrics
+)
 from tqdm import tqdm
 import warnings
+import pandas as pd
 
 
 def threshold_tune(
@@ -20,7 +21,7 @@ def threshold_tune(
     for i in range(fbeta_scores.shape[0]):
         for j in range(fbeta_scores.shape[1]):
             y_preds = (y_proba > thresholds_range[j]) * 1
-            fbeta_scores[i, j] = fbeta_score(y, y_preds, beta=betas[i])
+            fbeta_scores[i, j] = fbeta_score(y, y_preds, beta=betas[i], zero_division=1)
 
     ind_beta_with_max_fscore = np.argmax(np.max(fbeta_scores, axis=1))
 
@@ -36,6 +37,23 @@ def find_optimal_threshold_beta(
     delta=0.0,
 ):
     threshold = None
+
+    if target_metric not in ["precision", "recall"]:
+        raise ValueError("Please specify either precision or recall")
+
+    ## Exceptions to test if y or y_proba are empty based on whether they are dataframes
+    ## or numpy arrays
+    if isinstance(y, pd.DataFrame) or isinstance(y, pd.Series):
+        if y.empty:
+            raise ValueError("y cannot be empty.")
+    elif not y.size:
+        raise ValueError("y cannot be empty.")
+
+    if isinstance(y_proba, pd.DataFrame) or isinstance(y_proba, pd.Series):
+        if y_proba.empty:
+            raise ValueError("y_proba cannot be empty.")
+    elif not y_proba.size:
+        raise ValueError("y_proba cannot be empty.")
 
     while threshold is None:
         # Increase delta if no threshold is found
@@ -57,7 +75,6 @@ def find_optimal_threshold_beta(
                 print(f"Found optimal threshold for {target_metric}: {target_score}")
                 print(f"Threshold: {threshold}")
                 return threshold, beta
-            
 
             if delta > 0.1:
                 warnings.warn(
@@ -68,7 +85,5 @@ def find_optimal_threshold_beta(
                 raise Exception(
                     "Delta exceeded 0.2. Unable to find an optimal threshold."
                 )
-            
-            threshold = None
 
-    return None
+            threshold = None
