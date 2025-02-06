@@ -1,4 +1,5 @@
 from typing import Union, List, Optional, Tuple
+import pandas as pd
 import numpy as np
 from sklearn.metrics import (
     precision_score,
@@ -7,7 +8,6 @@ from sklearn.metrics import (
 )
 from tqdm import tqdm
 import warnings
-import pandas as pd
 
 
 def threshold_tune(
