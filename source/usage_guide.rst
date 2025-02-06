@@ -1969,6 +1969,10 @@ datasets. F1 Beta threshold tuning helps adjust this threshold to maximize the F
 score, which balances precision and recall according to the importance assigned to each 
 through the beta parameter.
 
+.. note::
+
+   To better understand the impact of threshold tuning on model results, see the :ref:`Threshold Tuning Considerations <Threshold_Tuning_Considerations>` section.
+
 Understanding F1 Beta Score
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -2023,8 +2027,8 @@ Setting up the Model object ready for tuning.
    )
 
 
-In the grid_search_param_tuning use the f1_beta_tune variable when using
-grid_search_param_tuning(). Set this to True to enable tuning. 
+In the grid_search_param_tuning use the ``f1_beta_tune`` variable when using
+``grid_search_param_tuning()``. Set this to True to enable tuning. 
 
 .. code-block:: python
 
@@ -2055,10 +2059,10 @@ make sure to remember to specify this in them for example:
 
 
 Example usage: custom betas (higher recall)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If we want to have a higher recall score and care less about precision then we increase
 the beta value. This looks very similar to the previous example except that when we
-use f1_beta_tune, we also set a beta value like so:
+use ``f1_beta_tune``, we also set a beta value like so:
 
 
 .. code-block:: python
@@ -2070,7 +2074,7 @@ Setting the beta value to 2 will priortise increasing the recall over the precis
 
 
 Example usage: custom betas (higher precision)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 If we want to have a higher precision score and care less about recall then we decrease
 the beta value. This looks very similar to the previous example except that we set the
 beta value to less than 1.
@@ -2082,6 +2086,22 @@ beta value to less than 1.
 
 Setting the beta value to 0.5 will priortise increasing the precision over the recall.
 
+
+Optimizing Model Threshold for Precision/Recall Trade-off
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This function helps fine-tune a saved model’s decision threshold to maximize precision or recall using a beta-weighted approach.
+
+.. code-block:: python
+
+   threshold, beta = find_optimal_threshold_beta(
+      y_valid,
+      model.predict_proba(X_valid)[:, 1],
+      target_metric="precision",
+      target_score=0.5,
+      beta_value_range=np.linspace(0.01, 4, 40),
+   )
+   
 Imbalanced Learning
 ------------------------
 
