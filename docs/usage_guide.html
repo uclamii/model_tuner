@@ -131,6 +131,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#example-usage-default-beta-1">Example usage: default (beta = 1)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-usage-custom-betas-higher-recall">Example usage: custom betas (higher recall)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#example-usage-custom-betas-higher-precision">Example usage: custom betas (higher precision)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optimizing-model-threshold-for-precision-recall-trade-off">Optimizing Model Threshold for Precision/Recall Trade-off</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#imbalanced-learning">Imbalanced Learning</a><ul>
@@ -2326,6 +2327,10 @@ may not always yield optimal performance, especially when dealing with imbalance
 datasets. F1 Beta threshold tuning helps adjust this threshold to maximize the F-beta
 score, which balances precision and recall according to the importance assigned to each
 through the beta parameter.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To better understand the impact of threshold tuning on model results, see the <a class="reference internal" href="caveats.html#threshold-tuning-considerations"><span class="std std-ref">Threshold Tuning Considerations</span></a> section.</p>
+</div>
 <section id="understanding-f1-beta-score">
 <h3>Understanding F1 Beta Score<a class="headerlink" href="#understanding-f1-beta-score" title="Link to this heading"></a></h3>
 <p>The F-beta score is a generalization of the F1-score that allows you to weigh recall
@@ -2374,8 +2379,8 @@ more heavily than precision (or vice versa) based on the beta parameter:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>In the grid_search_param_tuning use the f1_beta_tune variable when using
-grid_search_param_tuning(). Set this to True to enable tuning.</p>
+<p>In the grid_search_param_tuning use the <code class="docutils literal notranslate"><span class="pre">f1_beta_tune</span></code> variable when using
+<code class="docutils literal notranslate"><span class="pre">grid_search_param_tuning()</span></code>. Set this to True to enable tuning.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2402,7 +2407,7 @@ make sure to remember to specify this in them for example:</p>
 <h3>Example usage: custom betas (higher recall)<a class="headerlink" href="#example-usage-custom-betas-higher-recall" title="Link to this heading"></a></h3>
 <p>If we want to have a higher recall score and care less about precision then we increase
 the beta value. This looks very similar to the previous example except that when we
-use f1_beta_tune, we also set a beta value like so:</p>
+use <code class="docutils literal notranslate"><span class="pre">f1_beta_tune</span></code>, we also set a beta value like so:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xgb_model</span><span class="o">.</span><span class="n">grid_search_param_tuning</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">f1_beta_tune</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">betas</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -2417,6 +2422,19 @@ beta value to less than 1.</p>
 </pre></div>
 </div>
 <p>Setting the beta value to 0.5 will priortise increasing the precision over the recall.</p>
+</section>
+<section id="optimizing-model-threshold-for-precision-recall-trade-off">
+<h3>Optimizing Model Threshold for Precision/Recall Trade-off<a class="headerlink" href="#optimizing-model-threshold-for-precision-recall-trade-off" title="Link to this heading"></a></h3>
+<p>This function helps fine-tune a saved model’s decision threshold to maximize precision or recall using a beta-weighted approach.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">threshold</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">find_optimal_threshold_beta</span><span class="p">(</span>
+   <span class="n">y_valid</span><span class="p">,</span>
+   <span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_valid</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">],</span>
+   <span class="n">target_metric</span><span class="o">=</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+   <span class="n">target_score</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+   <span class="n">beta_value_range</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 </section>
 <section id="imbalanced-learning">
