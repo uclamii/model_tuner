@@ -43,14 +43,14 @@ X.head()  ## Inspect the first 5 rows of data
 if isinstance(y, pd.DataFrame):
     y = y.squeeze()
 
-"""## Check for zero-variance columns and drop accordingly"""
+## Check for zero-variance columns and drop accordingly
 
 ## Check for zero-variance columns and drop them
 zero_variance_columns = X.columns[X.var() == 0]
 if not zero_variance_columns.empty:
     X = X.drop(columns=zero_variance_columns)
 
-"""## Define Hyperparameters for XGBoost"""
+## Define Hyperparameters for XGBoost
 
 xgb_name = "xgb"
 xgb = XGBClassifier(
@@ -76,7 +76,7 @@ xgb_definition = {
     "early": xgbearly,
 }
 
-"""## Define The Model Object"""
+## Define The Model Object
 
 model_type = "xgb"
 clc = xgb_definition["clc"]
