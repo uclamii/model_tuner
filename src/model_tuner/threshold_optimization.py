@@ -64,6 +64,9 @@ def find_optimal_threshold_beta(
 
     Raises:
         Exception: If delta exceeds 0.2 and no threshold is found.
+        ValueError: If y or y_proba are empty
+        ValueError: If precision or recall are not specifid as target metrics
+        
     """
     threshold = None
 
