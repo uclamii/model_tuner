@@ -50,7 +50,8 @@ zero_variance_columns = X.columns[X.var() == 0]
 if not zero_variance_columns.empty:
     X = X.drop(columns=zero_variance_columns)
 
-## Define Hyperparameters for XGBoost
+# Define Hyperparameters for RandomForest
+rf = RandomForestClassifier(class_weight="balanced", random_state=42)
 
 estimator_name = "rf"  # Change estimator name to reflect Random Forest
 # Set the parameters by cross-validation (example: tuning n_estimators and max_depth)
