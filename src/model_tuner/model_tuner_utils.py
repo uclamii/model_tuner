@@ -1162,8 +1162,8 @@ class Model:
 
                 if self.feature_selection:
                     best_features = self.get_feature_names()
-                    print(best_features)                    
-                    
+                    print(best_features)
+
                     if return_dict:
                         return {
                             "Classification Report": self.classification_report,
@@ -1532,8 +1532,11 @@ class Model:
         --------
             A list of the features.
         """
-        return self.estimator[:-1].get_feature_names_out().tolist()
-
+        if hasattr(self.estimator, "steps"):
+            estimator_steps = self.estimator[:-1]
+        else:
+            estimator_steps = self.estimator.estimator[:-1]
+        return estimator_steps.get_feature_names_out().tolist()
 
     def tune_threshold_Fbeta(
         self,
