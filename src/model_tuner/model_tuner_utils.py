@@ -1089,7 +1089,7 @@ class Model:
                     self.regression_report_kfold(X, y, self.test_model, score)
 
                 if self.feature_selection:
-                    self.print_selected_best_features(X)
+                    print(self.get_features())
         else:
             y_pred_valid = self.predict(X, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
@@ -1161,8 +1161,9 @@ class Model:
                 print("-" * 80)
 
                 if self.feature_selection:
-                    best_features = self.print_selected_best_features(X)
-
+                    best_features = self.get_feature_names()
+                    print(best_features)                    
+                    
                     if return_dict:
                         return {
                             "Classification Report": self.classification_report,
@@ -1178,7 +1179,8 @@ class Model:
             else:
                 reg_report = self.regression_report(y, y_pred_valid)
                 if self.feature_selection:
-                    best_features = self.print_selected_best_features(X)
+                    best_features = self.get_feature_names()
+                    print(best_features)
                     if return_dict:
                         return {
                             "Regression Report": reg_report,
@@ -1522,52 +1524,16 @@ class Model:
                         pprint(self.best_params_per_score[score])
                         print("Best " + score + ": %0.3f" % (np.max(scores)), "\n")
 
-    def print_selected_best_features(self, X):
+    def get_feature_names(self):
         """
-        Prints and returns the selected top K best features based on the feature
-        selection step.
-
-        Parameters:
-        -----------
-        X : The feature matrix used during the feature selection process.
+        Returns feature names post processing. Uses self.estimator[:-1] to access pipe.
 
         Returns:
         --------
-            A list of the selected features or column indices.
-
-        Raises:
-        -------
-        AttributeError
-            Raised if the feature selection pipeline is not properly
-            configured or trained.
-
-        Description:
-        ------------
-        - Retrieves the top K features selected by the feature
-        selection pipeline.
-        - Prints the names or column indices of the selected
-        features to the console.
-        - Returns the selected features as a list.
-
-        For Array-like Data:
-            - Prints the indices of the selected feature columns.
-            - Returns a list of column indices.
+            A list of the features.
         """
+        return self.estimator[:-1].get_feature_names_out().tolist()
 
-        feat_select_pipeline = self.get_feature_selection_pipeline()
-        feat_select_pipeline = feat_select_pipeline[0]
-        support = feat_select_pipeline.get_support()
-
-        if isinstance(X, pd.DataFrame):
-            if self.oh_or_ct:
-                columns = self.estimator[:-1].get_feature_names_out()
-            else:
-                columns = X.columns
-            support = columns[support].to_list()
-        else:
-            print("Feature columns selected:")
-        print()
-        return support
 
     def tune_threshold_Fbeta(
         self,
