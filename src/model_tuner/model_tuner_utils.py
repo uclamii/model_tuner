@@ -324,6 +324,8 @@ class Model:
 
             # Categorize the transformer
             if is_column_transformer(transformer):
+                self.oh_or_ct = True
+
                 # ColumnTransformer steps
                 if not name:
                     name = f"preprocess_column_transformer_step_{len(column_transformer_steps)}"
@@ -1555,8 +1557,13 @@ class Model:
         feat_select_pipeline = self.get_feature_selection_pipeline()
         feat_select_pipeline = feat_select_pipeline[0]
         support = feat_select_pipeline.get_support()
+
         if isinstance(X, pd.DataFrame):
-            support = X.columns[support].to_list()
+            if self.oh_or_ct:
+                columns = self.estimator[:-1].get_feature_names_out()
+            else:
+                columns = X.columns
+            support = columns[support].to_list()
         else:
             print("Feature columns selected:")
         print()
