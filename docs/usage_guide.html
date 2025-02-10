@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iPython Notebooks &mdash; Model Tuner 0.0.23a0 documentation</title>
+  <title>iPython Notebooks &mdash; Model Tuner 0.0.26b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/usage_guide.html" />
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=2b808d0e"></script>
+      <script src="_static/documentation_options.js?v=eb2198be"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -108,6 +108,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#get_preprocessing_and_feature_selection_pipeline"><code class="docutils literal notranslate"><span class="pre">get_preprocessing_and_feature_selection_pipeline()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#get_feature_selection_pipeline"><code class="docutils literal notranslate"><span class="pre">get_feature_selection_pipeline()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#get_preprocessing_pipeline"><code class="docutils literal notranslate"><span class="pre">get_preprocessing_pipeline()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extracting-feature-names">Extracting Feature names</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#get_feature_names"><code class="docutils literal notranslate"><span class="pre">get_feature_names()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
@@ -1888,7 +1892,7 @@ Defaults to an array of 400 values between <code class="docutils literal notrans
 <dt class="sig sig-object py" id="get_preprocessing_and_feature_selection_pipeline">
 <span class="sig-name descname"><span class="pre">get_preprocessing_and_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_and_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts both the preprocessing and feature selection parts of the pipeline.</p>
-<p><strong>Example</strong>:</p>
+<p><strong>Definition</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_and_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
@@ -1904,7 +1908,7 @@ Defaults to an array of 400 values between <code class="docutils literal notrans
 <dt class="sig sig-object py" id="get_feature_selection_pipeline">
 <span class="sig-name descname"><span class="pre">get_feature_selection_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_feature_selection_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the feature selection part of the pipeline.</p>
-<p><strong>Example</strong>:</p>
+<p><strong>Definition</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_feature_selection_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
@@ -1920,7 +1924,7 @@ Defaults to an array of 400 values between <code class="docutils literal notrans
 <dt class="sig sig-object py" id="get_preprocessing_pipeline">
 <span class="sig-name descname"><span class="pre">get_preprocessing_pipeline</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_preprocessing_pipeline" title="Link to this definition"></a></dt>
 <dd><p>Extracts only the preprocessing part of the pipeline.</p>
-<p><strong>Example</strong>:</p>
+<p><strong>Definition</strong>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_preprocessing_pipeline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="n">preprocessing_steps</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">transformer</span><span class="p">)</span>
@@ -1928,6 +1932,40 @@ Defaults to an array of 400 values between <code class="docutils literal notrans
         <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;preprocess_&quot;</span><span class="p">)</span>
     <span class="p">]</span>
     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">PipelineClass</span><span class="p">(</span><span class="n">preprocessing_steps</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="extracting-feature-names">
+<h2>Extracting Feature names<a class="headerlink" href="#extracting-feature-names" title="Link to this heading"></a></h2>
+<p>When performing feature selection with tools such as Recursive Feature Elimination (RFE) or
+when using ColumnTransformers the feature names that are fed to the model can be obscured
+and different from the original. To get the transformed feature names or to extract the
+feature names that were selected by the feature selection process we have provided the
+<cite>get_feature_names()</cite> method.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="get_feature_names">
+<span class="sig-name descname"><span class="pre">get_feature_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#get_feature_names" title="Link to this definition"></a></dt>
+<dd><p>Extracts the feature names after they have been processed by the pipeline.
+This does not work if a ColumnTransformerm, OneHotEncoder or some form of
+feature selection is not present in the pipeline.</p>
+<p><strong>Definition</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_feature_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline_steps</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipeline_steps</span><span class="p">:</span>
+      <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You must provide pipeline steps to use get_feature_names&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">,</span> <span class="s2">&quot;steps&quot;</span><span class="p">):</span>
+      <span class="n">estimator_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+      <span class="n">estimator_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">estimator</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">return</span> <span class="n">estimator_steps</span><span class="o">.</span><span class="n">get_feature_names_out</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Example Usage</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">### Assuming you already have fitted a model with some form of feature selection</span>
+<span class="c1">### or feature transformation in the pipeline e.g. one hot encoder:</span>
+
+<span class="n">feat_names</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -3156,7 +3194,8 @@ SHAP values provide insights into how individual features contribute to the pred
 <span class="kn">import</span> <span class="nn">shap</span>
 
 <span class="c1">## Feature names are required for interpretability in SHAP plots</span>
-<span class="n">feature_names</span> <span class="o">=</span> <span class="n">X_train</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+<span class="c1">## If feature selection, Column Transformer or One Hot Encoders were used</span>
+<span class="n">feature_names</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">get_feature_names</span><span class="p">()</span>
 
 <span class="c1">## Initialize the SHAP explainer with the model</span>
 <span class="n">explainer</span> <span class="o">=</span> <span class="n">shap</span><span class="o">.</span><span class="n">TreeExplainer</span><span class="p">(</span><span class="n">xgb_classifier</span><span class="p">)</span>
@@ -3174,7 +3213,7 @@ SHAP values provide insights into how individual features contribute to the pred
 <h3>Step 5: Generate a summary plot of SHAP values<a class="headerlink" href="#step-5-generate-a-summary-plot-of-shap-values" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## Plot SHAP values</span>
 <span class="c1">## Summary plot of SHAP values for all features across all data points</span>
-<span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">X_test_transformed</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">,)</span>
+<span class="n">shap</span><span class="o">.</span><span class="n">summary_plot</span><span class="p">(</span><span class="n">shap_values</span><span class="p">,</span> <span class="n">X_test_transformed</span><span class="p">,</span> <span class="n">feature_names</span><span class="o">=</span><span class="n">feature_names</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="no-click"><a class="reference internal image-reference" href="_images/SHAP_summary_plot.png"><img alt="Calibration Curve AIDs" class="align-center" src="_images/SHAP_summary_plot.png" style="width: 600px;" />
