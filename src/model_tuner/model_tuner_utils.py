@@ -1089,7 +1089,7 @@ class Model:
                     self.regression_report_kfold(X, y, self.test_model, score)
 
                 if self.feature_selection:
-                    print(self.get_features())
+                    print(self.get_feature_names())
         else:
             y_pred_valid = self.predict(X, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
@@ -1532,10 +1532,13 @@ class Model:
         --------
             A list of the features.
         """
+        if self.pipeline_steps is None or not self.pipeline_steps:
+            raise ValueError("You must provide pipeline steps to use get_feature_names")
         if hasattr(self.estimator, "steps"):
             estimator_steps = self.estimator[:-1]
         else:
             estimator_steps = self.estimator.estimator[:-1]
+
         return estimator_steps.get_feature_names_out().tolist()
 
     def tune_threshold_Fbeta(
