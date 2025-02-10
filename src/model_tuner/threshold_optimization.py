@@ -1,3 +1,6 @@
+
+from typing import Union, List, Optional, Tuple
+import pandas as pd
 import numpy as np
 from sklearn.metrics import (
     precision_score,
@@ -10,11 +13,11 @@ import pandas as pd
 
 
 def threshold_tune(
-    y,
-    y_proba,
-    betas,
-    thresholds_range=np.arange(0, 1, 0.01),
-):
+    y: Union[np.ndarray, List[int]],
+    y_proba: Union[np.ndarray, List[float]],
+    betas: Union[np.ndarray, List[float]],
+    thresholds_range: np.ndarray = np.arange(0, 1, 0.01),
+) -> float:
     """
     Tune the threshold to maximize the F-beta score.
 
@@ -41,13 +44,13 @@ def threshold_tune(
 
 
 def find_optimal_threshold_beta(
-    y,
-    y_proba,
-    target_metric=None,
-    target_score=None,
-    beta_value_range=np.linspace(0.01, 4, 400),
-    delta=0.0,
-):
+    y: Union[np.ndarray, List[int]],
+    y_proba: Union[np.ndarray, List[float]],
+    target_metric: Optional[str] = None,
+    target_score: Optional[float] = None,
+    beta_value_range: np.ndarray = np.linspace(0.01, 4, 400),
+    delta: float = 0.0,
+) -> Optional[Tuple[float, float]]:
     """
     Find the optimal threshold and beta for a given target metric and score.
 
@@ -66,7 +69,6 @@ def find_optimal_threshold_beta(
         Exception: If delta exceeds 0.2 and no threshold is found.
         ValueError: If y or y_proba are empty
         ValueError: If precision or recall are not specifid as target metrics
-        
     """
     threshold = None
 
