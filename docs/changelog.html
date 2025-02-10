@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Changelog &mdash; Model Tuner 0.0.23a0 documentation</title>
+  <title>Changelog &mdash; Model Tuner 0.0.26b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -16,7 +16,7 @@
     <link rel="canonical" href="https://uclamii.github.io/model_tuner/changelog.html" />
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=2b808d0e"></script>
+      <script src="_static/documentation_options.js?v=eb2198be"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -85,6 +85,9 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html#citing-model-tuner">Citing Model Tuner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-26b-beta">Version 0.0.26b (Beta)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-25a">Version 0.0.25a</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-24a">Version 0.0.24a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-23a">Version 0.0.23a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-22a">Version 0.0.22a</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-21a">Version 0.0.21a</a></li>
@@ -142,6 +145,62 @@
 <p class="admonition-title">Important</p>
 <p>Complete version release history available <a class="reference external" href="https://pypi.org/project/model-tuner/#history">here</a></p>
 </div>
+<section id="version-0-0-26b-beta">
+<h2>Version 0.0.26b (Beta)<a class="headerlink" href="#version-0-0-26b-beta" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Optimal threshold: Users can now specify target precision or recall and an optimal</p></li>
+</ul>
+<p>threshold is computed for that
+- Finalised testing: coverage is now at 86% total
+- New get_feature_names() helper function for extracting features
+- n_estimators calculation for boosting algorithms is now fixed</p>
+</section>
+<section id="version-0-0-25a">
+<h2>Version 0.0.25a<a class="headerlink" href="#version-0-0-25a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Pushed fixes for the get_feature_selection_pipeline method.</p></li>
+<li><p>Updated scoring blocks for calibrated KFold models and folded confusion matrix metrics.</p></li>
+<li><p>Added unittests for edge cases, including test_rfe_calibrate_model() and validating confusion matrix alignment.</p></li>
+<li><p>Fixed mismatches between confusion matrix and classification report.</p></li>
+<li><p>Provided fixes for all pipeline getter methods.</p></li>
+<li><p>Integrated verify_imb_sampler prints into KFold logic.</p></li>
+<li><p>Resolved typos in group split configurations and refined nested KFold bug fixes.</p></li>
+<li><p>Adjusted fold metric calculations in report_model_metrics.</p></li>
+<li><p>Moved optimal threshold logic into prediction functionality.</p></li>
+<li><p>Enhanced return metrics dictionary logic to handle all cases and added multilabel classification tests.</p></li>
+<li><p>Addressed Brier score calculation issues and optimized regression reports for KFold.</p></li>
+<li><p>Introduced threshold print updates for clearer reporting.</p></li>
+<li><p>Implemented SHAP scripts and tests for model explainability.</p></li>
+<li><p>Removed outdated calibration reports from documentation and codebase.</p></li>
+<li><p>Fixed bugs in regression metric calculations and refined KFold metric aggregation.</p></li>
+</ul>
+</section>
+<section id="version-0-0-24a">
+<h2>Version 0.0.24a<a class="headerlink" href="#version-0-0-24a" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Updated .gitignore to incl. doctrees</p></li>
+<li><p>Added pickleObjects tests and updated reqs, tests passed</p></li>
+<li><p>Added boostrapper test and tests passed</p></li>
+<li><p>Adding multi class test script</p></li>
+<li><p>Updated Metrics Output</p></li>
+<li><p>Added optl’ threshold print inside return_metrics</p></li>
+<li><p>KFold metric printing</p></li>
+<li><p>Augmented predict_proba test, and train_val_test_split</p></li>
+<li><p>Fixed pipeline_steps arg in model definition</p></li>
+<li><p>Refactored metrics_df in report_model_metrics for aesthetics</p></li>
+<li><p>Unit Tests</p></li>
+<li><p>Made return_dict optional in return_metrics</p></li>
+<li><p>Added openpyxl versions for all python versions in requirements.txt</p></li>
+<li><p>Refactor metrics, foldwise metrics and foldwise con_mat, class_labels</p></li>
+<li><p>Cleaned notebooks dir</p></li>
+<li><p>Added model_tuner version print to scripts</p></li>
+<li><p>Added fix for sort of pipeline_steps now optional:</p></li>
+<li><p>Added required model_tuner import to xgb_multi.py</p></li>
+<li><p>Added requisite model_tuner import to multi_class_test.py</p></li>
+<li><p>Added catboost_multi_class.py script</p></li>
+<li><p>Removed pip dependency from requirements</p></li>
+</ul>
+</section>
 <section id="version-0-0-23a">
 <h2>Version 0.0.23a<a class="headerlink" href="#version-0-0-23a" title="Link to this heading"></a></h2>
 <ul class="simple">
