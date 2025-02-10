@@ -25,6 +25,60 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+Version 0.0.26b (Beta)
+-----------------------
+
+- Optimal threshold: Users can now specify target precision or recall and an optimal
+threshold is computed for that
+- Finalised testing: coverage is now at 86% total
+- New get_feature_names() helper function for extracting features
+- n_estimators calculation for boosting algorithms is now fixed
+
+Version 0.0.25a
+----------------
+
+- Pushed fixes for the get_feature_selection_pipeline method.
+- Updated scoring blocks for calibrated KFold models and folded confusion matrix metrics.
+- Added unittests for edge cases, including test_rfe_calibrate_model() and validating confusion matrix alignment.
+- Fixed mismatches between confusion matrix and classification report.
+- Provided fixes for all pipeline getter methods.
+- Integrated verify_imb_sampler prints into KFold logic.
+- Resolved typos in group split configurations and refined nested KFold bug fixes.
+- Adjusted fold metric calculations in report_model_metrics.
+- Moved optimal threshold logic into prediction functionality.
+- Enhanced return metrics dictionary logic to handle all cases and added multilabel classification tests.
+- Addressed Brier score calculation issues and optimized regression reports for KFold.
+- Introduced threshold print updates for clearer reporting.
+- Implemented SHAP scripts and tests for model explainability.
+- Removed outdated calibration reports from documentation and codebase.
+- Fixed bugs in regression metric calculations and refined KFold metric aggregation.
+
+
+Version 0.0.24a
+-----------------
+
+- Updated .gitignore to incl. doctrees
+- Added pickleObjects tests and updated reqs, tests passed
+- Added boostrapper test and tests passed
+- Adding multi class test script
+- Updated Metrics Output
+- Added optl' threshold print inside return_metrics
+- KFold metric printing
+- Augmented predict_proba test, and train_val_test_split
+- Fixed pipeline_steps arg in model definition
+- Refactored metrics_df in report_model_metrics for aesthetics
+- Unit Tests
+- Made return_dict optional in return_metrics
+- Added openpyxl versions for all python versions in requirements.txt
+- Refactor metrics, foldwise metrics and foldwise con_mat, class_labels
+- Cleaned notebooks dir
+- Added model_tuner version print to scripts
+- Added fix for sort of pipeline_steps now optional:
+- Added required model_tuner import to xgb_multi.py
+- Added requisite model_tuner import to multi_class_test.py
+- Added catboost_multi_class.py script
+- Removed pip dependency from requirements
+
 Version 0.0.23a
 --------------------
 

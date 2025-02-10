@@ -1475,7 +1475,7 @@ Here are some of the available methods:
 
     Extracts both the preprocessing and feature selection parts of the pipeline.
 
-    **Example**::
+    **Definition**::
 
         def get_preprocessing_and_feature_selection_pipeline(self):
             steps = [
@@ -1489,7 +1489,7 @@ Here are some of the available methods:
 
     Extracts only the feature selection part of the pipeline.
 
-    **Example**::
+    **Definition**::
 
         def get_feature_selection_pipeline(self):
             steps = [
@@ -1503,7 +1503,7 @@ Here are some of the available methods:
 
     Extracts only the preprocessing part of the pipeline.
 
-    **Example**::
+    **Definition**::
 
         def get_preprocessing_pipeline(self):
             preprocessing_steps = [
@@ -1512,6 +1512,39 @@ Here are some of the available methods:
                 if name.startswith("preprocess_")
             ]
             return self.PipelineClass(preprocessing_steps)
+
+Extracting Feature names
+--------------------------
+When performing feature selection with tools such as Recursive Feature Elimination (RFE) or
+when using ColumnTransformers the feature names that are fed to the model can be obscured
+and different from the original. To get the transformed feature names or to extract the 
+feature names that were selected by the feature selection process we have provided the 
+`get_feature_names()` method. 
+
+.. py:function:: get_feature_names()
+
+   Extracts the feature names after they have been processed by the pipeline.
+   This does not work if a ColumnTransformerm, OneHotEncoder or some form of 
+   feature selection is not present in the pipeline.
+
+   **Definition**::
+
+      def get_feature_names(self):
+      if self.pipeline_steps is None or not self.pipeline_steps:
+            raise ValueError("You must provide pipeline steps to use get_feature_names")
+      if hasattr(self.estimator, "steps"):
+            estimator_steps = self.estimator[:-1]
+      else:
+            estimator_steps = self.estimator.estimator[:-1]
+      return estimator_steps.get_feature_names_out().tolist()
+
+   **Example Usage**::
+
+      ### Assuming you already have fitted a model with some form of feature selection
+      ### or feature transformation in the pipeline e.g. one hot encoder:
+
+      feat_names = model.get_feature_names()
+
 
 Summary
 --------
@@ -2880,7 +2913,8 @@ Step 3: Extract feature names from the training data, and initialize the SHAP ex
    import shap
 
    ## Feature names are required for interpretability in SHAP plots
-   feature_names = X_train.columns.to_list()
+   ## If feature selection, Column Transformer or One Hot Encoders were used
+   feature_names = model.get_feature_names()
 
    ## Initialize the SHAP explainer with the model
    explainer = shap.TreeExplainer(xgb_classifier)
@@ -2901,7 +2935,7 @@ Step 5: Generate a summary plot of SHAP values
 
    ## Plot SHAP values
    ## Summary plot of SHAP values for all features across all data points
-   shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names,)
+   shap.summary_plot(shap_values, X_test_transformed, feature_names=feature_names)
 
 
 .. raw:: html
