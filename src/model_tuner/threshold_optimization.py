@@ -1,3 +1,4 @@
+
 from typing import Union, List, Optional, Tuple
 import pandas as pd
 import numpy as np
@@ -8,6 +9,7 @@ from sklearn.metrics import (
 )
 from tqdm import tqdm
 import warnings
+import pandas as pd
 
 
 def threshold_tune(
@@ -67,7 +69,6 @@ def find_optimal_threshold_beta(
         Exception: If delta exceeds 0.2 and no threshold is found.
         ValueError: If y or y_proba are empty
         ValueError: If precision or recall are not specifid as target metrics
-
     """
     threshold = None
 

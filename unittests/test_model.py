@@ -1814,42 +1814,6 @@ def test_grid_search_param_tuning_randomized(classification_data, n_iter_value):
     print(f"Test passed with n_iter={n_iter_value}. Best Params: {best_params}")
 
 
-def test_print_selected_best_features_with_dataframe(model):
-    # Mock the feature selection pipeline and its get_support method
-    model.get_feature_selection_pipeline = MagicMock()
-    mock_pipeline = MagicMock()
-    mock_pipeline.get_support.return_value = [True, False, True]
-    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
-
-    # Create a sample DataFrame
-    X = pd.DataFrame(
-        {"feature1": [1, 2, 3], "feature2": [4, 5, 6], "feature3": [7, 8, 9]}
-    )
-
-    # Call the method and capture the output
-    selected_features = model.print_selected_best_features(X)
-
-    # Assert the correct features are selected
-    assert selected_features == ["feature1", "feature3"]
-
-
-def test_print_selected_best_features_with_array(model):
-    # Mock the feature selection pipeline and its get_support method
-    model.get_feature_selection_pipeline = MagicMock()
-    mock_pipeline = MagicMock()
-    mock_pipeline.get_support.return_value = [True, False, True]
-    model.get_feature_selection_pipeline.return_value = [mock_pipeline]
-
-    # Create a sample array-like input
-    X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-
-    # Call the method and capture the output
-    selected_features = model.print_selected_best_features(X)
-
-    # Assert the correct features are selected
-    assert selected_features == [True, False, True]
-
-
 from sklearn.metrics import confusion_matrix, fbeta_score
 
 
@@ -2786,3 +2750,105 @@ def test_fit_with_early_stopping_default_score(
     assert (
         estimator.n_estimators <= 50
     )  # Initial was 50, should be <= due to early stopping
+
+
+@pytest.mark.parametrize("calibrate", [True, False])
+def test_get_feature_names_out(classification_data, calibrate):
+    X, y = classification_data
+    rfe_estimator = ElasticNet()
+
+    rfe = RFE(rfe_estimator, n_features_to_select=3)
+
+    # Initialize the classification model
+    model = Model(
+        name="test_feat_names",
+        estimator_name="lr",
+        pipeline_steps=[rfe],
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+        feature_selection=True,
+        calibrate=calibrate,
+    )
+
+    # Perform grid search to populate `best_params_per_score`
+    model.grid_search_param_tuning(X, y)
+
+    X_train, y_train = model.get_train_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+
+    model.fit(X_train, y_train)
+
+    if model.calibrate:
+        model.calibrateModel(X, y)
+
+    feat_names = model.get_feature_names()
+
+    assert len(feat_names) == 3, f"Expected 3 features, but got {len(feat_names)}"
+
+
+def test_get_feature_names_out_no_feature_selection(classification_data):
+    from sklearn.compose import ColumnTransformer
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.impute import SimpleImputer
+
+    X, y = classification_data
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("scaler", StandardScaler(), slice(0, 5)),  # Scale first 5 features
+            ("imputer", SimpleImputer(), slice(5, 10)),  # Impute last 5 features
+        ]
+    )
+
+    model = Model(
+        name="test_no_feature_selection",
+        estimator_name="lr",
+        pipeline_steps=[("preprocess", preprocessor)],
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+        feature_selection=False,
+        calibrate=False,
+    )
+
+    model.grid_search_param_tuning(X, y)
+    X_train, y_train = model.get_train_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+
+    model.fit(X_train, y_train)
+    feat_names = model.get_feature_names()
+
+    assert (
+        len(feat_names) == X.shape[1]
+    ), f"Expected {X.shape[1]} features, but got {len(feat_names)}"
+
+
+def test_get_feature_names_out_no_pipeline(classification_data):
+
+    X, y = classification_data
+
+    model = Model(
+        name="test_no_feature_selection",
+        estimator_name="lr",
+        pipeline_steps=[],
+        model_type="classification",
+        estimator=LogisticRegression(),
+        scoring=["roc_auc"],
+        grid={"lr__C": [0.01, 0.1, 1]},
+        feature_selection=False,
+        calibrate=False,
+    )
+
+    model.grid_search_param_tuning(X, y)
+    X_train, y_train = model.get_train_data(X, y)
+    X_valid, y_valid = model.get_valid_data(X, y)
+    X_test, y_test = model.get_test_data(X, y)
+
+    model.fit(X_train, y_train)
+    with pytest.raises(ValueError):
+        feat_names = model.get_feature_names()
