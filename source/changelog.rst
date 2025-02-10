@@ -28,8 +28,7 @@ Changelog
 Version 0.0.26b (Beta)
 -----------------------
 
-- Optimal threshold: Users can now specify target precision or recall and an optimal
-threshold is computed for that
+- Optimal threshold: Users can now specify target precision or recall and an optimal threshold is computed for that
 - Finalised testing: coverage is now at 86% total
 - New get_feature_names() helper function for extracting features
 - n_estimators calculation for boosting algorithms is now fixed
