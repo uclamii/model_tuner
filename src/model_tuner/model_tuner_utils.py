@@ -1480,9 +1480,9 @@ class Model:
                         ### setting the current item in the grid to this number
                         try:
                             ### XGBoost case
-                            params[f"{self.estimator_name}__n_estimators"] = clf[
-                                len(clf) - 1
-                            ].best_iteration
+                            params[f"{self.estimator_name}__n_estimators"] = (
+                                clf[len(clf) - 1].best_iteration + 1
+                            )
                         except:
                             ### catboost case
                             params[f"{self.estimator_name}__n_estimators"] = (
