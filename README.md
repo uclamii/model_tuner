@@ -56,7 +56,7 @@ The following dependencies will be automatically installed when you install `mod
 - `setuptools==75.1.0`
 - `wheel==0.44.0`
 - `numpy>=1.19.5, <2.0.0`
-- `pandas>=1.3.5, <2.2.2`
+- `pandas>=1.3.5, <2.2.3`
 - `scikit-learn==1.5.1`
 - `scipy==1.14.0`
 - `imbalanced-learn==0.12.4`
