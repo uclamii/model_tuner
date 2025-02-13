@@ -9,7 +9,7 @@ import builtins
 
 detailed_doc = """                                                               
 The `model_tuner` library is a versatile and powerful tool designed to 
-facilitate the training, evaluation, and tuning of machine learning models. 
+facilitate the training, tuning, and evaluation of machine learning models. 
 It supports various functionalities such as handling imbalanced data, applying 
 different scaling and imputation techniques, calibrating models, and conducting 
 cross-validation. This library is particularly useful for hyperparameter tuning

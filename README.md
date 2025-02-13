@@ -6,7 +6,7 @@
 
 [![Downloads](https://pepy.tech/badge/model_tuner)](https://pepy.tech/project/model_tuner) [![PyPI](https://img.shields.io/pypi/v/model_tuner.svg)](https://pypi.org/project/model_tuner/) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12727322.svg)](https://doi.org/10.5281/zenodo.12727322)
 
-The `model_tuner` library is a versatile and powerful tool designed to facilitate the training, evaluation, and tuning of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This library is particularly useful for hyperparameter tuning and ensuring optimal performance across different metrics.
+The `model_tuner` library is a versatile and powerful tool designed to facilitate the training, tuning, and evaluation of machine learning models. It supports various functionalities such as handling imbalanced data, applying different scaling and imputation techniques, calibrating models, and conducting cross-validation. This library is particularly useful for hyperparameter tuning and ensuring optimal performance across different metrics.
 
 ## Prerequisites
 
