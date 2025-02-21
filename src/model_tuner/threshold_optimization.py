@@ -25,13 +25,13 @@ def find_threshold_for_precision_recall(
     beta: float = 1.0,
 ) -> Optional[Tuple[float, float, float]]:
     """
-    1) Find all threshold points at which precision >= `min_target_metric`.
+    1) Find all threshold points at which precision or recall >= `min_target_metric`.
     2) Among them, choose the threshold that maximizes the fbeta
 
     Args:
         y_true (np.ndarray): Ground-truth binary labels (0 or 1).
         y_proba (np.ndarray): Predicted probabilities for the positive class.
-        min_target_metric (float): The minimum required precision (default 0.99).
+        min_target_metric (float): The minimum required precision or recall (default 0.99).
         beta (float): If `secondary_metric` is 'fbeta', this beta is used for the F-beta score.
 
     Returns:
