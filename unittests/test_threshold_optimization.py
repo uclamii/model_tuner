@@ -1,114 +1,137 @@
 import numpy as np
 import pytest
-from sklearn.metrics import fbeta_score
-from src.model_tuner.threshold_optimization import (
-    threshold_tune,
-    find_optimal_threshold_beta,
-)
+from src.model_tuner.threshold_optimization import find_threshold_for_precision_recall
 import pandas as pd
-
-
-empty_inputs = [
-    (np.array([]), np.array([0.1, 0.2, 0.3]), "y"),
-    (np.array([0, 1, 0]), np.array([]), "y_proba"),
-    (pd.DataFrame(), pd.Series([0.1, 0.2, 0.3]), "y"),
-    (pd.Series([0, 1, 0]), pd.DataFrame(), "y_proba"),
-]
 
 
 @pytest.fixture
 def sample_data():
     """Fixture to generate sample binary classification data"""
     np.random.seed(42)
-    y_true = np.random.randint(0, 2, 100)  ## Binary labels
-    y_proba = np.random.rand(100)  ## Probability scores
+    y_true = np.random.randint(0, 2, 100)  # Binary labels
+    y_proba = np.random.rand(100)  # Probability scores
     return y_true, y_proba
 
 
-def test_threshold_tune(sample_data):
-    """Test threshold tuning function with valid inputs."""
-    y, y_proba = sample_data
-    betas = [0.5, 1.0, 2.0]
-    threshold = threshold_tune(y, y_proba, betas)
+def test_basic_functionality(sample_data):
+    """Test basic functionality with valid inputs."""
+    y_true, y_proba = sample_data
+    result = find_threshold_for_precision_recall(
+        y_true, y_proba, target_metric="precision", min_target_metric=0.5, beta=1.0
+    )
 
-    assert 0 <= threshold <= 1, "Threshold should be within the range [0,1]"
+    assert result is not None, "Should find a valid threshold for reasonable target"
+    threshold, precision, fbeta = result
+    assert 0 <= threshold <= 1, "Threshold should be within [0,1]"
+    assert 0 <= precision <= 1, "Precision should be within [0,1]"
+    assert 0 <= fbeta <= 1, "F-beta score should be within [0,1]"
+    assert precision >= 0.5, "Returned precision should meet minimum target"
 
 
-def test_threshold_tune_invalid_input():
-    """Test threshold tuning with invalid inputs."""
-    y = np.array([0, 1, 1, 0])
-    y_proba = np.array([0.2, 0.8, 0.6, 0.4])
-    betas = []  # Invalid betas list
+def test_impossible_target():
+    """Test when target metric is impossibly high."""
+    # Create a case where even with the highest threshold possible,
+    # we can't achieve perfect precision because we have identical
+    # probabilities for different classes
+    y_true = np.array([0, 1, 0, 1])
+    y_proba = np.array([0.9, 0.9, 0.9, 0.9])  # Same probability for both classes
 
-    with pytest.raises(ValueError):
-        threshold_tune(y, y_proba, betas)
+    result = find_threshold_for_precision_recall(
+        y_true,
+        y_proba,
+        target_metric="precision",
+        min_target_metric=1.0,  # Require perfect precision
+    )
+
+    assert result is None, "Should return None when target is impossible to achieve"
+
+
+def test_perfect_predictions():
+    """Test with perfect predictions."""
+    y_true = np.array([0, 1, 0, 1])
+    y_proba = np.array([0.1, 0.9, 0.1, 0.9])
+
+    result = find_threshold_for_precision_recall(
+        y_true,
+        y_proba,
+        target_metric="precision",
+        min_target_metric=1.0,
+    )
+
+    assert result is not None, "Should find threshold for perfect predictions"
+    threshold, precision, fbeta = result
+    assert precision == 1.0, "Should achieve perfect precision"
 
 
 @pytest.mark.parametrize("target_metric", ["precision", "recall"])
-def test_find_optimal_threshold_beta(sample_data, target_metric):
-    """Test find_optimal_threshold_beta function with valid input."""
-    y, y_proba = sample_data
-    target_score = 0.7  # Arbitrary chosen target score
-
-    threshold, beta = find_optimal_threshold_beta(
-        y,
+def test_different_target_metrics(sample_data, target_metric):
+    """Test both precision and recall as target metrics."""
+    y_true, y_proba = sample_data
+    result = find_threshold_for_precision_recall(
+        y_true,
         y_proba,
-        target_metric,
-        target_score,
-        beta_value_range=np.linspace(0.01, 4, 40),
-        delta=0.18,
+        target_metric=target_metric,
+        min_target_metric=0.5,
     )
 
-    assert 0 <= threshold <= 1, "Threshold should be within [0,1]"
-    assert 0.01 <= beta <= 4, "Beta should be within the given range"
+    assert result is not None, "Should find valid threshold for both metrics"
+    threshold, metric_val, fbeta = result
+    assert metric_val >= 0.5, f"Should meet minimum {target_metric} target"
 
 
-def test_find_optimal_threshold_invalid_metric(sample_data):
-    """Test invalid target metric input."""
-    y, y_proba = sample_data
-    target_metric = "invalid_metric"
+def test_invalid_target_metric(sample_data):
+    """Test with invalid target metric."""
+    y_true, y_proba = sample_data
 
-    with pytest.raises(ValueError):
-        find_optimal_threshold_beta(
-            y,
+    with pytest.raises(ValueError, match="Please specify either precision or recall"):
+        find_threshold_for_precision_recall(
+            y_true,
             y_proba,
-            target_metric,
-            target_score=0.7,
-            beta_value_range=np.linspace(0.01, 4, 40),
-            delta=0.18,
+            target_metric="invalid_metric",
         )
 
 
-def test_find_optimal_threshold_no_suitable_beta(sample_data):
-    """Test when no suitable beta is found within delta tolerance."""
-    y, y_proba = sample_data
-    target_metric = "precision"
-    target_score = 0.99  # Unreasonably high target precision that won't be met
+def test_different_beta_values(sample_data):
+    """Test with different beta values."""
+    y_true, y_proba = sample_data
+    betas = [0.5, 1.0, 2.0]
 
-    with pytest.raises(Exception):
-        result = find_optimal_threshold_beta(
-            y,
-            y_proba,
-            target_metric,
-            target_score,
-            beta_value_range=np.linspace(0.01, 4, 40),
-            delta=0.18,
+    for beta in betas:
+        result = find_threshold_for_precision_recall(
+            y_true, y_proba, target_metric="precision", min_target_metric=0.5, beta=beta
+        )
+        assert result is not None, f"Should work with beta={beta}"
+
+
+def test_input_validation():
+    """Test input validation."""
+    # Empty arrays
+    with pytest.raises(ValueError):
+        find_threshold_for_precision_recall(
+            np.array([]), np.array([]), target_metric="precision"
         )
 
-
-@pytest.mark.parametrize("y, y_proba, which_empty", empty_inputs)
-def test_threshold_tune_empty_input(y, y_proba, which_empty):
-    betas = [1.0]
+    # Mismatched lengths
     with pytest.raises(ValueError):
-        threshold_tune(y, y_proba, betas)
+        find_threshold_for_precision_recall(
+            np.array([0, 1]), np.array([0.5]), target_metric="precision"
+        )
 
-
-@pytest.mark.parametrize("y, y_proba, which_empty", empty_inputs)
-def test_find_optimal_threshold_beta_empty_input(y, y_proba, which_empty):
-    target_metric = "precision"
-    target_score = 0.5
+    # Invalid values in y_true
     with pytest.raises(ValueError):
-        find_optimal_threshold_beta(y, y_proba, target_metric, target_score)
+        find_threshold_for_precision_recall(
+            np.array([0, 1, 2]),  # Invalid label
+            np.array([0.1, 0.2, 0.3]),
+            target_metric="precision",
+        )
+
+    # Invalid probabilities
+    with pytest.raises(ValueError):
+        find_threshold_for_precision_recall(
+            np.array([0, 1, 0]),
+            np.array([0.1, 1.2, 0.3]),  # Invalid probability > 1
+            target_metric="precision",
+        )
 
 
 if __name__ == "__main__":
