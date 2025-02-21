@@ -1,4 +1,3 @@
-
 from typing import Union, List, Optional, Tuple
 import pandas as pd
 import numpy as np
@@ -11,113 +10,73 @@ from tqdm import tqdm
 import warnings
 import pandas as pd
 
+import numpy as np
+import pandas as pd
+from typing import Tuple, Optional
 
-def threshold_tune(
-    y: Union[np.ndarray, List[int]],
-    y_proba: Union[np.ndarray, List[float]],
-    betas: Union[np.ndarray, List[float]],
-    thresholds_range: np.ndarray = np.arange(0, 1, 0.01),
-) -> float:
+from sklearn.metrics import precision_recall_curve, fbeta_score
+
+
+def find_threshold_for_precision_recall(
+    y_true: np.ndarray,
+    y_proba: np.ndarray,
+    target_metric: str = "precision",
+    min_target_metric: float = 0.99,
+    beta: float = 1.0,
+) -> Optional[Tuple[float, float, float]]:
     """
-    Tune the threshold to maximize the F-beta score.
+    1) Find all threshold points at which precision >= `min_target_metric`.
+    2) Among them, choose the threshold that maximizes the fbeta
 
-    Parameters:
-        y (array-like): True binary labels.
-        y_proba (array-like): Predicted probabilities.
-        betas (array-like): List of beta values for F-beta score calculation.
-        thresholds_range (array-like): Range of thresholds to evaluate.
+    Args:
+        y_true (np.ndarray): Ground-truth binary labels (0 or 1).
+        y_proba (np.ndarray): Predicted probabilities for the positive class.
+        min_target_metric (float): The minimum required precision (default 0.99).
+        beta (float): If `secondary_metric` is 'fbeta', this beta is used for the F-beta score.
 
     Returns:
-        float: Optimal threshold that maximizes the F-beta score.
+        (best_threshold, best_precision, best_fbeta_socre) if found,
+        else None if no threshold can achieve the required min_target_metric.
     """
 
-    fbeta_scores = np.zeros((len(betas), len(thresholds_range)))
+    ### 1. Calculate precision, recall, threshold arrays
+    precisions, recalls, thresholds = precision_recall_curve(y_true, y_proba)
 
-    for i in range(fbeta_scores.shape[0]):
-        for j in range(fbeta_scores.shape[1]):
-            y_preds = (y_proba > thresholds_range[j]) * 1
-            fbeta_scores[i, j] = fbeta_score(y, y_preds, beta=betas[i], zero_division=1)
+    ## `precision_recall_curve` returns an array of thresholds of length N-1,
+    ## but the precision/recall arrays are length N.
 
-    ind_beta_with_max_fscore = np.argmax(np.max(fbeta_scores, axis=1))
+    ## 2. find where precision or recalls are above the target. This gives us our
+    ## threshold search space. We ignore the last value as this doesn't correspond to
+    ## a real threshold
+    if target_metric == "precision":
+        valid_indices = np.where(precisions[:-1] >= min_target_metric)[0]
+    elif target_metric == "recall":
+        valid_indices = np.where(recalls[:-1] >= min_target_metric)[0]
+    else:
+        raise (ValueError("Please specify either precision or recall"))
 
-    return thresholds_range[np.argmax(fbeta_scores[ind_beta_with_max_fscore])]
+    if len(valid_indices) == 0:
+        print("Unable to find a threshold that can achieve your target value.")
+        return None
 
+    ### 3. Among those thresholds, pick the one that maximizes the fbeta score.
+    best_idx = None
+    best_val = -1.0
+    best_thresh = None
 
-def find_optimal_threshold_beta(
-    y: Union[np.ndarray, List[int]],
-    y_proba: Union[np.ndarray, List[float]],
-    target_metric: Optional[str] = None,
-    target_score: Optional[float] = None,
-    beta_value_range: np.ndarray = np.linspace(0.01, 4, 400),
-    delta: float = 0.0,
-) -> Optional[Tuple[float, float]]:
-    """
-    Find the optimal threshold and beta for a given target metric and score.
+    for i in valid_indices:
 
-    Parameters:
-        y (array-like): True binary labels.
-        y_proba (array-like): Predicted probabilities.
-        target_metric (str): Metric to optimize ("precision" or "recall").
-        target_score (float): Desired target metric score.
-        beta_value_range (array-like): Range of beta values to evaluate.
-        delta (float): Initial tolerance for matching the target score.
+        t = thresholds[i]
 
-    Returns:
-        tuple: Optimal threshold and beta if found; otherwise, None.
+        y_pred = (y_proba >= t).astype(int)
+        secondary_val = fbeta_score(y_true, y_pred, beta=beta, zero_division=1)
 
-    Raises:
-        Exception: If delta exceeds 0.2 and no threshold is found.
-        ValueError: If y or y_proba are empty
-        ValueError: If precision or recall are not specifid as target metrics
-    """
-    threshold = None
+        if secondary_val > best_val:
+            best_val = secondary_val
+            best_thresh = t
+            best_idx = i
 
-    if target_metric not in ["precision", "recall"]:
-        raise ValueError("Please specify either precision or recall")
-
-    ## Exceptions to test if y or y_proba are empty based on whether they are dataframes
-    ## or numpy arrays
-    if isinstance(y, pd.DataFrame) or isinstance(y, pd.Series):
-        if y.empty:
-            raise ValueError("y cannot be empty.")
-    elif not y.size:
-        raise ValueError("y cannot be empty.")
-
-    if isinstance(y_proba, pd.DataFrame) or isinstance(y_proba, pd.Series):
-        if y_proba.empty:
-            raise ValueError("y_proba cannot be empty.")
-    elif not y_proba.size:
-        raise ValueError("y_proba cannot be empty.")
-
-    while threshold is None:
-        # Increase delta if no threshold is found
-        delta += 0.01
-
-        for beta in tqdm(beta_value_range, desc="Beta Tuning"):
-
-            threshold = threshold_tune(y, y_proba, betas=[beta])
-
-            ## Convert probabilities to binary predictions using the current threshold
-            y_pred = (y_proba >= threshold).astype(int)
-
-            if target_metric == "precision":
-                metric = precision_score(y, y_pred, zero_division=0)
-            else:
-                metric = recall_score(y, y_pred, zero_division=0)
-
-            if abs(target_score - metric) < delta:
-                print(f"Found optimal threshold for {target_metric}: {target_score}")
-                print(f"Threshold: {threshold}")
-                return threshold, beta
-
-            if delta > 0.1:
-                warnings.warn(
-                    f"Delta has exceeded 0.1. Continuing to increase delta..."
-                )
-
-            if delta > 0.2:
-                raise Exception(
-                    "Delta exceeded 0.2. Unable to find an optimal threshold."
-                )
-
-            threshold = None
+    if best_idx is not None:
+        return (best_thresh, precisions[best_idx], best_val)
+    else:
+        return None
