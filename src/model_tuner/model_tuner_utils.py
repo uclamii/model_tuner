@@ -540,10 +540,6 @@ class Model:
                     ).fit(X, y)
                     test_model = self.estimator
 
-                    # self.conf_mat_class_kfold(
-                    #     X=X, y=y, test_model=test_model, score=score
-                    # )
-
         else:
             if score == None:
                 if self.calibrate:
