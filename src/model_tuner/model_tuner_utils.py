@@ -540,10 +540,6 @@ class Model:
                     ).fit(X, y)
                     test_model = self.estimator
 
-                    # self.conf_mat_class_kfold(
-                    #     X=X, y=y, test_model=test_model, score=score
-                    # )
-
         else:
             if score == None:
                 if self.calibrate:
@@ -588,7 +584,7 @@ class Model:
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_test, y_test)
+                    ).fit(X_valid, y_valid)
                 else:
                     pass
             else:
@@ -642,7 +638,7 @@ class Model:
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_test, y_test)
+                    ).fit(X_valid, y_valid)
                     test_model = self.estimator
                     print(
                         f"{score} after calibration:",
