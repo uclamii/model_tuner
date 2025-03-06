@@ -96,7 +96,7 @@ If you use `model_tuner` in your research or projects, please consider citing it
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.27b},
+  version      = {0.0.28b},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
