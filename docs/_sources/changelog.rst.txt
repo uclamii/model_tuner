@@ -25,6 +25,25 @@ Changelog
 .. important::
    Complete version release history available `here <https://pypi.org/project/model-tuner/#history>`_
 
+
+Version 0.0.28b (Beta)
+-----------------------
+
+- Updated CalibratedClassifier to use validation set by @lshpaner in https://github.com/uclamii/model_tuner/pull/193
+- Updated docstring for `stratify_y` in `train_val_test_split` by @lshpaner in https://github.com/uclamii/model_tuner/pull/194
+
+**Full Changelog**: https://github.com/uclamii/model_tuner/compare/0.0.27b...0.0.28b
+
+Version 0.0.27b (Beta)
+-----------------------
+
+- Xgboost n estimators fix by @elemets in https://github.com/uclamii/model_tuner/pull/186
+- Google colab compatibility - pandas version by @elemets in https://github.com/uclamii/model_tuner/pull/187
+
+
+**Full Changelog**: https://github.com/uclamii/model_tuner/compare/0.0.26b...0.0.27b
+
+
 Version 0.0.26b (Beta)
 -----------------------
 
