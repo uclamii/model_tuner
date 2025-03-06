@@ -2100,8 +2100,9 @@ def train_val_test_split(
         The feature matrix to split.
     y : pandas.Series or array-like
         The target vector corresponding to `X`.
-    stratify_y : pandas.Series or None, optional
-        Specifies whether to stratify based on the target variable.
+    stratify_y : bool, optional
+        If True, stratifies based on the target variable (`y`).
+        If None or False, no stratification is applied.
         Default is None.
     train_size : float, optional
         Proportion of the data to allocate to the training set.
