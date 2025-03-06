@@ -1,9 +1,9 @@
 ### Defining columns to be scaled and columns to be onehotencoded
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.datasets import fetch_openml
+from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 from catboost import CatBoostClassifier
-import seaborn as sns
 from sklearn.impute import SimpleImputer
 from model_tuner import Model
 from sklearn.pipeline import Pipeline
@@ -14,16 +14,25 @@ print(f"Model Tuner version: {model_tuner.__version__}")
 print(f"Model Tuner authors: {model_tuner.__author__}")
 print()
 
-titanic = sns.load_dataset("titanic")
-titanic.head()
-X = titanic[[col for col in titanic.columns if col != "survived"]]
-### Removing repeated data
-X = X.drop(columns=["alive", "class", "embarked"])
-y = titanic["survived"]
+# Load Titanic dataset from OpenML
+titanic = fetch_openml("titanic", version=1, as_frame=True)
+df = titanic.data
 
-ohcols = ["embark_town", "who", "sex", "adult_male"]
-ordcols = ["deck"]
-scalercols = ["parch", "fare", "age", "pclass"]
+# Convert target to numeric (sklearn datasets sometimes store target as string)
+df["survived"] = titanic.target.astype(int)
+
+X = df[[col for col in df.columns if col != "survived"]]
+X = X.drop(
+    columns=["name", "ticket", "cabin", "boat", "body", "home.dest", "embark_town"],
+    errors="ignore",
+)
+
+y = df["survived"]
+
+# Update categorical column selections
+ohcols = ["embarked", "sex"]  # Removed "embark_town" and "who" since they are missing
+scalercols = ["parch", "fare", "age", "pclass"]  # Keep numeric columns
+
 
 numerical_transformer = Pipeline(
     steps=[
@@ -39,19 +48,11 @@ categorical_transformer = Pipeline(
     ]
 )
 
-ordinal_transformer = Pipeline(
-    steps=[
-        ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
-        ("ord_encoder", OrdinalEncoder()),
-    ]
-)
-
 # Create the ColumnTransformer with passthrough
 preprocessor = ColumnTransformer(
     transformers=[
         ("num", numerical_transformer, scalercols),
         ("cat", categorical_transformer, ohcols),
-        ("ord", ordinal_transformer, ordcols),
     ],
     remainder="passthrough",
 )
