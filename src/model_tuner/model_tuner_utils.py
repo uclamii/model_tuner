@@ -639,7 +639,6 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
-                    test_model = self.estimator
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -1087,18 +1086,18 @@ class Model:
                 if self.feature_selection:
                     print(self.get_feature_names())
         else:
-            y_pred_valid = self.predict(X, optimal_threshold=optimal_threshold)
+            y_pred = self.predict(X, optimal_threshold=optimal_threshold)
             if self.model_type != "regression":
 
                 if self.multi_label:
-                    conf_mat = multilabel_confusion_matrix(y, y_pred_valid)
+                    conf_mat = multilabel_confusion_matrix(y, y_pred)
                     self.conf_mat = conf_mat  # store it so we can ext. dict
                     self._confusion_matrix_print_ML(conf_mat)
 
                     print(
                         classification_report(
                             y,
-                            y_pred_valid,
+                            y_pred,
                             target_names=self.class_labels,
                         )
                     )
@@ -1118,7 +1117,7 @@ class Model:
 
                     if return_dict:
                         self.classification_report = classification_report(
-                            y, y_pred_valid, output_dict=True
+                            y, y_pred, output_dict=True
                         )
                         return {
                             "Classification Report": self.classification_report,
@@ -1126,7 +1125,7 @@ class Model:
                         }
 
                 else:
-                    conf_mat = confusion_matrix(y, y_pred_valid)
+                    conf_mat = confusion_matrix(y, y_pred)
                     self.conf_mat = conf_mat  # store it so we can ext. dict
                     print("Confusion matrix on set provided: ")
                     _confusion_matrix_print(conf_mat, self.labels)
@@ -1145,12 +1144,12 @@ class Model:
                     print("-" * 80)
                 print()
                 self.classification_report = classification_report(
-                    y, y_pred_valid, output_dict=True
+                    y, y_pred, output_dict=True
                 )
                 print(
                     classification_report(
                         y,
-                        y_pred_valid,
+                        y_pred,
                         target_names=self.class_labels,
                     )
                 )
@@ -1173,7 +1172,7 @@ class Model:
                             "Confusion Matrix": conf_mat,
                         }
             else:
-                reg_report = self.regression_report(y, y_pred_valid)
+                reg_report = self.regression_report(y, y_pred)
                 if self.feature_selection:
                     best_features = self.get_feature_names()
                     print(best_features)
