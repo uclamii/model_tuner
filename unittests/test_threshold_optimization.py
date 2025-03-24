@@ -111,5 +111,18 @@ def test_find_optimal_threshold_beta_empty_input(y, y_proba, which_empty):
         find_optimal_threshold_beta(y, y_proba, target_metric, target_score)
 
 
+def test_threshold_strict_greater_than_behavior():
+    """Ensure y_pred excludes threshold value under strict greater-than condition."""
+    y = np.array([0, 1, 1])
+    y_proba = np.array([0.4, 0.5, 0.6])
+    threshold = 0.5
+
+    # Expect only the value above threshold to be 1
+    y_pred = (y_proba > threshold).astype(int)
+    expected_pred = np.array([0, 0, 1])
+
+    np.testing.assert_array_equal(y_pred, expected_pred)
+
+
 if __name__ == "__main__":
     pytest.main()

@@ -1,4 +1,3 @@
-
 from typing import Union, List, Optional, Tuple
 import pandas as pd
 import numpy as np
@@ -98,7 +97,7 @@ def find_optimal_threshold_beta(
             threshold = threshold_tune(y, y_proba, betas=[beta])
 
             ## Convert probabilities to binary predictions using the current threshold
-            y_pred = (y_proba >= threshold).astype(int)
+            y_pred = (y_proba > threshold).astype(int)
 
             if target_metric == "precision":
                 metric = precision_score(y, y_pred, zero_division=0)
