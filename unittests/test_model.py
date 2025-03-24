@@ -1,5 +1,6 @@
 from copy import deepcopy
 import pytest
+import warnings
 from sklearn.discriminant_analysis import StandardScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.impute import SimpleImputer
@@ -745,7 +746,7 @@ def test_train_val_test_split_stratify(sample_dataframe):
     )  # Add a stratification column
     stratify_cols = ["stratify_col"]
 
-    X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+    X_train, X_valid, X_test, _, _, _ = train_val_test_split(
         X,
         y,
         stratify_y=True,
@@ -2283,8 +2284,6 @@ def test_calibrate_imbalance_sampler_and_extract(classification_data):
     calibrate_imb_model.grid_search_param_tuning(X, y)
 
     X_train, y_train = calibrate_imb_model.get_train_data(X, y)
-    X_valid, y_valid = calibrate_imb_model.get_valid_data(X, y)
-    X_test, y_test = calibrate_imb_model.get_test_data(X, y)
 
     calibrate_imb_model.fit(X_train, y_train)
 
@@ -2368,8 +2367,6 @@ def test_calculate_metrics_classification(classification_data):
 
     model.grid_search_param_tuning(X, y)
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
 
     model.fit(X_train, y_train)
 
@@ -2596,8 +2593,6 @@ def test_get_preprocessing_pipeline_after_calibration(classification_data):
     model.grid_search_param_tuning(X, y)
 
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
 
     model.fit(X_train, y_train)
 
@@ -2605,7 +2600,7 @@ def test_get_preprocessing_pipeline_after_calibration(classification_data):
 
     # Attempt to retrieve the preprocessing pipeline
     preproc_pipeline = model.get_preprocessing_pipeline()
-    x_transformed = preproc_pipeline.transform(X)
+    preproc_pipeline.transform(X)
     # Verify the pipeline contains the expected steps
     assert len(preproc_pipeline.named_steps) == 2, "Preprocessing steps mismatch"
     assert "preprocess_scaler_step_0" in preproc_pipeline.named_steps, "Scaler missing"
@@ -2633,15 +2628,14 @@ def test_get_feature_selection_pipeline_after_calibration(classification_data):
     model.grid_search_param_tuning(X, y)
 
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
+    X_test, _ = model.get_test_data(X, y)
 
     model.fit(X_train, y_train)
 
     model.calibrateModel(X, y)
     # Retrieve combined preprocessing and feature selection pipeline
     feat_pipeline = model.get_feature_selection_pipeline()
-    transformed_x = feat_pipeline.transform(X_test)
+    feat_pipeline.transform(X_test)
 
     # Check if the selector is correctly identified
     assert len(feat_pipeline.named_steps) == 1, "Feature selection steps mismatch"
@@ -2673,15 +2667,14 @@ def test_combined_preproc_feat_select_after_calibration(classification_data):
     model.grid_search_param_tuning(X, y)
 
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
+    X_test, _ = model.get_test_data(X, y)
 
     model.fit(X, y)
 
     model.calibrateModel(X_train, y_train)
     # Retrieve combined preprocessing and feature selection pipeline
     combined_pipeline = model.get_preprocessing_and_feature_selection_pipeline()
-    transformed_x = combined_pipeline.transform(X_test)
+    combined_pipeline.transform(X_test)
     # Verify all steps are present
     expected_steps = [
         "preprocess_scaler_scaler",
@@ -2704,7 +2697,6 @@ def test_fit_with_early_stopping_and_specific_score(
     score = "f1"
 
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
     X_valid, y_valid = model.get_valid_data(X, y)
 
     model.fit(X_train, y_train, score=score, validation_data=(X_valid, y_valid))
@@ -2734,7 +2726,6 @@ def test_fit_with_early_stopping_default_score(
     default_score = model.scoring[0]
 
     X_train, y_train = model.get_train_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
     X_valid, y_valid = model.get_valid_data(X, y)
     model.fit(X_train, y_train, validation_data=(X_valid, y_valid))
 
@@ -2776,8 +2767,6 @@ def test_get_feature_names_out(classification_data, calibrate):
     model.grid_search_param_tuning(X, y)
 
     X_train, y_train = model.get_train_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
 
     model.fit(X_train, y_train)
 
@@ -2817,8 +2806,6 @@ def test_get_feature_names_out_no_feature_selection(classification_data):
 
     model.grid_search_param_tuning(X, y)
     X_train, y_train = model.get_train_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
 
     model.fit(X_train, y_train)
     feat_names = model.get_feature_names()
@@ -2846,9 +2833,107 @@ def test_get_feature_names_out_no_pipeline(classification_data):
 
     model.grid_search_param_tuning(X, y)
     X_train, y_train = model.get_train_data(X, y)
-    X_valid, y_valid = model.get_valid_data(X, y)
-    X_test, y_test = model.get_test_data(X, y)
 
     model.fit(X_train, y_train)
     with pytest.raises(ValueError):
-        feat_names = model.get_feature_names()
+        model.get_feature_names()
+
+
+def test_predict_without_fit(initialized_model, classification_data):
+    """
+    Ensure that calling predict() before fit() raises an exception.
+    """
+    X, _ = classification_data
+    with pytest.raises(Exception):  # Or a more specific exception type if known
+        initialized_model.predict(X)
+
+
+def test_calibrateModel_before_fit_runs_safely():
+    """
+    Verify that calibrateModel() runs without error even if fit() has not been called.
+    """
+
+    model = Model(
+        name="test_model",
+        estimator_name="LogisticRegression",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        grid={},
+    )
+    X = np.random.rand(10, 3)
+    y = np.random.randint(0, 2, 10)
+
+    model.calibrateModel(X, y)  # Should not raise any error
+
+
+def test_calibrateModel_without_fitting_raises(
+    calibrated_lr_model,
+    classification_data,
+):
+    X, y = classification_data
+    with pytest.raises(Exception):
+        calibrated_lr_model.calibrateModel(X, y)
+
+
+def test_fit_without_gridsearch_raises(
+    initialized_model,
+    classification_data,
+):
+    X, y = classification_data
+    with pytest.raises(Exception):
+        initialized_model.fit(X, y)
+
+
+def test_calibrateModel_before_fit_emits_warning_or_silently_passes():
+    """
+    Check whether calibrateModel() emits a warning or silently succeeds before fit().
+    """
+
+    model = Model(
+        name="test_model",
+        estimator_name="LogisticRegression",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        grid={},
+    )
+    X = np.random.rand(10, 3)
+    y = np.random.randint(0, 2, 10)
+
+    with warnings.catch_warnings(record=True) as w:
+        warnings.simplefilter("always")
+        model.calibrateModel(X, y)
+        # Optionally assert len(w) > 0 or inspect warning messages
+
+
+def test_threshold_tuning_beta_less_than_1(initialized_model):
+    """
+    Ensure threshold tuning works with beta < 1 to emphasize precision over recall.
+    """
+
+    y_valid = np.array([0, 1, 0, 1])
+    y_valid_proba = np.array([0.1, 0.4, 0.3, 0.8])
+    beta = [0.5]  # Emphasize precision
+    initialized_model.tune_threshold_Fbeta(
+        "f1", y_valid, y_valid_proba=y_valid_proba, betas=beta
+    )
+
+
+def test_fit_with_single_feature(classification_data):
+    """
+    Verify model can train and predict using only a single feature.
+    """
+
+    X, y = classification_data
+    X_single = X.iloc[:, [0]]
+
+    model = Model(
+        name="single_feature_test",
+        estimator_name="LogisticRegression",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        grid={},
+    )
+    model.grid_search_param_tuning(X_single, y)
+    model.fit(X_single, y)
+    preds = model.predict(X_single)
+    assert len(preds) == len(y)
