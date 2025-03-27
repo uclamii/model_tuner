@@ -20,18 +20,19 @@ Before installing `model_tuner`, ensure your system meets the following requirem
 
 The following dependencies will be automatically installed when you install `model_tuner` via pip:
 
-### For Python 3.7:
+### For Python 3.7 to 3.8:
 
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
 - `catboost==1.2.7`
-- `numpy==1.21.4`
-- `pandas==1.1.5`
-- `scikit-learn==0.23.2`
-- `scipy==1.4.1`
-- `imbalanced-learn==0.7.0`
-- `scikit-optimize==0.8.1`
-- `xgboost==1.6.2`
+
+- `numpy>=1.21.4, <1.23.0`
+- `pandas>=1.1.5, <1.3.5`
+- `scikit-learn>=0.23.2, <1.0.2`
+- `scipy>=1.4.1, <1.11`
+- `imbalanced-learn>=0.7.0, <0.8.0`
+- `scikit-optimize>=0.8.1, <0.10.2`
+- `xgboost>=1.6.2, <2.1.2`
 
 ### For Python 3.8 to 3.10:
 
@@ -96,7 +97,7 @@ If you use `model_tuner` in your research or projects, please consider citing it
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.28b},
+  version      = {0.0.29b},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
