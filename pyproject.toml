@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "model_tuner"
-version = "0.0.29b"
+version = "0.0.29b1"
 description = "A Python library for training and tuning machine learning models."
 readme = { file = "README.md", content-type = "text/markdown" }
 authors = [
@@ -21,7 +21,7 @@ dependencies = [
     "scikit-learn>=0.23.2, <1.0.2; python_version >= '3.7' and python_version < '3.8'",
     "scipy>=1.4.1, <1.11; python_version >= '3.7' and python_version < '3.8'",
     "imbalanced-learn>=0.7.0, <0.8.0; python_version >= '3.7' and python_version < '3.8'",
-    "scikit-optimize>=0.8.1, <0.10.2 python_version >= '3.7' and python_version < '3.8'",
+    "scikit-optimize>=0.8.1, <0.10.2; python_version >= '3.7' and python_version < '3.8'",
     "xgboost>=1.6.2, <2.1.2; python_version >= '3.7' and python_version < '3.8'",
 
     "setuptools==75.1.0; python_version >= '3.8' and python_version < '3.11'",

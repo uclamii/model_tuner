@@ -97,7 +97,7 @@ If you use `model_tuner` in your research or projects, please consider citing it
   month        = jul,
   year         = 2024,
   publisher    = {Zenodo},
-  version      = {0.0.29b},
+  version      = {0.0.29b1},
   doi          = {10.5281/zenodo.12727322},
   url          = {https://doi.org/10.5281/zenodo.12727322}
 }
@@ -109,4 +109,4 @@ If you have any questions or issues with `model_tuner`, please open an issue on 
 
 ## Acknowledgements
 
-This work was supported by the UCLA Medical Informatics Institute (MII) and the Clinical and Translational Science Institute (CTSI). Special thanks to Dr. Alex Bui for his invaluable guidance and support, and to Panayiotis Petousis for his original contributions to this codebase.
+This work was supported by the UCLA Medical Informatics Institute (MII) and the Clinical and Translational Science Institute (CTSI). Special thanks to Dr. Alex Bui for his invaluable guidance and support, and to Panayiotis Petousis, PhD, for his original contributions to this codebase.
