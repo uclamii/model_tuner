@@ -1,6 +1,5 @@
 import numpy as np
 import pytest
-from sklearn.metrics import fbeta_score
 from src.model_tuner.threshold_optimization import (
     threshold_tune,
     find_optimal_threshold_beta,
@@ -86,7 +85,7 @@ def test_find_optimal_threshold_no_suitable_beta(sample_data):
     target_score = 0.99  # Unreasonably high target precision that won't be met
 
     with pytest.raises(Exception):
-        result = find_optimal_threshold_beta(
+        find_optimal_threshold_beta(
             y,
             y_proba,
             target_metric,
