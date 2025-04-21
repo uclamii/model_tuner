@@ -48,6 +48,7 @@ def find_optimal_threshold_beta(
     target_metric: Optional[str] = None,
     target_score: Optional[float] = None,
     beta_value_range: np.ndarray = np.linspace(0.01, 4, 400),
+    thresholds_range: np.ndarray = np.arange(0, 1, 0.01),
     delta: float = 0.0,
 ) -> Optional[Tuple[float, float]]:
     """
@@ -94,7 +95,9 @@ def find_optimal_threshold_beta(
 
         for beta in tqdm(beta_value_range, desc="Beta Tuning"):
 
-            threshold = threshold_tune(y, y_proba, betas=[beta])
+            threshold = threshold_tune(
+                y, y_proba, betas=[beta], thresholds_range=thresholds_range
+            )
 
             ## Convert probabilities to binary predictions using the current threshold
             y_pred = (y_proba > threshold).astype(int)
