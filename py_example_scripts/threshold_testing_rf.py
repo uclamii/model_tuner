@@ -102,6 +102,7 @@ threshold, beta = find_optimal_threshold_beta(
     target_metric="precision",
     target_score=0.5,
     beta_value_range=np.linspace(0.01, 4, 40),
+    threshold_value_range=[0.2, 1],
     delta=0.05,
 )
 
@@ -118,6 +119,7 @@ threshold, beta = find_optimal_threshold_beta(
     target_metric="recall",
     target_score=0.8,
     beta_value_range=np.linspace(0.01, 4, 40),
+    threshold_value_range=[0.3, 0.7],
     delta=0.08,
 )
 
