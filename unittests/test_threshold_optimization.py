@@ -96,6 +96,32 @@ def test_find_optimal_threshold_no_suitable_beta(sample_data):
         )
 
 
+def test_find_optimal_threshold_beta_custom_thresholds(sample_data):
+    """Test find_optimal_threshold_beta with a custom threshold range."""
+    y, y_proba = sample_data
+    target_metric = "recall"
+    target_score = 0.6
+    custom_thresholds = np.linspace(0.2, 0.8, 10)  # Custom range
+
+    threshold, beta = find_optimal_threshold_beta(
+        y,
+        y_proba,
+        target_metric,
+        target_score,
+        threshold_value_range=custom_thresholds,
+        beta_value_range=np.linspace(0.01, 4, 40),
+        delta=0.18,  # Set a larger initial delta to speed up test
+    )
+
+    # Check if the returned threshold is one of the values from the custom range
+    assert threshold in custom_thresholds, "Threshold should be from the custom range"
+    # Also check bounds based on the custom range provided
+    assert (
+        min(custom_thresholds) <= threshold <= max(custom_thresholds)
+    ), "Threshold outside custom bounds"
+    assert 0.01 <= beta <= 4, "Beta should be within the given range"
+
+
 @pytest.mark.parametrize("y, y_proba, which_empty", empty_inputs)
 def test_threshold_tune_empty_input(y, y_proba, which_empty):
     betas = [1.0]
