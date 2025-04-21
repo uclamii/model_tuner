@@ -48,6 +48,7 @@ def find_optimal_threshold_beta(
     target_metric: Optional[str] = None,
     target_score: Optional[float] = None,
     beta_value_range: np.ndarray = np.linspace(0.01, 4, 400),
+    threshold_value_range: np.ndarray = np.arange(0, 1, 0.01),
     delta: float = 0.0,
 ) -> Optional[Tuple[float, float]]:
     """
@@ -59,7 +60,9 @@ def find_optimal_threshold_beta(
         target_metric (str): Metric to optimize ("precision" or "recall").
         target_score (float): Desired target metric score.
         beta_value_range (array-like): Range of beta values to evaluate.
+        thresholds_value_range (array-like): Range of thresholds to evaluate.
         delta (float): Initial tolerance for matching the target score.
+
 
     Returns:
         tuple: Optimal threshold and beta if found; otherwise, None.
@@ -94,7 +97,9 @@ def find_optimal_threshold_beta(
 
         for beta in tqdm(beta_value_range, desc="Beta Tuning"):
 
-            threshold = threshold_tune(y, y_proba, betas=[beta])
+            threshold = threshold_tune(
+                y, y_proba, betas=[beta], thresholds_range=threshold_value_range
+            )
 
             ## Convert probabilities to binary predictions using the current threshold
             y_pred = (y_proba > threshold).astype(int)
