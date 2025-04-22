@@ -16,25 +16,43 @@ Before installing `model_tuner`, ensure your system meets the following requirem
 
 `model_tuner` requires **Python 3.7 or higher**. Specific dependency versions vary depending on your Python version.
 
-## Dependencies
+## 📦 Dependencies
 
-The following dependencies will be automatically installed when you install `model_tuner` via pip:
+The following dependencies will be automatically installed for each python version when you install `model_tuner` via pip:
 
-### For Python 3.7 to 3.8:
+| Package              | Python 3.7               | Python 3.8                | Python 3.9–3.10           | Python 3.11+         |
+|----------------------|---------------------------|-----------------------------|----------------------------|----------------------|
+| `joblib`            | `1.3.2`                  | ✓                         | ✓                         | ✓                    |
+| `tqdm`              | `4.66.4`                 | ✓                         | ✓                         | ✓                    |
+| `catboost`          | `1.2.7`                  | ✓                         | ✓                         | ✓                    |
+| `setuptools`        | —                        | `75.1.0`                  | `75.1.0`                  | `75.1.0`             |
+| `wheel`             | —                        | `0.44.0`                  | `0.44.0`                  | `0.44.0`             |
+| `numpy`             | `1.21.4`                 | `>=1.19.5,<2.0.0`         | `>=1.19.5,<2.0.0`         | `>=1.19.5,<2.0.0`    |
+| `pandas`            | `1.1.5`                  | `>=1.3.5,<2.2.3`          | `>=1.3.5,<2.2.3`          | `>=1.3.5,<2.2.3`     |
+| `scikit-learn`      | `0.23.2`                 | `>=1.0.2,<1.4.0`          | `>=1.0.2,<=1.5.1`         | `1.5.1`              |
+| `scipy`             | `1.4.1`                  | `>=1.6.3,<1.11`           | `>=1.6.3,<=1.14.0`        | `1.14.0`             |
+| `imbalanced-learn`  | `0.7.0`                  | `0.12.4`                  | ✓                         | ✓                    |
+| `scikit-optimize`   | `0.8.1`                  | `0.10.2`                  | ✓                         | ✓                    |
+| `xgboost`           | `1.6.2`                  | `2.1.2`                   | ✓                         | ✓                    |
+
+> **Legend**:  
+> ✓ – Same as previous version  
+> — – Not applicable or not required
+
+### For Python 3.7:
 
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
 - `catboost==1.2.7`
+- `numpy==1.21.4`
+- `pandas==1.1.5`
+- `scikit-learn==0.23.2`
+- `scipy==1.4.1`
+- `imbalanced-learn==0.7.0`
+- `scikit-optimize==0.8.1`
+- `xgboost==1.6.2`
 
-- `numpy>=1.21.4, <1.23.0`
-- `pandas>=1.1.5, <1.3.5`
-- `scikit-learn>=0.23.2, <1.0.2`
-- `scipy>=1.4.1, <1.11`
-- `imbalanced-learn>=0.7.0, <0.8.0`
-- `scikit-optimize>=0.8.1, <0.10.2`
-- `xgboost>=1.6.2, <2.1.2`
-
-### For Python 3.8 to 3.10:
+### For Python 3.8:
 
 - `joblib==1.3.2`
 - `tqdm==4.66.4`
@@ -45,6 +63,21 @@ The following dependencies will be automatically installed when you install `mod
 - `pandas>=1.3.5, <2.2.3`
 - `scikit-learn>=1.0.2, <1.4.0`
 - `scipy>=1.6.3, <1.11`
+- `imbalanced-learn==0.12.4`
+- `scikit-optimize==0.10.2`
+- `xgboost==2.1.2`
+
+### For Python 3.9 to 3.10:
+
+- `joblib==1.3.2`
+- `tqdm==4.66.4`
+- `catboost==1.2.7`
+- `setuptools==75.1.0`
+- `wheel==0.44.0`
+- `numpy>=1.19.5, <2.0.0`
+- `pandas>=1.3.5, <2.2.3`
+- `scikit-learn>=1.0.2, <=1.5.1`
+- `scipy>=1.6.3, <=1.14.0`
 - `imbalanced-learn==0.12.4`
 - `scikit-optimize==0.10.2`
 - `xgboost==2.1.2`
@@ -76,7 +109,7 @@ pip install model_tuner
 
 https://uclamii.github.io/model_tuner
 
-## 🌐 Author Website
+## 🌐 Website
 
 https://www.mii.ucla.edu/
 
