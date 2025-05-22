@@ -184,7 +184,7 @@ def evaluate_bootstrap_metrics(
             y_pred_prob_resample = y_pred_prob.iloc[resampled_indicies]
 
             if model_type != "regression":
-                y_pred_resample = (y_pred_prob_resample >= threshold).astype(int)
+                y_pred_resample = (y_pred_prob_resample > threshold).astype(int)
             else:
                 y_pred_resample = y_pred_prob_resample
         else:
@@ -198,7 +198,7 @@ def evaluate_bootstrap_metrics(
                 y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
             else:
                 y_pred_prob_resample = None
-            y_pred_resample = model.predict(X_resample)
+            y_pred_resample = model.predict(X_resample, optimal_threshold=True)
 
         # Calculate and store metric scores
         for metric in metrics:
