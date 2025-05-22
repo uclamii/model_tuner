@@ -19,7 +19,7 @@ PyPI: https://pypi.org/project/model-tuner/
 Documentation: https://uclamii.github.io/model_tuner/
 
 
-Version: 0.0.30b
+Version: 0.0.31b
 
 """
 
@@ -27,7 +27,7 @@ Version: 0.0.30b
 __doc__ = detailed_doc
 
 
-__version__ = "0.0.30b"
+__version__ = "0.0.31b"
 __author__ = "Arthur Funnell, Leonid Shpaner, Panayiotis Petousis"
 __email__ = "lshpaner@ucla.edu; alafunnell@gmail.com; pp89@ucla.edu"
 
