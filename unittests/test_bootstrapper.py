@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
+from model_tuner import Model
 from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestClassifier
 from src.model_tuner.bootstrapper import (
@@ -90,9 +91,21 @@ def test_evaluate_bootstrap_metrics() -> None:
     """Test the evaluate_bootstrap_metrics function with various configurations."""
     # Generate data
     X, y = generate_classification_data(n_samples=500)
-    model = RandomForestClassifier(random_state=42)
-    model.fit(X, y)
 
+    X_single = X.iloc[:, [0]]
+
+    model = Model(
+        name="compare_test",
+        estimator_name="rf",
+        estimator=RandomForestClassifier(),
+        model_type="classification",
+        grid={},  # Not doing hyperparam tuning for simplicity
+        scoring=["accuracy"],  # Simplify
+        class_labels=["0", "1"],  # Let’s define these for the classification report
+    )
+
+    model.grid_search_param_tuning(X_single, y)
+    model.fit(X, y)
     # Test without y_pred_prob
     results = evaluate_bootstrap_metrics(
         model=model,
