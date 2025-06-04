@@ -266,14 +266,22 @@ def evaluate_bootstrap_metrics(
                     )
                 )
             else:
-                if thresholds is not None:
+                try:
                     scores[metric].append(
-                        scorer._score_func(y_resample, y_pred_resample, average=average)
+                        scorer._score_func(
+                            y_resample,
+                            y_pred_resample,
+                            average=average if thresholds is not None else None,
+                        )
                     )
-                else:
+                except TypeError:
                     scores[metric].append(
-                        scorer._score_func(y_resample, y_pred_resample)
+                        scorer._score_func(
+                            y_resample,
+                            y_pred_resample,
+                        )
                     )
+
     # Initialize a dictionary to store results
     metrics_results = {
         "Metric": [],
