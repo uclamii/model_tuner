@@ -1,5 +1,5 @@
 from sklearn.utils import resample
-from sklearn.metrics import get_scorer, recall_score
+from sklearn.metrics import get_scorer, recall_score, hamming_loss
 import numpy as np
 import scipy.stats as st
 import pandas as pd
@@ -257,7 +257,6 @@ def evaluate_bootstrap_metrics(
                         raise
 
             elif metric == "precision":
-                # Precision with zero division handling
                 scores[metric].append(
                     scorer._score_func(
                         y_resample,
@@ -267,13 +266,14 @@ def evaluate_bootstrap_metrics(
                     )
                 )
             else:
-                # Other metrics
-                scores[metric].append(
-                    scorer._score_func(
-                        y_resample,
-                        y_pred_resample,
+                if thresholds is not None:
+                    scores[metric].append(
+                        scorer._score_func(y_resample, y_pred_resample, average=average)
                     )
-                )
+                else:
+                    scores[metric].append(
+                        scorer._score_func(y_resample, y_pred_resample)
+                    )
     # Initialize a dictionary to store results
     metrics_results = {
         "Metric": [],
