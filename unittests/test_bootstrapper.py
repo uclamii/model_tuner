@@ -87,6 +87,66 @@ def test_sampling_method() -> None:
         sampling_method(y, 20, class_proportions={0: 0.6, 1: 0.6})
 
 
+def test_evaluate_bootstrap_metrics_multilabel_thresholds() -> None:
+    """Test the evaluate_bootstrap_metrics function with multi-label thresholds."""
+    # Generate multi-label data
+    n_samples = 200
+    n_labels = 3
+    np.random.seed(42)
+
+    # Create multi-label target data (3 labels)
+    y_multilabel = pd.DataFrame(
+        {
+            "label_0": np.random.binomial(1, 0.3, n_samples),
+            "label_1": np.random.binomial(1, 0.5, n_samples),
+            "label_2": np.random.binomial(1, 0.4, n_samples),
+        }
+    )
+
+    # Create predicted probabilities for each label
+    y_pred_prob_multilabel = pd.DataFrame(
+        {
+            "label_0": np.random.beta(2, 5, n_samples),  # Lower probabilities
+            "label_1": np.random.beta(3, 3, n_samples),  # Balanced probabilities
+            "label_2": np.random.beta(2, 3, n_samples),  # Moderate probabilities
+        }
+    )
+
+    # Test with list of thresholds
+    custom_thresholds = [0.3, 0.5, 0.4]  # Different threshold per label
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob_multilabel,
+        y=y_multilabel,
+        thresholds=custom_thresholds,
+        n_samples=50,
+        num_resamples=20,
+        metrics=["roc_auc", "precision", "recall", "f1_weighted"],
+        average="macro",
+    )
+
+    assert isinstance(results, pd.DataFrame), "The return type should be DataFrame"
+    assert "Metric" in results.columns, "Results DataFrame must include 'Metric' column"
+    assert len(results) == 4, "Should have 4 metrics evaluated"
+    assert all(results["Mean"] >= 0), "All metric means should be non-negative"
+
+    # Test with dictionary of thresholds
+    threshold_dict = {"label_0": 0.3, "label_1": 0.5, "label_2": 0.4}
+
+    results_dict = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob_multilabel,
+        y=y_multilabel,
+        thresholds=threshold_dict,
+        n_samples=50,
+        num_resamples=20,
+        metrics=["roc_auc", "f1_weighted"],
+        average="macro",
+    )
+
+    assert isinstance(results_dict, pd.DataFrame), "The return type should be DataFrame"
+    assert len(results_dict) == 2, "Should have 2 metrics evaluated"
+
+
 def test_evaluate_bootstrap_metrics() -> None:
     """Test the evaluate_bootstrap_metrics function with various configurations."""
     # Generate data
