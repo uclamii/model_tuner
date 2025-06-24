@@ -267,13 +267,21 @@ def evaluate_bootstrap_metrics(
                 )
             else:
                 try:
-                    scores[metric].append(
-                        scorer._score_func(
-                            y_resample,
-                            y_pred_resample,
-                            average=average if thresholds is not None else None,
+                    if thresholds:
+                        scores[metric].append(
+                            scorer._score_func(
+                                y_resample,
+                                y_pred_resample,
+                                average=average,
+                            )
                         )
-                    )
+                    else:
+                        scores[metric].append(
+                            scorer._score_func(
+                                y_resample,
+                                y_pred_resample,
+                            )
+                        )
                 except TypeError:
                     scores[metric].append(
                         scorer._score_func(
