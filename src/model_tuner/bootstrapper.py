@@ -194,13 +194,13 @@ def evaluate_bootstrap_metrics(
                         for idx, col in enumerate(y_pred_prob_resample.columns):
                             thr = thresholds.get(col, 0.5)
                             y_pred_resample[:, idx] = (
-                                y_pred_prob_resample.iloc[:, idx] >= thr
+                                y_pred_prob_resample.iloc[:, idx] > thr
                             ).astype(int)
                     else:
                         # Thresholds as list/array
                         for idx, thr in enumerate(thresholds):
                             y_pred_resample[:, idx] = (
-                                y_pred_prob_resample.iloc[:, idx] >= thr
+                                y_pred_prob_resample.iloc[:, idx] > thr
                             ).astype(int)
                 else:
                     y_pred_resample = (y_pred_prob_resample > threshold).astype(int)
