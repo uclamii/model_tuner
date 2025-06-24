@@ -1,5 +1,5 @@
 from sklearn.utils import resample
-from sklearn.metrics import get_scorer, recall_score
+from sklearn.metrics import get_scorer, recall_score, hamming_loss
 import numpy as np
 import scipy.stats as st
 import pandas as pd
@@ -97,6 +97,8 @@ def evaluate_bootstrap_metrics(
     metrics=["roc_auc", "f1_weighted", "average_precision"],
     random_state=42,
     threshold=0.5,
+    average="macro",
+    thresholds=None,
     model_type="classification",
     stratify=None,
     balance=False,
@@ -184,7 +186,24 @@ def evaluate_bootstrap_metrics(
             y_pred_prob_resample = y_pred_prob.iloc[resampled_indicies]
 
             if model_type != "regression":
-                y_pred_resample = (y_pred_prob_resample > threshold).astype(int)
+                # handle multi label thresholds
+                if thresholds is not None:
+                    y_pred_resample = np.zeros_like(y_pred_prob_resample)
+                    if isinstance(thresholds, dict):
+                        # Thresholds as dict with column names
+                        for idx, col in enumerate(y_pred_prob_resample.columns):
+                            thr = thresholds.get(col, 0.5)
+                            y_pred_resample[:, idx] = (
+                                y_pred_prob_resample.iloc[:, idx] > thr
+                            ).astype(int)
+                    else:
+                        # Thresholds as list/array
+                        for idx, thr in enumerate(thresholds):
+                            y_pred_resample[:, idx] = (
+                                y_pred_prob_resample.iloc[:, idx] > thr
+                            ).astype(int)
+                else:
+                    y_pred_resample = (y_pred_prob_resample > threshold).astype(int)
             else:
                 y_pred_resample = y_pred_prob_resample
         else:
@@ -209,6 +228,15 @@ def evaluate_bootstrap_metrics(
                         y_resample,
                         y_pred_resample,
                         pos_label=0,
+                        average=average if thresholds is not None else None,
+                    )
+                )
+                continue
+            if metric == "hamming_loss":
+                scores[metric].append(
+                    hamming_loss(
+                        y_resample,
+                        y_pred_resample,
                     )
                 )
                 continue
@@ -229,22 +257,31 @@ def evaluate_bootstrap_metrics(
                         raise
 
             elif metric == "precision":
-                # Precision with zero division handling
                 scores[metric].append(
                     scorer._score_func(
                         y_resample,
                         y_pred_resample,
                         zero_division=0,
+                        average=average if thresholds is not None else None,
                     )
                 )
             else:
-                # Other metrics
-                scores[metric].append(
-                    scorer._score_func(
-                        y_resample,
-                        y_pred_resample,
+                try:
+                    scores[metric].append(
+                        scorer._score_func(
+                            y_resample,
+                            y_pred_resample,
+                            average=average if thresholds is not None else None,
+                        )
                     )
-                )
+                except TypeError:
+                    scores[metric].append(
+                        scorer._score_func(
+                            y_resample,
+                            y_pred_resample,
+                        )
+                    )
+
     # Initialize a dictionary to store results
     metrics_results = {
         "Metric": [],
