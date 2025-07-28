@@ -228,7 +228,7 @@ def evaluate_bootstrap_metrics(
                         y_resample,
                         y_pred_resample,
                         pos_label=0,
-                        average=average if thresholds is not None else None,
+                        average=average if thresholds is not None else "binary",
                     )
                 )
                 continue
@@ -262,7 +262,7 @@ def evaluate_bootstrap_metrics(
                         y_resample,
                         y_pred_resample,
                         zero_division=0,
-                        average=average if thresholds is not None else None,
+                        average=average if thresholds is not None else "binary",
                     )
                 )
             else:
