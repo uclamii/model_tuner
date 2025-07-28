@@ -12,7 +12,7 @@ def test_custom_help_override(monkeypatch, capsys):
     captured = capsys.readouterr()
 
     # Adjusted assertions for actual content
-    assert "Version: 0.0.33b" in captured.out
+    assert "Version: 0.0.34b" in captured.out
     assert "https://pypi.org/project/model-tuner/" in captured.out
 
 
