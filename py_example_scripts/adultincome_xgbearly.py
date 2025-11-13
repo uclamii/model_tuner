@@ -130,7 +130,7 @@ if __name__ == "__main__":
     calibrate = True
 
     model_xgb = Model(
-        name=f"AIDS_Clinical_{model_type}",
+        name=f"Adult_Income_{model_type}",
         estimator_name=estimator_name,
         calibrate=calibrate,
         estimator=clc,
