@@ -481,7 +481,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, groups=None, score=None):
+    def calibrateModel(self, X, y, score=None):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -561,7 +561,7 @@ class Model:
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         random_state=self.random_state,
-                        groups=groups,
+                        groups=self.groups,
                     )
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -608,7 +608,7 @@ class Model:
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         random_state=self.random_state,
-                        groups=groups,
+                        groups=self.groups,
                     )
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -1262,7 +1262,6 @@ class Model:
         self,
         X,
         y,
-        groups=None,
         f1_beta_tune=False,
         betas=[1, 2],
     ):
@@ -1369,7 +1368,7 @@ class Model:
                 validation_size=self.validation_size,
                 test_size=self.test_size,
                 random_state=self.random_state,
-                groups=groups,
+                groups=self.groups,
             )
             if isinstance(X, pd.DataFrame):
                 self.X_train_index = X_train.index.to_list()
