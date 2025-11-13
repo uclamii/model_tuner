@@ -4,7 +4,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
-from sklearn.model_selection import StratifiedKFold, KFold
+from sklearn.model_selection import StratifiedKFold, KFold, GroupShuffleSplit
 from pprint import pprint
 from sklearn.metrics import get_scorer
 from sklearn.metrics import (
@@ -479,7 +479,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None):
+    def calibrateModel(self, X, y, groups=None, score=None):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -559,6 +559,7 @@ class Model:
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         random_state=self.random_state,
+                        groups=groups,
                     )
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -605,6 +606,7 @@ class Model:
                         validation_size=self.validation_size,
                         test_size=self.test_size,
                         random_state=self.random_state,
+                        groups=groups,
                     )
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -1258,6 +1260,7 @@ class Model:
         self,
         X,
         y,
+        groups=None,
         f1_beta_tune=False,
         betas=[1, 2],
     ):
@@ -1364,6 +1367,7 @@ class Model:
                 validation_size=self.validation_size,
                 test_size=self.test_size,
                 random_state=self.random_state,
+                groups=groups,
             )
             if isinstance(X, pd.DataFrame):
                 self.X_train_index = X_train.index.to_list()
@@ -2088,6 +2092,7 @@ def train_val_test_split(
     test_size=0.2,
     random_state=3,
     stratify_cols=None,
+    groups=None,
 ):
     """
     Splits data into train, validation, and test sets, supporting stratification
@@ -2117,6 +2122,9 @@ def train_val_test_split(
     stratify_cols : list, pandas.DataFrame, or None, optional
         Columns to use for stratification, in addition to or instead of `y`.
         Default is None.
+    groups : array-like or None, optional
+        Group identifiers for group-aware splitting. Each group is placed
+        entirely in train, validation, or test. Default is None.
 
     Returns:
     --------
@@ -2137,15 +2145,49 @@ def train_val_test_split(
       columns (`stratify_cols`).
     - Ensures the proportions of the split sets are consistent with the
       specified `train_size`, `validation_size`, and `test_size`.
-
-    Notes:
-    ------
-    - The sum of `train_size`, `validation_size`, and `test_size` must equal 1.0.
-    - Stratification ensures the distribution of classes or categories is
-      preserved across splits.
-    - The function works seamlessly with both `pandas.DataFrame` and array-like
-      data structures.
     """
+
+    ## Validate sizes
+    if not np.isclose(train_size + validation_size + test_size, 1.0):
+        raise ValueError("train_size + validation_size + test_size must equal 1.0")
+
+    if groups is not None:
+        ## First: split train vs (validation + test)
+        gss = GroupShuffleSplit(
+            n_splits=1, test_size=(1 - train_size), random_state=random_state
+        )
+        train_idx, valid_test_idx = next(gss.split(X, y, groups))
+
+        ## Second: split (validation + test)
+        val_ratio = validation_size / (validation_size + test_size)
+        gss_val = GroupShuffleSplit(
+            n_splits=1, test_size=(1 - val_ratio), random_state=random_state
+        )
+
+        if isinstance(X, pd.DataFrame):
+            temp_groups = groups.iloc[valid_test_idx]
+            val_idx, test_idx = next(
+                gss_val.split(
+                    X.iloc[valid_test_idx], y.iloc[valid_test_idx], temp_groups
+                )
+            )
+        else:
+            temp_groups = groups[valid_test_idx]
+            val_idx, test_idx = next(
+                gss_val.split(X[valid_test_idx], y[valid_test_idx], temp_groups)
+            )
+
+        ## Map indices back to global index space
+        val_idx = valid_test_idx[val_idx]
+        test_idx = valid_test_idx[test_idx]
+        X_train = X.iloc[train_idx] if hasattr(X, "iloc") else X[train_idx]
+        X_valid = X.iloc[val_idx] if hasattr(X, "iloc") else X[val_idx]
+        X_test = X.iloc[test_idx] if hasattr(X, "iloc") else X[test_idx]
+        y_train = y.iloc[train_idx] if hasattr(y, "iloc") else y[train_idx]
+        y_valid = y.iloc[val_idx] if hasattr(y, "iloc") else y[val_idx]
+        y_test = y.iloc[test_idx] if hasattr(y, "iloc") else y[test_idx]
+
+        return X_train, X_valid, X_test, y_train, y_valid, y_test
 
     # Standardize stratification parameters
     if stratify_y is False:
