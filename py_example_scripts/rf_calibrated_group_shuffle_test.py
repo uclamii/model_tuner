@@ -67,6 +67,29 @@ model = Model(
 # Perform grid search
 model.grid_search_param_tuning(X, y, f1_beta_tune=True, groups=groups)
 
+### Extract Training, Validation, and Test Splits
+X_train, y_train = model.get_train_data(X, y)
+X_valid, y_valid = model.get_valid_data(X, y)
+X_valid, y_valid = model.get_valid_data(X, y)
+X_test, y_test = model.get_test_data(X, y)
+
+print("-" * 80)
+print(
+    f"\nTrain_Val_Test size: Train = {X_train.shape[0]}, Validation = {X_valid.shape[0]}, Test = {X_test.shape[0]}\n"
+)
+print(
+    f"Total Train_Val_Test size: {X_train.shape[0] + X_valid.shape[0] + X_test.shape[0]}"
+)
+
+print(
+    f"\nSum of overlap: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).sum()}",
+)
+
+print(
+    f"Percentage of overlap: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).mean()}%\n",
+)
+print("-" * 80)
+
 # Fit model
 model.fit(X, y)
 
