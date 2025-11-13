@@ -125,6 +125,7 @@ class Model:
         bayesian=False,
         sort_preprocess=True,
         kfold_group=None,
+        groups=None,
     ):
 
         # Check if model_type is provided and valid
@@ -182,6 +183,7 @@ class Model:
         self.kf = None
         self.xval_output = None
         self.stratify_y = stratify_y
+        self.groups = groups
         self.stratify_cols = stratify_cols
         self.n_splits = n_splits
         self.scoring = scoring

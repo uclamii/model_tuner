@@ -54,7 +54,7 @@ model = Model(
     estimator=estimator,
     pipeline_steps=pipeline,
     kfold=kfold,
-    stratify_y=True,
+    stratify_y=False,
     grid=tuned_parameters,
     randomized_grid=False,
     n_iter=4,
@@ -62,10 +62,11 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=rstate,
+    groups=groups,
 )
 
 # Perform grid search
-model.grid_search_param_tuning(X, y, f1_beta_tune=True, groups=groups)
+model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
 ### Extract Training, Validation, and Test Splits
 X_train, y_train = model.get_train_data(X, y)
@@ -82,12 +83,32 @@ print(
 )
 
 print(
-    f"\nSum of overlap: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).sum()}",
+    f"\nSum of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).sum()}",
 )
 
 print(
-    f"Percentage of overlap: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).mean()}%\n",
+    f"Percentage of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).mean()}%\n",
 )
+
+print(
+    f"\nSum of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).sum()}",
+)
+
+print(
+    f"Percentage of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).mean()}%\n",
+)
+
+print("Distributions in each split:")
+
+print("Train distribution:")
+print(y_train.value_counts(normalize=True))
+
+print("\nValidation distribution:")
+print(y_valid.value_counts(normalize=True))
+
+print("\nTest distribution:")
+print(y_test.value_counts(normalize=True))
+
 print("-" * 80)
 
 # Fit model
