@@ -93,7 +93,6 @@ def main():
     X_valid, y_valid = model.get_valid_data(X, y)
     X_test, y_test = model.get_test_data(X, y)
 
-    ### This code only works indices ###
 
     print("-" * 80)
     print(
