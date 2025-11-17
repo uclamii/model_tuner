@@ -7,6 +7,7 @@ import model_tuner
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 
+
 def main():
     print()
     print(f"Model Tuner version: {model_tuner.__version__}")
@@ -25,11 +26,12 @@ def main():
     groups = np.repeat(groups, group_size)
     # handle any leftover samples
     if len(groups) < n_samples:
-        groups = np.concatenate([groups, np.full(n_samples - len(groups), groups[-1] + 1)])
+        groups = np.concatenate(
+            [groups, np.full(n_samples - len(groups), groups[-1] + 1)]
+        )
 
     # Add to DataFrame
     X["group_id"] = groups
-
 
     rstate = 42
 
@@ -37,7 +39,9 @@ def main():
 
     # Define Random Forest classifier
     estimator = RandomForestClassifier(
-        class_weight="balanced", random_state=rstate, n_jobs=-1  # Handle class imbalance
+        class_weight="balanced",
+        random_state=rstate,
+        n_jobs=-1,  # Handle class imbalance
     )
 
     estimator_name = "rf"
@@ -45,7 +49,10 @@ def main():
     tuned_parameters = {
         f"{estimator_name}__n_estimators": [100, 200],  # Number of trees in the forest
         f"{estimator_name}__max_depth": [5, 10, None],  # Control tree depth
-        f"{estimator_name}__min_samples_split": [2, 5],  # Minimum samples required to split
+        f"{estimator_name}__min_samples_split": [
+            2,
+            5,
+        ],  # Minimum samples required to split
     }
 
     kfold = False
@@ -74,7 +81,7 @@ def main():
         scoring=["roc_auc"],
         n_jobs=-2,
         random_state=rstate,
-        groups=X['group_id'],
+        groups=X["group_id"],
     )
 
     # Perform grid search
@@ -96,19 +103,21 @@ def main():
     )
 
     print(
-        f"\nSum of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).sum()}",
+        f"\nSum of overlap with Validation Set: {(X.loc[X_train.index, 'group_id'].isin(X.loc[X_valid.index, 'group_id'])).sum()}"
     )
 
     print(
-        f"Percentage of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).mean()}%\n",
+        f"Percentage of overlap with Validation Set: {(X.loc[X_train.index, 'group_id'].isin(X.loc[X_valid.index, 'group_id'])).mean()}%\n",
     )
 
     print(
-        f"\nSum of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).sum()}",
+        f"\nSum of overlap with Test Set: "
+        f"{X.loc[X_train.index, 'group_id'].isin(X.loc[X_test.index, 'group_id']).sum()}"
     )
 
     print(
-        f"Percentage of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).mean()}%\n",
+        f"Percentage of overlap with Test Set: "
+        f"{X.loc[X_train.index, 'group_id'].isin(X.loc[X_test.index, 'group_id']).mean()}\n"
     )
 
     print("Distributions in each split:")
