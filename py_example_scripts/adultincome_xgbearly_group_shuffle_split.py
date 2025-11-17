@@ -129,7 +129,17 @@ if __name__ == "__main__":
     kfold = False
     calibrate = True
 
-    groups = pd.Series(X.index.tolist(), index=X.index)
+    # groups = pd.Series(X.index.tolist(), index=X.index)
+    group_size = 10
+    groups_arr = np.repeat(np.arange(np.ceil(len(X) / group_size)), group_size)[
+        : len(X)
+    ]
+    groups = pd.Series(groups_arr, index=X.index)
+
+    X["group_id"] = groups
+
+    print(f"Shape of X: {X.shape}")
+    print(f"X['group_id'].nunique(): {X['group_id'].nunique()}")
 
     model_xgb = Model(
         name=f"Adult_Income_{model_type}",
