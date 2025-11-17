@@ -24,6 +24,7 @@ def main():
     group_size = 10
     groups = np.arange(n_samples // group_size)
     groups = np.repeat(groups, group_size)
+
     # handle any leftover samples
     if len(groups) < n_samples:
         groups = np.concatenate(

@@ -161,7 +161,17 @@ tuned_parameters = model_definitions[model_type]["tuned_parameters"]
 rand_grid = model_definitions[model_type]["randomized_grid"]
 early_stop = model_definitions[model_type]["early"]
 
-groups = pd.Series(X.index.tolist(), index=X.index)
+# groups = pd.Series(X.index.tolist(), index=X.index)
+group_size = 10
+groups_arr = np.repeat(np.arange(np.ceil(len(X) / group_size)), group_size)[: len(X)]
+groups = pd.Series(groups_arr, index=X.index)
+
+X = X.copy()
+X.loc[:, "group_id"] = groups
+
+print(f"Shape of X: {X.shape}")
+print(f"X['group_id'].nunique(): {X['group_id'].nunique()}")
+
 
 model_lasso = Model(
     name=f"lasso_{model_type}",
