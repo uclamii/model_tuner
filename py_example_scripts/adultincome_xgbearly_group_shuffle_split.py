@@ -129,6 +129,18 @@ if __name__ == "__main__":
     kfold = False
     calibrate = True
 
+    # groups = pd.Series(X.index.tolist(), index=X.index)
+    group_size = 10
+    groups_arr = np.repeat(np.arange(np.ceil(len(X) / group_size)), group_size)[
+        : len(X)
+    ]
+    groups = pd.Series(groups_arr, index=X.index)
+
+    X["group_id"] = groups
+
+    print(f"Shape of X: {X.shape}")
+    print(f"X['group_id'].nunique(): {X['group_id'].nunique()}")
+
     model_xgb = Model(
         name=f"Adult_Income_{model_type}",
         estimator_name=estimator_name,
@@ -145,6 +157,7 @@ if __name__ == "__main__":
         scoring=["roc_auc"],
         random_state=222,
         n_jobs=2,
+        groups=groups,
     )
 
     model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
@@ -152,6 +165,44 @@ if __name__ == "__main__":
     X_train, y_train = model_xgb.get_train_data(X, y)
     X_test, y_test = model_xgb.get_test_data(X, y)
     X_valid, y_valid = model_xgb.get_valid_data(X, y)
+    X_test, y_test = model_xgb.get_test_data(X, y)
+
+    print("-" * 80)
+    print(
+        f"\nTrain_Val_Test size: Train = {X_train.shape[0]}, Validation = {X_valid.shape[0]}, Test = {X_test.shape[0]}\n"
+    )
+    print(
+        f"Total Train_Val_Test size: {X_train.shape[0] + X_valid.shape[0] + X_test.shape[0]}"
+    )
+
+    print(
+        f"\nSum of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).sum()}",
+    )
+
+    print(
+        f"Percentage of overlap with Validation Set: {groups.loc[X_train.index].isin(groups.loc[X_valid.index]).mean()}%\n",
+    )
+
+    print(
+        f"\nSum of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).sum()}",
+    )
+
+    print(
+        f"Percentage of overlap with Test Set: {groups.loc[X_train.index].isin(groups.loc[X_test.index]).mean()}%\n",
+    )
+
+    print("Distributions in each split:")
+
+    print("Train distribution:")
+    print(y_train.value_counts(normalize=True))
+
+    print("\nValidation distribution:")
+    print(y_valid.value_counts(normalize=True))
+
+    print("\nTest distribution:")
+    print(y_test.value_counts(normalize=True))
+
+    print("-" * 80)
 
     model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
