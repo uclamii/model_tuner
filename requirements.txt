@@ -91,4 +91,5 @@ scikit-optimize==0.10.2
 pytest==8.3.3
 pytest-cov==5.0.0
 shap==0.46.0
+ucimlrepo==0.0.7
 openpyxl==3.1.5

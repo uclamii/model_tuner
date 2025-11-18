@@ -117,6 +117,7 @@ venvpy38/
 venvpy39/
 venvpy310/
 venvpy311/
+venv_m_tuner/
 venv_model311/
 ENV/
 env.bak/
