@@ -481,7 +481,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None):
+    def calibrateModel(self, X, y, score=None, tune_threshold=False):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -521,8 +521,23 @@ class Model:
                         cv=self.n_splits,
                         method=self.calibration_method,
                     ).fit(X, y)
-                    test_model = self.estimator
-                    # self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
+                    if tune_threshold:
+                        self.kfold = False
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
+                            thresh = self.tune_threshold_Fbeta(
+                                self.scoring[0],
+                                y.iloc[test],
+                                [1, 2],
+                                y_pred_proba,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        average_threshold = np.mean(thresh_list)
+                        self.threshold[self.scoring[0]] = average_threshold
+                        self.kfold = True
                 else:
                     pass
             else:
@@ -541,6 +556,23 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
+                    if tune_threshold:
+                        self.kfold = False
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
+                            thresh = self.tune_threshold_Fbeta(
+                                score,
+                                y.iloc[test],
+                                [1, 2],
+                                y_pred_proba,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        average_threshold = np.mean(thresh_list)
+                        self.threshold[score] = average_threshold
+                        self.kfold = True
 
         else:
             if score == None:
@@ -588,6 +620,15 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
+                    if tune_threshold:
+                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
+                        self.tune_threshold_Fbeta(
+                                    self.scoring[0],
+                                    y_valid,
+                                    [1, 2],
+                                    y_pred_proba,
+                                    kfold=False,
+                                )
                 else:
                     pass
             else:
@@ -643,6 +684,16 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
+                    if tune_threshold:
+                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
+                        self.tune_threshold_Fbeta(
+                                    score,
+                                    y_valid,
+                                    [1, 2],
+                                    y_pred_proba,
+                                    kfold=False,
+                                )
+
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
