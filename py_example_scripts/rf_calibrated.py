@@ -71,6 +71,7 @@ if model.calibrate:
         X,
         y,
         score="roc_auc",
+        f1_beta_tune=True
     )
 
 # Evaluate metrics

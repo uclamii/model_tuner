@@ -126,7 +126,7 @@ model.grid_search_param_tuning(X, y, f1_beta_tune=True)
 model.fit(X, y)
 
 if model.calibrate:
-    model.calibrateModel(X, y, score="roc_auc")
+    model.calibrateModel(X, y, score="roc_auc", f1_beta_tune=True)
 
 print("Validation Metrics")
 return_metrics_dict = model.return_metrics(
