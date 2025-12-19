@@ -481,7 +481,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None, tune_threshold=False):
+    def calibrateModel(self, X, y, score=None, f1_beta_tune=False):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -521,7 +521,7 @@ class Model:
                         cv=self.n_splits,
                         method=self.calibration_method,
                     ).fit(X, y)
-                    if tune_threshold:
+                    if f1_beta_tune:
                         self.kfold = False
                         thresh_list = []
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
@@ -556,7 +556,7 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
-                    if tune_threshold:
+                    if f1_beta_tune:
                         self.kfold = False
                         thresh_list = []
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
@@ -620,7 +620,7 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
-                    if tune_threshold:
+                    if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
                                     self.scoring[0],
@@ -684,7 +684,7 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
-                    if tune_threshold:
+                    if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
                                     score,

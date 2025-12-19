@@ -92,7 +92,7 @@ tuned_parameters = [
     }
 ]
 kfold = False
-calibrate = False
+calibrate = True
 
 
 model = Model(
@@ -115,7 +115,11 @@ model = Model(
 )
 
 
-model.grid_search_param_tuning(X, y)
+
+model.grid_search_param_tuning(X, y, f1_beta_tune=True)
+
+model.calibrateModel(X, y, f1_beta_tune=True)
+
 
 X_train, y_train = model.get_train_data(X, y)
 X_test, y_test = model.get_test_data(X, y)
