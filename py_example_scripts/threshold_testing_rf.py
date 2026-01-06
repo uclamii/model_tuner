@@ -94,7 +94,7 @@ prob_true_uncalibrated, prob_pred_uncalibrated = calibration_curve(
 
 ## Calibrate the model
 if model.calibrate:
-    model.calibrateModel(X, y, score="roc_auc")
+    model.calibrateModel(X, y, score="roc_auc", f1_beta_tune=True)
 
 threshold, beta = find_optimal_threshold_beta(
     y_valid,

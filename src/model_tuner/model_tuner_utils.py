@@ -144,6 +144,7 @@ class Model:
         self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
         self.sort_preprocess = sort_preprocess
+        self.kfold_thresholds = []
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
@@ -481,7 +482,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None):
+    def calibrateModel(self, X, y, score=None, f1_beta_tune=False):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -521,8 +522,26 @@ class Model:
                         cv=self.n_splits,
                         method=self.calibration_method,
                     ).fit(X, y)
-                    test_model = self.estimator
-                    # self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
+                    if f1_beta_tune:
+                        self.kfold = False
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
+                            thresh = self.tune_threshold_Fbeta(
+                                self.scoring[0],
+                                y.iloc[test],
+                                [1, 2],
+                                y_pred_proba,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
+                        average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
+                        self.threshold[self.scoring[0]] = average_threshold
+                        self.kfold = True
                 else:
                     pass
             else:
@@ -541,6 +560,26 @@ class Model:
                         method=self.calibration_method,
                     ).fit(X, y)
                     test_model = self.estimator
+                    if f1_beta_tune:
+                        self.kfold = False
+                        thresh_list = []
+                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
+                            self.fit(X.iloc[train], y.iloc[train])
+                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
+                            thresh = self.tune_threshold_Fbeta(
+                                score,
+                                y.iloc[test],
+                                [1, 2],
+                                y_pred_proba,
+                                kfold=True,
+                            )
+                            thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
+                        average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
+                        self.threshold[score] = average_threshold
+                        self.kfold = True
 
         else:
             if score == None:
@@ -588,6 +627,15 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
+                    if f1_beta_tune:
+                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
+                        self.tune_threshold_Fbeta(
+                                    self.scoring[0],
+                                    y_valid,
+                                    [1, 2],
+                                    y_pred_proba,
+                                    kfold=False,
+                                )
                 else:
                     pass
             else:
@@ -643,6 +691,16 @@ class Model:
                         cv="prefit",
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid)
+                    if f1_beta_tune:
+                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
+                        self.tune_threshold_Fbeta(
+                                    score,
+                                    y_valid,
+                                    [1, 2],
+                                    y_pred_proba,
+                                    kfold=False,
+                                )
+
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -1335,7 +1393,10 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
                         self.kfold = True
 
@@ -1356,7 +1417,10 @@ class Model:
                             )
                             thresh_list.append(thresh)
                         self.kfold = True
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
         else:
             X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(

@@ -85,8 +85,8 @@ if __name__ == "__main__":
         "clc": xgb,
         "estimator_name": xgb_name,
         "tuned_parameters": tuned_parameters_xgb,
-        "randomized_grid": False,
-        "n_iter": 5,
+        "randomized_grid": True,
+        "n_iter": 1,
         "early": xgbearly,
     }
 
@@ -139,6 +139,7 @@ if __name__ == "__main__":
         pipeline_steps=[("ColumnTransformer", preprocessor)],
         stratify_y=True,
         stratify_cols=["race", "sex"],
+        n_iter=n_iter,
         grid=tuned_parameters,
         randomized_grid=rand_grid,
         boost_early=early_stop,
@@ -149,10 +150,15 @@ if __name__ == "__main__":
 
     model_xgb.grid_search_param_tuning(X, y, f1_beta_tune=True)
 
+
     X_train, y_train = model_xgb.get_train_data(X, y)
     X_test, y_test = model_xgb.get_test_data(X, y)
     X_valid, y_valid = model_xgb.get_valid_data(X, y)
 
     model_xgb.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+
+
+    model_xgb.calibrateModel(X, y, f1_beta_tune=True)
+
 
     model_xgb.return_metrics(X_test, y_test, True)
