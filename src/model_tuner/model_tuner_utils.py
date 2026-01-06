@@ -144,6 +144,7 @@ class Model:
         self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
         self.sort_preprocess = sort_preprocess
+        self.kfold_thresholds = []
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
@@ -535,7 +536,10 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[self.scoring[0]] = average_threshold
                         self.kfold = True
                 else:
@@ -570,7 +574,10 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
                         self.kfold = True
 
@@ -1386,7 +1393,10 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
                         self.kfold = True
 
@@ -1407,7 +1417,10 @@ class Model:
                             )
                             thresh_list.append(thresh)
                         self.kfold = True
+                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
+                        ### thresholds across all folds also stored ###
+                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
         else:
             X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
