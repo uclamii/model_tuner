@@ -84,7 +84,7 @@ if model.calibrate:
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
 print("Test Metrics")
-model.return_metrics(X_test, y_test)
+model.return_metrics(X_test, y_test, print_best_feats=True)
 
 y_prob = model.predict_proba(X_test)
 
