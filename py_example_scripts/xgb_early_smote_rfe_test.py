@@ -4,7 +4,6 @@ from model_tuner.model_tuner_utils import Model
 from imblearn.over_sampling import SMOTE
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import ElasticNet
-from sklearn.compose import ColumnTransformer
 import model_tuner
 
 print()

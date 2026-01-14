@@ -1246,6 +1246,9 @@ class Model:
                         reg_report = reg_report.copy()
                         reg_report["Best Features"] = best_features
                         return reg_report
+                else:
+                    if return_dict:
+                        return reg_report
 
     def predict(self, X, y=None, optimal_threshold=False, score=None):
         """
