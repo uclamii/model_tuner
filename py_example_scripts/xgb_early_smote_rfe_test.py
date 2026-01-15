@@ -4,7 +4,6 @@ from model_tuner.model_tuner_utils import Model
 from imblearn.over_sampling import SMOTE
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import ElasticNet
-from sklearn.compose import ColumnTransformer
 import model_tuner
 
 print()
@@ -84,7 +83,7 @@ if model.calibrate:
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
 print("Test Metrics")
-model.return_metrics(X_test, y_test)
+model.return_metrics(X_test, y_test, print_best_feats=True)
 
 y_prob = model.predict_proba(X_test)
 
