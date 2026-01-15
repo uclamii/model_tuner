@@ -60,6 +60,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
+    calibrate=True
 )
 
 
@@ -70,6 +71,8 @@ X_test, y_test = model.get_test_data(X, y)
 X_valid, y_valid = model.get_valid_data(X, y)
 
 model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+
+model.calibrateModel(X, y, custom_splits=custom_splits)
 
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid)
