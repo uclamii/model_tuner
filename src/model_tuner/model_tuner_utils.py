@@ -630,12 +630,12 @@ class Model:
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
-                                    self.scoring[0],
-                                    y_valid,
-                                    [1, 2],
-                                    y_pred_proba,
-                                    kfold=False,
-                                )
+                            self.scoring[0],
+                            y_valid,
+                            [1, 2],
+                            y_pred_proba,
+                            kfold=False,
+                        )
                 else:
                     pass
             else:
@@ -694,12 +694,12 @@ class Model:
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
-                                    score,
-                                    y_valid,
-                                    [1, 2],
-                                    y_pred_proba,
-                                    kfold=False,
-                                )
+                            score,
+                            y_valid,
+                            [1, 2],
+                            y_pred_proba,
+                            kfold=False,
+                        )
 
                     print(
                         f"{score} after calibration:",
@@ -1030,6 +1030,7 @@ class Model:
         model_metrics=False,
         print_threshold=False,
         return_dict=False,
+        print_best_feats=False,
         print_per_fold=False,
     ):
         """
@@ -1054,6 +1055,7 @@ class Model:
             Whether to return the calculated metrics as a dictionary.
         print_per_fold : bool, optional (default=False)
             If using cross-validation, whether to print metrics for each fold.
+        print_best_feats : bool, optional (default=False)
 
         Returns:
         --------
@@ -1219,7 +1221,8 @@ class Model:
 
                 if self.feature_selection:
                     best_features = self.get_feature_names()
-                    print(best_features)
+                    if print_best_feats:
+                        print(best_features)
 
                     if return_dict:
                         return {
@@ -1237,12 +1240,12 @@ class Model:
                 reg_report = self.regression_report(y, y_pred)
                 if self.feature_selection:
                     best_features = self.get_feature_names()
-                    print(best_features)
+                    if print_best_feats:
+                        print(best_features)
                     if return_dict:
-                        return {
-                            "Regression Report": reg_report,
-                            "Best Features": best_features,
-                        }
+                        reg_report = reg_report.copy()
+                        reg_report["Best Features"] = best_features
+                        return reg_report
                 else:
                     if return_dict:
                         return reg_report
