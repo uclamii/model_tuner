@@ -31,20 +31,29 @@ tuned_parameters = {
 }
 
 
-X_train_val, X_test, y_train_val,  y_test = train_test_split(X, y, train_size=0.8)
+X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, train_size=0.8)
 
-X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, train_size=0.8)
+X_train, X_val, y_train, y_val = train_test_split(
+    X_train_val, y_train_val, train_size=0.8
+)
 
 custom_splits = {
     "X_train": X_train,
-    "y_train":  y_train,
+    "y_train": y_train,
     "X_valid": X_val,
     "y_valid": y_val,
     "X_test": X_test,
-    "y_test": y_test
+    "y_test": y_test,
 }
 
-
+print(f"\n{'-'*80}\nCustom Data Splits Summary:\n{'-'*80}")
+print(f"X_train = {X_train.shape[0]} rows")
+print(f"X_valid = {X_val.shape[0]} rows")
+print(f"X_test = {X_test.shape[0]} rows\n{'-'*80}")
+print(f"Total = {X.shape[0]} rows\n{'-'*80}")
+print(f"X_train is {X_train.shape[0]/X.shape[0]*100:.2f}% of total data")
+print(f"X_valid is {X_val.shape[0]/X.shape[0]*100:.2f}% of total data")
+print(f"X_test is {X_test.shape[0]/X.shape[0]*100:.2f}% of total data")
 
 model = Model(
     name="Catboost Early",
@@ -60,7 +69,7 @@ model = Model(
     scoring=["roc_auc"],
     n_jobs=-2,
     random_state=42,
-    calibrate=True
+    calibrate=True,
 )
 
 
