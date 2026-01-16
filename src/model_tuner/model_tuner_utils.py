@@ -500,7 +500,7 @@ class Model:
             The scoring metric(s) to guide calibration. If None, the first scoring
             metric from `self.scoring` is used. For k-fold workflows, calibration
             is performed for each specified score.
-        custom_splits : A dict of custom splits containing X_train, y_train etc. 
+        custom_splits : A dict of custom splits containing X_train, y_train etc.
 
 
         Returns:
@@ -587,24 +587,26 @@ class Model:
             if score == None:
                 if self.calibrate:
                     if custom_splits is None:
-                        X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
-                            X=X,
-                            y=y,
-                            stratify_y=self.stratify_y,
-                            stratify_cols=self.stratify_cols,
-                            train_size=self.train_size,
-                            validation_size=self.validation_size,
-                            test_size=self.test_size,
-                            random_state=self.random_state,
+                        X_train, X_valid, X_test, y_train, y_valid, y_test = (
+                            train_val_test_split(
+                                X=X,
+                                y=y,
+                                stratify_y=self.stratify_y,
+                                stratify_cols=self.stratify_cols,
+                                train_size=self.train_size,
+                                validation_size=self.validation_size,
+                                test_size=self.test_size,
+                                random_state=self.random_state,
+                                groups=self.groups,
+                            )
                         )
                     else:
-                        X_train = custom_splits['X_train']
-                        X_valid = custom_splits['X_valid']
-                        X_test = custom_splits['X_test']
-                        y_train = custom_splits['y_train']
-                        y_valid = custom_splits['y_valid']
-                        y_test = custom_splits['y_test']
-
+                        X_train = custom_splits["X_train"]
+                        X_valid = custom_splits["X_valid"]
+                        X_test = custom_splits["X_test"]
+                        y_train = custom_splits["y_train"]
+                        y_valid = custom_splits["y_valid"]
+                        y_test = custom_splits["y_test"]
 
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -645,23 +647,26 @@ class Model:
             else:
                 if self.calibrate:
                     if custom_splits is None:
-                        X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
-                            X=X,
-                            y=y,
-                            stratify_y=self.stratify_y,
-                            stratify_cols=self.stratify_cols,
-                            train_size=self.train_size,
-                            validation_size=self.validation_size,
-                            test_size=self.test_size,
-                            random_state=self.random_state,
+                        X_train, X_valid, X_test, y_train, y_valid, y_test = (
+                            train_val_test_split(
+                                X=X,
+                                y=y,
+                                stratify_y=self.stratify_y,
+                                stratify_cols=self.stratify_cols,
+                                train_size=self.train_size,
+                                validation_size=self.validation_size,
+                                test_size=self.test_size,
+                                random_state=self.random_state,
+                                groups=self.groups,
+                            )
                         )
                     else:
-                        X_train = custom_splits['X_train']
-                        X_valid = custom_splits['X_valid']
-                        X_test = custom_splits['X_test']
-                        y_train = custom_splits['y_train']
-                        y_valid = custom_splits['y_valid']
-                        y_test = custom_splits['y_test']
+                        X_train = custom_splits["X_train"]
+                        X_valid = custom_splits["X_valid"]
+                        X_test = custom_splits["X_test"]
+                        y_train = custom_splits["y_train"]
+                        y_valid = custom_splits["y_valid"]
+                        y_test = custom_splits["y_test"]
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
                         self.X_valid_index = X_valid.index.to_list()
@@ -1324,12 +1329,7 @@ class Model:
             return self.estimator.predict_proba(X)
 
     def grid_search_param_tuning(
-        self,
-        X,
-        y,
-        f1_beta_tune=False,
-        betas=[1, 2],
-        custom_splits=None
+        self, X, y, f1_beta_tune=False, betas=[1, 2], custom_splits=None
     ):
         """
         Performs grid or Bayesian search parameter tuning, optionally
@@ -1343,7 +1343,7 @@ class Model:
                        tuning. Default is False.
         betas : List of beta values to use for F-beta score tuning.Default is [1, 2].
         custom_splits: a dictionary containing X_train, y_train, X_val, y_val and X_test, y_test.
-                       These splits will be used instead of MT doing the split. 
+                       These splits will be used instead of MT doing the split.
 
         Raises:
         -------
@@ -1434,24 +1434,27 @@ class Model:
                         self.threshold[score] = average_threshold
         else:
             if custom_splits is None:
-                X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
-                    X=X,
-                    y=y,
-                    stratify_y=self.stratify_y,
-                    stratify_cols=self.stratify_cols,
-                    train_size=self.train_size,
-                    validation_size=self.validation_size,
-                    test_size=self.test_size,
-                    random_state=self.random_state,
+                X_train, X_valid, X_test, y_train, y_valid, y_test = (
+                    train_val_test_split(
+                        X=X,
+                        y=y,
+                        stratify_y=self.stratify_y,
+                        stratify_cols=self.stratify_cols,
+                        train_size=self.train_size,
+                        validation_size=self.validation_size,
+                        test_size=self.test_size,
+                        random_state=self.random_state,
+                        groups=self.groups,
+                    )
                 )
             else:
-                X_train = custom_splits['X_train']
-                X_valid = custom_splits['X_valid']
-                X_test = custom_splits['X_test']
-                y_train = custom_splits['y_train']
-                y_valid = custom_splits['y_valid']
-                y_test = custom_splits['y_test']
-            
+                X_train = custom_splits["X_train"]
+                X_valid = custom_splits["X_valid"]
+                X_test = custom_splits["X_test"]
+                y_train = custom_splits["y_train"]
+                y_valid = custom_splits["y_valid"]
+                y_test = custom_splits["y_test"]
+
             if isinstance(X, pd.DataFrame):
                 self.X_train_index = X_train.index.to_list()
                 self.X_valid_index = X_valid.index.to_list()
