@@ -4,7 +4,7 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import confusion_matrix, multilabel_confusion_matrix
 from sklearn.model_selection import cross_validate
-from sklearn.model_selection import StratifiedKFold, KFold, GroupShuffleSplit
+from sklearn.model_selection import StratifiedKFold, KFold
 from pprint import pprint
 from sklearn.metrics import get_scorer
 from sklearn.metrics import (
@@ -125,7 +125,6 @@ class Model:
         bayesian=False,
         sort_preprocess=True,
         kfold_group=None,
-        groups=None,
     ):
 
         # Check if model_type is provided and valid
@@ -144,7 +143,6 @@ class Model:
         self.calibration_method = calibration_method
         self.imbalance_sampler = imbalance_sampler
         self.sort_preprocess = sort_preprocess
-        self.kfold_thresholds = []
 
         if imbalance_sampler:
             from imblearn.pipeline import Pipeline
@@ -184,7 +182,6 @@ class Model:
         self.kf = None
         self.xval_output = None
         self.stratify_y = stratify_y
-        self.groups = groups
         self.stratify_cols = stratify_cols
         self.n_splits = n_splits
         self.scoring = scoring
@@ -482,7 +479,7 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None, f1_beta_tune=False, custom_splits=None, fit_params=None):
+    def calibrateModel(self, X, y, score=None, custom_splits=None):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -500,8 +497,7 @@ class Model:
             The scoring metric(s) to guide calibration. If None, the first scoring
             metric from `self.scoring` is used. For k-fold workflows, calibration
             is performed for each specified score.
-        custom_splits : A dict of custom splits containing X_train, y_train etc.
-
+        custom_splits : A dict of custom splits containing X_train, y_train etc. 
 
         Returns:
         --------
@@ -523,27 +519,9 @@ class Model:
                         classifier,
                         cv=self.n_splits,
                         method=self.calibration_method,
-                    ).fit(X, y, **fit_params)
-                    if f1_beta_tune:
-                        self.kfold = False
-                        thresh_list = []
-                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
-                            self.fit(X.iloc[train], y.iloc[train], **fit_params)
-                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
-                            thresh = self.tune_threshold_Fbeta(
-                                self.scoring[0],
-                                y.iloc[test],
-                                [1, 2],
-                                y_pred_proba,
-                                kfold=True,
-                            )
-                            thresh_list.append(thresh)
-                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
-                        average_threshold = np.mean(thresh_list)
-                        ### thresholds across all folds also stored ###
-                        self.kfold_thresholds = thresh_list
-                        self.threshold[self.scoring[0]] = average_threshold
-                        self.kfold = True
+                    ).fit(X, y)
+                    test_model = self.estimator
+                    # self.conf_mat_class_kfold(X=X, y=y, test_model=test_model)
                 else:
                     pass
             else:
@@ -560,53 +538,33 @@ class Model:
                         classifier,
                         cv=self.n_splits,
                         method=self.calibration_method,
-                    ).fit(X, y, **fit_params)
+                    ).fit(X, y)
                     test_model = self.estimator
-                    if f1_beta_tune:
-                        self.kfold = False
-                        thresh_list = []
-                        for train, test in self.kf.split(X, y, groups=self.kfold_group):
-                            self.fit(X.iloc[train], y.iloc[train], **fit_params)
-                            y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
-                            thresh = self.tune_threshold_Fbeta(
-                                score,
-                                y.iloc[test],
-                                [1, 2],
-                                y_pred_proba,
-                                kfold=True,
-                            )
-                            thresh_list.append(thresh)
-                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
-                        average_threshold = np.mean(thresh_list)
-                        ### thresholds across all folds also stored ###
-                        self.kfold_thresholds = thresh_list
-                        self.threshold[score] = average_threshold
-                        self.kfold = True
 
         else:
             if score == None:
                 if self.calibrate:
+
+
+                    
                     if custom_splits is None:
-                        X_train, X_valid, X_test, y_train, y_valid, y_test = (
-                            train_val_test_split(
-                                X=X,
-                                y=y,
-                                stratify_y=self.stratify_y,
-                                stratify_cols=self.stratify_cols,
-                                train_size=self.train_size,
-                                validation_size=self.validation_size,
-                                test_size=self.test_size,
-                                random_state=self.random_state,
-                                groups=self.groups,
-                            )
+                        X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+                            X=X,
+                            y=y,
+                            stratify_y=self.stratify_y,
+                            stratify_cols=self.stratify_cols,
+                            train_size=self.train_size,
+                            validation_size=self.validation_size,
+                            test_size=self.test_size,
+                            random_state=self.random_state,
                         )
                     else:
-                        X_train = custom_splits["X_train"]
-                        X_valid = custom_splits["X_valid"]
-                        X_test = custom_splits["X_test"]
-                        y_train = custom_splits["y_train"]
-                        y_valid = custom_splits["y_valid"]
-                        y_test = custom_splits["y_test"]
+                        X_train = custom_splits['X_train']
+                        X_valid = custom_splits['X_valid']
+                        X_test = custom_splits['X_test']
+                        y_train = custom_splits['y_train']
+                        y_valid = custom_splits['y_valid']
+                        y_test = custom_splits['y_test']
 
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
@@ -624,49 +582,37 @@ class Model:
                         self.verify_imbalance_sampler(X_train, y_train)
 
                     if self.boost_early:
-                        self.fit(X_train, y_train, validation_data=[X_valid, y_valid],  **fit_params)
+                        self.fit(X_train, y_train, validation_data=[X_valid, y_valid])
                     else:
-                        self.fit(X_train, y_train,  **fit_params)
+                        self.fit(X_train, y_train)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_valid, y_valid,  **fit_params)
-                    if f1_beta_tune:
-                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
-                        self.tune_threshold_Fbeta(
-                            self.scoring[0],
-                            y_valid,
-                            [1, 2],
-                            y_pred_proba,
-                            kfold=False,
-                        )
+                    ).fit(X_valid, y_valid)
                 else:
                     pass
             else:
                 if self.calibrate:
                     if custom_splits is None:
-                        X_train, X_valid, X_test, y_train, y_valid, y_test = (
-                            train_val_test_split(
-                                X=X,
-                                y=y,
-                                stratify_y=self.stratify_y,
-                                stratify_cols=self.stratify_cols,
-                                train_size=self.train_size,
-                                validation_size=self.validation_size,
-                                test_size=self.test_size,
-                                random_state=self.random_state,
-                                groups=self.groups,
-                            )
+                        X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+                            X=X,
+                            y=y,
+                            stratify_y=self.stratify_y,
+                            stratify_cols=self.stratify_cols,
+                            train_size=self.train_size,
+                            validation_size=self.validation_size,
+                            test_size=self.test_size,
+                            random_state=self.random_state,
                         )
                     else:
-                        X_train = custom_splits["X_train"]
-                        X_valid = custom_splits["X_valid"]
-                        X_test = custom_splits["X_test"]
-                        y_train = custom_splits["y_train"]
-                        y_valid = custom_splits["y_valid"]
-                        y_test = custom_splits["y_test"]
+                        X_train = custom_splits['X_train']
+                        X_valid = custom_splits['X_valid']
+                        X_test = custom_splits['X_test']
+                        y_train = custom_splits['y_train']
+                        y_valid = custom_splits['y_valid']
+                        y_test = custom_splits['y_test']
                     if isinstance(X, pd.DataFrame):
                         self.X_train_index = X_train.index.to_list()
                         self.X_valid_index = X_valid.index.to_list()
@@ -692,7 +638,6 @@ class Model:
                         y_train,
                         score=score,
                         validation_data=(X_valid, y_valid),
-                         **fit_params
                     )
                     #  calibrate model, and save output
 
@@ -700,17 +645,7 @@ class Model:
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_valid, y_valid,  **fit_params)
-                    if f1_beta_tune:
-                        y_pred_proba = self.predict_proba(X_valid)[:, 1]
-                        self.tune_threshold_Fbeta(
-                            score,
-                            y_valid,
-                            [1, 2],
-                            y_pred_proba,
-                            kfold=False,
-                        )
-
+                    ).fit(X_valid, y_valid)
                     print(
                         f"{score} after calibration:",
                         get_scorer(score)(self.estimator, X_valid, y_valid),
@@ -758,7 +693,6 @@ class Model:
         """
 
         self.reset_estimator()
-        ### KFOLD CASE ###
         if self.kfold:
             if score == None:
                 classifier = self.estimator.set_params(
@@ -788,7 +722,6 @@ class Model:
                 self.xval_output = get_cross_validate(
                     classifier, X, y, self.kf, scoring=scorer, kfgroups=self.kfold_group
                 )
-        ### NON KFOLD CASE ###
         else:
             if score is None:
                 best_params = self.best_params_per_score[self.scoring[0]]["params"]
@@ -932,12 +865,12 @@ class Model:
 
                     self.estimator.set_params(
                         **self.best_params_per_score[score]["params"]
-                    ).fit(X, y, **xgb_params, **fit_params)
+                    ).fit(X, y, **xgb_params)
                 else:
                     try:
                         self.estimator.set_params(
                             **self.best_params_per_score[score]["params"]
-                        ).fit(X, y, **fit_params)
+                        ).fit(X, y)
                     except ValueError as error:
                         print(
                             "Specified score not found in scoring dictionary. "
@@ -1042,7 +975,6 @@ class Model:
         model_metrics=False,
         print_threshold=False,
         return_dict=False,
-        print_best_feats=False,
         print_per_fold=False,
     ):
         """
@@ -1067,7 +999,6 @@ class Model:
             Whether to return the calculated metrics as a dictionary.
         print_per_fold : bool, optional (default=False)
             If using cross-validation, whether to print metrics for each fold.
-        print_best_feats : bool, optional (default=False)
 
         Returns:
         --------
@@ -1233,8 +1164,7 @@ class Model:
 
                 if self.feature_selection:
                     best_features = self.get_feature_names()
-                    if print_best_feats:
-                        print(best_features)
+                    print(best_features)
 
                     if return_dict:
                         return {
@@ -1252,12 +1182,12 @@ class Model:
                 reg_report = self.regression_report(y, y_pred)
                 if self.feature_selection:
                     best_features = self.get_feature_names()
-                    if print_best_feats:
-                        print(best_features)
+                    print(best_features)
                     if return_dict:
-                        reg_report = reg_report.copy()
-                        reg_report["Best Features"] = best_features
-                        return reg_report
+                        return {
+                            "Regression Report": reg_report,
+                            "Best Features": best_features,
+                        }
                 else:
                     if return_dict:
                         return reg_report
@@ -1332,7 +1262,13 @@ class Model:
             return self.estimator.predict_proba(X)
 
     def grid_search_param_tuning(
-        self, X, y, f1_beta_tune=False, betas=[1, 2], custom_splits=None, fit_params=None
+        self,
+        X=None,
+        y=None,
+        f1_beta_tune=False,
+        betas=[1, 2],
+        custom_splits=None,
+        fit_params=None
     ):
         """
         Performs grid or Bayesian search parameter tuning, optionally
@@ -1345,8 +1281,6 @@ class Model:
         f1_beta_tune : Whether to tune F-beta score thresholds during parameter
                        tuning. Default is False.
         betas : List of beta values to use for F-beta score tuning.Default is [1, 2].
-        custom_splits: a dictionary containing X_train, y_train, X_val, y_val and X_test, y_test.
-                       These splits will be used instead of MT doing the split.
 
         Raises:
         -------
@@ -1406,10 +1340,7 @@ class Model:
                                 kfold=True,
                             )
                             thresh_list.append(thresh)
-                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
-                        ### thresholds across all folds also stored ###
-                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
                         self.kfold = True
 
@@ -1419,7 +1350,7 @@ class Model:
                         self.kfold = False
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
 
-                            self.fit(X[train], y[train], **fit_params)
+                            self.fit(X[train], y[train])
                             y_pred_proba = self.predict_proba(X[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
@@ -1430,34 +1361,29 @@ class Model:
                             )
                             thresh_list.append(thresh)
                         self.kfold = True
-                        ### Average taken across all the different kfold loops as an alternative to storing every threshold ###
                         average_threshold = np.mean(thresh_list)
-                        ### thresholds across all folds also stored ###
-                        self.kfold_thresholds = thresh_list
                         self.threshold[score] = average_threshold
         else:
+            
             if custom_splits is None:
-                X_train, X_valid, X_test, y_train, y_valid, y_test = (
-                    train_val_test_split(
-                        X=X,
-                        y=y,
-                        stratify_y=self.stratify_y,
-                        stratify_cols=self.stratify_cols,
-                        train_size=self.train_size,
-                        validation_size=self.validation_size,
-                        test_size=self.test_size,
-                        random_state=self.random_state,
-                        groups=self.groups,
-                    )
+                X_train, X_valid, X_test, y_train, y_valid, y_test = train_val_test_split(
+                    X=X,
+                    y=y,
+                    stratify_y=self.stratify_y,
+                    stratify_cols=self.stratify_cols,
+                    train_size=self.train_size,
+                    validation_size=self.validation_size,
+                    test_size=self.test_size,
+                    random_state=self.random_state,
                 )
             else:
-                X_train = custom_splits["X_train"]
-                X_valid = custom_splits["X_valid"]
-                X_test = custom_splits["X_test"]
-                y_train = custom_splits["y_train"]
-                y_valid = custom_splits["y_valid"]
-                y_test = custom_splits["y_test"]
-
+                X_train = custom_splits['X_train']
+                X_valid = custom_splits['X_valid']
+                X_test = custom_splits['X_test']
+                y_train = custom_splits['y_train']
+                y_valid = custom_splits['y_valid']
+                y_test = custom_splits['y_test']
+                
             if isinstance(X, pd.DataFrame):
                 self.X_train_index = X_train.index.to_list()
                 self.X_valid_index = X_valid.index.to_list()
@@ -2181,7 +2107,6 @@ def train_val_test_split(
     test_size=0.2,
     random_state=3,
     stratify_cols=None,
-    groups=None,
 ):
     """
     Splits data into train, validation, and test sets, supporting stratification
@@ -2211,9 +2136,6 @@ def train_val_test_split(
     stratify_cols : list, pandas.DataFrame, or None, optional
         Columns to use for stratification, in addition to or instead of `y`.
         Default is None.
-    groups : array-like or None, optional
-        Group identifiers for group-aware splitting. Each group is placed
-        entirely in train, validation, or test. Default is None.
 
     Returns:
     --------
@@ -2234,49 +2156,15 @@ def train_val_test_split(
       columns (`stratify_cols`).
     - Ensures the proportions of the split sets are consistent with the
       specified `train_size`, `validation_size`, and `test_size`.
+
+    Notes:
+    ------
+    - The sum of `train_size`, `validation_size`, and `test_size` must equal 1.0.
+    - Stratification ensures the distribution of classes or categories is
+      preserved across splits.
+    - The function works seamlessly with both `pandas.DataFrame` and array-like
+      data structures.
     """
-
-    ## Validate sizes
-    if not np.isclose(train_size + validation_size + test_size, 1.0):
-        raise ValueError("train_size + validation_size + test_size must equal 1.0")
-
-    if groups is not None:
-        ## First: split train vs (validation + test)
-        gss = GroupShuffleSplit(
-            n_splits=1, test_size=(1 - train_size), random_state=random_state
-        )
-        train_idx, valid_test_idx = next(gss.split(X, y, groups))
-
-        ## Second: split (validation + test)
-        val_ratio = validation_size / (validation_size + test_size)
-        gss_val = GroupShuffleSplit(
-            n_splits=1, test_size=(1 - val_ratio), random_state=random_state
-        )
-
-        if isinstance(X, pd.DataFrame):
-            temp_groups = groups.iloc[valid_test_idx]
-            val_idx, test_idx = next(
-                gss_val.split(
-                    X.iloc[valid_test_idx], y.iloc[valid_test_idx], temp_groups
-                )
-            )
-        else:
-            temp_groups = groups[valid_test_idx]
-            val_idx, test_idx = next(
-                gss_val.split(X[valid_test_idx], y[valid_test_idx], temp_groups)
-            )
-
-        ## Map indices back to global index space
-        val_idx = valid_test_idx[val_idx]
-        test_idx = valid_test_idx[test_idx]
-        X_train = X.iloc[train_idx] if hasattr(X, "iloc") else X[train_idx]
-        X_valid = X.iloc[val_idx] if hasattr(X, "iloc") else X[val_idx]
-        X_test = X.iloc[test_idx] if hasattr(X, "iloc") else X[test_idx]
-        y_train = y.iloc[train_idx] if hasattr(y, "iloc") else y[train_idx]
-        y_valid = y.iloc[val_idx] if hasattr(y, "iloc") else y[val_idx]
-        y_test = y.iloc[test_idx] if hasattr(y, "iloc") else y[test_idx]
-
-        return X_train, X_valid, X_test, y_train, y_valid, y_test
 
     # Standardize stratification parameters
     if stratify_y is False:
