@@ -5,6 +5,7 @@ from sklearn.discriminant_analysis import StandardScaler
 from sklearn.feature_selection import SelectKBest
 from sklearn.impute import SimpleImputer
 from model_tuner import Model, report_model_metrics
+from model_tuner.model_tuner_utils import Model
 import pandas as pd
 import numpy as np
 from sklearn.datasets import make_classification, make_regression
@@ -20,6 +21,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import KFold, StratifiedKFold
+from sklearn.compose import ColumnTransformer
 from model_tuner.model_tuner_utils import kfold_split
 from model_tuner.model_tuner_utils import train_val_test_split, report_model_metrics
 
@@ -1941,7 +1943,6 @@ def test_group_kfold_no_group_overlap():
 
     # --- 2. Instantiate the Model, specifying GroupKFold usage ---
     from sklearn.linear_model import LogisticRegression
-    from model_tuner.model_tuner_utils import Model
 
     estimator_name = "lr"
     param_grid = {f"{estimator_name}__C": [0.1, 1]}  # minimal grid for speed
@@ -2316,7 +2317,6 @@ def test_calibrate_imbalance_sampler_and_extract(classification_data):
 
 
 def test_model_with_column_transformer(classification_data):
-    from sklearn.compose import ColumnTransformer
     from sklearn.preprocessing import StandardScaler
     from sklearn.impute import SimpleImputer
 
@@ -2779,7 +2779,6 @@ def test_get_feature_names_out(classification_data, calibrate):
 
 
 def test_get_feature_names_out_no_feature_selection(classification_data):
-    from sklearn.compose import ColumnTransformer
     from sklearn.preprocessing import StandardScaler
     from sklearn.impute import SimpleImputer
 
@@ -2937,3 +2936,193 @@ def test_fit_with_single_feature(classification_data):
     model.fit(X_single, y)
     preds = model.predict(X_single)
     assert len(preds) == len(y)
+
+
+# ------------------------------------------------------------
+# CatBoost pipeline + fit_params behavior tests
+# ------------------------------------------------------------
+
+
+def _make_df(n=60):
+    """Utility: small mixed dataset"""
+    return pd.DataFrame(
+        {
+            "num": np.random.randn(n),
+            "cat": np.random.choice(["A", "B"], n).astype(str),
+        }
+    )
+
+
+CAT_IDX = [1]  # categorical column index after ColumnTransformer
+
+
+# ------------------------------------------------------------
+# fit_params pass-through
+# ------------------------------------------------------------
+def test_catboost_fitparams_pass_through():
+
+    df = _make_df(50)
+    y = pd.Series(np.random.randint(0, 2, 50))
+
+    preprocessor = ColumnTransformer(
+        [
+            ("num", "passthrough", ["num"]),
+            ("cat", "passthrough", ["cat"]),
+        ]
+    )
+
+    model = Model(
+        name="cat_fitparams_test",
+        estimator_name="cat",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        pipeline_steps=[("ct", preprocessor)],
+        grid={"cat__depth": [2]},
+        scoring=["roc_auc"],
+    )
+
+    # IMPORTANT: provide cat_features during grid search
+    model.grid_search_param_tuning(df, y, fit_params={"cat__cat_features": CAT_IDX})
+
+    model.fit(
+        df,
+        y,
+        fit_params={"cat__cat_features": CAT_IDX},
+    )
+
+    assert hasattr(model.estimator.named_steps["cat"], "predict")
+
+
+# ------------------------------------------------------------
+# categorical column handled correctly
+# ------------------------------------------------------------
+def test_catboost_uses_categorical_features():
+
+    df = _make_df(60)
+    y = pd.Series(np.random.randint(0, 2, 60))
+
+    preprocessor = ColumnTransformer(
+        [
+            ("num", "passthrough", ["num"]),
+            ("cat", "passthrough", ["cat"]),
+        ]
+    )
+
+    model = Model(
+        name="cat_feature_usage",
+        estimator_name="cat",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        pipeline_steps=[("ct", preprocessor)],
+        grid={"cat__depth": [2]},
+    )
+
+    model.grid_search_param_tuning(df, y, fit_params={"cat__cat_features": CAT_IDX})
+
+    model.fit(
+        df,
+        y,
+        fit_params={"cat__cat_features": CAT_IDX},
+    )
+
+    assert model.estimator.named_steps["cat"].is_fitted()
+
+
+# ------------------------------------------------------------
+# grid search retains fit_params
+# ------------------------------------------------------------
+def test_catboost_gridsearch_with_fitparams():
+
+    df = _make_df(80)
+    y = pd.Series(np.random.randint(0, 2, 80))
+
+    preprocessor = ColumnTransformer(
+        [
+            ("num", "passthrough", ["num"]),
+            ("cat", "passthrough", ["cat"]),
+        ]
+    )
+
+    model = Model(
+        name="cat_grid_fitparams",
+        estimator_name="cat",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        pipeline_steps=[("ct", preprocessor)],
+        grid={"cat__depth": [2, 3]},
+        scoring=["roc_auc"],
+    )
+
+    model.grid_search_param_tuning(df, y, fit_params={"cat__cat_features": CAT_IDX})
+
+    assert model.best_params_per_score["roc_auc"]["params"] is not None
+
+
+# ------------------------------------------------------------
+# calibration works with categorical features
+# ------------------------------------------------------------
+def test_catboost_calibration_with_fitparams():
+
+    df = _make_df(70)
+    y = pd.Series(np.random.randint(0, 2, 70))
+
+    preprocessor = ColumnTransformer(
+        [
+            ("num", "passthrough", ["num"]),
+            ("cat", "passthrough", ["cat"]),
+        ]
+    )
+
+    model = Model(
+        name="cat_calibration",
+        estimator_name="cat",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        pipeline_steps=[("ct", preprocessor)],
+        grid={"cat__depth": [2]},
+        calibrate=True,
+    )
+
+    model.grid_search_param_tuning(df, y, fit_params={"cat__cat_features": CAT_IDX})
+
+    model.fit(
+        df,
+        y,
+        fit_params={"cat__cat_features": CAT_IDX},
+    )
+
+    model.calibrateModel(
+        df,
+        y,
+        fit_params={"cat__cat_features": CAT_IDX},
+    )
+
+    proba = model.predict_proba(df)
+
+    assert np.allclose(proba.sum(axis=1), 1)
+
+
+# ------------------------------------------------------------
+# invalid categorical index should fail
+# ------------------------------------------------------------
+def test_catboost_invalid_cat_index_raises():
+
+    df = _make_df(40)
+    y = pd.Series(np.random.randint(0, 2, 40))
+
+    model = Model(
+        name="cat_invalid_idx",
+        estimator_name="cat",
+        estimator=CatBoostClassifier(verbose=0),
+        model_type="classification",
+        grid={"cat__depth": [2]},
+    )
+
+    model.grid_search_param_tuning(df, y, fit_params={"cat__cat_features": CAT_IDX})
+
+    with pytest.raises(Exception):
+        model.fit(
+            df,
+            y,
+            fit_params={"cat__cat_features": [5]},
+        )
