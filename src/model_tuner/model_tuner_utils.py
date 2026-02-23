@@ -482,7 +482,9 @@ class Model:
         print(f"Distribution of y values after resampling: {y_res.value_counts()}")
         print()
 
-    def calibrateModel(self, X, y, score=None, f1_beta_tune=False, custom_splits=None):
+    def calibrateModel(
+        self, X, y, score=None, f1_beta_tune=False, custom_splits=None, fit_params={}
+    ):
         """
         Calibrates the model to improve probability estimates, with support for
         k-fold cross-validation and prefit workflows. This method adjusts the
@@ -523,12 +525,12 @@ class Model:
                         classifier,
                         cv=self.n_splits,
                         method=self.calibration_method,
-                    ).fit(X, y)
+                    ).fit(X, y, **fit_params)
                     if f1_beta_tune:
                         self.kfold = False
                         thresh_list = []
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
-                            self.fit(X.iloc[train], y.iloc[train])
+                            self.fit(X.iloc[train], y.iloc[train], **fit_params)
                             y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 self.scoring[0],
@@ -560,13 +562,13 @@ class Model:
                         classifier,
                         cv=self.n_splits,
                         method=self.calibration_method,
-                    ).fit(X, y)
+                    ).fit(X, y, **fit_params)
                     test_model = self.estimator
                     if f1_beta_tune:
                         self.kfold = False
                         thresh_list = []
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
-                            self.fit(X.iloc[train], y.iloc[train])
+                            self.fit(X.iloc[train], y.iloc[train], **fit_params)
                             y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
@@ -624,15 +626,20 @@ class Model:
                         self.verify_imbalance_sampler(X_train, y_train)
 
                     if self.boost_early:
-                        self.fit(X_train, y_train, validation_data=[X_valid, y_valid])
+                        self.fit(
+                            X_train,
+                            y_train,
+                            validation_data=[X_valid, y_valid],
+                            fit_params=fit_params,
+                        )
                     else:
-                        self.fit(X_train, y_train)
+                        self.fit(X_train, y_train, fit_params=fit_params)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_valid, y_valid)
+                    ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
@@ -692,6 +699,7 @@ class Model:
                         y_train,
                         score=score,
                         validation_data=(X_valid, y_valid),
+                        **fit_params,
                     )
                     #  calibrate model, and save output
 
@@ -699,7 +707,7 @@ class Model:
                         self.estimator,
                         cv="prefit",
                         method=self.calibration_method,
-                    ).fit(X_valid, y_valid)
+                    ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
@@ -733,7 +741,7 @@ class Model:
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
 
-    def fit(self, X, y, validation_data=None, score=None):
+    def fit(self, X, y, validation_data=None, score=None, fit_params={}):
         """
         Trains the model using the best hyperparameters obtained from tuning
         and optionally supports k-fold cross-validation and early stopping.
@@ -757,6 +765,7 @@ class Model:
         """
 
         self.reset_estimator()
+        ### KFOLD CASE ###
         if self.kfold:
             if score == None:
                 classifier = self.estimator.set_params(
@@ -786,6 +795,7 @@ class Model:
                 self.xval_output = get_cross_validate(
                     classifier, X, y, self.kf, scoring=scorer, kfgroups=self.kfold_group
                 )
+        ### NON KFOLD CASE ###
         else:
             if score is None:
                 best_params = self.best_params_per_score[self.scoring[0]]["params"]
@@ -853,9 +863,11 @@ class Model:
                     }
                     if estimator_verbosity in best_params:
                         best_params.pop(estimator_verbosity)
-                    self.estimator.set_params(**best_params).fit(X, y, **xgb_params)
+                    self.estimator.set_params(**best_params).fit(
+                        X, y, **xgb_params, **fit_params
+                    )
                 else:
-                    self.estimator.set_params(**best_params).fit(X, y)
+                    self.estimator.set_params(**best_params).fit(X, y, **fit_params)
             else:
                 best_params = self.best_params_per_score[score]["params"]
                 if self.boost_early:
@@ -929,12 +941,12 @@ class Model:
 
                     self.estimator.set_params(
                         **self.best_params_per_score[score]["params"]
-                    ).fit(X, y, **xgb_params)
+                    ).fit(X, y, **xgb_params, **fit_params)
                 else:
                     try:
                         self.estimator.set_params(
                             **self.best_params_per_score[score]["params"]
-                        ).fit(X, y)
+                        ).fit(X, y, **fit_params)
                     except ValueError as error:
                         print(
                             "Specified score not found in scoring dictionary. "
@@ -1329,7 +1341,13 @@ class Model:
             return self.estimator.predict_proba(X)
 
     def grid_search_param_tuning(
-        self, X, y, f1_beta_tune=False, betas=[1, 2], custom_splits=None
+        self,
+        X,
+        y,
+        f1_beta_tune=False,
+        betas=[1, 2],
+        custom_splits=None,
+        fit_params={},
     ):
         """
         Performs grid or Bayesian search parameter tuning, optionally
@@ -1393,7 +1411,9 @@ class Model:
                         self.kfold = False
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
 
-                            self.fit(X.iloc[train], y.iloc[train])
+                            self.fit(
+                                X.iloc[train], y.iloc[train], fit_params=fit_params
+                            )
                             y_pred_proba = self.predict_proba(X.iloc[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
@@ -1416,7 +1436,7 @@ class Model:
                         self.kfold = False
                         for train, test in self.kf.split(X, y, groups=self.kfold_group):
 
-                            self.fit(X[train], y[train])
+                            self.fit(X[train], y[train], **fit_params)
                             y_pred_proba = self.predict_proba(X[test])[:, 1]
                             thresh = self.tune_threshold_Fbeta(
                                 score,
@@ -1543,7 +1563,7 @@ class Model:
                         }
 
                         clf = self.estimator.set_params(**params).fit(
-                            X_train, y_train, **xgb_params
+                            X_train, y_train, **xgb_params, **fit_params
                         )
 
                         ### extracting the best parameters found through early stopping
@@ -1578,7 +1598,9 @@ class Model:
                         self.grid[index] = params
 
                     else:
-                        clf = self.estimator.set_params(**params).fit(X_train, y_train)
+                        clf = self.estimator.set_params(**params).fit(
+                            X_train, y_train, **fit_params
+                        )
 
                     if score in self.custom_scorer:
                         scorer_func = self.custom_scorer[score]
