@@ -483,7 +483,7 @@ class Model:
         print()
 
     def calibrateModel(
-        self, X, y, score=None, f1_beta_tune=False, custom_splits=None, fit_params=None
+        self, X, y, score=None, f1_beta_tune=False, custom_splits=None, fit_params={}
     ):
         """
         Calibrates the model to improve probability estimates, with support for
@@ -741,7 +741,7 @@ class Model:
     def get_test_data(self, X, y):
         return X.loc[self.X_test_index], y.loc[self.y_test_index]
 
-    def fit(self, X, y, validation_data=None, score=None, fit_params=None):
+    def fit(self, X, y, validation_data=None, score=None, fit_params={}):
         """
         Trains the model using the best hyperparameters obtained from tuning
         and optionally supports k-fold cross-validation and early stopping.
@@ -1347,7 +1347,7 @@ class Model:
         f1_beta_tune=False,
         betas=[1, 2],
         custom_splits=None,
-        fit_params=None,
+        fit_params={},
     ):
         """
         Performs grid or Bayesian search parameter tuning, optionally
