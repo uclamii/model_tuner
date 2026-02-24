@@ -119,25 +119,6 @@ if __name__ == "__main__":
                 "to_str",
                 FunctionTransformer(
                     to_str_func,
-                    # IMPORTANT:
-                    # ColumnTransformer.get_feature_names_out() requires every
-                    # transformer in the pipeline to implement feature name
-                    # propagation. FunctionTransformer does not provide this
-                    # by default, which causes:
-                    #
-                    # AttributeError:
-                    #   Estimator to_str does not provide get_feature_names_out
-                    #
-                    # Setting feature_names_out="one-to-one" tells sklearn that:
-                    #
-                    #   • output columns == input columns
-                    #   • no columns are added, removed, or renamed
-                    #
-                    # This enables safe feature lineage tracking and allows:
-                    #
-                    #   pipeline.get_feature_names_out()
-                    #
-                    # to work correctly.
                     feature_names_out="one-to-one",
                 ),
             ),
