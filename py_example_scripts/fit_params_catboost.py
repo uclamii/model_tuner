@@ -102,11 +102,45 @@ if __name__ == "__main__":
         ]
     )
 
+    def to_str_func(X):
+        # Convert categorical values to strings.
+        # CatBoost can consume string categories directly, and this ensures
+        # consistent dtype handling after imputation.
+        return X.astype(str)
+
     # Create the ColumnTransformer with passthrough
     cat_transformer = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value="__MISSING__")),
-            ("to_str", FunctionTransformer(lambda x: x.astype(str))),
+            (
+                "imputer",
+                SimpleImputer(strategy="constant", fill_value="__MISSING__"),
+            ),
+            (
+                "to_str",
+                FunctionTransformer(
+                    to_str_func,
+                    # IMPORTANT:
+                    # ColumnTransformer.get_feature_names_out() requires every
+                    # transformer in the pipeline to implement feature name
+                    # propagation. FunctionTransformer does not provide this
+                    # by default, which causes:
+                    #
+                    # AttributeError:
+                    #   Estimator to_str does not provide get_feature_names_out
+                    #
+                    # Setting feature_names_out="one-to-one" tells sklearn that:
+                    #
+                    #   • output columns == input columns
+                    #   • no columns are added, removed, or renamed
+                    #
+                    # This enables safe feature lineage tracking and allows:
+                    #
+                    #   pipeline.get_feature_names_out()
+                    #
+                    # to work correctly.
+                    feature_names_out="one-to-one",
+                ),
+            ),
         ]
     )
 
