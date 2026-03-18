@@ -2639,6 +2639,8 @@ def report_model_metrics(
         if model.model_type == "regression":
             # Regression metrics
             y_pred = model.predict(X)
+            n = len(y)
+            p = X.shape[1] if hasattr(X, "shape") else len(X[0])
             return pd.DataFrame(
                 [
                     {
@@ -2654,6 +2656,14 @@ def report_model_metrics(
                         "Value": np.sqrt(mean_squared_error(y, y_pred)),
                     },
                     {"Metric": "R2 Score", "Value": r2_score(y, y_pred)},
+                    {
+                        "Metric": "Adjusted R2 Score",
+                        "Value": (
+                            1 - (1 - r2_score(y, y_pred)) * (n - 1) / (n - p - 1)
+                            if n - p - 1 > 0
+                            else float("nan")
+                        ),
+                    },
                     {
                         "Metric": "Explained Variance",
                         "Value": explained_variance_score(y, y_pred),
@@ -2791,6 +2801,8 @@ def report_model_metrics(
             test_model.kfold = True
 
         if model.model_type == "regression":
+            n = len(aggregated_y_true)
+            p = X_valid.shape[1] if hasattr(X_valid, "shape") else len(X_valid[0])
             avg_metrics_df = pd.DataFrame(
                 [
                     {
@@ -2814,6 +2826,23 @@ def report_model_metrics(
                     {
                         "Metric": "R2 Score",
                         "Value": r2_score(aggregated_y_true, aggregated_y_pred),
+                    },
+                    {
+                        "Metric": "Adjusted R2 Score",
+                        "Value": (
+                            1
+                            - (
+                                1
+                                - r2_score(
+                                    aggregated_y_true,
+                                    aggregated_y_pred,
+                                )
+                            )
+                            * (n - 1)
+                            / (n - p - 1)
+                            if n - p - 1 > 0
+                            else float("nan")
+                        ),
                     },
                     {
                         "Metric": "Explained Variance",

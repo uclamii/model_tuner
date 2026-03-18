@@ -224,8 +224,6 @@ def evaluate_bootstrap_metrics(
                 scores[metric].append(adj_r2)
                 continue
 
-        # Calculate and store metric scores
-        for metric in metrics:
             if metric == "neg_brier_score":
                 scores[metric].append(
                     brier_score_loss(
