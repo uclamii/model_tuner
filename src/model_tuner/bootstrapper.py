@@ -1,5 +1,11 @@
 from sklearn.utils import resample
-from sklearn.metrics import get_scorer, recall_score, hamming_loss
+from sklearn.metrics import (
+    get_scorer,
+    recall_score,
+    hamming_loss,
+    brier_score_loss,
+    r2_score,
+)
 import numpy as np
 import scipy.stats as st
 import pandas as pd
@@ -103,29 +109,8 @@ def evaluate_bootstrap_metrics(
     stratify=None,
     balance=False,
     class_proportions=None,
+    n_features=None,
 ):
-    """
-    Evaluate various classification metrics on bootstrap samples using a
-    pre-trained model or pre-computed predicted probabilities.
-
-    Parameters:
-    - model (optional): A pre-trained classifier that has a predict_proba method.
-      Not required if y_pred_prob is provided.
-    - X (array-like, optional): Input features. Not required if y_pred_prob is provided.
-    - y (array-like): Labels.
-    - y_pred_prob (array-like, optional): Pre-computed predicted probabilities.
-    - n_samples (int): The number of samples in each bootstrap sample.
-    - num_resamples (int): The number of resamples to generate.
-    - metrics (list): List of metric names to evaluate.
-    - random_state (int, optional): Random state used as the seed for each random number
-      in the loop
-    - threshold (float, optional): Threshold used to turn probability estimates into predictions.
-
-    Returns:
-    - DataFrame: Confidence intervals for various metrics.
-    """
-
-    # Check if y is provided
     if y is None:
         raise ValueError("The y parameter is required and cannot be None.")
 
@@ -138,19 +123,33 @@ def evaluate_bootstrap_metrics(
         "neg_mean_squared_log_error",
         "neg_median_absolute_error",
         "r2",
+        "adjusted_r2",
         "neg_mean_poisson_deviance",
         "neg_mean_gamma_deviance",
     ]
 
-    # if y is a numpy array cast it to a dataframe
+    if "adjusted_r2" in metrics:
+        if model_type != "regression":
+            raise ValueError(
+                "'adjusted_r2' is a regression metric; set model_type='regression'."
+            )
+        if n_features is None:
+            if X is not None:
+                n_features = np.array(X).shape[1]
+            else:
+                raise ValueError(
+                    "n_features must be provided when 'adjusted_r2' is included "
+                    "in metrics and X is not supplied."
+                )
+        if n_features < 1:
+            raise ValueError("n_features must be a positive integer.")
+
     y = check_input_type(y)
     if y_pred_prob is not None:
         y_pred_prob = check_input_type(y_pred_prob)
 
-    # Set the random seed for reproducibility
     seed(random_state)
 
-    # Ensure either model and X or y_pred_prob are provided
     if y_pred_prob is None and (model is None or X is None):
         raise ValueError("Either model and X or y_pred_prob must be provided.")
 
@@ -166,10 +165,8 @@ def evaluate_bootstrap_metrics(
             "Error: Balancing classes is not applicable for 'regression' tasks."
         )
 
-    # Initialize a dictionary to store scores for each metric
     scores = {metric: [] for metric in metrics}
 
-    # Perform bootstrap resampling
     for _ in tqdm(range(num_resamples)):
 
         y_resample = sampling_method(
@@ -180,24 +177,20 @@ def evaluate_bootstrap_metrics(
             class_proportions=class_proportions,
         )
 
-        # If pre-computed predicted probabilities are provided
         if y_pred_prob is not None:
             resampled_indicies = y_resample.index
             y_pred_prob_resample = y_pred_prob.iloc[resampled_indicies]
 
             if model_type != "regression":
-                # handle multi label thresholds
                 if thresholds is not None:
                     y_pred_resample = np.zeros_like(y_pred_prob_resample)
                     if isinstance(thresholds, dict):
-                        # Thresholds as dict with column names
                         for idx, col in enumerate(y_pred_prob_resample.columns):
                             thr = thresholds.get(col, 0.5)
                             y_pred_resample[:, idx] = (
                                 y_pred_prob_resample.iloc[:, idx] > thr
                             ).astype(int)
                     else:
-                        # Thresholds as list/array
                         for idx, thr in enumerate(thresholds):
                             y_pred_resample[:, idx] = (
                                 y_pred_prob_resample.iloc[:, idx] > thr
@@ -208,21 +201,41 @@ def evaluate_bootstrap_metrics(
                 y_pred_resample = y_pred_prob_resample
         else:
             X = check_input_type(X)
-            # Resample the input features and compute predictions
             resampled_indicies = y_resample.index
             X_resample = X.iloc[resampled_indicies]
 
-            # X_resample = X_resample.values  # numpy array
             if model_type != "regression":
                 y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
             else:
                 y_pred_prob_resample = None
             y_pred_resample = model.predict(X_resample, optimal_threshold=True)
 
+        for metric in metrics:
+            if metric == "adjusted_r2":
+                n = len(y_resample)
+                p = n_features
+                r2 = r2_score(y_resample, y_pred_resample)
+                if n - p - 1 <= 0:
+                    raise RuntimeError(
+                        "Sample Size Error: n_samples must be greater than "
+                        "n_features + 1 to compute adjusted_r2."
+                    )
+                adj_r2 = 1 - (1 - r2) * (n - 1) / (n - p - 1)
+                scores[metric].append(adj_r2)
+                continue
+
         # Calculate and store metric scores
         for metric in metrics:
+            if metric == "neg_brier_score":
+                scores[metric].append(
+                    brier_score_loss(
+                        y_resample,
+                        y_pred_prob_resample,
+                    )
+                )
+                continue
+
             if metric == "specificity":
-                # Compute specificity using recall_score with pos_label=0
                 scores[metric].append(
                     recall_score(
                         y_resample,
@@ -233,17 +246,10 @@ def evaluate_bootstrap_metrics(
                 )
                 continue
             if metric == "hamming_loss":
-                scores[metric].append(
-                    hamming_loss(
-                        y_resample,
-                        y_pred_resample,
-                    )
-                )
+                scores[metric].append(hamming_loss(y_resample, y_pred_resample))
                 continue
-            # Get the scorer function for the given metric
             scorer = get_scorer(metric)
             if metric in ["roc_auc", "average_precision", "brier_score"]:
-                # Metrics that use probability predictions
                 try:
                     scores[metric].append(
                         scorer._score_func(y_resample, y_pred_prob_resample)
@@ -251,11 +257,11 @@ def evaluate_bootstrap_metrics(
                 except ValueError as e:
                     if "Only one class present in y_true" in str(e):
                         raise RuntimeError(
-                            "Sample Size Error: Increase n_samples, sample size too small for metric to be valid."
+                            "Sample Size Error: Increase n_samples, sample size "
+                            "too small for metric to be valid."
                         )
                     else:
                         raise
-
             elif metric == "precision":
                 scores[metric].append(
                     scorer._score_func(
@@ -270,27 +276,18 @@ def evaluate_bootstrap_metrics(
                     if thresholds:
                         scores[metric].append(
                             scorer._score_func(
-                                y_resample,
-                                y_pred_resample,
-                                average=average,
+                                y_resample, y_pred_resample, average=average
                             )
                         )
                     else:
                         scores[metric].append(
-                            scorer._score_func(
-                                y_resample,
-                                y_pred_resample,
-                            )
+                            scorer._score_func(y_resample, y_pred_resample)
                         )
                 except TypeError:
                     scores[metric].append(
-                        scorer._score_func(
-                            y_resample,
-                            y_pred_resample,
-                        )
+                        scorer._score_func(y_resample, y_pred_resample)
                     )
 
-    # Initialize a dictionary to store results
     metrics_results = {
         "Metric": [],
         "Mean": [],
@@ -298,7 +295,6 @@ def evaluate_bootstrap_metrics(
         "95% CI Upper": [],
     }
 
-    # Calculate mean and confidence intervals for each metric
     for metric in metrics:
         metric_scores = scores[metric]
         mean_score = np.mean(metric_scores)
@@ -306,15 +302,12 @@ def evaluate_bootstrap_metrics(
             0.95,
             len(metric_scores) - 1,
             loc=mean_score,
-            scale=st.sem(
-                metric_scores,
-            ),
+            scale=st.sem(metric_scores),
         )
         metrics_results["Metric"].append(metric)
         metrics_results["Mean"].append(mean_score)
         metrics_results["95% CI Lower"].append(ci_lower)
         metrics_results["95% CI Upper"].append(ci_upper)
 
-    # Convert results to a DataFrame and return
     metrics_df = pd.DataFrame(metrics_results)
     return metrics_df

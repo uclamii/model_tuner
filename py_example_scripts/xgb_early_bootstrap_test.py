@@ -8,7 +8,7 @@ from sklearn.datasets import make_classification
 from sklearn.datasets import load_breast_cancer
 
 import model_tuner
-from model_tuner.model_tuner_utils import Model
+from model_tuner.model_tuner_utils import Model, report_model_metrics
 from model_tuner.bootstrapper import evaluate_bootstrap_metrics
 from model_tuner.pickleObjects import dumpObjects, loadObjects
 
@@ -105,8 +105,15 @@ model.fit(X_train, y_train, validation_data=[X_valid, y_valid])
 
 print("Validation Metrics")
 model.return_metrics(X_valid, y_valid, optimal_threshold=True)
+
+print("Validation Metrics")
+report_model_metrics(model, X_valid, y_valid)
+
 print("Test Metrics")
 model.return_metrics(X_test, y_test, optimal_threshold=True)
+
+print("Test Metrics")
+report_model_metrics(model, X_test, y_test)
 
 y_prob = model.predict_proba(X_test)[:, 1]
 
@@ -131,6 +138,7 @@ print(
             "recall",
             "specificity",
             "average_precision",
+            "neg_brier_score",
         ],
         random_state=42,
         threshold=0.5,
