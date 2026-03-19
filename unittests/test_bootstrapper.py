@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 import pandas as pd
 from model_tuner import Model
-from sklearn.datasets import make_classification
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification, make_regression
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from src.model_tuner.bootstrapper import (
     check_input_type,
     sampling_method,
@@ -32,6 +32,30 @@ def generate_classification_data(
         n_samples=n_samples,
         n_features=n_features,
         n_classes=n_classes,
+        random_state=random_state,
+    )
+    return pd.DataFrame(X), pd.Series(y)
+
+
+def generate_regression_data(
+    n_samples: int = 200,
+    n_features: int = 10,
+    random_state: int = 42,
+) -> tuple[pd.DataFrame, pd.Series]:
+    """Generate synthetic regression data for testing.
+
+    Parameters:
+    - n_samples: Number of samples.
+    - n_features: Number of features.
+    - random_state: Random seed for reproducibility.
+
+    Returns:
+    A tuple containing a DataFrame of features and a Series of targets.
+    """
+    X, y = make_regression(
+        n_samples=n_samples,
+        n_features=n_features,
+        noise=0.1,
         random_state=random_state,
     )
     return pd.DataFrame(X), pd.Series(y)
@@ -161,7 +185,7 @@ def test_evaluate_bootstrap_metrics() -> None:
         model_type="classification",
         grid={},  # Not doing hyperparam tuning for simplicity
         scoring=["accuracy"],  # Simplify
-        class_labels=["0", "1"],  # Let’s define these for the classification report
+        class_labels=["0", "1"],  # Let's define these for the classification report
     )
 
     model.grid_search_param_tuning(X_single, y)
@@ -237,6 +261,214 @@ def test_balance_with_regression_type() -> None:
     ):
         evaluate_bootstrap_metrics(
             model=model, X=X, y=y, model_type="regression", balance=True
+        )
+
+
+# ---------------------------------------------------------------------------
+# Brier Score Loss Tests
+# ---------------------------------------------------------------------------
+
+def test_brier_score_with_y_pred_prob() -> None:
+    """Test neg_brier_score metric using pre-computed predicted probabilities."""
+    np.random.seed(42)
+    n_samples = 300
+
+    y = pd.Series(np.random.binomial(1, 0.4, n_samples))
+    y_pred_prob = pd.DataFrame(np.random.beta(2, 3, n_samples))
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        metrics=["neg_brier_score"],
+    )
+
+    assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
+    assert "neg_brier_score" in results["Metric"].values, (
+        "neg_brier_score should appear in results"
+    )
+    brier_row = results[results["Metric"] == "neg_brier_score"].iloc[0]
+    # Brier score is always in [0, 1]; mean should be non-negative
+    assert 0.0 <= brier_row["Mean"] <= 1.0, (
+        f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
+    )
+    assert brier_row["95% CI Lower"] <= brier_row["Mean"] <= brier_row["95% CI Upper"], (
+        "CI bounds should bracket the mean"
+    )
+
+
+def test_brier_score_with_model() -> None:
+    """Test neg_brier_score metric when a fitted Model object is supplied."""
+    X, y = generate_classification_data(n_samples=400)
+
+    model = Model(
+        name="brier_test",
+        estimator_name="rf",
+        estimator=RandomForestClassifier(random_state=42),
+        model_type="classification",
+        grid={},
+        scoring=["accuracy"],
+        class_labels=["0", "1"],
+    )
+    model.grid_search_param_tuning(X, y)
+    model.fit(X, y)
+
+    results = evaluate_bootstrap_metrics(
+        model=model,
+        X=X,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        metrics=["neg_brier_score"],
+    )
+
+    assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
+    assert "neg_brier_score" in results["Metric"].values, (
+        "neg_brier_score should appear in results"
+    )
+    brier_row = results[results["Metric"] == "neg_brier_score"].iloc[0]
+    assert 0.0 <= brier_row["Mean"] <= 1.0, (
+        f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
+    )
+
+
+def test_brier_score_combined_with_other_metrics() -> None:
+    """Test that neg_brier_score can be evaluated alongside other metrics."""
+    np.random.seed(0)
+    n_samples = 300
+
+    y = pd.Series(np.random.binomial(1, 0.5, n_samples))
+    y_pred_prob = pd.DataFrame(np.random.uniform(0, 1, n_samples))
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        metrics=["roc_auc", "neg_brier_score"],
+    )
+
+    assert len(results) == 2, "Should return results for both metrics"
+    assert set(results["Metric"].values) == {"roc_auc", "neg_brier_score"}, (
+        "Both metrics should be present in the results"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Adjusted R² Tests
+# ---------------------------------------------------------------------------
+
+def test_adjusted_r2_with_x_supplied() -> None:
+    """Test adjusted_r2 when X is supplied so n_features is inferred automatically."""
+    X, y = generate_regression_data(n_samples=300, n_features=10)
+    model = RandomForestRegressor(random_state=42).fit(X, y)
+
+    results = evaluate_bootstrap_metrics(
+        model=model,
+        X=X,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        model_type="regression",
+        metrics=["adjusted_r2"],
+    )
+
+    assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
+    assert "adjusted_r2" in results["Metric"].values, (
+        "adjusted_r2 should appear in results"
+    )
+    row = results[results["Metric"] == "adjusted_r2"].iloc[0]
+    # Adjusted R² can be negative for poor models but must be ≤ 1
+    assert row["Mean"] <= 1.0, f"Adjusted R² mean {row['Mean']} should not exceed 1"
+    assert row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"], (
+        "CI bounds should bracket the mean"
+    )
+
+
+def test_adjusted_r2_with_explicit_n_features() -> None:
+    """Test adjusted_r2 when n_features is explicitly provided (no X passed)."""
+    np.random.seed(42)
+    n_samples, n_features = 300, 10
+
+    X, y = generate_regression_data(n_samples=n_samples, n_features=n_features)
+    model = RandomForestRegressor(random_state=42).fit(X, y)
+
+    # Simulate pre-computed predictions as y_pred_prob (regression values)
+    y_pred = pd.DataFrame(model.predict(X))
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        model_type="regression",
+        metrics=["adjusted_r2"],
+        n_features=n_features,
+    )
+
+    assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
+    assert "adjusted_r2" in results["Metric"].values, (
+        "adjusted_r2 should appear in results"
+    )
+
+
+def test_adjusted_r2_combined_with_other_regression_metrics() -> None:
+    """Test adjusted_r2 alongside other regression metrics."""
+    X, y = generate_regression_data(n_samples=300, n_features=8)
+    model = RandomForestRegressor(random_state=42).fit(X, y)
+
+    results = evaluate_bootstrap_metrics(
+        model=model,
+        X=X,
+        y=y,
+        n_samples=100,
+        num_resamples=20,
+        model_type="regression",
+        metrics=["r2", "adjusted_r2", "neg_mean_squared_error"],
+    )
+
+    assert len(results) == 3, "Should return results for all three metrics"
+    assert set(results["Metric"].values) == {"r2", "adjusted_r2", "neg_mean_squared_error"}, (
+        "All requested metrics should appear in results"
+    )
+
+
+def test_adjusted_r2_raises_without_classification_model_type() -> None:
+    """Test that adjusted_r2 raises an error when model_type is not 'regression'."""
+    X, y = generate_classification_data(n_samples=100)
+    model = RandomForestClassifier().fit(X, y)
+
+    with pytest.raises(ValueError, match="'adjusted_r2' is a regression metric"):
+        evaluate_bootstrap_metrics(
+            model=model,
+            X=X,
+            y=y,
+            model_type="classification",
+            metrics=["adjusted_r2"],
+            n_samples=50,
+            num_resamples=5,
+        )
+
+
+def test_adjusted_r2_raises_without_n_features_and_no_x() -> None:
+    """Test that adjusted_r2 raises ValueError when n_features and X are both absent."""
+    np.random.seed(42)
+    n_samples = 200
+
+    X, y = generate_regression_data(n_samples=n_samples, n_features=5)
+    model = RandomForestRegressor(random_state=42).fit(X, y)
+    y_pred = pd.DataFrame(model.predict(X))
+
+    with pytest.raises(ValueError, match="n_features must be provided"):
+        evaluate_bootstrap_metrics(
+            y_pred_prob=y_pred,
+            y=y,
+            n_samples=50,
+            num_resamples=5,
+            model_type="regression",
+            metrics=["adjusted_r2"],
+            # n_features intentionally omitted, X intentionally omitted
         )
 
 
