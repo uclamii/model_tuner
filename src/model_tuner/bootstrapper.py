@@ -204,12 +204,14 @@ def evaluate_bootstrap_metrics(
             resampled_indicies = y_resample.index
             X_resample = X.iloc[resampled_indicies]
 
+
             if model_type != "regression":
                 y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
+                y_pred_resample = model.predict(X_resample, optimal_threshold=True)
             else:
                 y_pred_prob_resample = None
-            y_pred_resample = model.predict(X_resample, optimal_threshold=True)
-
+                y_pred_resample = model.predict(X_resample)
+                
         for metric in metrics:
             if metric == "adjusted_r2":
                 n = len(y_resample)
