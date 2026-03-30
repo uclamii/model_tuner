@@ -110,9 +110,32 @@ def evaluate_bootstrap_metrics(
     balance=False,
     class_proportions=None,
     n_features=None,
+    ci_method="t",
 ):
+    """
+    Evaluate model performance metrics using bootstrap resampling.
+
+    Confidence intervals are computed using the specified ci_method:
+    'percentile' (default), 'bca' (bias-corrected and accelerated), or
+    't' (t-distribution with SEM, legacy behavior).
+
+    Parameters
+    ----------
+    ... (existing parameters unchanged)
+    ci_method : str, default 'percentile'
+        Method for computing 95% confidence intervals. Options are
+        'percentile', 'bca', or 't'.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns: Metric, Mean, 95% CI Lower, 95% CI Upper.
+    """
     if y is None:
         raise ValueError("The y parameter is required and cannot be None.")
+
+    if ci_method not in ("percentile", "bca", "t"):
+        raise ValueError("ci_method must be 'percentile', 'bca', or 't'.")
 
     regression_metrics = [
         "explained_variance",
@@ -204,14 +227,13 @@ def evaluate_bootstrap_metrics(
             resampled_indicies = y_resample.index
             X_resample = X.iloc[resampled_indicies]
 
-
             if model_type != "regression":
                 y_pred_prob_resample = model.predict_proba(X_resample)[:, 1]
                 y_pred_resample = model.predict(X_resample, optimal_threshold=True)
             else:
                 y_pred_prob_resample = None
                 y_pred_resample = model.predict(X_resample)
-                
+
         for metric in metrics:
             if metric == "adjusted_r2":
                 n = len(y_resample)
@@ -245,9 +267,11 @@ def evaluate_bootstrap_metrics(
                     )
                 )
                 continue
+
             if metric == "hamming_loss":
                 scores[metric].append(hamming_loss(y_resample, y_pred_resample))
                 continue
+
             scorer = get_scorer(metric)
             if metric in ["roc_auc", "average_precision", "brier_score"]:
                 try:
@@ -298,12 +322,27 @@ def evaluate_bootstrap_metrics(
     for metric in metrics:
         metric_scores = scores[metric]
         mean_score = np.mean(metric_scores)
-        ci_lower, ci_upper = st.t.interval(
-            0.95,
-            len(metric_scores) - 1,
-            loc=mean_score,
-            scale=st.sem(metric_scores),
-        )
+
+        if ci_method == "percentile":
+            ci_lower, ci_upper = np.percentile(metric_scores, [2.5, 97.5])
+        elif ci_method == "bca":
+            boot_result = st.bootstrap(
+                (np.array(metric_scores),),
+                np.mean,
+                confidence_level=0.95,
+                method="BCa",
+                random_state=random_state,
+            )
+            ci_lower = boot_result.confidence_interval.low
+            ci_upper = boot_result.confidence_interval.high
+        elif ci_method == "t":
+            ci_lower, ci_upper = st.t.interval(
+                0.95,
+                len(metric_scores) - 1,
+                loc=mean_score,
+                scale=st.sem(metric_scores),
+            )
+
         metrics_results["Metric"].append(metric)
         metrics_results["Mean"].append(mean_score)
         metrics_results["95% CI Lower"].append(ci_lower)

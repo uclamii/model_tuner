@@ -148,6 +148,63 @@ print(
     )
 )
 
+
+### model type bootstrap no stratify, balance, or class proportions w/ percentile method
+print("\nBootstrap metrics w/ percentile method \n")
+print(
+    evaluate_bootstrap_metrics(
+        model=model,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=None,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=[
+            "roc_auc",
+            "f1_weighted",
+            "precision",
+            "recall",
+            "specificity",
+            "average_precision",
+            "neg_brier_score",
+        ],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        ci_method="percentile",
+    )
+)
+
+### model type bootstrap no stratify, balance, or class proportions w/ percentile method
+print("Bootstrap metrics w/ bca method \n")
+print(
+    evaluate_bootstrap_metrics(
+        model=model,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=None,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=[
+            "roc_auc",
+            "f1_weighted",
+            "precision",
+            "recall",
+            "specificity",
+            "average_precision",
+            "neg_brier_score",
+        ],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        ci_method="bca",
+    )
+)
+
 print("Bootstrap metrics - Stratified \n")
 # stratified
 print(
