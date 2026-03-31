@@ -111,20 +111,20 @@ def evaluate_bootstrap_metrics(
     class_proportions=None,
     n_features=None,
     ci_method="t",
+    confidence_level=0.95,
 ):
     """
     Evaluate model performance metrics using bootstrap resampling.
 
     Confidence intervals are computed using the specified ci_method:
-    'percentile' (default), 'bca' (bias-corrected and accelerated), or
-    't' (t-distribution with SEM, legacy behavior).
+    'percentile' (default) or 't' (t-distribution with SEM, legacy behavior).
 
     Parameters
     ----------
     ... (existing parameters unchanged)
-    ci_method : str, default 'percentile'
+    ci_method : str, default 't'
         Method for computing 95% confidence intervals. Options are
-        'percentile', 'bca', or 't'.
+        'percentile' or 't'.
 
     Returns
     -------
@@ -324,20 +324,13 @@ def evaluate_bootstrap_metrics(
         mean_score = np.mean(metric_scores)
 
         if ci_method == "percentile":
-            ci_lower, ci_upper = np.percentile(metric_scores, [2.5, 97.5])
-        elif ci_method == "bca":
-            boot_result = st.bootstrap(
-                (np.array(metric_scores),),
-                np.mean,
-                confidence_level=0.95,
-                method="BCa",
-                random_state=random_state,
+            ci_lower, ci_upper = np.percentile(
+                metric_scores,
+                [(1 - confidence_level) / 2 * 100, (1 + confidence_level) / 2 * 100],
             )
-            ci_lower = boot_result.confidence_interval.low
-            ci_upper = boot_result.confidence_interval.high
         elif ci_method == "t":
             ci_lower, ci_upper = st.t.interval(
-                0.95,
+                confidence_level,
                 len(metric_scores) - 1,
                 loc=mean_score,
                 scale=st.sem(metric_scores),
