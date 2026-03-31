@@ -86,8 +86,8 @@ model = Model(
     kfold=kfold,
     stratify_y=True,
     grid=tuned_parameters,
-    randomized_grid=False,
-    n_iter=4,
+    randomized_grid=True,
+    n_iter=1,
     boost_early=True,
     scoring=["roc_auc"],
     n_jobs=-2,
@@ -145,6 +145,63 @@ print(
         model_type="classification",
         stratify=None,
         balance=False,
+    )
+)
+
+
+### model type bootstrap no stratify, balance, or class proportions w/ percentile method
+print("\nBootstrap metrics w/ percentile method \n")
+print(
+    evaluate_bootstrap_metrics(
+        model=model,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=None,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=[
+            "roc_auc",
+            "f1_weighted",
+            "precision",
+            "recall",
+            "specificity",
+            "average_precision",
+            "neg_brier_score",
+        ],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        ci_method="percentile",
+    )
+)
+
+### model type bootstrap no stratify, balance, or class proportions w/ percentile method
+print("Bootstrap metrics w/ bca method \n")
+print(
+    evaluate_bootstrap_metrics(
+        model=model,
+        X=X_test,
+        y=y_test,
+        y_pred_prob=None,
+        n_samples=500,
+        num_resamples=1000,
+        metrics=[
+            "roc_auc",
+            "f1_weighted",
+            "precision",
+            "recall",
+            "specificity",
+            "average_precision",
+            "neg_brier_score",
+        ],
+        random_state=42,
+        threshold=0.5,
+        model_type="classification",
+        stratify=None,
+        balance=False,
+        ci_method="bca",
     )
 )
 

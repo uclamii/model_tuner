@@ -268,6 +268,7 @@ def test_balance_with_regression_type() -> None:
 # Brier Score Loss Tests
 # ---------------------------------------------------------------------------
 
+
 def test_brier_score_with_y_pred_prob() -> None:
     """Test neg_brier_score metric using pre-computed predicted probabilities."""
     np.random.seed(42)
@@ -285,17 +286,17 @@ def test_brier_score_with_y_pred_prob() -> None:
     )
 
     assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
-    assert "neg_brier_score" in results["Metric"].values, (
-        "neg_brier_score should appear in results"
-    )
+    assert (
+        "neg_brier_score" in results["Metric"].values
+    ), "neg_brier_score should appear in results"
     brier_row = results[results["Metric"] == "neg_brier_score"].iloc[0]
     # Brier score is always in [0, 1]; mean should be non-negative
-    assert 0.0 <= brier_row["Mean"] <= 1.0, (
-        f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
-    )
-    assert brier_row["95% CI Lower"] <= brier_row["Mean"] <= brier_row["95% CI Upper"], (
-        "CI bounds should bracket the mean"
-    )
+    assert (
+        0.0 <= brier_row["Mean"] <= 1.0
+    ), f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
+    assert (
+        brier_row["95% CI Lower"] <= brier_row["Mean"] <= brier_row["95% CI Upper"]
+    ), "CI bounds should bracket the mean"
 
 
 def test_brier_score_with_model() -> None:
@@ -324,13 +325,13 @@ def test_brier_score_with_model() -> None:
     )
 
     assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
-    assert "neg_brier_score" in results["Metric"].values, (
-        "neg_brier_score should appear in results"
-    )
+    assert (
+        "neg_brier_score" in results["Metric"].values
+    ), "neg_brier_score should appear in results"
     brier_row = results[results["Metric"] == "neg_brier_score"].iloc[0]
-    assert 0.0 <= brier_row["Mean"] <= 1.0, (
-        f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
-    )
+    assert (
+        0.0 <= brier_row["Mean"] <= 1.0
+    ), f"Brier score mean {brier_row['Mean']} out of expected [0, 1] range"
 
 
 def test_brier_score_combined_with_other_metrics() -> None:
@@ -350,14 +351,16 @@ def test_brier_score_combined_with_other_metrics() -> None:
     )
 
     assert len(results) == 2, "Should return results for both metrics"
-    assert set(results["Metric"].values) == {"roc_auc", "neg_brier_score"}, (
-        "Both metrics should be present in the results"
-    )
+    assert set(results["Metric"].values) == {
+        "roc_auc",
+        "neg_brier_score",
+    }, "Both metrics should be present in the results"
 
 
 # ---------------------------------------------------------------------------
 # Adjusted R² Tests
 # ---------------------------------------------------------------------------
+
 
 def test_adjusted_r2_with_x_supplied() -> None:
     """Test adjusted_r2 when X is supplied so n_features is inferred automatically."""
@@ -375,15 +378,15 @@ def test_adjusted_r2_with_x_supplied() -> None:
     )
 
     assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
-    assert "adjusted_r2" in results["Metric"].values, (
-        "adjusted_r2 should appear in results"
-    )
+    assert (
+        "adjusted_r2" in results["Metric"].values
+    ), "adjusted_r2 should appear in results"
     row = results[results["Metric"] == "adjusted_r2"].iloc[0]
     # Adjusted R² can be negative for poor models but must be ≤ 1
     assert row["Mean"] <= 1.0, f"Adjusted R² mean {row['Mean']} should not exceed 1"
-    assert row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"], (
-        "CI bounds should bracket the mean"
-    )
+    assert (
+        row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"]
+    ), "CI bounds should bracket the mean"
 
 
 def test_adjusted_r2_with_explicit_n_features() -> None:
@@ -408,9 +411,9 @@ def test_adjusted_r2_with_explicit_n_features() -> None:
     )
 
     assert isinstance(results, pd.DataFrame), "Result should be a DataFrame"
-    assert "adjusted_r2" in results["Metric"].values, (
-        "adjusted_r2 should appear in results"
-    )
+    assert (
+        "adjusted_r2" in results["Metric"].values
+    ), "adjusted_r2 should appear in results"
 
 
 def test_adjusted_r2_combined_with_other_regression_metrics() -> None:
@@ -429,9 +432,11 @@ def test_adjusted_r2_combined_with_other_regression_metrics() -> None:
     )
 
     assert len(results) == 3, "Should return results for all three metrics"
-    assert set(results["Metric"].values) == {"r2", "adjusted_r2", "neg_mean_squared_error"}, (
-        "All requested metrics should appear in results"
-    )
+    assert set(results["Metric"].values) == {
+        "r2",
+        "adjusted_r2",
+        "neg_mean_squared_error",
+    }, "All requested metrics should appear in results"
 
 
 def test_adjusted_r2_raises_without_classification_model_type() -> None:
@@ -469,6 +474,99 @@ def test_adjusted_r2_raises_without_n_features_and_no_x() -> None:
             model_type="regression",
             metrics=["adjusted_r2"],
             # n_features intentionally omitted, X intentionally omitted
+        )
+
+
+################################################################################
+## ci_method Tests
+################################################################################
+
+
+def test_ci_method_percentile_default() -> None:
+    """Test that percentile CI produces wider intervals than t-based CI."""
+    np.random.seed(42)
+    y = pd.Series(np.random.binomial(1, 0.3, 500))
+    y_pred_prob = pd.DataFrame(np.random.beta(2, 5, 500))
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob,
+        y=y,
+        n_samples=200,
+        num_resamples=100,
+        metrics=["roc_auc"],
+        ci_method="percentile",
+    )
+
+    assert isinstance(results, pd.DataFrame)
+    row = results[results["Metric"] == "roc_auc"].iloc[0]
+    assert (
+        row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"]
+    ), "Percentile CI bounds should bracket the mean"
+
+
+def test_ci_method_t_produces_narrower_intervals() -> None:
+    """Test that t-based CI is narrower than percentile CI at high num_resamples."""
+    np.random.seed(0)
+    y = pd.Series(np.random.binomial(1, 0.4, 500))
+    y_pred_prob = pd.DataFrame(np.random.beta(2, 3, 500))
+
+    kwargs = dict(
+        y_pred_prob=y_pred_prob,
+        y=y,
+        n_samples=200,
+        num_resamples=500,
+        metrics=["roc_auc"],
+    )
+
+    results_t = evaluate_bootstrap_metrics(**kwargs, ci_method="t")
+    results_p = evaluate_bootstrap_metrics(**kwargs, ci_method="percentile")
+
+    row_t = results_t[results_t["Metric"] == "roc_auc"].iloc[0]
+    row_p = results_p[results_p["Metric"] == "roc_auc"].iloc[0]
+
+    width_t = row_t["95% CI Upper"] - row_t["95% CI Lower"]
+    width_p = row_p["95% CI Upper"] - row_p["95% CI Lower"]
+
+    assert (
+        width_t < width_p
+    ), "t-based CI should be narrower than percentile CI at high num_resamples"
+
+
+def test_ci_method_bca_brackets_mean() -> None:
+    """Test that BCa CI bounds bracket the mean."""
+    np.random.seed(7)
+    y = pd.Series(np.random.binomial(1, 0.35, 400))
+    y_pred_prob = pd.DataFrame(np.random.beta(3, 5, 400))
+
+    results = evaluate_bootstrap_metrics(
+        y_pred_prob=y_pred_prob,
+        y=y,
+        n_samples=150,
+        num_resamples=100,
+        metrics=["roc_auc"],
+        ci_method="bca",
+    )
+
+    row = results[results["Metric"] == "roc_auc"].iloc[0]
+    assert (
+        row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"]
+    ), "BCa CI bounds should bracket the mean"
+
+
+def test_ci_method_invalid_raises() -> None:
+    """Test that an invalid ci_method raises a ValueError."""
+    np.random.seed(42)
+    y = pd.Series(np.random.binomial(1, 0.4, 200))
+    y_pred_prob = pd.DataFrame(np.random.beta(2, 3, 200))
+
+    with pytest.raises(ValueError, match="ci_method must be"):
+        evaluate_bootstrap_metrics(
+            y_pred_prob=y_pred_prob,
+            y=y,
+            n_samples=50,
+            num_resamples=10,
+            metrics=["roc_auc"],
+            ci_method="invalid_method",
         )
 
 
