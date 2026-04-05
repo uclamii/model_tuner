@@ -134,8 +134,8 @@ def evaluate_bootstrap_metrics(
     if y is None:
         raise ValueError("The y parameter is required and cannot be None.")
 
-    if ci_method not in ("percentile", "bca", "t"):
-        raise ValueError("ci_method must be 'percentile', 'bca', or 't'.")
+    if ci_method not in ("percentile", "t"):
+        raise ValueError("ci_method must be 'percentile' or 't'.")
 
     regression_metrics = [
         "explained_variance",

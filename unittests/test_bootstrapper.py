@@ -532,27 +532,6 @@ def test_ci_method_t_produces_narrower_intervals() -> None:
     ), "t-based CI should be narrower than percentile CI at high num_resamples"
 
 
-def test_ci_method_bca_brackets_mean() -> None:
-    """Test that BCa CI bounds bracket the mean."""
-    np.random.seed(7)
-    y = pd.Series(np.random.binomial(1, 0.35, 400))
-    y_pred_prob = pd.DataFrame(np.random.beta(3, 5, 400))
-
-    results = evaluate_bootstrap_metrics(
-        y_pred_prob=y_pred_prob,
-        y=y,
-        n_samples=150,
-        num_resamples=100,
-        metrics=["roc_auc"],
-        ci_method="bca",
-    )
-
-    row = results[results["Metric"] == "roc_auc"].iloc[0]
-    assert (
-        row["95% CI Lower"] <= row["Mean"] <= row["95% CI Upper"]
-    ), "BCa CI bounds should bracket the mean"
-
-
 def test_ci_method_invalid_raises() -> None:
     """Test that an invalid ci_method raises a ValueError."""
     np.random.seed(42)
