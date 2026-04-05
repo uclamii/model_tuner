@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pytest
 import numpy as np
 import pandas as pd
@@ -9,7 +10,6 @@ from src.model_tuner.bootstrapper import (
     sampling_method,
     evaluate_bootstrap_metrics,
 )
-
 
 def generate_classification_data(
     n_samples: int = 100,
