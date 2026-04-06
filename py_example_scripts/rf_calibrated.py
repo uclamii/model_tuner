@@ -4,7 +4,8 @@ from sklearn.impute import SimpleImputer
 from model_tuner.model_tuner_utils import Model
 import model_tuner
 from sklearn.ensemble import RandomForestClassifier
-
+from sklearn.calibration import calibration_curve
+from sklearn.metrics import auc
 print()
 print(f"Model Tuner version: {model_tuner.__version__}")
 print(f"Model Tuner authors: {model_tuner.__author__}")
@@ -78,6 +79,17 @@ if model.calibrate:
 print("Validation Metrics")
 model.return_metrics(X, y, print_threshold=True, model_metrics=True)
 
+
+
 # Predict probabilities and classes
-y_prob = model.predict_proba(X)
+y_prob = model.predict_proba(X)[:,1]
 y_pred = model.predict(X, optimal_threshold=True)
+
+fraction_of_positives, mean_predicted_value = calibration_curve(
+    y, y_prob, n_bins=10, strategy="uniform"
+)
+
+# Area under calibration curve using trapezoidal rule
+auc_calibration = auc(mean_predicted_value, fraction_of_positives)
+
+print(f"The area under the calibration curve for comparison: {auc_calibration}")

@@ -22,8 +22,7 @@ from sklearn.metrics import (
     r2_score,
     explained_variance_score,
 )
-
-
+from sklearn.frozen import FrozenEstimator
 from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
@@ -636,8 +635,7 @@ class Model:
                         self.fit(X_train, y_train, fit_params=fit_params)
                     #  calibrate model, and save output
                     self.estimator = CalibratedClassifierCV(
-                        self.estimator,
-                        cv="prefit",
+                        estimator=FrozenEstimator(self.estimator),
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
@@ -704,8 +702,7 @@ class Model:
                     #  calibrate model, and save output
 
                     self.estimator = CalibratedClassifierCV(
-                        self.estimator,
-                        cv="prefit",
+                        estimator=FrozenEstimator(self.estimator),
                         method=self.calibration_method,
                     ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
