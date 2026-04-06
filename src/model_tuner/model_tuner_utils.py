@@ -22,7 +22,6 @@ from sklearn.metrics import (
     r2_score,
     explained_variance_score,
 )
-from sklearn.frozen import FrozenEstimator
 from skopt import BayesSearchCV
 import copy
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
@@ -88,6 +87,12 @@ from sklearn.linear_model import LogisticRegression
 | ‘neg_mean_gamma_deviance’      | metrics.mean_gamma_deviance          |                                 |
 
 """
+
+try:
+    from sklearn.frozen import FrozenEstimator
+    _HAS_FROZEN_ESTIMATOR = True
+except ImportError:
+    _HAS_FROZEN_ESTIMATOR = False
 
 
 class Model:
@@ -211,6 +216,7 @@ class Model:
 
         if self.kfold_group is not None:
             self.stratify_y = False
+
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
@@ -634,10 +640,18 @@ class Model:
                     else:
                         self.fit(X_train, y_train, fit_params=fit_params)
                     #  calibrate model, and save output
-                    self.estimator = CalibratedClassifierCV(
-                        estimator=FrozenEstimator(self.estimator),
-                        method=self.calibration_method,
-                    ).fit(X_valid, y_valid, **fit_params)
+                    if _HAS_FROZEN_ESTIMATOR:
+                        self.estimator = CalibratedClassifierCV(
+                            estimator=FrozenEstimator(self.estimator),
+                            method=self.calibration_method,
+                        ).fit(X_valid, y_valid, **fit_params)
+                    else:
+                        # sklearn < 1.6 fallback: prefit API
+                        self.estimator = CalibratedClassifierCV(
+                            self.estimator,
+                            cv="prefit",
+                            method=self.calibration_method,
+                        ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
@@ -701,10 +715,18 @@ class Model:
                     )
                     #  calibrate model, and save output
 
-                    self.estimator = CalibratedClassifierCV(
-                        estimator=FrozenEstimator(self.estimator),
-                        method=self.calibration_method,
-                    ).fit(X_valid, y_valid, **fit_params)
+                    if _HAS_FROZEN_ESTIMATOR:
+                        self.estimator = CalibratedClassifierCV(
+                            estimator=FrozenEstimator(self.estimator),
+                            method=self.calibration_method,
+                        ).fit(X_valid, y_valid, **fit_params)
+                    else:
+                        # sklearn < 1.6 fallback: prefit API
+                        self.estimator = CalibratedClassifierCV(
+                            self.estimator,
+                            cv="prefit",
+                            method=self.calibration_method,
+                        ).fit(X_valid, y_valid, **fit_params)
                     if f1_beta_tune:
                         y_pred_proba = self.predict_proba(X_valid)[:, 1]
                         self.tune_threshold_Fbeta(
