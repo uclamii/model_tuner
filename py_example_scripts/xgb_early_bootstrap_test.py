@@ -56,7 +56,6 @@ ct = ColumnTransformer(
 
 from xgboost import XGBClassifier
 
-
 estimator = XGBClassifier(objective="binary:logistic", device="cuda")
 
 estimator_name = "xgb"
@@ -178,7 +177,7 @@ print(
 )
 
 ### model type bootstrap no stratify, balance, or class proportions w/ percentile method
-print("Bootstrap metrics w/ bca method \n")
+print("Bootstrap metrics w/ Student's t-distribution method \n")
 print(
     evaluate_bootstrap_metrics(
         model=model,
@@ -201,7 +200,7 @@ print(
         model_type="classification",
         stratify=None,
         balance=False,
-        ci_method="bca",
+        ci_method="t",
     )
 )
 
