@@ -120,7 +120,25 @@ xgb_classifier = model.estimator.estimator[-1]
 feature_names = X_train.columns.to_list()
 
 ## Initialize the SHAP explainer with the model
-explainer = shap.TreeExplainer(xgb_classifier)
+## XGBoost 3.x serializes base_score as '[value]' in UBJ; SHAP ≤ 0.47.2 can't
+## parse it. Patch decode_ubjson_buffer to strip brackets before SHAP reads it.
+import shap.explainers._tree as _shap_tree
+
+_orig_decode = _shap_tree.decode_ubjson_buffer
+
+def _fixed_decode(fd):
+    result = _orig_decode(fd)
+    try:
+        bs = result["learner"]["learner_model_param"]["base_score"]
+        if isinstance(bs, str) and bs.startswith("["):
+            result["learner"]["learner_model_param"]["base_score"] = bs.strip("[]")
+    except (KeyError, TypeError):
+        pass
+    return result
+
+_shap_tree.decode_ubjson_buffer = _fixed_decode
+
+explainer = shap.TreeExplainer(xgb_classifier.get_booster())
 
 ## Compute SHAP values for the transformed dataset
 shap_values = explainer.shap_values(X_test_transformed)

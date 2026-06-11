@@ -88,6 +88,8 @@ from sklearn.linear_model import LogisticRegression
 
 """
 
+
+## TODO: Add comments
 try:
     from sklearn.frozen import FrozenEstimator
     _HAS_FROZEN_ESTIMATOR = True
