@@ -20,18 +20,18 @@ Before installing `model_tuner`, ensure your system meets the following requirem
 
 The following dependencies will be automatically installed for each python version when you install `model_tuner` via pip:
 
-| Package              | Python 3.8                | Python 3.9--3.10           | Python 3.11+               |
-|----------------------|---------------------------|----------------------------|-----------------------------|
-| `joblib`             | `>=1.3.2,<2.0`            | ✓                          | ✓                           |
-| `tqdm`               | `>=4.66.4,<5.0`           | ✓                          | ✓                           |
-| `catboost`           | `==1.2.8`                 | ✓                          | ✓                           |
-| `scikit-optimize`    | `==0.10.2`                | ✓                          | ✓                           |
-| `imbalanced-learn`   | `==0.12.4`                | ✓                          | ✓                           |
-| `xgboost`            | `==2.1.2`                 | ✓                          | ✓                           |
-| `numpy`              | `>=1.19.5,<2.0.0`         | ✓                          | `>=1.26,<3.0`               |
-| `pandas`             | `>=1.3.5,<2.2.3`          | ✓                          | ✓                           |
-| `scikit-learn`       | `>=1.0.2,<1.4.0`          | `==1.5.1`                  | ✓                           |
-| `scipy`              | `>=1.6.3,<1.11`           | `>=1.6.3,<2.0`             | `>=1.14.0,<2.0`             |
+| Package              | Python 3.8           | Python 3.9        | Python 3.10+        |
+|----------------------|----------------------|-------------------|---------------------|
+| `joblib`             | `>=1.3.2,<2.0`       | ✓                 | ✓                   |
+| `tqdm`               | `>=4.66.4,<5.0`      | ✓                 | ✓                   |
+| `scikit-optimize`    | `>=0.10.2,<0.11`     | ✓                 | ✓                   |
+| `pandas`             | `>=1.3.5,<2.2.3`     | ✓                 | ✓                   |
+| `numpy`              | `>=1.19.5,<2.0.0`    | ✓                 | `>=1.26,<3.0`       |
+| `scikit-learn`       | `>=1.0.2,<1.4.0`     | `==1.5.1`         | `>=1.6,<1.9`        |
+| `scipy`              | `>=1.6.3,<1.11`      | `>=1.6.3,<2.0`    | `>=1.14.0,<2.0`     |
+| `catboost`           | `>=1.2.7,<1.2.10`    | ✓                 | `>=1.2.10`          |
+| `xgboost`            | `>=2.1.2,<3.0`       | ✓                 | `>=3.0,<4.0`        |
+| `imbalanced-learn`   | `>=0.12.4,<0.13`     | ✓                 | `>=0.14,<0.15`      |
 
 > **Legend:**  
 > ✓ -- Same as previous column
