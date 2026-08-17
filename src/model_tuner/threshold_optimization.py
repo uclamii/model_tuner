@@ -125,3 +125,59 @@ def find_optimal_threshold_beta(
                 )
 
             threshold = None
+
+
+def find_optimal_threshold_youden(
+    y: Union[np.ndarray, List[int]],
+    y_proba: Union[np.ndarray, List[float]],
+    threshold_value_range: np.ndarray = np.arange(0, 1, 0.01),
+) -> Tuple[float, None]:
+    """
+    Find the threshold maximizing Youden's J statistic (sensitivity +
+    specificity - 1).
+
+    Unlike F-beta tuning, this requires no target score and no beta value.
+    Returns beta as None for signature compatibility with
+    find_optimal_threshold_beta.
+
+    Parameters:
+        y (array-like): True binary labels.
+        y_proba (array-like): Predicted probabilities.
+        threshold_value_range (array-like): Range of thresholds to evaluate.
+
+    Returns:
+        tuple: (optimal threshold, None)
+
+    Raises:
+        ValueError: If y or y_proba are empty.
+    """
+    y = np.asarray(y).ravel()
+    y_proba = np.asarray(y_proba).ravel()
+
+    if not y.size:
+        raise ValueError("y cannot be empty.")
+    if not y_proba.size:
+        raise ValueError("y_proba cannot be empty.")
+
+    n_pos = (y == 1).sum()
+    n_neg = (y == 0).sum()
+    if n_pos == 0 or n_neg == 0:
+        raise ValueError("y must contain both classes to compute Youden's J.")
+
+    # Vectorized: (n_thresholds, n_samples)
+    preds = y_proba[None, :] > threshold_value_range[:, None]
+
+    tp = (preds & (y == 1)[None, :]).sum(axis=1)
+    fp = (preds & (y == 0)[None, :]).sum(axis=1)
+
+    sensitivity = tp / n_pos
+    specificity = 1 - (fp / n_neg)
+    j = sensitivity + specificity - 1
+
+    best = int(np.argmax(j))
+    threshold = float(threshold_value_range[best])
+
+    print(f"Found optimal threshold via Youden's J: {threshold}")
+    print(f"Sensitivity: {sensitivity[best]:.3f}, Specificity: {specificity[best]:.3f}")
+
+    return threshold, None
