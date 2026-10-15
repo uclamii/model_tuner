@@ -92,6 +92,7 @@ from sklearn.linear_model import LogisticRegression
 ## TODO: Add comments
 try:
     from sklearn.frozen import FrozenEstimator
+
     _HAS_FROZEN_ESTIMATOR = True
 except ImportError:
     _HAS_FROZEN_ESTIMATOR = False
@@ -218,7 +219,6 @@ class Model:
 
         if self.kfold_group is not None:
             self.stratify_y = False
-
 
     """
     Multiple helper methods that are used to fetch different parts of the pipeline.
@@ -2204,10 +2204,10 @@ class Model:
 
             # Printing the confusion matrix for the class
             print(
-                f"Actual: Pos {conf_matrix[0,0]:>{max_length}} ({self.labels[0]})  {conf_matrix[0,1]:>{max_length}} ({self.labels[1]})"
+                f"Actual: Pos {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})  {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})"
             )
             print(
-                f"{'':>8}Neg {conf_matrix[1,0]:>{max_length}} ({self.labels[2]})  {conf_matrix[1,1]:>{max_length}} ({self.labels[3]})"
+                f"{'':>8}Neg {conf_matrix[0,1]:>{max_length}} ({self.labels[1]})  {conf_matrix[0,0]:>{max_length}} ({self.labels[0]})"
             )
             print(border)
 
