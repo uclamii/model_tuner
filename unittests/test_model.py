@@ -360,6 +360,34 @@ def test_return_metrics_multilabel_classification(multi_classification_data):
     ), "Confusion Matrix should be an array or list."
 
 
+def test_confusion_matrix_print_ML_positives_first(capsys):
+    """
+    Multiclass per-class confusion matrices should match the binary layout:
+    actual positives on the top row (tp, fn), actual negatives on the
+    bottom row (fp, tn).
+    """
+    model = Model(
+        name="ml_print_test",
+        estimator_name="lr",
+        estimator=LogisticRegression(),
+        model_type="classification",
+        multi_label=True,
+        class_labels=["1"],
+        grid={},
+    )
+
+    # sklearn's multilabel_confusion_matrix layout: [[tn, fp], [fn, tp]]
+    conf = np.array([[[12, 8], [0, 10]]])
+    model._confusion_matrix_print_ML(conf)
+
+    lines = capsys.readouterr().out.splitlines()
+    pos_row = next(line for line in lines if "Actual: Pos" in line)
+    neg_row = next(line for line in lines if "Neg" in line and "(" in line)
+
+    assert "10 (tp)" in pos_row and "0 (fn)" in pos_row
+    assert "8 (fp)" in neg_row and "12 (tn)" in neg_row
+
+
 def test_model_metrics_True_classification(classification_data):
     """
     Test the return_metrics method for a classification model.
